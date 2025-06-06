@@ -3,21 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dan Finn | Developer & Creator</title>
+  <title>Dan Finn | Developer</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #3498db;
+      --primary: #3498db;
       --primary-dark: #2980b9;
-      --accent-color: #f39c12;
-      --text-color: #f5f5f5;
+      --accent: #f39c12;
+      --text: #f5f5f5;
       --text-secondary: #ccc;
-      --container-bg: rgba(15, 15, 20, 0.85);
-      --card-bg: rgba(30, 30, 40, 0.6);
-      --transition-speed: 0.3s;
+      --bg-card: rgba(30, 30, 40, 0.6);
+      --transition: 0.3s;
     }
 
     * {
@@ -28,18 +27,15 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
       background-image: url('https://github.com/finn1817/image-links/blob/main/website_image_.jpg?raw=true');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       background-attachment: fixed;
       min-height: 100vh;
-      color: var(--text-color);
-      transition: background-image 0.8s ease-in-out;
+      color: var(--text);
+      transition: background-image 0.5s ease;
       position: relative;
-      overflow-x: hidden;
     }
 
     body::before {
@@ -58,11 +54,11 @@
     }
 
     body.dark-mode::before {
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.5);
     }
 
     header {
-      padding: 20px 40px;
+      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -72,88 +68,76 @@
       z-index: 1000;
       backdrop-filter: blur(8px);
       background-color: rgba(10, 10, 15, 0.7);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
 
     .logo {
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       display: flex;
       align-items: center;
     }
 
     .logo-mark {
-      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-      height: 36px;
-      width: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      height: 34px;
+      width: 34px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       margin-right: 10px;
-      box-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
     }
 
     .logo-mark span {
       font-weight: 700;
       color: white;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
 
     .theme-toggle {
       background: transparent;
       border: none;
       cursor: pointer;
-      color: var(--text-color);
-      font-size: 1.5rem;
-      padding: 10px;
-      border-radius: 50%;
-      transition: all var(--transition-speed) ease;
+      color: var(--text);
+      font-size: 1.2rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 45px;
-      height: 45px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
     }
 
     .theme-toggle:hover {
       background-color: rgba(255, 255, 255, 0.1);
-      transform: scale(1.1);
     }
 
-    .main-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
       padding: 100px 20px 60px;
     }
 
     .hero {
       text-align: center;
-      max-width: 1000px;
-      width: 100%;
-      margin-bottom: 40px;
-      padding: 40px 0;
+      padding: 60px 0 40px;
     }
 
     h1 {
       font-family: 'Montserrat', sans-serif;
-      font-size: 3.5rem;
+      font-size: 3.2rem;
       margin-bottom: 10px;
-      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      background: linear-gradient(135deg, var(--primary), var(--accent));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      text-fill-color: transparent;
     }
 
     .tagline {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       color: var(--text-secondary);
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .social-links {
@@ -164,11 +148,11 @@
     }
 
     .social-link {
-      color: var(--text-color);
-      font-size: 1.5rem;
-      transition: all var(--transition-speed) ease;
-      width: 45px;
-      height: 45px;
+      color: var(--text);
+      font-size: 1.3rem;
+      transition: all var(--transition) ease;
+      width: 42px;
+      height: 42px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -177,23 +161,15 @@
     }
 
     .social-link:hover {
-      color: var(--accent-color);
-      transform: translateY(-5px);
+      color: var(--accent);
+      transform: translateY(-3px);
       background-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .content {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      max-width: 1000px;
-      gap: 30px;
     }
 
     .section-title {
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.8rem;
-      margin-bottom: 20px;
+      font-size: 1.7rem;
+      margin-bottom: 25px;
       position: relative;
       display: inline-block;
     }
@@ -203,29 +179,26 @@
       position: absolute;
       left: 0;
       bottom: -8px;
-      width: 60px;
+      width: 50px;
       height: 3px;
-      background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+      background: var(--primary);
       border-radius: 3px;
     }
 
-    .projects-container {
+    .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 20px;
-      width: 100%;
     }
 
     .project-card {
-      background: var(--card-bg);
-      border-radius: 15px;
+      background: var(--bg-card);
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      transition: all var(--transition-speed) ease;
-      position: relative;
-      z-index: 1;
-      padding: 25px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      transition: all var(--transition) ease;
       border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 25px;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -233,38 +206,20 @@
     }
 
     .project-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-      border-color: rgba(var(--primary-color-rgb), 0.3);
-    }
-
-    .project-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(243, 156, 18, 0.1));
-      z-index: -1;
-      opacity: 0;
-      transition: opacity var(--transition-speed) ease;
-    }
-
-    .project-card:hover::before {
-      opacity: 1;
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
     }
 
     .project-icon {
-      font-size: 2rem;
+      font-size: 1.8rem;
       margin-bottom: 15px;
-      color: var(--accent-color);
+      color: var(--accent);
     }
 
     .project-title {
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 600;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       font-family: 'Montserrat', sans-serif;
     }
 
@@ -276,154 +231,81 @@
     }
 
     .project-link {
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      background: var(--primary);
       color: white;
       padding: 10px 20px;
-      border-radius: 50px;
+      border-radius: 6px;
       text-decoration: none;
       display: inline-block;
-      font-weight: 600;
+      font-weight: 500;
       font-size: 0.9rem;
-      transition: all var(--transition-speed) ease;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+      transition: all var(--transition) ease;
       text-align: center;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
     .project-link:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(52, 152, 219, 0.6);
+      background: var(--primary-dark);
     }
 
     .resume-section {
       text-align: center;
-      padding: 40px 0;
-      margin-top: 30px;
-      background: var(--card-bg);
-      border-radius: 15px;
+      padding: 40px;
+      margin-top: 40px;
+      background: var(--bg-card);
+      border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      width: 100%;
       backdrop-filter: blur(5px);
     }
 
     .resume-button {
-      background: linear-gradient(135deg, var(--accent-color), #e67e22);
+      background: var(--accent);
       color: white;
-      padding: 15px 40px;
-      border-radius: 50px;
+      padding: 12px 30px;
+      border-radius: 6px;
       text-decoration: none;
       display: inline-block;
       font-weight: 600;
-      font-size: 1.1rem;
-      transition: all var(--transition-speed) ease;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
-      text-align: center;
+      font-size: 1rem;
+      transition: all var(--transition) ease;
       margin-top: 20px;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
     .resume-button:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(243, 156, 18, 0.6);
+      background: #e67e22;
     }
 
     footer {
       text-align: center;
-      padding: 30px 20px;
-      background-color: rgba(10, 10, 15, 0.8);
-      backdrop-filter: blur(10px);
-      width: 100%;
-      margin-top: 80px;
-    }
-
-    .footer-text {
+      padding: 20px;
+      margin-top: 60px;
+      font-size: 0.85rem;
       color: var(--text-secondary);
-      font-size: 0.9rem;
     }
 
     @media (max-width: 768px) {
       h1 {
         font-size: 2.5rem;
       }
-
-      .tagline {
-        font-size: 1.1rem;
-      }
-
-      .projects-container {
+      
+      .projects-grid {
         grid-template-columns: 1fr;
       }
       
-      .main-container {
-        padding: 80px 15px 40px;
+      .hero {
+        padding: 40px 0 30px;
       }
       
-      header {
-        padding: 15px 20px;
+      .resume-section {
+        padding: 30px 20px;
       }
-    }
-
-    .scroll-down {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      animation: bounce 2s infinite;
-      color: var(--text-color);
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.1);
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      transition: all var(--transition-speed) ease;
-    }
-
-    .scroll-down:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0) translateX(-50%);
-      }
-      40% {
-        transform: translateY(-20px) translateX(-50%);
-      }
-      60% {
-        transform: translateY(-10px) translateX(-50%);
-      }
-    }
-
-    .page-transition {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #000;
-      z-index: 9999;
-      transform: translateY(100%);
-      transition: transform 0.5s ease-in-out;
-    }
-
-    .loading .page-transition {
-      transform: translateY(0);
     }
   </style>
 </head>
 <body>
-  <div class="page-transition"></div>
-
   <header>
     <div class="logo">
       <div class="logo-mark"><span>DF</span></div>
@@ -434,106 +316,73 @@
     </button>
   </header>
 
-  <div class="main-container">
+  <div class="container">
     <section class="hero">
       <h1>Dan Finn</h1>
       <p class="tagline">Developer, Creator & Digital Innovator</p>
       <div class="social-links">
-        <a href="#" class="social-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
-        <a href="#" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-        <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="social-link" aria-label="Email"><i class="fas fa-envelope"></i></a>
+        <a href="https://github.com/finn1817" class="social-link" aria-label="GitHub" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="mailto:finn1817@fredonia.edu" class="social-link" aria-label="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
       </div>
     </section>
 
-    <div class="content">
-      <section>
-        <h2 class="section-title">My Projects</h2>
-        <div class="projects-container">
-          <div class="project-card">
-            <div class="project-icon"><i class="fas fa-user"></i></div>
-            <h3 class="project-title">About Me</h3>
-            <p class="project-desc">Learn more about my background, skills, and what drives me as a developer.</p>
-            <a href="https://finn1817.github.io/About-Me/" class="project-link">Explore</a>
-          </div>
-          
-          <div class="project-card">
-            <div class="project-icon"><i class="fas fa-address-card"></i></div>
-            <h3 class="project-title">Contact Info</h3>
-            <p class="project-desc">Ways to get in touch with me for collaborations, opportunities, or just to say hello.</p>
-            <a href="https://finn1817.github.io/Contact-Info-Page/" class="project-link">Connect</a>
-          </div>
-          
-          <div class="project-card">
-            <div class="project-icon"><i class="fas fa-heart"></i></div>
-            <h3 class="project-title">My Interests</h3>
-            <p class="project-desc">Discover what I'm passionate about beyond coding and development.</p>
-            <a href="https://finn1817.github.io/For-Fun/" class="project-link">Discover</a>
-          </div>
-          
-          <div class="project-card">
-            <div class="project-icon"><i class="fas fa-graduation-cap"></i></div>
-            <h3 class="project-title">School Involvement</h3>
-            <p class="project-desc">My academic journey, achievements, and educational experiences.</p>
-            <a href="https://finn1817.github.io/More/" class="project-link">Learn More</a>
-          </div>
-          
-          <div class="project-card">
-            <div class="project-icon"><i class="fas fa-laptop-code"></i></div>
-            <h3 class="project-title">More Projects</h3>
-            <p class="project-desc">Explore my complete portfolio of work and creative projects.</p>
-            <a href="https://finn1817.github.io/My-Sites/" class="project-link">View All</a>
-          </div>
+    <section>
+      <h2 class="section-title">My Projects</h2>
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-icon"><i class="fas fa-user"></i></div>
+          <h3 class="project-title">About Me</h3>
+          <p class="project-desc">Learn more about my background, skills, and what drives me as a developer.</p>
+          <a href="https://finn1817.github.io/About-Me/" class="project-link">Explore</a>
         </div>
-      </section>
-      
-      <section class="resume-section">
-        <h2 class="section-title">Professional Experience</h2>
-        <p>Check out my complete professional background and skills in my online resume</p>
-        <a href="https://finn1817.github.io/Resume-Website/" class="resume-button">View My Resume</a>
-      </section>
-    </div>
+        
+        <div class="project-card">
+          <div class="project-icon"><i class="fas fa-address-card"></i></div>
+          <h3 class="project-title">Contact Info</h3>
+          <p class="project-desc">Ways to get in touch with me for collaborations, opportunities, or just to say hello.</p>
+          <a href="https://finn1817.github.io/Contact-Info-Page/" class="project-link">Connect</a>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-icon"><i class="fas fa-heart"></i></div>
+          <h3 class="project-title">My Interests</h3>
+          <p class="project-desc">Discover what I'm passionate about beyond coding and development.</p>
+          <a href="https://finn1817.github.io/For-Fun/" class="project-link">Discover</a>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-icon"><i class="fas fa-graduation-cap"></i></div>
+          <h3 class="project-title">School Involvement</h3>
+          <p class="project-desc">My academic journey, achievements, and educational experiences.</p>
+          <a href="https://finn1817.github.io/More/" class="project-link">Learn More</a>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-icon"><i class="fas fa-laptop-code"></i></div>
+          <h3 class="project-title">More Projects</h3>
+          <p class="project-desc">Explore my complete portfolio of work and creative projects.</p>
+          <a href="https://finn1817.github.io/My-Sites/" class="project-link">View All</a>
+        </div>
+      </div>
+    </section>
+    
+    <section class="resume-section">
+      <h2 class="section-title">Professional Experience</h2>
+      <p>Check out my complete professional background and skills in my online resume</p>
+      <a href="https://finn1817.github.io/Resume-Website/" class="resume-button">View My Resume</a>
+    </section>
   </div>
 
-  <a href="#" class="scroll-down" aria-label="Scroll Down">
-    <i class="fas fa-chevron-down"></i>
-  </a>
-
   <footer>
-    <p class="footer-text">© 2025 Dan Finn. All rights reserved.</p>
+    <p>© 2025 Dan Finn. All rights reserved.</p>
   </footer>
 
   <script>
-    // the page transition effect
-    document.addEventListener('DOMContentLoaded', function() {
-      document.body.classList.add('loading');
-      setTimeout(function() {
-        document.body.classList.remove('loading');
-      }, 300);
-    });
-
-    // handling link clicks with transition
-    document.querySelectorAll('a[href^="https://finn1817.github.io"]').forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const destination = this.href;
-        
-        document.body.classList.add('loading');
-        
-        setTimeout(function() {
-          window.location.href = destination;
-        }, 500);
-      });
-    });
-
-    // for the smooth scroll
-    document.querySelector('.scroll-down').addEventListener('click', function(e) {
-      e.preventDefault();
-      const contentSection = document.querySelector('.content');
-      contentSection.scrollIntoView({ behavior: 'smooth' });
-    });
-
-    // the theme click function
+    // theme toggle function
     function toggleTheme() {
       const themeIcon = document.getElementById('theme-icon');
       const isDark = document.body.classList.toggle('dark-mode');
@@ -549,7 +398,7 @@
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
     }
 
-    // apply saved theme or "system preference" - dark / light mode
+    // use saved theme or "system preference" dark / light mode
     (function () {
       const saved = localStorage.getItem('theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
