@@ -3,22 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dan Finn's Site</title>
-  <link rel="stylesheet" href="assets/css/styles.css">
+  <title>Dan Finn's Homepage</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body class="light">
   <button class="toggle-btn" onclick="toggleTheme()">Toggle Theme</button>
 
-  <div class="container">
-    <h1>My name is Dan Finn!</h1>
+  <div class="homepage-card">
+    <h1>My name is <strong>Dan Finn</strong>!</h1>
     <p>Welcome to my website! Here are some of my projects:</p>
-    <a href="about/">About Me | info tab</a><br><br>
-    <a href="contact/">Contact Info | brief</a><br><br>
-    <a href="interests/">My Interests</a><br><br>
-    <a href="involvement/">My School Involvement</a><br><br>
-    <a href="projects/">More of My Projects</a><br><br>
+
+    <div class="button-list">
+      <a href="about/">About Me | info tab</a>
+      <a href="contact/">Contact Info | brief</a>
+      <a href="interests/">My Interests</a>
+      <a href="involvement/">My School Involvement</a>
+      <a href="projects/">More of My Projects</a>
+    </div>
+
     <p>Below I also included the link to my resume (online edition)</p>
-    <a href="resume/">My Resume</a>
+    <a class="resume-button" href="resume/">My Resume</a>
   </div>
 
   <script src="assets/js/main.js"></script>
