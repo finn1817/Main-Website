@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dan Finn | Developer</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+    /* Base styles will be moved to external CSS file */
     :root {
       --primary: #3498db;
       --primary-dark: #2980b9;
@@ -27,7 +29,7 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      background-image: url('https://github.com/finn1817/image-links/blob/main/website_image_.jpg?raw=true');
+      background-image: url('assets/images/background-light.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -50,7 +52,7 @@
     }
 
     body.dark-mode {
-      background-image: url('https://github.com/finn1817/image-links/blob/main/darkMode.png?raw=true');
+      background-image: url('assets/images/background-dark.jpg');
     }
 
     body.dark-mode::before {
@@ -309,7 +311,7 @@
   <header>
     <div class="logo">
       <div class="logo-mark"><span>DF</span></div>
-      Dan Finn
+      <a href="index.html" style="text-decoration: none; color: inherit;">Dan Finn</a>
     </div>
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
       <i class="fas fa-moon" id="theme-icon"></i>
@@ -337,35 +339,35 @@
           <div class="project-icon"><i class="fas fa-user"></i></div>
           <h3 class="project-title">About Me</h3>
           <p class="project-desc">Learn more about my background, skills, and what drives me as a developer.</p>
-          <a href="https://finn1817.github.io/About-Me/" class="project-link">Explore</a>
+          <a href="about/index.html" class="project-link">Explore</a>
         </div>
         
         <div class="project-card">
           <div class="project-icon"><i class="fas fa-address-card"></i></div>
           <h3 class="project-title">Contact Info</h3>
           <p class="project-desc">Ways to get in touch with me for collaborations, opportunities, or just to say hello.</p>
-          <a href="https://finn1817.github.io/Contact-Info-Page/" class="project-link">Connect</a>
+          <a href="contact/index.html" class="project-link">Connect</a>
         </div>
         
         <div class="project-card">
           <div class="project-icon"><i class="fas fa-heart"></i></div>
           <h3 class="project-title">My Interests</h3>
           <p class="project-desc">Discover what I'm passionate about beyond coding and development.</p>
-          <a href="https://finn1817.github.io/For-Fun/" class="project-link">Discover</a>
+          <a href="interests/index.html" class="project-link">Discover</a>
         </div>
         
         <div class="project-card">
           <div class="project-icon"><i class="fas fa-graduation-cap"></i></div>
           <h3 class="project-title">School Involvement</h3>
           <p class="project-desc">My academic journey, achievements, and educational experiences.</p>
-          <a href="https://finn1817.github.io/More/" class="project-link">Learn More</a>
+          <a href="involvement/index.html" class="project-link">Learn More</a>
         </div>
         
         <div class="project-card">
           <div class="project-icon"><i class="fas fa-laptop-code"></i></div>
           <h3 class="project-title">More Projects</h3>
           <p class="project-desc">Explore my complete portfolio of work and creative projects.</p>
-          <a href="https://finn1817.github.io/My-Sites/" class="project-link">View All</a>
+          <a href="projects/index.html" class="project-link">View All</a>
         </div>
       </div>
     </section>
@@ -373,7 +375,7 @@
     <section class="resume-section">
       <h2 class="section-title">Professional Experience</h2>
       <p>Check out my complete professional background and skills in my online resume</p>
-      <a href="https://finn1817.github.io/Resume-Website/" class="resume-button">View My Resume</a>
+      <a href="resume/index.html" class="resume-button">View My Resume</a>
     </section>
   </div>
 
@@ -381,8 +383,9 @@
     <p>© 2025 Dan Finn. All rights reserved.</p>
   </footer>
 
+  <script src="assets/js/main.js"></script>
   <script>
-    // theme toggle function
+    // Theme toggle functionality - will be moved to external JS file
     function toggleTheme() {
       const themeIcon = document.getElementById('theme-icon');
       const isDark = document.body.classList.toggle('dark-mode');
@@ -398,7 +401,7 @@
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
     }
 
-    // use saved theme or "system preference" dark / light mode
+    // Apply saved theme or system preference
     (function () {
       const saved = localStorage.getItem('theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
