@@ -3,323 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>About Me | Dan Finn</title>
-  <link rel="stylesheet" href="../assets/css/styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    /* Page-specific styles */
-    .about-section {
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-    }
-
-    .about-content {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      align-items: center;
-    }
-
-    .about-text {
-      flex: 1;
-      min-width: 300px;
-      background: var(--bg-card);
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(5px);
-    }
-
-    .about-text h2 {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-      color: var(--text);
-    }
-
-    .about-text p {
-      color: var(--text-secondary);
-      line-height: 1.7;
-      margin-bottom: 15px;
-    }
-
-    .about-text p:last-child {
-      margin-bottom: 0;
-    }
-
-    .highlight {
-      color: var(--accent);
-      font-weight: 500;
-    }
-
-    .about-image {
-      flex: 1;
-      min-width: 300px;
-      max-width: 450px;
-    }
-
-    .about-image img {
-      width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-      transition: transform var(--transition) ease;
-    }
-
-    .about-image img:hover {
-      transform: scale(1.02);
-    }
-
-    .skills-section {
-      background: var(--bg-card);
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(5px);
-    }
-
-    .skills-title {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 1.8rem;
-      margin-bottom: 25px;
-      position: relative;
-      display: inline-block;
-    }
-
-    .skills-title::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: -8px;
-      width: 50px;
-      height: 3px;
-      background: var(--primary);
-      border-radius: 3px;
-    }
-
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 20px;
-    }
-
-    .skill-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding: 15px 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-      transition: all var(--transition) ease;
-    }
-
-    .skill-item:hover {
-      transform: translateY(-5px);
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .skill-icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-      color: var(--accent);
-    }
-
-    .skill-name {
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .back-button {
-      position: fixed;
-      bottom: 30px;
-      left: 30px;
-      background: var(--primary);
-      color: white;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      transition: all var(--transition) ease;
-      z-index: 100;
-    }
-
-    .back-button:hover {
-      background: var(--primary-dark);
-      transform: scale(1.1);
-    }
-
-    .location {
-      display: flex;
-      align-items: center;
-      margin-top: 15px;
-      color: var(--text-secondary);
-    }
-
-    .location i {
-      margin-right: 10px;
-      color: var(--primary);
-    }
-
-    @media (max-width: 768px) {
-      .about-content {
-        flex-direction: column-reverse;
-      }
-      
-      .about-image {
-        width: 100%;
-      }
-      
-      .skills-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      }
-      
-      .back-button {
-        bottom: 20px;
-        left: 20px;
-        width: 45px;
-        height: 45px;
-      }
-    }
-  </style>
+  <title>About Me</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
 </head>
-<body>
-  <header>
-    <div class="logo">
-      <div class="logo-mark"><span>DF</span></div>
-      <a href="../index.html" style="text-decoration: none; color: inherit;">Dan Finn</a>
-    </div>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
-      <i class="fas fa-moon" id="theme-icon"></i>
-    </button>
-  </header>
+<body class="light">
 
-  <div class="container">
-    <section class="hero">
-      <h1>About Me</h1>
-      <p class="tagline">Computer Science Student & Developer</p>
-    </section>
-
-    <section class="about-section">
-      <div class="about-content">
-        <div class="about-text">
-          <h2>Daniel Finn</h2>
-          <div class="location">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>Fredonia, NY - Buffalo, NY</span>
-          </div>
-          <p class="mt-6">
-            I currently attend Fredonia University, where I'm pursuing a degree in <span class="highlight">Computer Science</span>. My programming experience spans multiple languages including C++, C#, Python, Bash, SQL, HTML, and Java, covering both academic and personal projects.
-          </p>
-          <p>
-            Throughout my academic journey, I've developed various applications, from simple guessing games in C++ and C# to more complex projects using Unity. I've created my own versions of popular games like tic-tac-toe, Snake, Hangman, and Flappy Bird. Additionally, I've written code for system optimizations, particularly for Windows and Linux environments.
-          </p>
-          <p>
-            For the past three years, I've been commuting (a 1-hour drive) to school and work, which has been a rewarding experience filled with learning opportunities. Currently, I'm employed as an <span class="highlight">Esports Lounge Employee</span> and an <span class="highlight">IT Service Center Intern</span> (Programming & Hardware Assistant).
-          </p>
-          <p>
-            Beyond coding, I enjoy playing music, working on my car, and tackling various projects around my house. These activities help me grow and learn in diverse ways. Most of my free time is dedicated to programming, especially as my main job now involves developing a Web App for ITS!
-          </p>
-        </div>
-        <div class="about-image">
-          <img src="../assets/images/suny-fredonia.png" alt="SUNY Fredonia">
-        </div>
-      </div>
-
-      <div class="skills-section">
-        <h2 class="skills-title">Technical Skills</h2>
-        <div class="skills-grid">
-          <div class="skill-item">
-            <div class="skill-icon"><i class="fab fa-html5"></i></div>
-            <div class="skill-name">HTML</div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-icon"><i class="fab fa-css3-alt"></i></div>
-            <div class="skill-name">CSS</div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-icon"><i class="fab fa-js"></i></div>
-            <div class="skill-name">JavaScript</div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-icon"><i class="fab fa-python"></i></div>
-            <div class="skill-name">Python</div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-icon"><i class="fab fa-java"></i></div>
-            <div class="skill-name">Java</div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-icon"><i class="fas fa-database"></i></div>
-            <div class="skill-name">SQL</div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-icon"><i class="fab fa-cuttlefish"></i></div>
-            <div class="skill-name">C++</div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-icon"><i class="fab fa-microsoft"></i></div>
-            <div class="skill-name">C#</div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-icon"><i class="fab fa-unity"></i></div>
-            <div class="skill-name">Unity</div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-icon"><i class="fab fa-linux"></i></div>
-            <div class="skill-name">Bash</div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- Back button -->
+  <div class="top-left">
+    <a href="../index.html" class="button">Back to Home</a>
   </div>
 
-  <a href="../index.html" class="back-button">
-    <i class="fas fa-arrow-left"></i>
-  </a>
+  <!-- Theme Toggle -->
+  <div class="top-right">
+    <button id="theme-toggle" class="toggle-btn">🌙</button>
+  </div>
 
-  <footer>
-    <p>© 2025 Dan Finn. All rights reserved.</p>
-  </footer>
+  <!-- Main Content -->
+  <div class="about-wrapper">
+    <div class="about-card">
+      <h1>Daniel Finn</h1>
+      <hr>
+      <p><strong>Major:</strong> Computer Science</p>
+      <p><strong>Location:</strong> Fredonia, NY - Buffalo, NY</p>
+      <p class="text">
+        I currently go to Fredonia University, where I’m getting a degree in Computer Science. I have done a lot of programming using languages including C++, C#, Python, Bash, SQL, HTML, and Java. That includes both school and personal projects...
+      </p>
+      <p class="text">
+        Along with coding, I love playing music, working on my car, and doing lots of other random projects around my house. These all show or help me grow and learn more in some way. I spend most of my free time programming...
+      </p>
+    </div>
 
-  <script>
-    // theme toggle function
-    function toggleTheme() {
-      const themeIcon = document.getElementById('theme-icon');
-      const isDark = document.body.classList.toggle('dark-mode');
-      
-      if (isDark) {
-        themeIcon.classList.remove('fa-moon');
-        themeIcon.classList.add('fa-sun');
-      } else {
-        themeIcon.classList.remove('fa-sun');
-        themeIcon.classList.add('fa-moon');
-      }
-      
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    }
+    <div class="about-logo">
+      <img src="../assets/images/suny-fredonia.png" alt="SUNY Fredonia Logo">
+    </div>
+  </div>
 
-    // apply saved theme or system preference
-    (function () {
-      const saved = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const themeIcon = document.getElementById('theme-icon');
-      
-      if (saved === 'dark' || (!saved && prefersDark)) {
-        document.body.classList.add('dark-mode');
-        themeIcon.classList.remove('fa-moon');
-        themeIcon.classList.add('fa-sun');
-      }
-    })();
-  </script>
+  <script src="../assets/js/main.js"></script>
 </body>
 </html>
