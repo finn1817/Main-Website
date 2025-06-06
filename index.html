@@ -8,15 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <header>
     <div class="logo">
       <div class="logo-mark"><span>DF</span></div>
-      <a href="index.html" style="text-decoration: none; color: inherit;">Dan Finn</a>
+      <span>Dan Finn</span>
     </div>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
+    <button class="theme-toggle" id="theme-toggle">
       <i class="fas fa-moon" id="theme-icon"></i>
     </button>
   </header>
@@ -26,51 +26,51 @@
       <h1>Dan Finn</h1>
       <p class="tagline">Developer, Creator & Digital Innovator</p>
       <div class="social-links">
-        <a href="https://github.com/finn1817" class="social-link" aria-label="GitHub" target="_blank">
+        <a href="https://github.com/finn1817" class="social-link" target="_blank">
           <i class="fab fa-github"></i>
         </a>
-        <a href="mailto:finn1817@fredonia.edu" class="social-link" aria-label="Email">
+        <a href="mailto:finn1817@fredonia.edu" class="social-link">
           <i class="fas fa-envelope"></i>
         </a>
       </div>
     </section>
 
-    <section>
+    <section class="projects-section">
       <h2 class="section-title">My Projects</h2>
       <div class="projects-grid">
         <div class="project-card">
           <div class="project-icon"><i class="fas fa-user"></i></div>
           <h3 class="project-title">About Me</h3>
           <p class="project-desc">Learn more about my background, skills, and what drives me as a developer.</p>
-          <a href="about/index.html" class="project-link">Explore</a>
+          <a href="about/" class="project-link">Explore</a>
         </div>
         
         <div class="project-card">
           <div class="project-icon"><i class="fas fa-address-card"></i></div>
           <h3 class="project-title">Contact Info</h3>
           <p class="project-desc">Ways to get in touch with me for collaborations, opportunities, or just to say hello.</p>
-          <a href="contact/index.html" class="project-link">Connect</a>
+          <a href="contact/" class="project-link">Connect</a>
         </div>
         
         <div class="project-card">
           <div class="project-icon"><i class="fas fa-heart"></i></div>
           <h3 class="project-title">My Interests</h3>
           <p class="project-desc">Discover what I'm passionate about beyond coding and development.</p>
-          <a href="interests/index.html" class="project-link">Discover</a>
+          <a href="interests/" class="project-link">Discover</a>
         </div>
         
         <div class="project-card">
           <div class="project-icon"><i class="fas fa-graduation-cap"></i></div>
           <h3 class="project-title">School Involvement</h3>
           <p class="project-desc">My academic journey, achievements, and educational experiences.</p>
-          <a href="involvement/index.html" class="project-link">Learn More</a>
+          <a href="involvement/" class="project-link">Learn More</a>
         </div>
         
         <div class="project-card">
           <div class="project-icon"><i class="fas fa-laptop-code"></i></div>
           <h3 class="project-title">More Projects</h3>
           <p class="project-desc">Explore my complete portfolio of work and creative projects.</p>
-          <a href="projects/index.html" class="project-link">View All</a>
+          <a href="projects/" class="project-link">View All</a>
         </div>
       </div>
     </section>
@@ -78,7 +78,7 @@
     <section class="resume-section">
       <h2 class="section-title">Professional Experience</h2>
       <p>Check out my complete professional background and skills in my online resume</p>
-      <a href="resume/index.html" class="resume-button">View My Resume</a>
+      <a href="resume/" class="resume-button">View My Resume</a>
     </section>
   </div>
 
@@ -86,6 +86,6 @@
     <p>© 2025 Dan Finn. All rights reserved.</p>
   </footer>
 
-  <script src="assets/js/main.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
