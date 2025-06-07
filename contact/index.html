@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Information - Dan Finn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-image: url('../assets/images/background-light.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      transition: background-image 0.4s ease;
+      color: #333;
+      position: relative;
+    }
+
+    body.dark {
+      background-image: url('../assets/images/background-dark.jpg');
+      color: #f0f0f0;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-home {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+
+    .btn-home:hover {
+      background-color: #0056b3;
+      transform: translateY(-1px);
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: 2px solid #333;
+      color: #333;
+      font-size: 1.2em;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    body.dark .toggle-btn {
+      border-color: #f0f0f0;
+      color: #f0f0f0;
+    }
+
+    .toggle-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    /* Main Content */
+    .contact-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 100px 20px 20px;
+    }
+
+    .contact-card {
+      max-width: 700px;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+      color: #333;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark .contact-card {
+      background-color: rgba(30, 30, 30, 0.95);
+      color: #f0f0f0;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-align: center;
+      background: linear-gradient(135deg, #007bff, #4dabf7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .contact-grid {
+      display: grid;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .contact-item {
+      background: rgba(0, 123, 255, 0.05);
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid #007bff;
+      transition: all 0.3s;
+    }
+
+    body.dark .contact-item {
+      background: rgba(77, 171, 247, 0.1);
+      border-left-color: #4dabf7;
+    }
+
+    .contact-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+    }
+
+    .contact-label {
+      font-weight: 700;
+      font-size: 1.1em;
+      color: #007bff;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    body.dark .contact-label {
+      color: #4dabf7;
+    }
+
+    .contact-value {
+      font-size: 1em;
+      line-height: 1.5;
+    }
+
+    .contact-value a {
+      color: #007bff;
+      text-decoration: none;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+
+    .contact-value a:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+
+    body.dark .contact-value a {
+      color: #4dabf7;
+    }
+
+    body.dark .contact-value a:hover {
+      color: #74c0fc;
+    }
+
+    /* Icons */
+    .icon {
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+    }
+
+    .email-icon::before { content: "📧"; }
+    .phone-icon::before { content: "📱"; }
+    .github-icon::before { content: "⚡"; }
+
+    /* Note section */
+    .contact-note {
+      background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(77, 171, 247, 0.1));
+      padding: 25px;
+      border-radius: 12px;
+      font-style: italic;
+      border: 1px solid rgba(0, 123, 255, 0.2);
+      line-height: 1.6;
+    }
+
+    body.dark .contact-note {
+      background: linear-gradient(135deg, rgba(77, 171, 247, 0.15), rgba(116, 192, 252, 0.1));
+      border-color: rgba(77, 171, 247, 0.3);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+      border-top: 1px solid rgba(0, 123, 255, 0.2);
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .contact-card {
+        margin: 0 10px;
+        padding: 30px 20px;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+      
+      .top-bar {
+        padding: 12px 15px;
+      }
+
+      .contact-wrapper {
+        padding: 80px 15px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .contact-item {
+        padding: 15px;
+      }
+      
+      .contact-label {
+        font-size: 1em;
+      }
+      
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+  </style>
+</head>
+<body class="light">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <a href="../index.html" class="btn-home">← Back to Home</a>
+    <button id="theme-toggle" class="toggle-btn" aria-label="Toggle Theme">🌙</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="contact-wrapper">
+    <div class="contact-card">
+      <h1>Get In Touch</h1>
+      
+      <div class="contact-grid">
+        <div class="contact-item">
+          <div class="contact-label">
+            <span class="icon email-icon"></span>
+            School Email
+          </div>
+          <div class="contact-value">
+            <a href="mailto:finn1817@fredonia.edu">finn1817@fredonia.edu</a>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-label">
+            <span class="icon email-icon"></span>
+            Personal Email
+          </div>
+          <div class="contact-value">
+            <a href="mailto:dan@dfinn.me">dan@dfinn.me</a>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-label">
+            <span class="icon phone-icon"></span>
+            Phone Number
+          </div>
+          <div class="contact-value">
+            <a href="mailto:dan@dfinn.me?subject=Phone Number Request">Email me for my phone number!</a>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-label">
+            <span class="icon github-icon"></span>
+            GitHub Profile
+          </div>
+          <div class="contact-value">
+            <a href="https://github.com/finn1817" target="_blank" rel="noopener noreferrer">github.com/finn1817</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-note">
+        <strong>Let's collaborate!</strong> Feel free to reach out about any web development opportunities, feedback on my resume, or any projects that I can contribute in homehow!
+      </div>
+
+      <div class="footer">
+        <p>© 2025 Daniel Finn. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggleBtn = document.getElementById("theme-toggle");
+      const body = document.body;
+
+      // Apply saved theme or system preference
+      const savedTheme = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+      if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+        body.classList.remove("light");
+        body.classList.add("dark");
+        toggleBtn.textContent = "☀️";
+      } else {
+        body.classList.remove("dark");
+        body.classList.add("light");
+        toggleBtn.textContent = "🌙";
+      }
+
+      // Toggle theme listener
+      toggleBtn.addEventListener("click", () => {
+        const isDark = body.classList.toggle("dark");
+        body.classList.toggle("light", !isDark);
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+        toggleBtn.textContent = isDark ? "☀️" : "🌙";
+      });
+    });
+  </script>
+</body>
+</html>
