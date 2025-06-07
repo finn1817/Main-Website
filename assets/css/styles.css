@@ -19,7 +19,7 @@ body.dark {
   background-image: url('../images/background-dark.jpg');
 }
 
-/* main homepage box */
+/* homepage card */
 .homepage-card {
   background-color: rgba(0, 0, 0, 0.75);
   padding: 40px;
@@ -30,7 +30,39 @@ body.dark {
   width: 90%;
 }
 
-/* headers and paragraph text */
+/* about card */
+.about-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+  padding: 20px;
+  gap: 40px;
+}
+
+.about-card {
+  max-width: 800px;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: background-color 0.3s;
+  color: #111;
+}
+
+body.dark .about-card {
+  background-color: rgba(30, 30, 30, 0.85);
+  color: #f0f0f0;
+}
+
+.about-logo img {
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* text formatting */
 h1 {
   font-size: 2em;
   margin-bottom: 10px;
@@ -43,7 +75,8 @@ p {
 
 /* buttons */
 .button-list a,
-.resume-button {
+.resume-button,
+.btn-home {
   background-color: #007bff;
   color: white;
   padding: 10px 20px;
@@ -55,10 +88,13 @@ p {
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
+  font-weight: 600;
+  text-align: center;
 }
 
 .button-list a:hover,
-.resume-button:hover {
+.resume-button:hover,
+.btn-home:hover {
   background-color: #0056b3;
 }
 
@@ -77,7 +113,26 @@ p {
   transition: background-color 0.3s, color 0.3s;
 }
 
+body.dark .toggle-btn {
+  border-color: #f0f0f0;
+  color: #f0f0f0;
+}
+
 .toggle-btn:hover {
   background-color: white;
   color: black;
+}
+
+/* top bar (about pages) */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  background: transparent;
 }
