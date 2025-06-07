@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const toggleBtn = document.getElementById("theme-toggle") || document.querySelector(".toggle-btn");
   const body = document.body;
 
-  // apply saved or system preference
+  // apply saved or system preference | light / dark
   const savedTheme = localStorage.getItem("theme");
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
