@@ -10,8 +10,13 @@ document.addEventListener("DOMContentLoaded", function () {
     body.classList.remove("light");
     body.classList.add("dark");
     if (toggleBtn) toggleBtn.textContent = "☀️";
+  } else {
+    body.classList.remove("dark");
+    body.classList.add("light");
+    if (toggleBtn) toggleBtn.textContent = "🌙";
   }
 
+  // toggle listener
   if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {
       const isDark = body.classList.toggle("dark");
