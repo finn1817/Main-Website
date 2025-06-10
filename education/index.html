@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daniel Finn's Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-image: url("/Main-Website/assets/images/background-light.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: background-image 0.4s ease, color 0.4s ease;
+    }
+
+    body.dark-mode {
+      background-image: url("/Main-Website/assets/images/background-dark.jpg");
+      color: #f3f3f3;
+    }
+
+    .header {
+      background-color: #283593;
+      color: #ffffff;
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .header p {
+      font-weight: 400;
+      font-size: 14px;
+      margin: 5px 0;
+    }
+
+    .tab {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .tab button {
+      background-color: #283593;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 10px 20px;
+      transition: background-color 0.3s, transform 0.2s;
+      font-size: 18px;
+      color: #ffffff;
+      border-radius: 5px;
+      margin: 0 10px;
+    }
+
+    .tab button:hover {
+      background-color: #1a237e;
+      transform: translateY(-2px);
+    }
+
+    .tab button.active {
+      background-color: #3949ab;
+    }
+
+    .tabcontent {
+      display: none;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 800px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background-color: rgba(255, 255, 255, 0.85);
+      transition: background-color 0.4s ease;
+    }
+
+    body.dark-mode .tabcontent {
+      background-color: rgba(30, 30, 30, 0.85);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 10px 20px;
+      margin-top: auto;
+      color: #ffffff;
+      background-color: #283593;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .back-to-home {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      text-decoration: none;
+      border-radius: 0;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .back-to-home:hover {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 10px 15px;
+      border: 2px solid white;
+      color: white;
+      background: transparent;
+      border-radius: 5px;
+      font-size: 1.1em;
+      cursor: pointer;
+    }
+
+    .theme-toggle:hover {
+      background-color: white;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <!-- Back to Home -->
+  <a href="https://finn1817.github.io/HomePage/" class="back-to-home">Back to Home</a>
+  <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Daniel Finn</h1>
+    <p>How I have been Involved and What I can do</p>
+  </div>
+
+  <!-- Tab Buttons -->
+  <div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'HighSchool')">High School</button>
+    <button class="tablinks" onclick="openTab(event, 'College')">College</button>
+  </div>
+
+  <!-- Tab Content -->
+  <div id="HighSchool" class="tabcontent">
+    <h3>High School</h3>
+    <p>During high school, I was the captain of the soccer team and an active member of the AV club, where I gained both leadership and technical skills.</p>
+  </div>
+
+  <div id="College" class="tabcontent">
+    <h3>College</h3>
+    <p>Since I started college, I've gone much further into programming than I ever have before in my entire life. Before college, I had a very little amount of experience in coding at all. Over the last four years, there has been a huge improvement in both my tech skills and my understanding of programming in general. I have a good understanding of C++, C#, Python, HTML, and Bash, and I have experimented in a few other languages as well. With less than one more year of computer science left, I feel more ready than ever to get into a job and start showing people what I can do!</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>&copy; 2025 Daniel Finn &copy;</p>
+  </div>
+
+  <!-- Script -->
+  <script>
+    function openTab(evt, section) {
+      const tabcontent = document.getElementsByClassName("tabcontent");
+      for (let i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      const tablinks = document.getElementsByClassName("tablinks");
+      for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(section).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+
+    // Show default tab on load
+    window.onload = () => {
+      document.querySelectorAll(".tablinks")[0].click();
+
+      const saved = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const body = document.body;
+      const toggle = document.getElementById("themeToggle");
+
+      if (saved === "dark" || (!saved && prefersDark)) {
+        body.classList.add("dark-mode");
+        toggle.textContent = "☀️";
+      }
+    };
+
+    function toggleTheme() {
+      const body = document.body;
+      const toggle = document.getElementById("themeToggle");
+      const isDark = body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      toggle.textContent = isDark ? "☀️" : "🌙";
+    }
+  </script>
+</body>
+</html>
