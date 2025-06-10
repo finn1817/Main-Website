@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Free-Time Activities</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-image: url("assets/images/background-light.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      color: #333;
+      line-height: 1.6;
+      position: relative;
+      min-height: 100vh;
+      padding-bottom: 50px;
+      transition: background-image 0.4s ease, color 0.4s ease;
+    }
+
+    body.dark-mode {
+      background-image: url("assets/images/background-dark.jpg");
+      color: #f3f3f3;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.4s ease;
+    }
+
+    body.dark-mode .container {
+      background: rgba(30, 30, 30, 0.85);
+    }
+
+    h1, h2 {
+      color: #2c3e50;
+    }
+
+    body.dark-mode h1,
+    body.dark-mode h2 {
+      color: #90caf9;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      margin-bottom: 15px;
+    }
+
+    .interests,
+    .about-me {
+      margin-bottom: 25px;
+    }
+
+    a {
+      color: #3498db;
+      transition: color 0.3s;
+    }
+
+    a:hover {
+      color: #2980b9;
+      text-decoration: underline;
+    }
+
+    body.dark-mode a {
+      color: #89caff;
+    }
+
+    ul {
+      list-style-type: square;
+      margin-left: 20px;
+    }
+
+    .footer {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 20px;
+      color: #fff;
+      background-color: #2c3e50;
+    }
+
+    .back-to-home {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      text-decoration: none;
+      border-radius: 0;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .back-to-home:hover {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 10px 15px;
+      border: 2px solid white;
+      color: white;
+      background: transparent;
+      border-radius: 5px;
+      font-size: 1.1em;
+      cursor: pointer;
+    }
+
+    .theme-toggle:hover {
+      background-color: white;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <a href="https://finn1817.github.io/Main-Website/" class="back-to-home">Back to Home</a>
+  <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+
+  <!-- Page Content -->
+  <div class="container">
+    <h1>My Free-Time Activities</h1>
+    <div class="interests">
+      <h2>My Interests</h2>
+      <p>
+        I enjoy doing all kinds of things. I love my job, as I currently work in an Esports Lounge, and I DoorDash when that's out of season. I also love programming, both for school and just for fun. I do also enjoy spending some time working on my car, mostly trying to keep it from having issues on my drive to school, but I do enjoy learning how to do it all myself!
+      </p>
+      <ul>
+        <li>I love working on any Programming Projects</li>
+        <li>I also enjoy playing Video Games, and I am currently a captain on the Fredonia Rocket League Team.</li>
+      </ul>
+    </div>
+    <div class="about-me">
+      <p>
+        For more information, feel free to visit the 
+        <a href="https://finn1817.github.io/About-Me/" target="_blank">About Me</a> page.
+      </p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>© 2024 by Daniel Finn.</p>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const toggle = document.getElementById("themeToggle");
+    const body = document.body;
+
+    (function () {
+      const saved = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+      if (saved === "dark" || (!saved && prefersDark)) {
+        body.classList.add("dark-mode");
+        toggle.textContent = "☀️";
+      }
+    })();
+
+    function toggleTheme() {
+      const isDark = body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      toggle.textContent = isDark ? "☀️" : "🌙";
+    }
+  </script>
+</body>
+</html>
