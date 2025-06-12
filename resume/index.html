@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dan Finn's Resume</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * { box-sizing: border-box; }
 
@@ -260,6 +261,31 @@
     .theme-toggle:hover {
       background-color: rgba(0, 0, 0, 0.2);
     }
+
+    /* download resume button */
+    .download-resume {
+      position: fixed;
+      top: 60px;
+      right: 10px;
+      padding: 10px 15px;
+      background-color: #ff6b35;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+
+    .download-resume:hover {
+      background-color: #e55a2b;
+    }
+
+    .download-resume:active {
+      transform: scale(0.98);
+    }
   </style>
 </head>
 <body>
@@ -267,6 +293,8 @@
 <a href="https://finn1817.github.io/Main-Website/" class="back-to-home">Click this to see my main website!</a>
 
 <button class="theme-toggle" id="themeToggle">☀️</button>
+
+<button class="download-resume" id="downloadResume">📄 Download Resume</button>
 
 <header>
   <h1>Dan Finn - Resume Website</h1>
@@ -409,19 +437,149 @@
     });
   });
 
+  // PDF generation function
+  function generateResumePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    let yPosition = 20;
+    const margin = 20;
+    const lineHeight = 6;
+    const pageHeight = doc.internal.pageSize.height;
+    
+    function addNewPageIfNeeded(requiredSpace = 20) {
+      if (yPosition + requiredSpace > pageHeight - 20) {
+        doc.addPage();
+        yPosition = 20;
+      }
+    }
+    
+    function addText(text, fontSize = 11, isBold = false, indent = 0) {
+      doc.setFontSize(fontSize);
+      doc.setFont("helvetica", isBold ? "bold" : "normal");
+      
+      const maxWidth = 170 - indent;
+      const textLines = doc.splitTextToSize(text, maxWidth);
+      
+      addNewPageIfNeeded(textLines.length * lineHeight);
+      
+      textLines.forEach(line => {
+        doc.text(line, margin + indent, yPosition);
+        yPosition += lineHeight;
+      });
+    }
+    
+    // header
+    doc.setFillColor(0, 86, 179);
+    doc.rect(0, 0, 210, 35, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("Dan Finn", 105, 15, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text("Computer Science Student at SUNY Fredonia, NY", 105, 25, { align: 'center' });
+    
+    doc.setTextColor(0, 0, 0);
+    yPosition = 45;
+    
+    // about me section
+    addText("ABOUT ME", 14, true);
+    yPosition += 3;
+    addText("I am a computer science student at Fredonia University with a big interest in coding. I have finished classes using C++, Python, C#, HTML, Bash, Assembly Language, and a few other languages. I enjoy harder projects that actually let me learn and grow as a programmer.");
+    yPosition += 8;
+    
+    // school Section
+    addText("EDUCATION", 14, true);
+    yPosition += 3;
+    addText("• Currently Attending -- Bachelor of Science in Computer Science, Fredonia University", 11, false, 5);
+    addText("• Graduated -- Bishop Timon St. Jude High School", 11, false, 5);
+    yPosition += 8;
+    
+    // IT Experience Section
+    addText("IT EXPERIENCE", 14, true);
+    yPosition += 3;
+    
+    // Lounge Attendant
+    addText("Lounge Attendant -- SUNY Fredonia", 12, true, 5);
+    addText("• Watched over 12 gaming PCs and 3 other consoles (Xbox, PS5, Nintendo Switch), making sure everything is taken care of and keeping track of user accountability.", 10, false, 10);
+    addText("• Managed sign-in and out application, and enforced lounge rules to maintain a respectful and safe gaming lounge.", 10, false, 10);
+    addText("• Provided in-person support and updates for gaming PCs and consoles at all times.", 10, false, 10);
+    yPosition += 5;
+    
+    // AV Club
+    addText("AV Club -- Bishop Timon St. Jude", 12, true, 5);
+    addText("• Worked with professional audio/video equipment for school events and livestreams (basketball / football games).", 10, false, 10);
+    addText("• Handled live sound setup, video recording, and closing.", 10, false, 10);
+    addText("• Worked with soundboards, wireless mics, and video cameras.", 10, false, 10);
+    yPosition += 5;
+    
+    // ITS Internship (Programming)
+    addText("ITS Internship (Programming) -- 2024-2025", 12, true, 5);
+    addText("• Created a Windows-specific Python app to manage workers from three workplace locations, separating and organizing saved data properly to the cloud.", 10, false, 10);
+    addText("• Automated schedule generation based on worker availability and workplace hours of operation.", 10, false, 10);
+    addText("• Developed a real-time feature allowing managers to find last-minute shift coverage based on availability.", 10, false, 10);
+    yPosition += 5;
+    
+    // ITS Internship (Help Desk)
+    addText("ITS Internship (Help Desk) -- Summer 2025 (Current)", 12, true, 5);
+    addText("• Provided in-person and remote technical assistance for staff, faculty, and students.", 10, false, 10);
+    addText("• Supported ticket-based system issues including software installs, permission troubleshooting, and hardware setup.", 10, false, 10);
+    addText("• Worked with the ITS team to streamline tech operations and reduce repetitive bottlenecks across departments.", 10, false, 10);
+    yPosition += 8;
+    
+    // skills Section
+    addText("SKILLS", 14, true);
+    yPosition += 3;
+    addText("Programming: C++, C#, Python, HTML, SQL, Bash. Some knowledge in Java, Kotlin, R, Perl, Assembly.", 11, false, 5);
+    addText("Web: Strong with HTML/JavaScript. Built many web apps.", 11, false, 5);
+    addText("Cybersecurity: Networking, routers/switches, troubleshooting.", 11, false, 5);
+    addText("OS: Windows, Linux (Ubuntu/Debian), macOS, Android. Command-line and system admin experience.", 11, false, 5);
+    addText("VMs: Experienced setting up and configuring virtual machines.", 11, false, 5);
+    yPosition += 3;
+    
+    addText("Tools Used:", 11, true, 5);
+    addText("• Microsoft Office Suite (Word, Excel, PowerPoint, Access)", 10, false, 10);
+    addText("• Visual Studio / VS Code", 10, false, 10);
+    addText("• GitHub (individual & group work)", 10, false, 10);
+    addText("• WinSCP (remote file transfer)", 10, false, 10);
+    addText("• Terminal / PowerShell (automation, search, admin tasks)", 10, false, 10);
+    yPosition += 3;
+    
+    addText("Projects:", 11, true, 5);
+    addText("• C++: file editors, automation tools, math programs, games, database-linked apps", 10, false, 10);
+    addText("• Python: scripting, pattern parsing, automation", 10, false, 10);
+    addText("• Bash: install/uninstall scripts, system tweaks on Windows", 10, false, 10);
+    addText("• Homebrew/Modding: installed custom firmware, WiiFlow/USB Loader on Wii, handled troubleshooting", 10, false, 10);
+    
+    // save the PDF
+    doc.save('Dan_Finn_Resume.pdf');
+    
+    // show confirmation popup
+    const popup = document.getElementById('popup');
+    popup.innerText = "Resume PDF downloaded successfully!";
+    popup.style.display = "block";
+    setTimeout(() => {
+      popup.style.display = "none";
+    }, 3000);
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("contactForm");
     const popup = document.getElementById("popup");
     const themeToggle = document.getElementById("themeToggle");
+    const downloadButton = document.getElementById("downloadResume");
 
-    // Load saved theme from localStorage
+    // download resume function
+    downloadButton.addEventListener("click", generateResumePDF);
+
+    // loading in the saved theme from localStorage
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
       document.body.setAttribute("data-theme", "dark");
       themeToggle.textContent = "🌙";
     }
 
-    // Theme toggle functionality
+    // theme toggle function
     themeToggle.addEventListener("click", () => {
       if (document.body.getAttribute("data-theme") === "dark") {
         document.body.removeAttribute("data-theme");
@@ -434,7 +592,7 @@
       }
     });
 
-    // Form submission functionality
+    // form submission function
     if (localStorage.getItem("formSubmitted") === "true") {
       disableForm();
     }
