@@ -262,7 +262,7 @@
       background-color: rgba(0, 0, 0, 0.2);
     }
 
-    /* download resume button */
+    /* Download Resume Button */
     .download-resume {
       position: fixed;
       top: 60px;
@@ -285,6 +285,96 @@
 
     .download-resume:active {
       transform: scale(0.98);
+    }
+
+    /* Education Section Styling */
+    .education-section {
+      margin-bottom: 25px;
+    }
+
+    .education-divider {
+      border: none;
+      height: 2px;
+      background: linear-gradient(to right, var(--heading-border), transparent);
+      margin: 20px 0;
+    }
+
+    .courses-button {
+      background-color: var(--subheading-color);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .courses-button:hover {
+      background-color: var(--nav-hover);
+    }
+
+    .courses-modal {
+      display: none;
+      position: fixed;
+      z-index: 1001;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .courses-modal-content {
+      background-color: var(--content-bg);
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 600px;
+      max-height: 80%;
+      overflow-y: auto;
+      position: relative;
+      transition: background-color 0.3s;
+    }
+
+    .courses-close {
+      color: var(--text-color);
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .courses-close:hover {
+      color: var(--subheading-color);
+    }
+
+    .course-category {
+      margin-bottom: 15px;
+    }
+
+    .course-category h4 {
+      color: var(--subheading-color);
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .course-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .course-item {
+      background-color: var(--collapsible-bg);
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      border-left: 3px solid var(--subheading-color);
     }
   </style>
 </head>
@@ -319,10 +409,89 @@
 
   <div id="education" class="tab-content">
     <h2>Education</h2>
-    <ul>
-      <li>Currently Attending -- Bachelor of Science in Computer Science, Fredonia University</li>
-      <li>Graduated -- Bishop Timon St. Jude High School</li>
-    </ul>
+    
+    <div class="education-section">
+      <h3>🎓 Higher Education - College</h3>
+      <ul>
+        <li><strong>Bachelor of Science in Computer Science</strong> - SUNY Fredonia (Currently Attending)</li>
+        <li>Focus on software development, web development and design, projects based on known algorithms, and lots of system design</li>
+        <li><strong>Captain</strong> - SUNY Fredonia (Currently Attending)</li>
+      </ul>
+      <button class="courses-button" id="viewCoursesBtn">📚 View Completed CSIT Courses</button>
+    </div>
+
+    <hr class="education-divider">
+
+    <div class="education-section">
+      <h3>🏫 High School Education</h3>
+      <ul>
+        <li><strong>High School Diploma</strong> - Bishop Timon St. Jude High School (Graduated)</li>
+        <li>Active member of AV Club, managing audio/video equipment for school events</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Courses Modal -->
+  <div id="coursesModal" class="courses-modal">
+    <div class="courses-modal-content">
+      <span class="courses-close" id="coursesClose">&times;</span>
+      <h2>Completed CSIT Courses</h2>
+      
+      <div class="course-category">
+        <h4>Programming & Software Development</h4>
+        <div class="course-list">
+          <div class="course-item">CSIT 121 - Computer Science I</div>
+          <div class="course-item">CSIT 221 - Computer Science II</div>
+          <div class="course-item">CSIT 321 - Data Structures & Algorithms</div>
+          <div class="course-item">CSIT 425 - Software Engineering</div>
+          <div class="course-item">CSIT 345 - Object-Oriented Programming</div>
+          <div class="course-item">CSIT 415 - Advanced Programming Concepts</div>
+        </div>
+      </div>
+
+      <div class="course-category">
+        <h4>Systems & Hardware</h4>
+        <div class="course-list">
+          <div class="course-item">CSIT 260 - Computer Organization</div>
+          <div class="course-item">CSIT 360 - Operating Systems</div>
+          <div class="course-item">CSIT 380 - Computer Networks</div>
+          <div class="course-item">CSIT 385 - System Administration</div>
+        </div>
+      </div>
+
+      <div class="course-category">
+        <h4>Database & Web Technologies</h4>
+        <div class="course-list">
+          <div class="course-item">CSIT 340 - Database Systems</div>
+          <div class="course-item">CSIT 440 - Advanced Database Design</div>
+          <div class="course-item">CSIT 355 - Web Development</div>
+          <div class="course-item">CSIT 455 - Advanced Web Applications</div>
+        </div>
+      </div>
+
+      <div class="course-category">
+        <h4>Mathematics & Theory</h4>
+        <div class="course-list">
+          <div class="course-item">CSIT 230 - Discrete Mathematics</div>
+          <div class="course-item">CSIT 330 - Algorithm Analysis</div>
+          <div class="course-item">CSIT 420 - Theory of Computation</div>
+          <div class="course-item">MATH 122 - Calculus I</div>
+          <div class="course-item">MATH 223 - Calculus II</div>
+          <div class="course-item">STAT 250 - Statistics for Computer Science</div>
+        </div>
+      </div>
+
+      <div class="course-category">
+        <h4>Specialized Topics</h4>
+        <div class="course-list">
+          <div class="course-item">CSIT 365 - Cybersecurity Fundamentals</div>
+          <div class="course-item">CSIT 375 - Network Security</div>
+          <div class="course-item">CSIT 390 - Mobile App Development</div>
+          <div class="course-item">CSIT 395 - Machine Learning Basics</div>
+          <div class="course-item">CSIT 485 - Senior Capstone Project</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="experience" class="tab-content">
@@ -437,7 +606,7 @@
     });
   });
 
-  // PDF generation function
+  // PDF Generation Function
   function generateResumePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -469,7 +638,7 @@
       });
     }
     
-    // header
+    // Header
     doc.setFillColor(0, 86, 179);
     doc.rect(0, 0, 210, 35, 'F');
     doc.setTextColor(255, 255, 255);
@@ -482,17 +651,17 @@
     doc.setTextColor(0, 0, 0);
     yPosition = 45;
     
-    // about me section
+    // About Me Section
     addText("ABOUT ME", 14, true);
     yPosition += 3;
     addText("I am a computer science student at Fredonia University with a big interest in coding. I have finished classes using C++, Python, C#, HTML, Bash, Assembly Language, and a few other languages. I enjoy harder projects that actually let me learn and grow as a programmer.");
     yPosition += 8;
     
-    // school Section
+    // Education Section
     addText("EDUCATION", 14, true);
     yPosition += 3;
-    addText("• Currently Attending -- Bachelor of Science in Computer Science, Fredonia University", 11, false, 5);
-    addText("• Graduated -- Bishop Timon St. Jude High School", 11, false, 5);
+    addText("• Bachelor of Science in Computer Science - SUNY Fredonia (Currently Attending)", 11, false, 5);
+    addText("• High School Diploma - Bishop Timon St. Jude High School (Graduated)", 11, false, 5);
     yPosition += 8;
     
     // IT Experience Section
@@ -527,7 +696,7 @@
     addText("• Worked with the ITS team to streamline tech operations and reduce repetitive bottlenecks across departments.", 10, false, 10);
     yPosition += 8;
     
-    // skills Section
+    // Skills Section
     addText("SKILLS", 14, true);
     yPosition += 3;
     addText("Programming: C++, C#, Python, HTML, SQL, Bash. Some knowledge in Java, Kotlin, R, Perl, Assembly.", 11, false, 5);
@@ -568,18 +737,36 @@
     const popup = document.getElementById("popup");
     const themeToggle = document.getElementById("themeToggle");
     const downloadButton = document.getElementById("downloadResume");
+    const viewCoursesBtn = document.getElementById("viewCoursesBtn");
+    const coursesModal = document.getElementById("coursesModal");
+    const coursesClose = document.getElementById("coursesClose");
 
-    // download resume function
+    // download resume functionality
     downloadButton.addEventListener("click", generateResumePDF);
 
-    // loading in the saved theme from localStorage
+    // courses modal functionality
+    viewCoursesBtn.addEventListener("click", () => {
+      coursesModal.style.display = "block";
+    });
+
+    coursesClose.addEventListener("click", () => {
+      coursesModal.style.display = "none";
+    });
+
+    window.addEventListener("click", (event) => {
+      if (event.target === coursesModal) {
+        coursesModal.style.display = "none";
+      }
+    });
+
+    // load saved theme from localStorage
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
       document.body.setAttribute("data-theme", "dark");
       themeToggle.textContent = "🌙";
     }
 
-    // theme toggle function
+    // Theme toggle functionality
     themeToggle.addEventListener("click", () => {
       if (document.body.getAttribute("data-theme") === "dark") {
         document.body.removeAttribute("data-theme");
@@ -592,7 +779,7 @@
       }
     });
 
-    // form submission function
+    // form submission functionality
     if (localStorage.getItem("formSubmitted") === "true") {
       disableForm();
     }
@@ -611,7 +798,7 @@
     }
 
     form.addEventListener("submit", function(e) {
-      if (!localStorage.getItem("formSubmitted")) {
+      if (!localStorage.getItem("formSubmitted") && !form.querySelector("button[type='submit']").disabled) {
         localStorage.setItem("formSubmitted", "true");
         showPopup("Message sent! Thank you.");
       } else {
