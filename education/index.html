@@ -3,206 +3,1264 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Daniel Finn's Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>My Educational Journey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
+    :root {
+      --primary-color: #007bff;
+      --primary-dark: #0056b3;
+      --secondary-color: #6c757d;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+      --light-bg: #ffffff;
+      --dark-bg: #1a1a1a;
+      --card-bg-light: rgba(255, 255, 255, 0.95);
+      --card-bg-dark: rgba(30, 30, 30, 0.95);
+      --text-light: #333;
+      --text-dark: #f0f0f0;
+      --border-light: rgba(0, 0, 0, 0.1);
+      --border-dark: rgba(255, 255, 255, 0.1);
+      --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --gradient-primary: linear-gradient(135deg, #007bff, #4dabf7);
+      --gradient-secondary: linear-gradient(135deg, #6c757d, #495057);
+    }
+
+    * {
       margin: 0;
       padding: 0;
-      background-image: url("/Main-Website/assets/images/background-light.jpg");
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-image: url('/Main-Website/assets/images/background-light.jpg');
       background-size: cover;
-      background-repeat: no-repeat;
-      color: #333;
-      display: flex;
-      flex-direction: column;
+      background-position: center;
+      background-attachment: fixed;
       min-height: 100vh;
-      transition: background-image 0.4s ease, color 0.4s ease;
+      color: var(--text-light);
+      transition: all 0.3s ease;
+      overflow-x: hidden;
     }
 
     body.dark-mode {
-      background-image: url("/Main-Website/assets/images/background-dark.jpg");
-      color: #f3f3f3;
+      background-image: url('/Main-Website/assets/images/background-dark.jpg');
+      color: var(--text-dark);
     }
 
-    .header {
-      background-color: #283593;
-      color: #ffffff;
-      padding: 10px 20px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: 700;
-      line-height: 1.2;
-    }
-
-    .header p {
-      font-weight: 400;
-      font-size: 14px;
-      margin: 5px 0;
-    }
-
-    .tab {
+    /* Navigation Bar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-light);
+      padding: 1rem 2rem;
       display: flex;
-      justify-content: center;
-      margin-top: 20px;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
     }
 
-    .tab button {
-      background-color: #283593;
+    body.dark-mode .navbar {
+      background: rgba(30, 30, 30, 0.95);
+      border-bottom-color: var(--border-dark);
+    }
+
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
       border: none;
-      outline: none;
+      border-radius: 8px;
       cursor: pointer;
-      padding: 10px 20px;
-      transition: background-color 0.3s, transform 0.2s;
-      font-size: 18px;
-      color: #ffffff;
-      border-radius: 5px;
-      margin: 0 10px;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
 
-    .tab button:hover {
-      background-color: #1a237e;
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary-color);
+      color: white;
       transform: translateY(-2px);
     }
 
-    .tab button.active {
-      background-color: #3949ab;
-    }
-
-    .tabcontent {
-      display: none;
-      padding: 20px;
-      margin: 20px auto;
-      max-width: 800px;
-      text-align: center;
-      border-radius: 8px;
-      font-size: 16px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      background-color: rgba(255, 255, 255, 0.85);
-      transition: background-color 0.4s ease;
-    }
-
-    body.dark-mode .tabcontent {
-      background-color: rgba(30, 30, 30, 0.85);
-    }
-
-    .footer {
-      text-align: center;
-      padding: 10px 20px;
-      margin-top: auto;
-      color: #ffffff;
-      background-color: #283593;
-      font-size: 12px;
-      line-height: 1.2;
-    }
-
-    .back-to-home {
-      position: absolute;
-      top: 0;
-      left: 0;
-      padding: 10px 20px;
-      background-color: #4caf50;
-      color: white;
-      text-decoration: none;
-      border-radius: 0;
-      font-weight: bold;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .back-to-home:hover {
-      background-color: #4caf50;
-      color: white;
-    }
-
     .theme-toggle {
-      position: absolute;
-      top: 0;
-      right: 0;
-      padding: 10px 15px;
-      border: 2px solid white;
-      color: white;
-      background: transparent;
-      border-radius: 5px;
-      font-size: 1.1em;
+      background: none;
+      border: 2px solid var(--border-light);
+      color: var(--text-light);
+      font-size: 1.2rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
       cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    body.dark-mode .theme-toggle {
+      border-color: var(--border-dark);
+      color: var(--text-dark);
     }
 
     .theme-toggle:hover {
-      background-color: white;
-      color: black;
+      transform: scale(1.1) rotate(180deg);
+    }
+
+    /* Hero Section */
+    .hero {
+      margin-top: 80px;
+      padding: 4rem 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      opacity: 0.8;
+      margin-bottom: 2rem;
+      animation: fadeInUp 1s ease-out 0.2s both;
+    }
+
+    /* Progress Tracker */
+    .progress-tracker {
+      max-width: 800px;
+      margin: 0 auto 4rem;
+      padding: 0 2rem;
+    }
+
+    .progress-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .progress-header h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    .timeline {
+      position: relative;
+      padding: 2rem 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--gradient-primary);
+      transform: translateX(-50%);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin: 2rem 0;
+      opacity: 0;
+      animation: slideInFromLeft 0.6s ease-out forwards;
+    }
+
+    .timeline-item:nth-child(even) {
+      animation: slideInFromRight 0.6s ease-out forwards;
+    }
+
+    .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.3s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.5s; }
+    .timeline-item:nth-child(4) { animation-delay: 0.7s; }
+
+    .timeline-content {
+      background: var(--card-bg-light);
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: var(--shadow-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-light);
+      width: calc(50% - 2rem);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    body.dark-mode .timeline-content {
+      background: var(--card-bg-dark);
+      box-shadow: var(--shadow-dark);
+      border-color: var(--border-dark);
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content {
+      margin-left: 0;
+    }
+
+    .timeline-item:nth-child(even) .timeline-content {
+      margin-left: calc(50% + 2rem);
+    }
+
+    .timeline-content:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 123, 255, 0.2);
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 50%;
+      top: 2rem;
+      width: 20px;
+      height: 20px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      box-shadow: 0 0 0 4px var(--light-bg);
+      animation: pulse 2s infinite;
+    }
+
+    body.dark-mode .timeline-dot {
+      box-shadow: 0 0 0 4px var(--dark-bg);
+    }
+
+    .timeline-year {
+      position: absolute;
+      left: 50%;
+      top: 3rem;
+      transform: translateX(-50%);
+      background: var(--primary-color);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 15px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      z-index: 3;
+    }
+
+    .content-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .content-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    body.dark-mode .content-title {
+      color: #4dabf7;
+    }
+
+    .content-description {
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    /* Skills Section */
+    .skills-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+
+    .skills-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .skills-header h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .skill-category {
+      background: var(--card-bg-light);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: var(--shadow-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-light);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.dark-mode .skill-category {
+      background: var(--card-bg-dark);
+      box-shadow: var(--shadow-dark);
+      border-color: var(--border-dark);
+    }
+
+    .skill-category::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+
+    .skill-category:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(0, 123, 255, 0.3);
+    }
+
+    .skill-category h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    body.dark-mode .skill-category h3 {
+      color: #4dabf7;
+    }
+
+    .skill-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      background: rgba(0, 123, 255, 0.05);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .skill-item:hover {
+      background: rgba(0, 123, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .skill-name {
+      font-weight: 500;
+    }
+
+    .skill-level {
+      display: flex;
+      gap: 2px;
+    }
+
+    .skill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ddd;
+      transition: all 0.3s ease;
+    }
+
+    .skill-dot.filled {
+      background: var(--primary-color);
+      box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Interactive Stats */
+    .stats-section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg-light);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: var(--shadow-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-light);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.dark-mode .stat-card {
+      background: var(--card-bg-dark);
+      box-shadow: var(--shadow-dark);
+      border-color: var(--border-dark);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, transparent, rgba(0, 123, 255, 0.1), transparent);
+      animation: rotate 4s linear infinite;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-10px) scale(1.02);
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Achievements Section */
+    .achievements {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+
+    .achievements-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .achievements-header h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .achievement-card {
+      background: var(--card-bg-light);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: var(--shadow-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-light);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.dark-mode .achievement-card {
+      background: var(--card-bg-dark);
+      box-shadow: var(--shadow-dark);
+      border-color: var(--border-dark);
+    }
+
+    .achievement-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 123, 255, 0.2);
+    }
+
+    .achievement-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .achievement-icon::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, var(--primary-color), #4dabf7, var(--primary-color));
+      z-index: -1;
+      animation: rotate 3s linear infinite;
+    }
+
+    .achievement-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    body.dark-mode .achievement-title {
+      color: #4dabf7;
+    }
+
+    /* Interactive Elements */
+    .floating-shapes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .shape {
+      position: absolute;
+      opacity: 0.1;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .shape:nth-child(1) {
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .shape:nth-child(2) {
+      top: 60%;
+      right: 10%;
+      animation-delay: 2s;
+    }
+
+    .shape:nth-child(3) {
+      bottom: 20%;
+      left: 20%;
+      animation-delay: 4s;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInFromLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideInFromRight {
+      from {
+        opacity: 0;
+        transform: translateX(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translateX(-50%) scale(1);
+      }
+      50% {
+        transform: translateX(-50%) scale(1.2);
+      }
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      33% {
+        transform: translateY(-20px) rotate(120deg);
+      }
+      66% {
+        transform: translateY(10px) rotate(240deg);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 1rem;
+      }
+
+      .nav-brand {
+        font-size: 1.25rem;
+      }
+
+      .hero {
+        padding: 2rem 1rem;
+      }
+
+      .timeline::before {
+        left: 20px;
+      }
+
+      .timeline-content {
+        width: calc(100% - 60px);
+        margin-left: 60px !important;
+      }
+
+      .timeline-dot {
+        left: 20px;
+      }
+
+      .timeline-year {
+        left: 20px;
+      }
+
+      .progress-tracker,
+      .skills-section,
+      .stats-section,
+      .achievements {
+        padding: 0 1rem 2rem;
+      }
+
+      .skills-grid,
+      .achievements-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Back to Home -->  
-  <a href="https://finn1817.github.io/Main-Website/" class="back-to-home">Back to Home</a>
-  <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
-
-  <!-- Header -->
-  <div class="header">
-    <h1>Daniel Finn</h1>
-    <p>How I have been Involved and What I can do</p>
+  <!-- Floating Background Shapes -->
+  <div class="floating-shapes">
+    <div class="shape" style="width: 100px; height: 100px; background: var(--gradient-primary); border-radius: 50%;"></div>
+    <div class="shape" style="width: 80px; height: 80px; background: var(--gradient-secondary); border-radius: 20px;"></div>
+    <div class="shape" style="width: 120px; height: 120px; background: conic-gradient(from 0deg, var(--primary-color), transparent); border-radius: 50%;"></div>
   </div>
 
-  <!-- Tab Buttons -->
-  <div class="tab">
-    <button class="tablinks" onclick="openTab(event, 'HighSchool')">High School</button>
-    <button class="tablinks" onclick="openTab(event, 'College')">College</button>
-  </div>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-brand">Daniel Finn</div>
+    <div class="nav-controls">
+      <a href="https://finn1817.github.io/Main-Website/" class="btn btn-primary">← Back to Home</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">🌙</button>
+    </div>
+  </nav>
 
-  <!-- Tab Content -->
-  <div id="HighSchool" class="tabcontent">
-    <h3>High School</h3>
-    <p>During high school, I was the captain of the soccer team and an active member of the AV club, where I gained both leadership and technical skills.</p>
-  </div>
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1 class="hero-title">Educational Journey</h1>
+    <p class="hero-subtitle">From starting at the basics to getting where I am today - tracking my path better</p>
+  </section>
 
-  <div id="College" class="tabcontent">
-    <h3>College</h3>
-    <p>Since I started college, I've gone much further into programming than I ever have before in my entire life. Before college, I had a very little amount of experience in coding at all. Over the last four years, there has been a huge improvement in both my tech skills and my understanding of programming in general. I have a good understanding of C++, C#, Python, HTML, and Bash, and I have experimented in a few other languages as well. With less than one more year of computer science left, I feel more ready than ever to get into a job and start showing people what I can do!</p>
-  </div>
+  <!-- Progress Tracker -->
+  <section class="progress-tracker">
+    <div class="progress-header">
+      <h2>My Learning Timeline</h2>
+      <p>Milestones in my educational and professional Life</p>
+    </div>
+    
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">2017-2021</div>
+        <div class="timeline-content">
+          <div class="content-icon">🏫</div>
+          <h3 class="content-title">High School Excellence</h3>
+          <p class="content-description">
+            Was the soccer team captain while also being an active member of the AV club. 
+            This helped me develop leadership skills and technical skills that have helped me in college.
+          </p>
+          <div class="achievement-badges">
+            <span class="badge">Leadership</span>
+            <span class="badge">Teamwork</span>
+            <span class="badge">Technical Skills</span>
+          </div>
+        </div>
+      </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <p>&copy; 2025 Daniel Finn &copy;</p>
-  </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">2022-Present</div>
+        <div class="timeline-content">
+          <div class="content-icon">🎓</div>
+          <h3 class="content-title">College</h3>
+          <p class="content-description">
+            Began studying computer science at SUNY Fredonia. Transitioned from super basic coding experience (one class on arduino) to understanding programming concepts and building things on my own.
+          </p>
+          <div class="achievement-badges">
+            <span class="badge">C++</span>
+            <span class="badge">C#</span>
+            <span class="badge">Python</span>
+            <span class="badge">Web / App Development</span>
+            <span class="badge">Problem Solving</span>
+            <span class="badge">Algorithms</span>
+          </div>
+        </div>
+      </div>
 
-  <!-- Script -->
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">2023-Present</div>
+        <div class="timeline-content">
+          <div class="content-icon">💻</div>
+          <h3 class="content-title">Tech Expansion</h3>
+          <p class="content-description">
+            Have gotten very goof in multiple programming languages and began building real projects on my own and even for work with ITS. Also started working at an Esports Lounge and became captain of the Rocket League team.
+          </p>
+          <div class="achievement-badges">
+            <span class="badge">Multi-Programming-language</span>
+            <span class="badge">Project Development</span>
+            <span class="badge">Team leadership skills</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">2024-2025</div>
+        <div class="timeline-content">
+          <div class="content-icon">🚀</div>
+          <h3 class="content-title">Work Ready</h3>
+          <p class="content-description">
+            Getting toward graduation with solid programming skills, real-world experience, and a lot to show that I am capable of getting things done. I feel ready to go straight into a real job in the tech field.
+          </p>
+          <div class="achievement-badges">
+            <span class="badge">Website Proof</span>
+            <span class="badge">Resume Ready</span>
+            <span class="badge">Field preparing real world work experience</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Section -->
+  <section class="skills-section">
+    <div class="skills-header">
+      <h2>Techn Expertise</h2>
+      <p>Comprehensive skill development across multiple domains</p>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-category">
+        <h3>💻 Programming Languages</h3>
+        <div class="skill-item">
+          <span class="skill-name">C++</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">Python</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">C#</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">JavaScript</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <h3>🌐 Web Skills</h3>
+        <div class="skill-item">
+          <span class="skill-name">HTML/CSS</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">Frontend Design</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">Overall Design</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <h3>🛠️ Tools & System Work</h3>
+        <div class="skill-item">
+          <span class="skill-name">Bash Scripting</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot"></div>
+            <div class="skill-dot"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">SQL</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">Git/GitHub</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+          </div>
+        </div>
+        
+        <div class="skill-item">
+          <span class="skill-name">Hardware Maintenance</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <h3>🎯 Other Skills</h3>
+        <div class="skill-item">
+          <span class="skill-name">Team Leadership</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">Problem Solving</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">Project Management</span>
+          <div class="skill-level">
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+            <div class="skill-dot filled"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Stats -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card" onclick="animateNumber(this, 4)">
+        <span class="stat-number" data-target="4">0</span>
+        <div class="stat-label">Years in College</div>
+      </div>
+      <div class="stat-card" onclick="animateNumber(this, 7)">
+        <span class="stat-number" data-target="7">0</span>
+        <div class="stat-label">Programming Languages</div>
+      </div>
+      <div class="stat-card" onclick="animateNumber(this, 10+)">
+        <span class="stat-number" data-target="15">0</span>
+        <div class="stat-label">Advanced Projects</div>
+      </div>
+      <div class="stat-card" onclick="animateNumber(this, 2)">
+        <span class="stat-number" data-target="2">0</span>
+        <div class="stat-label">Leadership Roles</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Achievements -->
+  <section class="achievements">
+    <div class="achievements-header">
+      <h2>Achievements</h2>
+      <p>Recognition throughout all of this</p>
+    </div>
+
+    <div class="achievements-grid">
+      <div class="achievement-card">
+        <div class="achievement-icon">⚽</div>
+        <h3 class="achievement-title">Soccer Team Captain</h3>
+        <p>Led high school soccer team, getting leadership and teamwork skills that translate directly to software project collaboration.</p>
+      </div>
+
+      <div class="achievement-card">
+        <div class="achievement-icon">🎮</div>
+        <h3 class="achievement-title">eSports Team Captain</h3>
+        <p>Currently captain of Fredonia's Rocket League team, managing strategy, practicing, and managing schedules for our competetive gaming team.</p>
+      </div>
+
+      <div class="achievement-card">
+        <div class="achievement-icon">💼</div>
+        <h3 class="achievement-title">Professional Experience</h3>
+        <p>Working at an ITS, and the Esports Lounge along with DoorDashing helped gaining real-world work experience while maintaining a good academic standing.</p>
+      </div>
+
+      <div class="achievement-card">
+        <div class="achievement-icon">🚀</div>
+        <h3 class="achievement-title">Quick Skill Development</h3>
+        <p>Transformed from little coding experience to a noticably skilled programmer in under 4 years through lots of practice.</p>
+      </div>
+
+      <div class="achievement-card">
+        <div class="achievement-icon">🛠️</div>
+        <h3 class="achievement-title">Project Portfolio</h3>
+        <p>Built numerous personal and academic projects showing my programming skills and problem-solving abiliies.</p>
+      </div>
+
+      <div class="achievement-card">
+        <div class="achievement-icon">🎯</div>
+        <h3 class="achievement-title">Career Ready</h3>
+        <p>Getting closer to graduation with higher level skills, good work experience, and a proven ability to learn and adapt to lots of different things quickly.</p>
+      </div>
+    </div>
+  </section>
+
   <script>
-    function openTab(evt, section) {
-      const tabcontent = document.getElementsByClassName("tabcontent");
-      for (let i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-      }
-      const tablinks = document.getElementsByClassName("tablinks");
-      for (let i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-      }
-      document.getElementById(section).style.display = "block";
-      evt.currentTarget.className += " active";
+    // Theme Management
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      body.classList.add('dark-mode');
+      themeToggle.textContent = '☀️';
     }
 
-    // Show default tab on load
-    window.onload = () => {
-      document.querySelectorAll(".tablinks")[0].click();
+    // Theme toggle functionality
+    themeToggle.addEventListener('click', () => {
+      const isDark = body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    });
 
-      const saved = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const body = document.body;
-      const toggle = document.getElementById("themeToggle");
+    // Animated Number Counter
+    function animateNumber(element, target) {
+      const numberElement = element.querySelector('.stat-number');
+      const duration = 2000; // 2 seconds
+      const start = 0;
+      const increment = target / (duration / 16); // 60fps
+      let current = 0;
 
-      if (saved === "dark" || (!saved && prefersDark)) {
-        body.classList.add("dark-mode");
-        toggle.textContent = "☀️";
-      }
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        numberElement.textContent = Math.floor(current);
+      }, 16);
+
+      // Add visual feedback
+      element.style.transform = 'scale(1.05)';
+      setTimeout(() => {
+        element.style.transform = 'scale(1)';
+      }, 200);
+    }
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
     };
 
-    function toggleTheme() {
-      const body = document.body;
-      const toggle = document.getElementById("themeToggle");
-      const isDark = body.classList.toggle("dark-mode");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
-      toggle.textContent = isDark ? "☀️" : "🌙";
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Observe all animated elements
+    document.addEventListener('DOMContentLoaded', () => {
+      const animatedElements = document.querySelectorAll('.skill-category, .stat-card, .achievement-card');
+      animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+      });
+
+      // Auto-animate stats on first view
+      const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const statCards = entry.target.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+              setTimeout(() => {
+                const target = parseInt(card.querySelector('.stat-number').dataset.target);
+                animateNumber(card, target);
+              }, index * 200);
+            });
+            statsObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      const statsSection = document.querySelector('.stats-section');
+      if (statsSection) {
+        statsObserver.observe(statsSection);
+      }
+
+      // Skill level animation
+      const skillObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const skillDots = entry.target.querySelectorAll('.skill-dot.filled');
+            skillDots.forEach((dot, index) => {
+              setTimeout(() => {
+                dot.style.animation = 'pulse 0.5s ease';
+              }, index * 100);
+            });
+          }
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('.skill-category').forEach(category => {
+        skillObserver.observe(category);
+      });
+    });
+
+    // Smooth scrolling for internal links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Dynamic background shapes
+    function createFloatingShape() {
+      const shapes = document.querySelector('.floating-shapes');
+      const shape = document.createElement('div');
+      shape.className = 'shape';
+      
+      const size = Math.random() * 60 + 20;
+      const left = Math.random() * 100;
+      const animationDuration = Math.random() * 10 + 5;
+      
+      shape.style.width = `${size}px`;
+      shape.style.height = `${size}px`;
+      shape.style.left = `${left}%`;
+      shape.style.top = '100%';
+      shape.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      shape.style.borderRadius = Math.random() > 0.5 ? '50%' : '20px';
+      shape.style.animation = `float ${animationDuration}s ease-in-out infinite`;
+      shape.style.opacity = '0.1';
+      
+      shapes.appendChild(shape);
+      
+      setTimeout(() => {
+        shape.remove();
+      }, animationDuration * 1000);
     }
+
+    // Create floating shapes periodically
+    setInterval(createFloatingShape, 3000);
+
+    // Add interactive hover effects
+    document.querySelectorAll('.achievement-card, .skill-category').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-10px) scale(1.02)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+
+    // Badge styles (add to CSS if not present)
+    const style = document.createElement('style');
+    style.textContent = `
+      .badge {
+        display: inline-block;
+        background: var(--gradient-primary);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin: 0.25rem 0.25rem 0 0;
+      }
+      
+      .achievement-badges {
+        margin-top: 1rem;
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>
