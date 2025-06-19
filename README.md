@@ -8,7 +8,7 @@
 * Everything besides the main dashboard is now broken up into its own folder, seperating everything and making it much easier to work on if needed. This keeps all layouts consitent, allows me to move from page to page while keeping my light / dark mode feature working, and lets me keep the entire project in one place, rather than split around 10 - 15 different repositories!
 
 ![Screenshot](https://github.com/finn1817/Main-Website/blob/main/assets/images/Screenshots/Folder.png?raw=true)
-# **Web Background**
+# **Websites Background**
 
 - I currently have every site up and running on through Github, connecting to my domain, **https://www.dfinn.me**
 
