@@ -4,27 +4,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Running Websites</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* css custom properties for consistent theming */
+    :root {
+      --primary-color: #007bff;
+      --primary-hover: #0056b3;
+      --success-color: #4caf50;
+      --success-hover: #45a049;
+      --card-bg-light: rgba(255, 255, 255, 0.95);
+      --card-bg-dark: rgba(20, 20, 20, 0.95);
+      --text-light: #333;
+      --text-dark: #f0f0f0;
+      --text-secondary-light: #555;
+      --text-secondary-dark: #ccc;
+      --border-radius: 15px;
+      --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --transition-speed: 0.3s;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      transition: color 0.4s ease, background-color 0.4s ease;
+      transition: all var(--transition-speed) ease;
     }
 
     body {
       font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
       background: url("/Main-Website/assets/images/background-light.jpg") center/cover no-repeat;
       background-attachment: fixed;
-      height: 100vh;
-      overflow-y: auto;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background-image 0.8s ease;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
     }
 
     body.dark {
@@ -32,130 +49,335 @@
       background-attachment: fixed;
     }
 
+    /* animated background particles */
+    .particles-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(0, 123, 255, 0.1);
+      border-radius: 50%;
+      animation: float-particle 20s linear infinite;
+    }
+
+    @keyframes float-particle {
+      0% {
+        transform: translateY(100vh) translateX(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) translateX(50px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* main container with enhanced styling */
     .container {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      max-width: 600px;
-      width: 90%;
-      max-height: 90%;
+      background: var(--card-bg-light);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-light);
+      max-width: 800px;
+      width: 100%;
+      max-height: 85vh;
       overflow-y: auto;
       text-align: center;
-      transition: background-color 0.4s ease, box-shadow 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      z-index: 10;
     }
 
     body.dark .container {
-      background: rgba(20, 20, 20, 0.9);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+      background: var(--card-bg-dark);
+      box-shadow: var(--shadow-dark);
+      border-color: rgba(255, 255, 255, 0.1);
     }
 
-    h1, h2 {
-      color: #333;
-      margin-bottom: 15px;
-      transition: color 0.4s ease;
+    /* subtle hover effect for main container */
+    .container:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(0, 123, 255, 0.15);
     }
 
-    body.dark h1, body.dark h2 {
-      color: #f0f0f0;
+    body.dark .container:hover {
+      box-shadow: 0 15px 40px rgba(0, 123, 255, 0.25);
+    }
+
+    /* enhanced typography */
+    h1 {
+      color: var(--text-light);
+      font-size: 2.5em;
+      font-weight: 700;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--primary-color), #4dabf7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+    }
+
+    body.dark h1 {
+      color: var(--text-dark);
+    }
+
+    h2 {
+      color: var(--text-light);
+      font-size: 1.8em;
+      font-weight: 600;
+      margin: 30px 0 20px 0;
+      position: relative;
+      display: inline-block;
+    }
+
+    body.dark h2 {
+      color: var(--text-dark);
+    }
+
+    /* decorative line under section headers */
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(135deg, var(--primary-color), #4dabf7);
+      border-radius: 2px;
     }
 
     p {
-      color: #555;
-      font-size: 16px;
-      margin-bottom: 20px;
-      transition: color 0.4s ease;
+      color: var(--text-secondary-light);
+      font-size: 1.1em;
+      font-weight: 400;
+      margin-bottom: 25px;
+      line-height: 1.6;
     }
 
     body.dark p {
-      color: #ccc;
+      color: var(--text-secondary-dark);
     }
 
-    a {
-      display: inline-block;
-      background-color: #007BFF;
-      color: #fff;
-      padding: 10px 20px;
-      margin: 5px;
+    /* project grid layout */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+      margin: 25px 0;
+    }
+
+    /* enhanced project links with categories */
+    .project-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary-color), #0056b3);
+      color: white;
+      padding: 15px 20px;
       text-decoration: none;
-      border-radius: 5px;
-      font-size: 16px;
-      transition: background-color 0.3s, transform 0.3s;
+      border-radius: 12px;
+      font-size: 1em;
+      font-weight: 500;
+      transition: all var(--transition-speed) ease;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid transparent;
+      min-height: 60px;
+      text-align: center;
     }
 
-    a:hover {
-      background-color: #0056b3;
-      transform: translateY(-2px);
+    /* category-specific styling */
+    .project-link.school {
+      background: linear-gradient(135deg, #007bff, #4dabf7);
     }
 
-    body.dark a {
-      background-color: #1a73e8;
+    .project-link.personal {
+      background: linear-gradient(135deg, #28a745, #20c997);
     }
 
-    body.dark a:hover {
-      background-color: #0d47a1;
+    .project-link.games {
+      background: linear-gradient(135deg, #fd7e14, #ffc107);
     }
 
+    .project-link.other {
+      background: linear-gradient(135deg, #6f42c1, #e83e8c);
+    }
+
+    /* hover effects with enhanced animations */
+    .project-link:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .project-link.school:hover {
+      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+    }
+
+    .project-link.personal:hover {
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    }
+
+    .project-link.games:hover {
+      box-shadow: 0 8px 25px rgba(253, 126, 20, 0.4);
+    }
+
+    .project-link.other:hover {
+      box-shadow: 0 8px 25px rgba(111, 66, 193, 0.4);
+    }
+
+    /* ripple effect on click */
+    .project-link::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+    }
+
+    .project-link:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .project-link span {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* category badges */
+    .category-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 0.7em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* enhanced navigation buttons */
     .back-to-home {
       position: fixed;
       top: 20px;
       left: 20px;
-      padding: 10px 20px;
-      background-color: #4caf50;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--success-color), #45a049);
       color: white;
       text-decoration: none;
-      font-weight: bold;
-      border-radius: 5px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      transition: background-color 0.3s, transform 0.3s;
+      font-weight: 600;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+      transition: all var(--transition-speed) ease;
+      z-index: 100;
+      backdrop-filter: blur(5px);
     }
 
     .back-to-home:hover {
-      background-color: #45a049;
       transform: translateY(-2px);
-    }
-
-    body.dark .back-to-home {
-      background-color: #43a047;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    }
-
-    body.dark .back-to-home:hover {
-      background-color: #388e3c;
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+      background: linear-gradient(135deg, #45a049, #388e3c);
     }
 
     .toggle-btn {
       position: fixed;
       top: 20px;
       right: 20px;
-      background: transparent;
-      border: 2px solid white;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
       color: white;
-      font-size: 1.2em;
-      padding: 8px 14px;
-      border-radius: 5px;
+      font-size: 1.3em;
+      padding: 10px;
+      border-radius: 50%;
       cursor: pointer;
-      transition: all 0.3s;
-      z-index: 10;
+      transition: all var(--transition-speed) ease;
+      z-index: 100;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .toggle-btn:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1) rotate(180deg);
+      box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
     }
 
-    /* Page transition effect */
+    /* section dividers */
+    .section-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+      margin: 30px 0;
+      opacity: 0.3;
+    }
+
+    /* enhanced scrollbar */
+    .container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .container::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+
+    .container::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--primary-color), #4dabf7);
+      border-radius: 10px;
+    }
+
+    .container::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #0056b3, #007bff);
+    }
+
+    body.dark .container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* page transition with loading animation */
     .page-transition {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: black;
+      background: linear-gradient(135deg, var(--primary-color), #4dabf7);
       z-index: 9999;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .page-transition.active {
@@ -163,65 +385,187 @@
       pointer-events: all;
     }
 
-    /* Scrollbar styles */
-    .container::-webkit-scrollbar {
-      width: 10px;
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
 
-    .container::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
-    .container::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 10px;
+    /* intro animation */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease forwards;
     }
 
-    body.dark .container::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
+    .fade-in:nth-child(1) { animation-delay: 0.1s; }
+    .fade-in:nth-child(2) { animation-delay: 0.2s; }
+    .fade-in:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    body.dark .container::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.3);
+    /* responsive design improvements */
+    @media (max-width: 768px) {
+      .container {
+        padding: 25px;
+        margin: 10px;
+        max-height: 90vh;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      h2 {
+        font-size: 1.5em;
+      }
+
+      .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .project-link {
+        padding: 12px 16px;
+        font-size: 0.9em;
+        min-height: 50px;
+      }
+
+      .back-to-home {
+        top: 15px;
+        left: 15px;
+        padding: 10px 20px;
+        font-size: 0.9em;
+      }
+
+      .toggle-btn {
+        top: 15px;
+        right: 15px;
+        width: 45px;
+        height: 45px;
+        font-size: 1.1em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .project-link {
+        padding: 10px 14px;
+        font-size: 0.85em;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Page transition element -->
-  <div class="page-transition"></div>
+  <!-- floating particles background -->
+  <div class="particles-container" id="particlesContainer"></div>
 
-  <!-- Theme toggle button -->
+  <!-- page transition with loading spinner -->
+  <div class="page-transition">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- theme toggle button -->
   <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙</button>
 
-  <!-- Back to Home link -->
-  <a href="https://finn1817.github.io/Main-Website/" class="back-to-home">Back to Home</a>
+  <!-- back to home link -->
+  <a href="https://finn1817.github.io/Main-Website/" class="back-to-home">← Back to Home</a>
   
   <div class="container">
-    <h1>Welcome to My Public Websites!</h1>
-    <p>Here are some of my current projects:</p>
+    <h1 class="fade-in">Welcome to My Public Websites!</h1>
+    <p class="fade-in">Here are some of my current projects organized by category:</p>
     
-    <h2>Websites</h2>
-    <!-- for school (all my own) -->
-    <a href="https://finn1817.github.io/Main-Website/projects/calculator/" target="_blank">My Calculator</a>
-    <a href="https://finn1817.github.io/Main-Website/projects/word-counter/" target="_blank">Word Counter</a>
-    <a href="https://finn1817.github.io/Unit-Conversion/" target="_blank">Unit Conversion Site</a>
-    <a href="https://finn1817.github.io/Future-Finance/" target="_blank">Finance Checker</a>
-    <a href="https://finn1817.github.io/Resume-Builder/" target="_blank">Resume Builder (simple generative response and placement)</a>
+    <div class="section-divider"></div>
     
-    <!-- for dad -->
-    <a href="https://finn1817.github.io/LaxTimer/" target="_blank">Lacrosse Timer (pc)</a>
-    <a href="https://finn1817.github.io/Lax-Timer-Phone-/" target="_blank">Lacrosse Timer (mobile)</a>
-    
-    <!-- for fun (used online resources for help) -->
-    <a href="https://finn1817.github.io/TikTakToeGame/" target="_blank">Tik-Tak-Toe Game</a>
-    <a href="https://finn1817.github.io/Snake-Game/" target="_blank">Snake Game</a>
-    <a href="https://finn1817.github.io/Dans-Tetris/" target="_blank">Tetris (not finished)</a>
-    <a href="https://finn1817.github.io/my-flappy-bird/" target="_blank">Flappy Bird Remake</a>
+    <h2 class="fade-in">📚 School Projects</h2>
+    <div class="projects-grid">
+      <a href="https://finn1817.github.io/Main-Website/projects/calculator/" target="_blank" class="project-link school">
+        <span>My Calculator</span>
+        <div class="category-badge">Tool</div>
+      </a>
+      <a href="https://finn1817.github.io/Main-Website/projects/word-counter/" target="_blank" class="project-link school">
+        <span>Word Counter</span>
+        <div class="category-badge">Utility</div>
+      </a>
+      <a href="https://finn1817.github.io/Unit-Conversion/" target="_blank" class="project-link school">
+        <span>Unit Conversion Site</span>
+        <div class="category-badge">Tool</div>
+      </a>
+      <a href="https://finn1817.github.io/Future-Finance/" target="_blank" class="project-link school">
+        <span>Finance Checker</span>
+        <div class="category-badge">Finance</div>
+      </a>
+      <a href="https://finn1817.github.io/Resume-Builder/" target="_blank" class="project-link school">
+        <span>Resume Builder</span>
+        <div class="category-badge">Career</div>
+      </a>
+    </div>
 
-    <h2>Other Projects</h2>
-    <a href="https://github.com/finn1817/NATracker" target="_blank">NATracker (Journal Tracker) - GitHub Group Project</a>
-    <!-- <a href="https://drive.google.com/drive/folders/1Sq4B32br7vLmy4TPaHv9eJboiZ0ie2Eo?usp=sharing" target="_blank">Zillow Like Database Project</a> -->
+    <div class="section-divider"></div>
+    
+    <h2>⚽ Personal Projects</h2>
+    <div class="projects-grid">
+      <a href="https://finn1817.github.io/LaxTimer/" target="_blank" class="project-link personal">
+        <span>Lacrosse Timer (PC)</span>
+        <div class="category-badge">Sports</div>
+      </a>
+      <a href="https://finn1817.github.io/Lax-Timer-Phone-/" target="_blank" class="project-link personal">
+        <span>Lacrosse Timer (Mobile)</span>
+        <div class="category-badge">Sports</div>
+      </a>
+    </div>
+
+    <div class="section-divider"></div>
+    
+    <h2>🎮 Games & Fun</h2>
+    <div class="projects-grid">
+      <a href="https://finn1817.github.io/TikTakToeGame/" target="_blank" class="project-link games">
+        <span>Tic-Tac-Toe Game</span>
+        <div class="category-badge">Game</div>
+      </a>
+      <a href="https://finn1817.github.io/Snake-Game/" target="_blank" class="project-link games">
+        <span>Snake Game</span>
+        <div class="category-badge">Game</div>
+      </a>
+      <a href="https://finn1817.github.io/Dans-Tetris/" target="_blank" class="project-link games">
+        <span>Tetris (Beta)</span>
+        <div class="category-badge">Game</div>
+      </a>
+      <a href="https://finn1817.github.io/my-flappy-bird/" target="_blank" class="project-link games">
+        <span>Flappy Bird Remake</span>
+        <div class="category-badge">Game</div>
+      </a>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <h2>🚀 Other Projects</h2>
+    <div class="projects-grid">
+      <a href="https://github.com/finn1817/NATracker" target="_blank" class="project-link other">
+        <span>NATracker - Journal Tracker</span>
+        <div class="category-badge">GitHub</div>
+      </a>
+    </div>
   </div>
 
   <script>
@@ -230,18 +574,43 @@
       const body = document.body;
       const pageTransition = document.querySelector(".page-transition");
 
-      // Apply page transition effect
+      // create floating particles
+      function createParticle() {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        const size = Math.random() * 8 + 3;
+        const left = Math.random() * 100;
+        const duration = Math.random() * 15 + 15;
+        
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = left + '%';
+        particle.style.animationDuration = duration + 's';
+        particle.style.opacity = Math.random() * 0.2 + 0.05;
+        
+        document.getElementById('particlesContainer').appendChild(particle);
+        
+        setTimeout(() => {
+          particle.remove();
+        }, duration * 1000);
+      }
+
+      // generate particles periodically
+      setInterval(createParticle, 800);
+
+      // enhanced page transition effect
       function applyTransition(callback) {
         pageTransition.classList.add("active");
         setTimeout(() => {
           callback();
           setTimeout(() => {
             pageTransition.classList.remove("active");
-          }, 500);
-        }, 500);
+          }, 300);
+        }, 300);
       }
 
-      // Apply saved theme or system preference
+      // apply saved theme or system preference
       const savedTheme = localStorage.getItem("theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -252,7 +621,7 @@
         toggleBtn.textContent = "🌙";
       }
 
-      // Toggle theme listener
+      // toggle theme listener
       toggleBtn.addEventListener("click", () => {
         applyTransition(() => {
           const isDark = body.classList.toggle("dark");
@@ -261,9 +630,9 @@
         });
       });
 
-      // Apply transition when navigating away
+      // apply transition when navigating away (only for internal links)
       document.querySelectorAll("a").forEach(link => {
-        if (!link.target) { // Only apply to links that don't open in new tab
+        if (!link.target && !link.href.includes('github.com')) {
           link.addEventListener("click", function(e) {
             e.preventDefault();
             const href = this.getAttribute("href");
@@ -274,6 +643,69 @@
           });
         }
       });
+
+      // add ripple effect to project links
+      document.querySelectorAll('.project-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          if (this.target === '_blank') return; // skip for external links
+          
+          const ripple = document.createElement('span');
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+          
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.classList.add('ripple');
+          
+          this.appendChild(ripple);
+          
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        });
+      });
+
+      // smooth scroll behavior
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+
+      // add keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        // toggle theme with 't' key
+        if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
+          toggleBtn.click();
+        }
+        
+        // escape to go back home
+        if (e.key === 'Escape') {
+          document.querySelector('.back-to-home').click();
+        }
+      });
+
+      // performance optimization for slower devices
+      const isLowPerformance = navigator.hardwareConcurrency < 4;
+      
+      if (isLowPerformance) {
+        // reduce particle generation
+        clearInterval();
+        setInterval(createParticle, 2000);
+        
+        // disable some animations
+        document.body.style.setProperty('--transition-speed', '0.2s');
+      }
     });
   </script>
 </body>
