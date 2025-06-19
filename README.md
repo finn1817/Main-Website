@@ -14,7 +14,14 @@
 
 - The idea was to make a clean layout combining all my individual websites repositories into one solid big repository.
 
+- This does have a more modern design system in place for the light & dark mode, as it uses built in image links to the light and dark images and has a smooth transition from one mode to the other.
+
+- This does use multi page navigation, where each section is a full page instead of aloowing scrolling on every single one.
+
 - This does still seperate all other projects besides my main website, meaning they won't be moved into this repository.
+
+- Almost every page has a link back to the main page on the top bar!
+  
 ## **Screenshots**
 
 ![Screenshot](https://github.com/finn1817/Main-Website/blob/main/assets/images/Screenshots/darkMode.png?raw=true)
