@@ -10,7 +10,7 @@
 ![Screenshot](https://github.com/finn1817/Main-Website/blob/main/assets/images/Screenshots/Folder.png?raw=true)
 # **Websites Background**
 
-- I currently have every site up and running on through Github, connecting to my domain, **https://www.dfinn.me**
+- I currently have every site up and running on through Github, connecting to my domain through my entry point level site, **https://www.dfinn.me**
 
 - The idea was to make a clean layout combining all my individual websites repositories into one solid big repository.
 
