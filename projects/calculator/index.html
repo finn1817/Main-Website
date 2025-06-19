@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Site</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --light-bg: #f5f8fa;
+            --dark-bg: #1a1a1a;
+            --light-text: #333;
+            --dark-text: #f5f5f5;
+            --light-card: #ffffff;
+            --dark-card: #2a2a2a;
+            --light-border: #dde1e7;
+            --dark-border: #444;
+            --light-shadow: rgba(0, 0, 0, 0.1);
+            --dark-shadow: rgba(0, 0, 0, 0.5);
+            --light-btn: #f0f0f0;
+            --dark-btn: #3a3a3a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.dark-mode .theme-toggle {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 40px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #007bff, #00c6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .subtitle {
+            color: #aaa;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+        }
+
+        #calculator {
+            flex: 1;
+            min-width: 320px;
+            max-width: 450px;
+            background-color: var(--light-card);
+            border: 1px solid var(--light-border);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px var(--light-shadow);
+        }
+
+        body.dark-mode #calculator {
+            background-color: var(--dark-card);
+            border-color: var(--dark-border);
+            box-shadow: 0 10px 25px var(--dark-shadow);
+        }
+
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calculator-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-border);
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: var(--light-card);
+            color: var(--light-text);
+        }
+
+        body.dark-mode input[type="number"] {
+            background-color: var(--dark-card);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .operation-btn {
+            padding: 12px 0;
+            cursor: pointer;
+            background-color: var(--light-btn);
+            color: var(--light-text);
+            border: 1px solid var(--light-border);
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        body.dark-mode .operation-btn {
+            background-color: var(--dark-btn);
+            color: var(--dark-text);
+            border-color: var(--dark-border);
+        }
+
+        .operation-btn:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .operation-btn:hover {
+            background-color: #444;
+        }
+
+        .operation-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .operation-btn.primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .operation-btn.danger {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .operation-btn.danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Dropdown Styles */
+        .dropdown-section {
+            margin-top: 20px;
+            border-top: 1px solid var(--light-border);
+            padding-top: 20px;
+        }
+
+        body.dark-mode .dropdown-section {
+            border-color: var(--dark-border);
+        }
+
+        .dropdown-container {
+            margin-bottom: 15px;
+        }
+
+        .dropdown-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .dropdown-header:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s;
+        }
+
+        .dropdown-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: var(--light-card);
+            border: 1px solid var(--light-border);
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+        }
+
+        body.dark-mode .dropdown-content {
+            background-color: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .dropdown-content.open {
+            max-height: 300px;
+            padding: 15px;
+        }
+
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .dropdown-btn {
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: var(--light-btn);
+            color: var(--light-text);
+            border: 1px solid var(--light-border);
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        body.dark-mode .dropdown-btn {
+            background-color: var(--dark-btn);
+            color: var(--dark-text);
+            border-color: var(--dark-border);
+        }
+
+        .dropdown-btn:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-1px);
+        }
+
+        body.dark-mode .dropdown-btn:hover {
+            background-color: #444;
+        }
+
+        #result {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 24px;
+            font-weight: 500;
+            margin-top: 20px;
+            text-align: right;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            border: 1px solid var(--light-border);
+        }
+
+        body.dark-mode #result {
+            background-color: #333;
+            border-color: var(--dark-border);
+        }
+
+        .history-section {
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+            background-color: var(--light-card);
+            border: 1px solid var(--light-border);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px var(--light-shadow);
+        }
+
+        body.dark-mode .history-section {
+            background-color: var(--dark-card);
+            border-color: var(--dark-border);
+            box-shadow: 0 10px 25px var(--dark-shadow);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .history-header h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        .clear-history {
+            background-color: transparent;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .clear-history:hover {
+            text-decoration: underline;
+        }
+
+        #history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--light-border);
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        body.dark-mode .history-item {
+            border-color: var(--dark-border);
+        }
+
+        .history-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        body.dark-mode .history-item:hover {
+            background-color: #333;
+        }
+
+        .operation {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .memory-section {
+            margin-top: 20px;
+            border-top: 1px solid var(--light-border);
+            padding-top: 20px;
+        }
+
+        body.dark-mode .memory-section {
+            border-color: var(--dark-border);
+        }
+
+        .memory-section h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .memory-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .memory-btn {
+            padding: 8px 0;
+            cursor: pointer;
+            background-color: var(--light-btn);
+            color: var(--light-text);
+            border: 1px solid var(--light-border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        body.dark-mode .memory-btn {
+            background-color: var(--dark-btn);
+            color: var(--dark-text);
+            border-color: var(--dark-border);
+        }
+
+        .memory-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        body.dark-mode .memory-btn:hover {
+            background-color: #444;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        body.dark-mode footer {
+            color: #aaa;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #calculator, .history-section {
+                max-width: 100%;
+            }
+
+            .dropdown-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">☀️</button>
+    
+    <div class="container">
+        <header>
+            <h1>Advanced Calculator</h1>
+            <p class="subtitle">A calculator with comprehensive mathematical functions and calculation history</p>
+        </header>
+
+        <div class="main-content">
+            <div id="calculator">
+                <div class="calculator-header">
+                    <h2>Calculator</h2>
+                </div>
+                
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="num1">First Number</label>
+                        <input type="number" id="num1" placeholder="Enter first number">
+                    </div>
+                    <div class="input-group">
+                        <label for="num2">Second Number</label>
+                        <input type="number" id="num2" placeholder="Enter second number">
+                    </div>
+                </div>
+                
+                <div class="buttons-grid">
+                    <button type="button" class="operation-btn primary" id="add">Add (+)</button>
+                    <button type="button" class="operation-btn primary" id="subtract">Subtract (-)</button>
+                    <button type="button" class="operation-btn primary" id="multiply">Multiply (×)</button>
+                    <button type="button" class="operation-btn primary" id="divide">Divide (÷)</button>
+                    <button type="button" class="operation-btn primary" id="modulus">Modulus (%)</button>
+                    <button type="button" class="operation-btn primary" id="power">Power (^)</button>
+                    <button type="button" class="operation-btn danger" id="clear">Clear</button>
+                </div>
+                
+                <div class="dropdown-section">
+                    <!-- Trigonometric Functions -->
+                    <div class="dropdown-container">
+                        <div class="dropdown-header" onclick="toggleDropdown('trig')">
+                            Trigonometric Functions
+                            <span class="dropdown-arrow" id="trig-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-content" id="trig-content">
+                            <div class="dropdown-grid">
+                                <button class="dropdown-btn" onclick="calculate('sin', false)">sin(°)</button>
+                                <button class="dropdown-btn" onclick="calculate('cos', false)">cos(°)</button>
+                                <button class="dropdown-btn" onclick="calculate('tan', false)">tan(°)</button>
+                                <button class="dropdown-btn" onclick="calculate('asin', false)">arcsin</button>
+                                <button class="dropdown-btn" onclick="calculate('acos', false)">arccos</button>
+                                <button class="dropdown-btn" onclick="calculate('atan', false)">arctan</button>
+                                <button class="dropdown-btn" onclick="calculate('sinh', false)">sinh</button>
+                                <button class="dropdown-btn" onclick="calculate('cosh', false)">cosh</button>
+                                <button class="dropdown-btn" onclick="calculate('tanh', false)">tanh</button>
+                                <button class="dropdown-btn" onclick="calculate('csc', false)">csc</button>
+                                <button class="dropdown-btn" onclick="calculate('sec', false)">sec</button>
+                                <button class="dropdown-btn" onclick="calculate('cot', false)">cot</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logarithmic & Exponential -->
+                    <div class="dropdown-container">
+                        <div class="dropdown-header" onclick="toggleDropdown('log')">
+                            Logarithmic & Exponential
+                            <span class="dropdown-arrow" id="log-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-content" id="log-content">
+                            <div class="dropdown-grid">
+                                <button class="dropdown-btn" onclick="calculate('log', false)">log₁₀</button>
+                                <button class="dropdown-btn" onclick="calculate('ln', false)">ln</button>
+                                <button class="dropdown-btn" onclick="calculate('log2', false)">log₂</button>
+                                <button class="dropdown-btn" onclick="calculate('exp', false)">eˣ</button>
+                                <button class="dropdown-btn" onclick="calculate('pow10', false)">10ˣ</button>
+                                <button class="dropdown-btn" onclick="calculate('pow2', false)">2ˣ</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Root & Power Functions -->
+                    <div class="dropdown-container">
+                        <div class="dropdown-header" onclick="toggleDropdown('root')">
+                            Root & Power Functions
+                            <span class="dropdown-arrow" id="root-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-content" id="root-content">
+                            <div class="dropdown-grid">
+                                <button class="dropdown-btn" onclick="calculate('sqrt', false)">√x</button>
+                                <button class="dropdown-btn" onclick="calculate('cbrt', false)">∛x</button>
+                                <button class="dropdown-btn" onclick="calculate('square', false)">x²</button>
+                                <button class="dropdown-btn" onclick="calculate('cube', false)">x³</button>
+                                <button class="dropdown-btn" onclick="calculate('nthRoot', true)">ⁿ√x</button>
+                                <button class="dropdown-btn" onclick="calculate('reciprocal', false)">1/x</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistical Functions -->
+                    <div class="dropdown-container">
+                        <div class="dropdown-header" onclick="toggleDropdown('stats')">
+                            Statistical & Special Functions
+                            <span class="dropdown-arrow" id="stats-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-content" id="stats-content">
+                            <div class="dropdown-grid">
+                                <button class="dropdown-btn" onclick="calculate('factorial', false)">x!</button>
+                                <button class="dropdown-btn" onclick="calculate('abs', false)">|x|</button>
+                                <button class="dropdown-btn" onclick="calculate('ceil', false)">⌈x⌉</button>
+                                <button class="dropdown-btn" onclick="calculate('floor', false)">⌊x⌋</button>
+                                <button class="dropdown-btn" onclick="calculate('round', false)">round</button>
+                                <button class="dropdown-btn" onclick="calculate('random', false)">random</button>
+                                <button class="dropdown-btn" onclick="calculate('percent', false)">%</button>
+                                <button class="dropdown-btn" onclick="calculate('gamma', false)">Γ(x)</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Constants & Utilities -->
+                    <div class="dropdown-container">
+                        <div class="dropdown-header" onclick="toggleDropdown('constants')">
+                            Constants & Utilities
+                            <span class="dropdown-arrow" id="constants-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-content" id="constants-content">
+                            <div class="dropdown-grid">
+                                <button class="dropdown-btn" onclick="insertConstant('pi')">π</button>
+                                <button class="dropdown-btn" onclick="insertConstant('e')">e</button>
+                                <button class="dropdown-btn" onclick="insertConstant('phi')">φ (golden)</button>
+                                <button class="dropdown-btn" onclick="insertConstant('sqrt2')">√2</button>
+                                <button class="dropdown-btn" onclick="calculate('degToRad', false)">deg→rad</button>
+                                <button class="dropdown-btn" onclick="calculate('radToDeg', false)">rad→deg</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Functions -->
+                    <div class="dropdown-container">
+                        <div class="dropdown-header" onclick="toggleDropdown('finance')">
+                            Financial & Practical Functions
+                            <span class="dropdown-arrow" id="finance-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-content" id="finance-content">
+                            <div class="dropdown-grid">
+                                <button class="dropdown-btn" onclick="calculate('compound', true)">compound</button>
+                                <button class="dropdown-btn" onclick="calculate('simpleInterest', true)">simple int.</button>
+                                <button class="dropdown-btn" onclick="calculate('percentage', true)">% of</button>
+                                <button class="dropdown-btn" onclick="calculate('percentIncrease', true)">% increase</button>
+                                <button class="dropdown-btn" onclick="calculate('percentDecrease', true)">% decrease</button>
+                                <button class="dropdown-btn" onclick="calculate('tip', true)">tip calc</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="result">Result will appear here</div>
+            </div>
+            
+            <div class="history-section">
+                <div class="history-header">
+                    <h2>History</h2>
+                    <button type="button" class="clear-history" id="clear-history">Clear All</button>
+                </div>
+                
+                <ul id="history-list">
+                    <!-- history items will be added here dynamically -->
+                </ul>
+                
+                <div class="memory-section">
+                    <h3>Memory Functions</h3>
+                    <div class="memory-buttons">
+                        <button type="button" class="memory-btn" id="memory-store">Store (MS)</button>
+                        <button type="button" class="memory-btn" id="memory-recall">Recall (MR)</button>
+                        <button type="button" class="memory-btn" id="memory-add">Add (M+)</button>
+                        <button type="button" class="memory-btn" id="memory-subtract">Subtract (M-)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            &copy; 2025 Dan Finn - Advanced Calculator | All rights reserved
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // theme toggle
+            const themeToggle = document.getElementById("theme-toggle");
+            const body = document.body;
+            let memoryValue = 0;
+            let calculationHistory = [];
+            
+            // check for saved theme preference or prefer-color-scheme
+            const savedTheme = localStorage.getItem("calculator-theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            
+            if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+                body.classList.add("dark-mode");
+                themeToggle.textContent = "🌙";
+            }
+            
+            themeToggle.addEventListener("click", function() {
+                body.classList.toggle("dark-mode");
+                if (body.classList.contains("dark-mode")) {
+                    localStorage.setItem("calculator-theme", "dark");
+                    themeToggle.textContent = "🌙";
+                } else {
+                    localStorage.setItem("calculator-theme", "light");
+                    themeToggle.textContent = "☀️";
+                }
+            });
+            
+            // load history from localStorage
+            if (localStorage.getItem("calculator-history")) {
+                try {
+                    calculationHistory = JSON.parse(localStorage.getItem("calculator-history"));
+                    updateHistoryDisplay();
+                } catch (e) {
+                    console.error("Error loading history:", e);
+                    localStorage.removeItem("calculator-history");
+                }
+            }
+            
+            // Dropdown toggle function
+            window.toggleDropdown = function(section) {
+                const content = document.getElementById(section + '-content');
+                const arrow = document.getElementById(section + '-arrow');
+                
+                content.classList.toggle('open');
+                arrow.classList.toggle('open');
+            };
+
+            // Insert constant function
+            window.insertConstant = function(constant) {
+                const num1Input = document.getElementById("num1");
+                let value;
+                
+                switch(constant) {
+                    case 'pi':
+                        value = Math.PI;
+                        break;
+                    case 'e':
+                        value = Math.E;
+                        break;
+                    case 'phi':
+                        value = (1 + Math.sqrt(5)) / 2; // Golden ratio
+                        break;
+                    case 'sqrt2':
+                        value = Math.sqrt(2);
+                        break;
+                }
+                
+                num1Input.value = value.toFixed(10);
+            };
+            
+            // Enhanced calculate function
+            window.calculate = function(operation, requiresSecondNumber = true) {
+                const num1Input = document.getElementById("num1");
+                const num2Input = document.getElementById("num2");
+                const resultDisplay = document.getElementById("result");
+                
+                let num1 = parseFloat(num1Input.value);
+                let num2 = requiresSecondNumber ? parseFloat(num2Input.value) : null;
+                let result;
+                let operationText = "";
+                
+                // validate inputs based on operation
+                if (isNaN(num1)) {
+                    resultDisplay.textContent = "Please enter a valid first number.";
+                    return;
+                }
+                
+                if (requiresSecondNumber && isNaN(num2)) {
+                    resultDisplay.textContent = "Please enter a valid second number.";
+                    return;
+                }
+                
+                // perform calculation based on operation
+                switch (operation) {
+                    // Basic operations
+                    case "add":
+                        result = num1 + num2;
+                        operationText = `${num1} + ${num2} = ${result}`;
+                        break;
+                    case "subtract":
+                        result = num1 - num2;
+                        operationText = `${num1} - ${num2} = ${result}`;
+                        break;
+                    case "multiply":
+                        result = num1 * num2;
+                        operationText = `${num1} × ${num2} = ${result}`;
+                        break;
+                    case "divide":
+                        if (num2 === 0) {
+                            result = "Cannot divide by zero!";
+                            operationText = `${num1} ÷ ${num2} = Error`;
+                        } else {
+                            result = num1 / num2;
+                            operationText = `${num1} ÷ ${num2} = ${result}`;
+                        }
+                        break;
+                    case "modulus":
+                        if (num2 === 0) {
+                            result = "Cannot find modulus with zero!";
+                            operationText = `${num1} % ${num2} = Error`;
+                        } else {
+                            result = num1 % num2;
+                            operationText = `${num1} % ${num2} = ${result}`;
+                        }
+                        break;
+                    case "power":
+                        result = Math.pow(num1, num2);
+                        operationText = `${num1} ^ ${num2} = ${result}`;
+                        break;
+                    
+                    // Trigonometric functions
+                    case "sin":
+                        result = Math.sin(num1 * (Math.PI / 180));
+                        operationText = `sin(${num1}°) = ${result}`;
+                        break;
+                    case "cos":
+                        result = Math.cos(num1 * (Math.PI / 180));
+                        operationText = `cos(${num1}°) = ${result}`;
+                        break;
+                    case "tan":
+                        result = Math.tan(num1 * (Math.PI / 180));
+                        operationText = `tan(${num1}°) = ${result}`;
+                        break;
+                    case "asin":
+                        if (num1 < -1 || num1 > 1) {
+                            result = "Domain error for arcsin!";
+                            operationText = `arcsin(${num1}) = Error`;
+                        } else {
+                            result = Math.asin(num1) * (180 / Math.PI);
+                            operationText = `arcsin(${num1}) = ${result}°`;
+                        }
+                        break;
+                    case "acos":
+                        if (num1 < -1 || num1 > 1) {
+                            result = "Domain error for arccos!";
+                            operationText = `arccos(${num1}) = Error`;
+                        } else {
+                            result = Math.acos(num1) * (180 / Math.PI);
+                            operationText = `arccos(${num1}) = ${result}°`;
+                        }
+                        break;
+                    case "atan":
+                        result = Math.atan(num1) * (180 / Math.PI);
+                        operationText = `arctan(${num1}) = ${result}°`;
+                        break;
+                    case "sinh":
+                        result = Math.sinh(num1);
+                        operationText = `sinh(${num1}) = ${result}`;
+                        break;
+                    case "cosh":
+                        result = Math.cosh(num1);
+                        operationText = `cosh(${num1}) = ${result}`;
+                        break;
+                    case "tanh":
+                        result = Math.tanh(num1);
+                        operationText = `tanh(${num1}) = ${result}`;
+                        break;
+                    case "csc":
+                        const sinValue = Math.sin(num1 * (Math.PI / 180));
+                        if (sinValue === 0) {
+                            result = "Cannot calculate csc of 0!";
+                            operationText = `csc(${num1}°) = Error`;
+                        } else {
+                            result = 1 / sinValue;
+                            operationText = `csc(${num1}°) = ${result}`;
+                        }
+                        break;
+                    case "sec":
+                        const cosValue = Math.cos(num1 * (Math.PI / 180));
+                        if (cosValue === 0) {
+                            result = "Cannot calculate sec of 90°!";
+                            operationText = `sec(${num1}°) = Error`;
+                        } else {
+                            result = 1 / cosValue;
+                            operationText = `sec(${num1}°) = ${result}`;
+                        }
+                        break;
+                    case "cot":
+                        const tanValue = Math.tan(num1 * (Math.PI / 180));
+                        if (tanValue === 0) {
+                            result = "Cannot calculate cot of 0!";
+                            operationText = `cot(${num1}°) = Error`;
+                        } else {
+                            result = 1 / tanValue;
+                            operationText = `cot(${num1}°) = ${result}`;
+                        }
+                        break;
+                    
+                    // Logarithmic functions
+                    case "log":
+                        if (num1 <= 0) {
+                            result = "Cannot calculate log of non-positive number!";
+                            operationText = `log(${num1}) = Error`;
+                        } else {
+                            result = Math.log10(num1);
+                            operationText = `log(${num1}) = ${result}`;
+                        }
+                        break;
+                    case "ln":
+                        if (num1 <= 0) {
+                            result = "Cannot calculate ln of non-positive number!";
+                            operationText = `ln(${num1}) = Error`;
+                        } else {
+                            result = Math.log(num1);
+                            operationText = `ln(${num1}) = ${result}`;
+                        }
+                        break;
+                    case "log2":
+                        if (num1 <= 0) {
+                            result = "Cannot calculate log₂ of non-positive number!";
+                            operationText = `log₂(${num1}) = Error`;
+                        } else {
+                            result = Math.log2(num1);
+                            operationText = `log₂(${num1}) = ${result}`;
+                        }
+                        break;
+                    case "exp":
+                        result = Math.exp(num1);
+                        operationText = `e^${num1} = ${result}`;
+                        break;
+                    case "pow10":
+                        result = Math.pow(10, num1);
+                        operationText = `10^${num1} = ${result}`;
+                        break;
+                    case "pow2":
+                        result = Math.pow(2, num1);
+                        operationText = `2^${num1} = ${result}`;
+                        break;
+                    
+                    // Root and power functions
+                    case "sqrt":
+                        if (num1 < 0) {
+                            result = "Cannot calculate square root of negative number!";
+                            operationText = `√${num1} = Error`;
+                        } else {
+                            result = Math.sqrt(num1);
+                            operationText = `√${num1} = ${result}`;
+                        }
+                        break;
+                    case "cbrt":
+                        result = Math.cbrt(num1);
+                        operationText = `∛${num1} = ${result}`;
+                        break;
+                    case "square":
+                        result = num1 * num1;
+                        operationText = `${num1}² = ${result}`;
+                        break;
+                    case "cube":
+                        result = num1 * num1 * num1;
+                        operationText = `${num1}³ = ${result}`;
+                        break;
+                    case "nthRoot":
+                        if (num2 === 0) {
+                            result = "Cannot calculate 0th root!";
+                            operationText = `${num2}√${num1} = Error`;
+                        } else {
+                            result = Math.pow(num1, 1/num2);
+                            operationText = `${num2}√${num1} = ${result}`;
+                        }
+                        break;
+                    case "reciprocal":
+                        if (num1 === 0) {
+                            result = "Cannot calculate reciprocal of zero!";
+                            operationText = `1/${num1} = Error`;
+                        } else {
+                            result = 1 / num1;
+                            operationText = `1/${num1} = ${result}`;
+                        }
+                        break;
+                    
+                    // Statistical and special functions
+                    case "factorial":
+                        if (num1 < 0 || !Number.isInteger(num1)) {
+                            result = "Factorial is only defined for non-negative integers!";
+                            operationText = `${num1}! = Error`;
+                        } else {
+                            result = factorial(num1);
+                            operationText = `${num1}! = ${result}`;
+                        }
+                        break;
+                    case "abs":
+                        result = Math.abs(num1);
+                        operationText = `|${num1}| = ${result}`;
+                        break;
+                    case "ceil":
+                        result = Math.ceil(num1);
+                        operationText = `⌈${num1}⌉ = ${result}`;
+                        break;
+                    case "floor":
+                        result = Math.floor(num1);
+                        operationText = `⌊${num1}⌋ = ${result}`;
+                        break;
+                    case "round":
+                        result = Math.round(num1);
+                        operationText = `round(${num1}) = ${result}`;
+                        break;
+                    case "random":
+                        result = Math.random();
+                        operationText = `random() = ${result}`;
+                        break;
+                    case "percent":
+                        result = num1 / 100;
+                        operationText = `${num1}% = ${result}`;
+                        break;
+                    case "gamma":
+                        result = gamma(num1);
+                        operationText = `Γ(${num1}) = ${result}`;
+                        break;
+                    
+                    // Conversion functions
+                    case "degToRad":
+                        result = num1 * (Math.PI / 180);
+                        operationText = `${num1}° = ${result} rad`;
+                        break;
+                    case "radToDeg":
+                        result = num1 * (180 / Math.PI);
+                        operationText = `${num1} rad = ${result}°`;
+                        break;
+                    
+                    // Financial functions
+                    case "compound":
+                        // num1 = principal, num2 = rate (as percentage)
+                        result = num1 * Math.pow(1 + (num2/100), 1); // 1 year compound
+                        operationText = `$${num1} at ${num2}% = $${result}`;
+                        break;
+                    case "simpleInterest":
+                        result = num1 * (num2/100); // 1 year simple interest
+                        operationText = `${num2}% of $${num1} = $${result}`;
+                        break;
+                    case "percentage":
+                        result = (num2/100) * num1;
+                        operationText = `${num2}% of ${num1} = ${result}`;
+                        break;
+                    case "percentIncrease":
+                        result = ((num2 - num1) / num1) * 100;
+                        operationText = `${num1} to ${num2} = ${result}% increase`;
+                        break;
+                    case "percentDecrease":
+                        result = ((num1 - num2) / num1) * 100;
+                        operationText = `${num1} to ${num2} = ${result}% decrease`;
+                        break;
+                    case "tip":
+                        result = num1 * (num2/100);
+                        operationText = `${num2}% tip on $${num1} = $${result}`;
+                        break;
+                }
+                
+                // display result
+                if (typeof result === "number") {
+                    // round to 10 decimal places to avoid floating point issues
+                    result = parseFloat(result.toFixed(10));
+                    // remove trailing zeros
+                    result = result.toString().replace(/\.0+$|(\.\d*[1-9])0+$/, '$1');
+                }
+                
+                resultDisplay.textContent = `Result: ${result}`;
+                
+                // add to history if it's a valid calculation
+                if (operationText && !operationText.includes("Error")) {
+                    addToHistory(operationText, result);
+                }
+                
+                return result;
+            };
+
+            // Helper function for factorial
+            function factorial(n) {
+                if (n === 0 || n === 1) return 1;
+                let result = 1;
+                for (let i = 2; i <= n; i++) {
+                    result *= i;
+                }
+                return result;
+            }
+
+            // Helper function for gamma function (approximation)
+            function gamma(z) {
+                // Stirling's approximation for gamma function
+                if (z < 0.5) {
+                    return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
+                }
+                z -= 1;
+                const x = 0.99999999999980993 +
+                    676.5203681218851 / (z + 1) +
+                    -1259.1392167224028 / (z + 2) +
+                    771.32342877765313 / (z + 3) +
+                    -176.61502916214059 / (z + 4) +
+                    12.507343278686905 / (z + 5) +
+                    -0.13857109526572012 / (z + 6) +
+                    9.9843695780195716e-6 / (z + 7) +
+                    1.5056327351493116e-7 / (z + 8);
+                
+                const t = z + 7.5;
+                return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+            }
+            
+            // add event listeners to all basic operation buttons
+            document.getElementById("add").addEventListener("click", () => calculate("add"));
+            document.getElementById("subtract").addEventListener("click", () => calculate("subtract"));
+            document.getElementById("multiply").addEventListener("click", () => calculate("multiply"));
+            document.getElementById("divide").addEventListener("click", () => calculate("divide"));
+            document.getElementById("modulus").addEventListener("click", () => calculate("modulus"));
+            document.getElementById("power").addEventListener("click", () => calculate("power"));
+            
+            // clear button
+            document.getElementById("clear").addEventListener("click", function() {
+                document.getElementById("num1").value = "";
+                document.getElementById("num2").value = "";
+                document.getElementById("result").textContent = "Result will appear here";
+            });
+            
+            // clear history
+            document.getElementById("clear-history").addEventListener("click", function() {
+                calculationHistory = [];
+                localStorage.removeItem("calculator-history");
+                updateHistoryDisplay();
+            });
+            
+            // memory functions
+            document.getElementById("memory-store").addEventListener("click", function() {
+                const resultText = document.getElementById("result").textContent;
+                if (resultText.startsWith("Result: ")) {
+                    const value = parseFloat(resultText.substring(8));
+                    if (!isNaN(value)) {
+                        memoryValue = value;
+                        alert("Value stored in memory: " + value);
+                    }
+                }
+            });
+            
+            document.getElementById("memory-recall").addEventListener("click", function() {
+                document.getElementById("num1").value = memoryValue;
+            });
+            
+            document.getElementById("memory-add").addEventListener("click", function() {
+                const resultText = document.getElementById("result").textContent;
+                if (resultText.startsWith("Result: ")) {
+                    const value = parseFloat(resultText.substring(8));
+                    if (!isNaN(value)) {
+                        memoryValue += value;
+                        alert("Value added to memory. New memory value: " + memoryValue);
+                    }
+                }
+            });
+            
+            document.getElementById("memory-subtract").addEventListener("click", function() {
+                const resultText = document.getElementById("result").textContent;
+                if (resultText.startsWith("Result: ")) {
+                    const value = parseFloat(resultText.substring(8));
+                    if (!isNaN(value)) {
+                        memoryValue -= value;
+                        alert("Value subtracted from memory. New memory value: " + memoryValue);
+                    }
+                }
+            });
+            
+            // add to history
+            function addToHistory(operation, result) {
+                calculationHistory.unshift({
+                    operation: operation,
+                    result: result,
+                    timestamp: new Date().toLocaleString()
+                });
+                
+                // limit history to 15 items
+                if (calculationHistory.length > 15) {
+                    calculationHistory.pop();
+                }
+                
+                // save to localStorage
+                localStorage.setItem("calculator-history", JSON.stringify(calculationHistory));
+                
+                // update display
+                updateHistoryDisplay();
+            }
+            
+            // update history display
+            function updateHistoryDisplay() {
+                const historyList = document.getElementById("history-list");
+                historyList.innerHTML = "";
+                
+                if (calculationHistory.length === 0) {
+                    const emptyItem = document.createElement("li");
+                    emptyItem.className = "history-item";
+                    emptyItem.textContent = "No calculations yet";
+                    historyList.appendChild(emptyItem);
+                    return;
+                }
+                
+                calculationHistory.forEach(item => {
+                    const listItem = document.createElement("li");
+                    listItem.className = "history-item";
+                    
+                    const operationSpan = document.createElement("span");
+                    operationSpan.className = "operation";
+                    operationSpan.textContent = item.operation;
+                    
+                    listItem.appendChild(operationSpan);
+                    
+                    // make history items clickable to reuse the values
+                    listItem.addEventListener("click", function() {
+                        // Extract numbers from the operation string
+                        const numberRegex = /([-+]?\d*\.?\d+)/g;
+                        const numbers = item.operation.match(numberRegex);
+                        
+                        if (numbers && numbers.length >= 1) {
+                            document.getElementById("num1").value = numbers[0];
+                            if (numbers.length >= 2) {
+                                document.getElementById("num2").value = numbers[1];
+                            }
+                            document.getElementById("result").textContent = "Result: " + item.result;
+                        }
+                    });
+                    
+                    historyList.appendChild(listItem);
+                });
+            }
+            
+            // initialize history display
+            updateHistoryDisplay();
+        });
+    </script>
+</body>
+</html>
