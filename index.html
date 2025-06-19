@@ -103,8 +103,53 @@
       51%, 100% { border-color: #007bff; }
     }
 
+    /* date time display at top */
+    .datetime-display {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: white;
+      font-size: 0.9em;
+      font-weight: 500;
+      z-index: 100;
+      transition: all var(--transition-speed) ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark .datetime-display {
+      background: rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .datetime-display:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.2);
+    }
+
+    .date-text {
+      display: block;
+      font-size: 0.85em;
+      opacity: 0.9;
+      margin-bottom: 2px;
+    }
+
+    .time-text {
+      display: block;
+      font-size: 1.1em;
+      font-weight: 600;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
     .toggle-btn {
-      position: absolute;
+      position: fixed;
       top: 20px;
       right: 20px;
       background: transparent;
@@ -143,9 +188,10 @@
 
     /* floating status indicator */
     .status-indicator {
-      position: absolute;
-      top: 70px;
-      right: 20px;
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       background: var(--secondary-gradient);
       color: white;
       padding: 8px 16px;
@@ -339,49 +385,6 @@
       box-shadow: 0 12px 35px rgba(40, 167, 69, 0.5);
     }
 
-    /* quick stats section */
-    .stats-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-top: 40px;
-      width: 100%;
-      max-width: 800px;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 15px;
-      padding: 20px;
-      text-align: center;
-      transition: all var(--transition-speed) ease;
-      cursor: pointer;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-5px) scale(1.02);
-      background: rgba(0, 123, 255, 0.1);
-      border-color: rgba(0, 123, 255, 0.3);
-    }
-
-    .stat-number {
-      font-size: 2em;
-      font-weight: 700;
-      background: var(--primary-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      display: block;
-    }
-
-    .stat-label {
-      font-size: 0.9em;
-      opacity: 0.8;
-      margin-top: 5px;
-    }
-
     /* quick access toolbar */
     .quick-access {
       position: fixed;
@@ -481,16 +484,17 @@
         right: 15px;
       }
 
-      .status-indicator {
-        top: 60px;
-        right: 15px;
-        font-size: 0.7em;
-        padding: 6px 12px;
+      .datetime-display {
+        top: 15px;
+        left: 15px;
+        font-size: 0.8em;
+        padding: 10px 16px;
       }
 
-      .stats-section {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+      .status-indicator {
+        top: 15px;
+        font-size: 0.7em;
+        padding: 6px 12px;
       }
 
       .quick-access {
@@ -506,8 +510,17 @@
     }
 
     @media (max-width: 480px) {
-      .stats-section {
-        grid-template-columns: 1fr;
+      .datetime-display {
+        font-size: 0.7em;
+        padding: 8px 12px;
+      }
+
+      .time-text {
+        font-size: 1em;
+      }
+
+      .date-text {
+        font-size: 0.8em;
       }
     }
   </style>
@@ -523,6 +536,12 @@
 
   <!-- floating particles background -->
   <div class="particles-container" id="particlesContainer"></div>
+
+  <!-- date and time display -->
+  <div class="datetime-display" id="datetimeDisplay">
+    <span class="date-text" id="dateText"></span>
+    <span class="time-text" id="timeText"></span>
+  </div>
 
   <!-- status indicator showing availability -->
   <div class="status-indicator">
@@ -548,22 +567,6 @@
       <p style="animation-delay: 0.7s;">Download or view my professional resume:</p>
       <a class="resume-button" href="resume/"><span>My Resume</span></a>
     </div>
-
-    <!-- quick stats section -->
-    <div class="stats-section">
-      <div class="stat-card" onclick="animateNumber(this, '4+')">
-        <span class="stat-number" data-target="4">0</span>
-        <div class="stat-label">Years Experience</div>
-      </div>
-      <div class="stat-card" onclick="animateNumber(this, '7+')">
-        <span class="stat-number" data-target="7">0</span>
-        <div class="stat-label">Programming Languages</div>
-      </div>
-      <div class="stat-card" onclick="animateNumber(this, '15+')">
-        <span class="stat-number" data-target="15">0</span>
-        <div class="stat-label">Projects Completed</div>
-      </div>
-    </div>
   </div>
 
   <!-- quick access toolbar -->
@@ -580,6 +583,8 @@
       const body = document.body;
       const loadingOverlay = document.getElementById("loadingOverlay");
       const scrollIndicator = document.getElementById("scrollIndicator");
+      const dateText = document.getElementById("dateText");
+      const timeText = document.getElementById("timeText");
 
       // loading screen fade out
       setTimeout(() => {
@@ -588,6 +593,35 @@
           loadingOverlay.style.display = 'none';
         }, 500);
       }, 1000);
+
+      // update date and time function
+      function updateDateTime() {
+        const now = new Date();
+        
+        // format date options
+        const dateOptions = {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        };
+        
+        // format time options
+        const timeOptions = {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        };
+        
+        // update the display
+        dateText.textContent = now.toLocaleDateString('en-US', dateOptions);
+        timeText.textContent = now.toLocaleTimeString('en-US', timeOptions);
+      }
+
+      // update time immediately and then every second
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
 
       // Apply saved theme or system preference
       const savedTheme = localStorage.getItem("theme");
@@ -617,30 +651,6 @@
         scrollIndicator.style.width = scrollPercentage + '%';
       });
 
-      // animated counter for stats
-      window.animateNumber = function(element, target) {
-        const numberElement = element.querySelector('.stat-number');
-        const duration = 2000;
-        const start = 0;
-        const increment = target / (duration / 16);
-        let current = 0;
-
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= target) {
-            current = target;
-            clearInterval(timer);
-          }
-          numberElement.textContent = Math.floor(current);
-        }, 16);
-
-        // visual feedback on click
-        element.style.transform = 'scale(1.1)';
-        setTimeout(() => {
-          element.style.transform = 'scale(1)';
-        }, 200);
-      };
-
       // create floating particles
       function createParticle() {
         const particle = document.createElement('div');
@@ -666,22 +676,6 @@
 
       // generate particles periodically
       setInterval(createParticle, 500);
-
-      // add intersection observer for stat cards
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const target = parseInt(entry.target.querySelector('.stat-number').dataset.target);
-            animateNumber(entry.target, target);
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.5 });
-
-      // observe all stat cards
-      document.querySelectorAll('.stat-card').forEach(card => {
-        observer.observe(card);
-      });
 
       // keyboard shortcuts for quick navigation
       document.addEventListener('keydown', (e) => {
@@ -714,7 +708,7 @@
 
       // mouse movement parallax effect
       document.addEventListener('mousemove', (e) => {
-        const cards = document.querySelectorAll('.homepage-card, .stat-card');
+        const cards = document.querySelectorAll('.homepage-card');
         const mouseX = e.clientX / window.innerWidth;
         const mouseY = e.clientY / window.innerHeight;
         
