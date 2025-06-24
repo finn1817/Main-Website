@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Unit Converter | Dan Finn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --primary-light: #e6f2ff;
+            --secondary-color: #343a40;
+            --light-bg: #f8f9fa;
+            --dark-bg: #212529;
+            --light-text: #343a40;
+            --dark-text: #f8f9fa;
+            --light-card: #ffffff;
+            --dark-card: #2a2a2a;
+            --light-input: #ffffff;
+            --dark-input: #3a3a3a;
+            --light-border: #dee2e6;
+            --dark-border: #444;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --error-color: #dc3545;
+            --light-shadow: rgba(0, 0, 0, 0.1);
+            --dark-shadow: rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .back-to-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            box-shadow: 0 2px 5px var(--light-shadow);
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-to-home:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .back-to-home {
+            box-shadow: 0 2px 5px var(--dark-shadow);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        body.dark-mode .theme-toggle {
+            border-color: var(--primary-light);
+            color: var(--primary-light);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        body.dark-mode .theme-toggle:hover {
+            background-color: var(--primary-light);
+            color: var(--dark-bg);
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background-color: var(--light-card);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px var(--light-shadow);
+            overflow: hidden;
+            margin: 60px 0 20px;
+        }
+
+        body.dark-mode .container {
+            background-color: var(--dark-card);
+            box-shadow: 0 10px 30px var(--dark-shadow);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            padding: 25px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            margin-top: 10px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .conversion-panel {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        body.dark-mode .form-group label {
+            color: var(--primary-light);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-border);
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: var(--light-input);
+            color: var(--light-text);
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .form-control {
+            background-color: var(--dark-input);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        body.dark-mode .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        .unit-selectors {
+            display: flex;
+            gap: 15px;
+        }
+
+        .unit-column {
+            flex: 1;
+        }
+
+        .unit-selector {
+            width: 100%;
+            background-color: var(--light-input);
+            border: 1px solid var(--light-border);
+            border-radius: 6px;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body.dark-mode .unit-selector {
+            background-color: var(--dark-input);
+            border-color: var(--dark-border);
+        }
+
+        .unit-selector-header {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 10px 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        body.dark-mode .unit-selector-header {
+            background-color: var(--primary-dark);
+            color: var(--dark-text);
+        }
+
+        .unit-options {
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .unit-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid var(--light-border);
+        }
+
+        body.dark-mode .unit-option {
+            border-color: var(--dark-border);
+        }
+
+        .unit-option:last-child {
+            border-bottom: none;
+        }
+
+        .unit-option:hover {
+            background-color: var(--primary-light);
+        }
+
+        body.dark-mode .unit-option:hover {
+            background-color: rgba(0, 123, 255, 0.2);
+        }
+
+        .unit-option.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        body.dark-mode .unit-option.selected {
+            background-color: var(--primary-color);
+        }
+
+        .unit-icon {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .unit-details {
+            flex: 1;
+        }
+
+        .unit-name {
+            font-weight: 500;
+        }
+
+        .unit-abbr {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+
+        body.dark-mode .unit-abbr {
+            color: #adb5bd;
+        }
+
+        .conversion-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .swap-btn {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .swap-btn {
+            background-color: var(--primary-dark);
+            color: var(--primary-light);
+            border-color: var(--primary-light);
+        }
+
+        .swap-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        body.dark-mode .swap-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .convert-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .convert-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .convert-btn:hover {
+            background-color: #0062cc;
+        }
+
+        .result-panel {
+            margin-top: 25px;
+            padding: 25px;
+            background-color: var(--primary-light);
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        body.dark-mode .result-panel {
+            background-color: rgba(0, 123, 255, 0.15);
+        }
+
+        .result-panel.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        body.dark-mode .result-value {
+            color: var(--primary-light);
+        }
+
+        .result-formula {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        body.dark-mode .result-formula {
+            color: #adb5bd;
+        }
+
+        .result-details {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 123, 255, 0.2);
+        }
+
+        .result-item {
+            text-align: center;
+        }
+
+        .result-item-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        body.dark-mode .result-item-label {
+            color: #adb5bd;
+        }
+
+        .result-item-value {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        body.dark-mode .result-item-value {
+            color: var(--primary-light);
+        }
+
+        .category-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--light-border);
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        body.dark-mode .category-tabs {
+            border-color: var(--dark-border);
+        }
+
+        .category-tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        body.dark-mode .category-tab {
+            color: #adb5bd;
+        }
+
+        .category-tab:hover {
+            color: var(--primary-color);
+        }
+
+        body.dark-mode .category-tab:hover {
+            color: var(--primary-light);
+        }
+
+        .category-tab.active {
+            color: var(--primary-color);
+        }
+
+        body.dark-mode .category-tab.active {
+            color: var(--primary-light);
+        }
+
+        .category-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        body.dark-mode .category-tab.active::after {
+            background-color: var(--primary-light);
+        }
+
+        .category-tab i {
+            margin-right: 8px;
+        }
+
+        .history-panel {
+            padding: 20px;
+            border-top: 1px solid var(--light-border);
+            margin-top: 20px;
+        }
+
+        body.dark-mode .history-panel {
+            border-color: var(--dark-border);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .history-title {
+            font-weight: 500;
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.dark-mode .history-title {
+            color: var(--dark-text);
+        }
+
+        .clear-history {
+            background: none;
+            border: none;
+            color: var(--error-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .clear-history:hover {
+            color: #bd2130;
+            text-decoration: underline;
+        }
+
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--light-border);
+            border-radius: 6px;
+        }
+
+        body.dark-mode .history-list {
+            border-color: var(--dark-border);
+        }
+
+        .history-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--light-border);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        body.dark-mode .history-item {
+            border-color: var(--dark-border);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item:hover {
+            background-color: var(--primary-light);
+        }
+
+        body.dark-mode .history-item:hover {
+            background-color: rgba(0, 123, 255, 0.15);
+        }
+
+        .history-conversion {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .history-timestamp {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        body.dark-mode .history-timestamp {
+            color: #adb5bd;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6c757d;
+            padding-bottom: 20px;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        body.dark-mode .footer {
+            color: #adb5bd;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        body.dark-mode .footer-link {
+            color: var(--primary-light);
+        }
+
+        .footer-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        body.dark-mode .footer-link:hover {
+            color: #8bbeff;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin-top: 80px;
+            }
+            
+            .unit-selectors {
+                flex-direction: column;
+            }
+            
+            .conversion-panel {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .back-to-home, .theme-toggle {
+                top: 10px;
+            }
+            
+            .category-tab {
+                padding: 12px 15px;
+            }
+        }
+
+        /* Page transition effect */
+        .page-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .page-transition.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page transition element -->
+    <div class="page-transition"></div>
+
+    <!-- Theme toggle button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">🌙</button>
+
+    <!-- Back to Home link -->
+    <a href="../../index.html" class="back-to-home">
+        <i class="fas fa-home"></i> Back to Home
+    </a>
+
+    <div class="container">
+        <div class="header">
+            <h1>Advanced Unit Converter</h1>
+            <p>Convert between different units of measurement with precision</p>
+        </div>
+
+        <div class="category-tabs">
+            <div class="category-tab active" data-category="length">
+                <i class="fas fa-ruler"></i> Length
+            </div>
+            <div class="category-tab" data-category="weight">
+                <i class="fas fa-weight-hanging"></i> Weight
+            </div>
+            <div class="category-tab" data-category="volume">
+                <i class="fas fa-flask"></i> Volume
+            </div>
+            <div class="category-tab" data-category="temperature">
+                <i class="fas fa-thermometer-half"></i> Temperature
+            </div>
+            <div class="category-tab" data-category="area">
+                <i class="fas fa-vector-square"></i> Area
+            </div>
+            <div class="category-tab" data-category="speed">
+                <i class="fas fa-tachometer-alt"></i> Speed
+            </div>
+            <div class="category-tab" data-category="time">
+                <i class="fas fa-clock"></i> Time
+            </div>
+        </div>
+
+        <div class="conversion-panel">
+            <form id="unitConversionForm">
+                <div class="form-group">
+                    <label for="fromValue">
+                        <i class="fas fa-calculator"></i> Enter Value
+                    </label>
+                    <input type="number" id="fromValue" class="form-control" step="any" required placeholder="Enter a number...">
+                </div>
+
+                <div class="unit-selectors">
+                    <div class="unit-column">
+                        <div class="form-group">
+                            <label for="fromUnitSelector">
+                                <i class="fas fa-exchange-alt"></i> From Unit
+                            </label>
+                            <div class="unit-selector" id="fromUnitSelector">
+                                <div class="unit-selector-header">
+                                    <span id="selectedFromUnit">Meters (m)</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="unit-options" id="fromUnitOptions">
+                                    <!-- Units will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="conversion-controls">
+                        <div class="swap-btn" id="swapBtn">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                    </div>
+
+                    <div class="unit-column">
+                        <div class="form-group">
+                            <label for="toUnitSelector">
+                                <i class="fas fa-exchange-alt"></i> To Unit
+                            </label>
+                            <div class="unit-selector" id="toUnitSelector">
+                                <div class="unit-selector-header">
+                                    <span id="selectedToUnit">Centimeters (cm)</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="unit-options" id="toUnitOptions">
+                                    <!-- Units will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="convert-btn">
+                    <i class="fas fa-sync-alt"></i> Convert
+                </button>
+            </form>
+
+            <div class="result-panel" id="resultPanel">
+                <div class="result-value" id="resultValue">100 cm</div>
+                <div class="result-formula" id="resultFormula">1 m = 100 cm</div>
+                <div class="result-details">
+                    <div class="result-item">
+                        <div class="result-item-label">From Value</div>
+                        <div class="result-item-value" id="resultFromValue">1 m</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-item-label">To Value</div>
+                        <div class="result-item-value" id="resultToValue">100 cm</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-panel">
+            <div class="history-header">
+                <div class="history-title">
+                    <i class="fas fa-history"></i> Recent Conversions
+                </div>
+                <button class="clear-history" id="clearHistory">Clear All</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- History items will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="../../index.html" class="footer-link">Home</a>
+            <a href="../../about/" class="footer-link">About</a>
+            <a href="../../contact/" class="footer-link">Contact</a>
+        </div>
+        <div class="copyright">
+            &copy; 2025 Dan Finn | Advanced Unit Converter
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // DOM Elements
+            const themeToggle = document.getElementById("themeToggle");
+            const body = document.body;
+            const conversionForm = document.getElementById("unitConversionForm");
+            const fromValueInput = document.getElementById("fromValue");
+            const selectedFromUnitSpan = document.getElementById("selectedFromUnit");
+            const selectedToUnitSpan = document.getElementById("selectedToUnit");
+            const fromUnitSelector = document.getElementById("fromUnitSelector");
+            const toUnitSelector = document.getElementById("toUnitSelector");
+            const fromUnitOptions = document.getElementById("fromUnitOptions");
+            const toUnitOptions = document.getElementById("toUnitOptions");
+            const swapBtn = document.getElementById("swapBtn");
+            const resultPanel = document.getElementById("resultPanel");
+            const resultValue = document.getElementById("resultValue");
+            const resultFormula = document.getElementById("resultFormula");
+            const resultFromValue = document.getElementById("resultFromValue");
+            const resultToValue = document.getElementById("resultToValue");
+            const categoryTabs = document.querySelectorAll(".category-tab");
+            const historyList = document.getElementById("historyList");
+            const clearHistoryBtn = document.getElementById("clearHistory");
+            const pageTransition = document.querySelector(".page-transition");
+
+            // Variables for tracking current state
+            let currentCategory = "length";
+            let currentFromUnit = "m";
+            let currentToUnit = "cm";
+            let fromUnitSelectorOpen = false;
+            let toUnitSelectorOpen = false;
+            let conversionHistory = JSON.parse(localStorage.getItem("conversion-history") || "[]");
+
+            // Units by category
+            const unitsByCategory = {
+                length: [
+                    { name: "Millimeters", abbr: "mm", icon: "ruler", factor: 0.001 },
+                    { name: "Centimeters", abbr: "cm", icon: "ruler", factor: 0.01 },
+                    { name: "Meters", abbr: "m", icon: "ruler-combined", factor: 1 },
+                    { name: "Kilometers", abbr: "km", icon: "road", factor: 1000 },
+                    { name: "Inches", abbr: "in", icon: "ruler", factor: 0.0254 },
+                    { name: "Feet", abbr: "ft", icon: "shoe-prints", factor: 0.3048 },
+                    { name: "Yards", abbr: "yd", icon: "ruler-combined", factor: 0.9144 },
+                    { name: "Miles", abbr: "mi", icon: "road", factor: 1609.34 }
+                ],
+                weight: [
+                    { name: "Milligrams", abbr: "mg", icon: "weight-hanging", factor: 0.000001 },
+                    { name: "Grams", abbr: "g", icon: "weight-hanging", factor: 0.001 },
+                    { name: "Kilograms", abbr: "kg", icon: "weight-hanging", factor: 1 },
+                    { name: "Metric Tons", abbr: "t", icon: "truck", factor: 1000 },
+                    { name: "Ounces", abbr: "oz", icon: "balance-scale", factor: 0.0283495 },
+                    { name: "Pounds", abbr: "lb", icon: "balance-scale", factor: 0.453592 },
+                    { name: "Stone", abbr: "st", icon: "weight-hanging", factor: 6.35029 }
+                ],
+                volume: [
+                    { name: "Milliliters", abbr: "ml", icon: "flask", factor: 0.001 },
+                    { name: "Liters", abbr: "l", icon: "flask", factor: 1 },
+                    { name: "Cubic Meters", abbr: "m³", icon: "cube", factor: 1000 },
+                    { name: "Fluid Ounces (US)", abbr: "fl oz", icon: "wine-glass", factor: 0.0295735 },
+                    { name: "Cups (US)", abbr: "cup", icon: "coffee", factor: 0.236588 },
+                    { name: "Pints (US)", abbr: "pt", icon: "glass-whiskey", factor: 0.473176 },
+                    { name: "Gallons (US)", abbr: "gal", icon: "fill", factor: 3.78541 }
+                ],
+                temperature: [
+                    { name: "Celsius", abbr: "°C", icon: "thermometer-half", factor: 1, offset: 0 },
+                    { name: "Fahrenheit", abbr: "°F", icon: "thermometer-half", factor: 1.8, offset: 32 },
+                    { name: "Kelvin", abbr: "K", icon: "thermometer-empty", factor: 1, offset: 273.15 }
+                ],
+                area: [
+                    { name: "Square Millimeters", abbr: "mm²", icon: "vector-square", factor: 0.000001 },
+                    { name: "Square Centimeters", abbr: "cm²", icon: "vector-square", factor: 0.0001 },
+                    { name: "Square Meters", abbr: "m²", icon: "vector-square", factor: 1 },
+                    { name: "Square Kilometers", abbr: "km²", icon: "vector-square", factor: 1000000 },
+                    { name: "Square Inches", abbr: "in²", icon: "vector-square", factor: 0.00064516 },
+                    { name: "Square Feet", abbr: "ft²", icon: "vector-square", factor: 0.092903 },
+                    { name: "Acres", abbr: "ac", icon: "tree", factor: 4046.86 },
+                    { name: "Hectares", abbr: "ha", icon: "tree", factor: 10000 }
+                ],
+                speed: [
+                    { name: "Meters per Second", abbr: "m/s", icon: "tachometer-alt", factor: 1 },
+                    { name: "Kilometers per Hour", abbr: "km/h", icon: "car", factor: 0.277778 },
+                    { name: "Miles per Hour", abbr: "mph", icon: "car", factor: 0.44704 },
+                    { name: "Knots", abbr: "kn", icon: "ship", factor: 0.514444 }
+                ],
+                time: [
+                    { name: "Milliseconds", abbr: "ms", icon: "stopwatch", factor: 0.001 },
+                    { name: "Seconds", abbr: "s", icon: "clock", factor: 1 },
+                    { name: "Minutes", abbr: "min", icon: "clock", factor: 60 },
+                    { name: "Hours", abbr: "h", icon: "clock", factor: 3600 },
+                    { name: "Days", abbr: "d", icon: "calendar-day", factor: 86400 },
+                    { name: "Weeks", abbr: "wk", icon: "calendar-week", factor: 604800 },
+                    { name: "Months (avg)", abbr: "mo", icon: "calendar-alt", factor: 2629746 },
+                    { name: "Years", abbr: "yr", icon: "calendar", factor: 31556952 }
+                ]
+            };
+
+            // Apply page transition effect
+            function applyTransition(callback) {
+                pageTransition.classList.add("active");
+                setTimeout(() => {
+                    callback();
+                    setTimeout(() => {
+                        pageTransition.classList.remove("active");
+                    }, 500);
+                }, 500);
+            }
+
+            // Apply saved theme or system preference
+            const savedTheme = localStorage.getItem("theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            
+            if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+                body.classList.add("dark-mode");
+                themeToggle.textContent = "☀️";
+            } else {
+                themeToggle.textContent = "🌙";
+            }
+            
+            // Toggle theme listener
+            themeToggle.addEventListener("click", function() {
+                applyTransition(() => {
+                    const isDark = body.classList.toggle("dark-mode");
+                    localStorage.setItem("theme", isDark ? "dark" : "light");
+                    themeToggle.textContent = isDark ? "☀️" : "🌙";
+                });
+            });
+
+            // Apply transition when navigating away
+            document.querySelectorAll("a").forEach(link => {
+                if (!link.target) { // Only apply to links that don't open in new tab
+                    link.addEventListener("click", function(e) {
+                        e.preventDefault();
+                        const href = this.getAttribute("href");
+                        
+                        applyTransition(() => {
+                            window.location.href = href;
+                        });
+                    });
+                }
+            });
+
+            // Populate unit selectors based on current category
+            function populateUnitSelectors() {
+                const units = unitsByCategory[currentCategory];
+                
+                fromUnitOptions.innerHTML = "";
+                toUnitOptions.innerHTML = "";
+                
+                units.forEach(unit => {
+                    // Add to "From" unit options
+                    const fromOption = document.createElement("div");
+                    fromOption.className = "unit-option";
+                    if (unit.abbr === currentFromUnit) {
+                        fromOption.classList.add("selected");
+                    }
+                    fromOption.setAttribute("data-unit", unit.abbr);
+                    fromOption.innerHTML = `
+                        <div class="unit-icon">
+                            <i class="fas fa-${unit.icon}"></i>
+                        </div>
+                        <div class="unit-details">
+                            <div class="unit-name">${unit.name}</div>
+                            <div class="unit-abbr">${unit.abbr}</div>
+                        </div>
+                    `;
+                    fromUnitOptions.appendChild(fromOption);
+                    
+                    // Add click event to from option
+                    fromOption.addEventListener("click", function() {
+                        const unitAbbr = this.getAttribute("data-unit");
+                        const unitName = unit.name;
+                        currentFromUnit = unitAbbr;
+                        selectedFromUnitSpan.textContent = `${unitName} (${unitAbbr})`;
+                        document.querySelectorAll("#fromUnitOptions .unit-option").forEach(opt => {
+                            opt.classList.remove("selected");
+                        });
+                        this.classList.add("selected");
+                        toggleFromUnitSelector();
+                    });
+                    
+                    // Add to "To" unit options
+                    const toOption = document.createElement("div");
+                    toOption.className = "unit-option";
+                    if (unit.abbr === currentToUnit) {
+                        toOption.classList.add("selected");
+                    }
+                    toOption.setAttribute("data-unit", unit.abbr);
+                    toOption.innerHTML = `
+                        <div class="unit-icon">
+                            <i class="fas fa-${unit.icon}"></i>
+                        </div>
+                        <div class="unit-details">
+                            <div class="unit-name">${unit.name}</div>
+                            <div class="unit-abbr">${unit.abbr}</div>
+                        </div>
+                    `;
+                    toUnitOptions.appendChild(toOption);
+                    
+                    // Add click event to to option
+                    toOption.addEventListener("click", function() {
+                        const unitAbbr = this.getAttribute("data-unit");
+                        const unitName = unit.name;
+                        currentToUnit = unitAbbr;
+                        selectedToUnitSpan.textContent = `${unitName} (${unitAbbr})`;
+                        document.querySelectorAll("#toUnitOptions .unit-option").forEach(opt => {
+                            opt.classList.remove("selected");
+                        });
+                        this.classList.add("selected");
+                        toggleToUnitSelector();
+                    });
+                });
+                
+                // Set default selected units
+                const defaultFromUnit = units.find(u => u.abbr === currentFromUnit) || units[0];
+                const defaultToUnit = units.find(u => u.abbr === currentToUnit) || units[1];
+                
+                selectedFromUnitSpan.textContent = `${defaultFromUnit.name} (${defaultFromUnit.abbr})`;
+                selectedToUnitSpan.textContent = `${defaultToUnit.name} (${defaultToUnit.abbr})`;
+                currentFromUnit = defaultFromUnit.abbr;
+                currentToUnit = defaultToUnit.abbr;
+            }
+            
+            // Toggle from unit selector
+            function toggleFromUnitSelector() {
+                if (fromUnitSelectorOpen) {
+                    fromUnitOptions.style.display = "none";
+                } else {
+                    fromUnitOptions.style.display = "block";
+                    toUnitOptions.style.display = "none";
+                    toUnitSelectorOpen = false;
+                }
+                fromUnitSelectorOpen = !fromUnitSelectorOpen;
+            }
+            
+            // Toggle to unit selector
+            function toggleToUnitSelector() {
+                if (toUnitSelectorOpen) {
+                    toUnitOptions.style.display = "none";
+                } else {
+                    toUnitOptions.style.display = "block";
+                    fromUnitOptions.style.display = "none";
+                    fromUnitSelectorOpen = false;
+                }
+                toUnitSelectorOpen = !toUnitSelectorOpen;
+            }
+            
+            // Convert units
+            function convertUnits(value, fromUnit, toUnit) {
+                const units = unitsByCategory[currentCategory];
+                const fromUnitData = units.find(u => u.abbr === fromUnit);
+                const toUnitData = units.find(u => u.abbr === toUnit);
+                
+                if (!fromUnitData || !toUnitData) {
+                    return { value: 0, formula: "Invalid units" };
+                }
+                
+                let result;
+                let formula;
+                
+                // Special case for temperature
+                if (currentCategory === "temperature") {
+                    if (fromUnit === "°C" && toUnit === "°F") {
+                        result = (value * 9/5) + 32;
+                        formula = `${value} °C × (9/5) + 32 = ${result.toFixed(4)} °F`;
+                    } else if (fromUnit === "°F" && toUnit === "°C") {
+                        result = (value - 32) * 5/9;
+                        formula = `(${value} °F - 32) × (5/9) = ${result.toFixed(4)} °C`;
+                    } else if (fromUnit === "°C" && toUnit === "K") {
+                        result = value + 273.15;
+                        formula = `${value} °C + 273.15 = ${result.toFixed(4)} K`;
+                    } else if (fromUnit === "K" && toUnit === "°C") {
+                        result = value - 273.15;
+                        formula = `${value} K - 273.15 = ${result.toFixed(4)} °C`;
+                    } else if (fromUnit === "°F" && toUnit === "K") {
+                        result = (value - 32) * 5/9 + 273.15;
+                        formula = `(${value} °F - 32) × (5/9) + 273.15 = ${result.toFixed(4)} K`;
+                    } else if (fromUnit === "K" && toUnit === "°F") {
+                        result = (value - 273.15) * 9/5 + 32;
+                        formula = `(${value} K - 273.15) × (9/5) + 32 = ${result.toFixed(4)} °F`;
+                    } else {
+                        result = value;
+                        formula = `${value} ${fromUnit} = ${value} ${toUnit}`;
+                    }
+                } else {
+                    // For other unit types
+                    const baseValue = value * fromUnitData.factor;
+                    result = baseValue / toUnitData.factor;
+                    
+                    // Create formula
+                    if (fromUnitData.factor === 1) {
+                        formula = `${value} ${fromUnit} ÷ ${toUnitData.factor} = ${result.toFixed(6)} ${toUnit}`;
+                    } else if (toUnitData.factor === 1) {
+                        formula = `${value} ${fromUnit} × ${fromUnitData.factor} = ${result.toFixed(6)} ${toUnit}`;
+                    } else {
+                        formula = `${value} ${fromUnit} × (${fromUnitData.factor} ÷ ${toUnitData.factor}) = ${result.toFixed(6)} ${toUnit}`;
+                    }
+                }
+                
+                return {
+                    value: result,
+                    formula: formula
+                };
+            }
+            
+            // Update history display
+            function updateHistoryDisplay() {
+                historyList.innerHTML = "";
+                
+                if (conversionHistory.length === 0) {
+                    const emptyHistory = document.createElement("div");
+                    emptyHistory.className = "history-item";
+                    emptyHistory.textContent = "No recent conversions";
+                    historyList.appendChild(emptyHistory);
+                    return;
+                }
+                
+                conversionHistory.forEach((item, index) => {
+                    const historyItem = document.createElement("div");
+                    historyItem.className = "history-item";
+                    historyItem.innerHTML = `
+                        <div class="history-conversion">${item.fromValue} ${item.fromUnit} = ${item.toValue} ${item.toUnit}</div>
+                        <div class="history-timestamp">${item.timestamp}</div>
+                    `;
+                    
+                    historyItem.addEventListener("click", function() {
+                        // Load this conversion
+                        fromValueInput.value = item.fromValue;
+                        currentCategory = item.category;
+                        currentFromUnit = item.fromUnit;
+                        currentToUnit = item.toUnit;
+                        
+                        // Update UI to reflect loaded conversion
+                        categoryTabs.forEach(tab => {
+                            tab.classList.remove("active");
+                            if (tab.getAttribute("data-category") === currentCategory) {
+                                tab.classList.add("active");
+                            }
+                        });
+                        
+                        populateUnitSelectors();
+                        performConversion();
+                    });
+                    
+                    historyList.appendChild(historyItem);
+                });
+            }
+            
+            // Add to history
+            function addToHistory(fromValue, fromUnit, toValue, toUnit) {
+                const timestamp = new Date().toLocaleString();
+                
+                // Create history item
+                const historyItem = {
+                    category: currentCategory,
+                    fromValue: fromValue,
+                    fromUnit: fromUnit,
+                    toValue: toValue,
+                    toUnit: toUnit,
+                    timestamp: timestamp
+                };
+                
+                // Add to beginning of array
+                conversionHistory.unshift(historyItem);
+                
+                // Limit to 10 items
+                if (conversionHistory.length > 10) {
+                    conversionHistory.pop();
+                }
+                
+                // Save to localStorage
+                localStorage.setItem("conversion-history", JSON.stringify(conversionHistory));
+                
+                // Update display
+                updateHistoryDisplay();
+            }
+            
+            // Perform conversion
+            function performConversion() {
+                const fromValue = parseFloat(fromValueInput.value);
+                
+                if (isNaN(fromValue)) {
+                    resultPanel.classList.remove("active");
+                    return;
+                }
+                
+                const result = convertUnits(fromValue, currentFromUnit, currentToUnit);
+                
+                // Format the result for display
+                const fromUnitData = unitsByCategory[currentCategory].find(u => u.abbr === currentFromUnit);
+                const toUnitData = unitsByCategory[currentCategory].find(u => u.abbr === currentToUnit);
+                
+                // Update result display
+                resultValue.textContent = `${result.value.toFixed(6)} ${currentToUnit}`;
+                resultFormula.textContent = result.formula;
+                resultFromValue.textContent = `${fromValue} ${currentFromUnit}`;
+                resultToValue.textContent = `${result.value.toFixed(6)} ${currentToUnit}`;
+                
+                // Show result panel
+                resultPanel.classList.add("active");
+                
+                // Add to history
+                addToHistory(fromValue, currentFromUnit, result.value.toFixed(6), currentToUnit);
+            }
+            
+            // Event Listeners
+            fromUnitSelector.querySelector(".unit-selector-header").addEventListener("click", toggleFromUnitSelector);
+            toUnitSelector.querySelector(".unit-selector-header").addEventListener("click", toggleToUnitSelector);
+            
+            // Close selectors when clicking outside
+            document.addEventListener("click", function(event) {
+                if (!fromUnitSelector.contains(event.target) && fromUnitSelectorOpen) {
+                    toggleFromUnitSelector();
+                }
+                if (!toUnitSelector.contains(event.target) && toUnitSelectorOpen) {
+                    toggleToUnitSelector();
+                }
+            });
+            
+            // Swap units
+            swapBtn.addEventListener("click", function() {
+                const tempUnit = currentFromUnit;
+                currentFromUnit = currentToUnit;
+                currentToUnit = tempUnit;
+                
+                const fromUnitData = unitsByCategory[currentCategory].find(u => u.abbr === currentFromUnit);
+                const toUnitData = unitsByCategory[currentCategory].find(u => u.abbr === currentToUnit);
+                
+                selectedFromUnitSpan.textContent = `${fromUnitData.name} (${fromUnitData.abbr})`;
+                selectedToUnitSpan.textContent = `${toUnitData.name} (${toUnitData.abbr})`;
+                
+                populateUnitSelectors();
+                
+                if (fromValueInput.value) {
+                    performConversion();
+                }
+            });
+            
+            // Form submission
+            conversionForm.addEventListener("submit", function(e) {
+                e.preventDefault();
+                performConversion();
+            });
+            
+            // Category tabs
+            categoryTabs.forEach(tab => {
+                tab.addEventListener("click", function() {
+                    const category = this.getAttribute("data-category");
+                    currentCategory = category;
+                    
+                    // Update active tab
+                    categoryTabs.forEach(t => t.classList.remove("active"));
+                    this.classList.add("active");
+                    
+                    // Reset unit selectors for new category
+                    currentFromUnit = unitsByCategory[category][0].abbr;
+                    currentToUnit = unitsByCategory[category][1].abbr;
+                    
+                    populateUnitSelectors();
+                    
+                    // Hide result until conversion is performed again
+                    resultPanel.classList.remove("active");
+                });
+            });
+            
+            // Clear history
+            clearHistoryBtn.addEventListener("click", function() {
+                if (confirm("Are you sure you want to clear all conversion history?")) {
+                    conversionHistory = [];
+                    localStorage.removeItem("conversion-history");
+                    updateHistoryDisplay();
+                }
+            });
+            
+            // Initialize
+            populateUnitSelectors();
+            updateHistoryDisplay();
+        });
+    </script>
+</body>
+</html>
