@@ -6,6 +6,12 @@
   <title>Password Manager & Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <!-- Firebase Auth -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <!-- Firebase Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <style>
     /* css custom properties for consistent theming */
     :root {
@@ -288,7 +294,7 @@
       display: none;
     }
 
-    .master-password-screen {
+    .auth-screen {
       text-align: center;
       max-width: 400px;
       margin: 0 auto;
@@ -627,6 +633,49 @@
       margin-right: 5px;
     }
 
+    /* auth tabs */
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #ddd;
+    }
+
+    body.dark .auth-tabs {
+      border-color: #444;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.5);
+      color: var(--text-secondary-light);
+      transition: all 0.3s;
+    }
+
+    body.dark .auth-tab {
+      background: rgba(40, 40, 40, 0.5);
+      color: var(--text-secondary-dark);
+    }
+
+    .auth-tab.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .auth-content {
+      display: none;
+    }
+
+    .auth-content.active {
+      display: block;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
     /* enhanced scrollbar */
     .container::-webkit-scrollbar {
       width: 8px;
@@ -753,6 +802,53 @@
       color: #856404;
     }
 
+    .alert-info {
+      background: rgba(0, 123, 255, 0.1);
+      border: 1px solid rgba(0, 123, 255, 0.3);
+      color: var(--primary-color);
+    }
+
+    /* user profile */
+    .user-profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 10px;
+      background: rgba(0, 123, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    body.dark .user-profile {
+      background: rgba(0, 123, 255, 0.1);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-right: 10px;
+    }
+
+    .user-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    .user-email {
+      font-size: 0.9rem;
+      color: var(--text-secondary-light);
+    }
+
+    body.dark .user-email {
+      color: var(--text-secondary-dark);
+    }
+
     /* responsive design improvements */
     @media (max-width: 768px) {
       .container {
@@ -839,7 +935,25 @@
       border-radius: 50%;
       border-top-color: var(--primary-color);
       animation: spin 1s linear infinite;
-      margin-right: 10px;
+      margin: 0 auto;
+    }
+
+    .loader-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+    }
+
+    .loader-text {
+      margin-top: 15px;
+      color: var(--text-secondary-light);
+      font-weight: 500;
+    }
+
+    body.dark .loader-text {
+      color: var(--text-secondary-dark);
     }
 
     @keyframes spin {
@@ -887,6 +1001,19 @@
       visibility: visible;
       opacity: 1;
     }
+
+    /* master password setup section */
+    .master-password-setup {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(0, 123, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    body.dark .master-password-setup {
+      background: rgba(0, 123, 255, 0.1);
+    }
   </style>
 </head>
 <body>
@@ -900,9 +1027,106 @@
   <a href="https://finn1817.github.io/Main-Website/" class="back-to-home">← Back to Home</a>
   
   <div class="container">
-    <!-- Master Password Screen -->
-    <div id="master-password-screen" class="master-password-screen fade-in">
-      <h1>Password Vault</h1>
+    <!-- Authentication Screen -->
+    <div id="auth-screen" class="auth-screen fade-in">
+      <h1>Secure Password Vault</h1>
+      
+      <div class="security-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        Firebase Authentication
+      </div>
+      
+      <p>Your passwords are securely encrypted and stored in the cloud. Access them from any device.</p>
+      
+      <div class="auth-tabs">
+        <div class="auth-tab active" data-tab="login">Login</div>
+        <div class="auth-tab" data-tab="signup">Sign Up</div>
+      </div>
+      
+      <!-- Login Form -->
+      <div id="login-content" class="auth-content active">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="Enter your email">
+        </div>
+        
+        <div class="form-group password-field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Enter your password">
+          <button type="button" class="toggle-password" id="toggle-login-password">👁️</button>
+        </div>
+        
+        <div id="login-error" class="alert alert-danger" style="display: none;"></div>
+        
+        <button id="login-btn" class="btn btn-primary btn-block">Login</button>
+        
+        <p style="margin-top: 15px; font-size: 0.9rem;">
+          <a href="#" id="forgot-password-link">Forgot your password?</a>
+        </p>
+      </div>
+      
+      <!-- Sign Up Form -->
+      <div id="signup-content" class="auth-content">
+        <div class="form-group">
+          <label for="signup-email">Email</label>
+          <input type="email" id="signup-email" placeholder="Enter your email">
+        </div>
+        
+        <div class="form-group password-field">
+          <label for="signup-password">Password</label>
+          <input type="password" id="signup-password" placeholder="Choose a strong password">
+          <button type="button" class="toggle-password" id="toggle-signup-password">👁️</button>
+        </div>
+        
+        <div class="password-strength">
+          <div class="strength-meter">
+            <div class="strength-meter-fill" id="signup-password-strength-meter"></div>
+          </div>
+          <div class="strength-text" id="signup-password-strength-text"></div>
+        </div>
+        
+        <div class="form-group password-field">
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" placeholder="Confirm your password">
+          <button type="button" class="toggle-password" id="toggle-confirm-password">👁️</button>
+        </div>
+        
+        <div id="signup-error" class="alert alert-danger" style="display: none;"></div>
+        
+        <button id="signup-btn" class="btn btn-success btn-block">Create Account</button>
+      </div>
+      
+      <!-- Password Reset Form -->
+      <div id="reset-password-content" class="auth-content">
+        <h2>Reset Password</h2>
+        <p>Enter your email address and we'll send you a link to reset your password.</p>
+        
+        <div class="form-group">
+          <label for="reset-email">Email</label>
+          <input type="email" id="reset-email" placeholder="Enter your email">
+        </div>
+        
+        <div id="reset-message" class="alert alert-info" style="display: none;"></div>
+        
+        <button id="reset-password-btn" class="btn btn-primary btn-block">Send Reset Link</button>
+        
+        <p style="margin-top: 15px;">
+          <a href="#" id="back-to-login-link">Back to Login</a>
+        </p>
+      </div>
+      
+      <!-- Loading State -->
+      <div id="auth-loading" style="display: none;" class="loader-container">
+        <div class="loader"></div>
+        <div class="loader-text">Authenticating...</div>
+      </div>
+    </div>
+    
+    <!-- Master Password Setup (after first sign-in) -->
+    <div id="master-password-setup" class="master-password-setup fade-in">
+      <h1>Set Up Your Master Password</h1>
       
       <div class="security-badge">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -911,63 +1135,79 @@
         AES-256 Encryption
       </div>
       
-      <p>Your passwords are encrypted with AES-256 and stored locally in your browser, meaning no data is sent to any server!</p>
+      <p>Create a master password to encrypt your vault. This password is separate from your account password and is used to encrypt your data.</p>
+      <p><strong>Important:</strong> This password is never stored anywhere. If you forget it, your data cannot be recovered.</p>
       
-      <div id="setup-container">
-        <h2>Make your Master Password</h2>
-        <p>This password will be used to encrypt all your saved passwords. Make it strong and memorable - if you forget it, your data cannot be recovered.</p>
-        
-        <div class="form-group password-field">
-          <label for="master-password">Master Password</label>
-          <input type="password" id="master-password" placeholder="Enter a strong master password">
-          <button type="button" class="toggle-password" id="toggle-master-password">👁️</button>
-        </div>
-        
-        <div class="form-group password-field">
-          <label for="confirm-master-password">Confirm Master Password</label>
-          <input type="password" id="confirm-master-password" placeholder="Confirm your master password">
-          <button type="button" class="toggle-password" id="toggle-confirm-password">👁️</button>
-        </div>
-        
-        <div class="password-strength">
-          <div class="strength-meter">
-            <div class="strength-meter-fill" id="master-password-strength-meter"></div>
-          </div>
-          <div class="strength-text" id="master-password-strength-text"></div>
-        </div>
-        
-        <button id="create-vault-btn" class="btn btn-success btn-block">Create Password Vault</button>
+      <div class="form-group password-field">
+        <label for="master-password">Master Password</label>
+        <input type="password" id="master-password" placeholder="Create a strong master password">
+        <button type="button" class="toggle-password" id="toggle-master-password">👁️</button>
       </div>
       
-      <div id="login-container" style="display: none;">
-        <h2>Unlock Your Vault</h2>
-        <p>Enter your master password to access your saved passwords.</p>
-        
-        <div class="form-group password-field">
-          <label for="login-master-password">Master Password</label>
-          <input type="password" id="login-master-password" placeholder="Enter your master password">
-          <button type="button" class="toggle-password" id="toggle-login-password">👁️</button>
-        </div>
-        
-        <div id="login-error" class="alert alert-danger" style="display: none;">
-          Incorrect master password. Please try again.
-        </div>
-        
-        <button id="unlock-vault-btn" class="btn btn-primary btn-block">Unlock Vault</button>
-        
-        <p style="margin-top: 20px; font-size: 0.9rem;">
-          <span class="tooltip">
-            Forgot your password?
-            <span class="tooltip-text">Since encryption happens locally, we cannot recover your master password. You'll need to reset your vault and start over.</span>
-          </span>
-          <button id="reset-vault-btn" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem; margin-left: 10px;">Reset Vault</button>
-        </p>
+      <div class="form-group password-field">
+        <label for="confirm-master-password">Confirm Master Password</label>
+        <input type="password" id="confirm-master-password" placeholder="Confirm your master password">
+        <button type="button" class="toggle-password" id="toggle-confirm-master">👁️</button>
       </div>
+      
+      <div class="password-strength">
+        <div class="strength-meter">
+          <div class="strength-meter-fill" id="master-password-strength-meter"></div>
+        </div>
+        <div class="strength-text" id="master-password-strength-text"></div>
+      </div>
+      
+      <div id="master-password-error" class="alert alert-danger" style="display: none;"></div>
+      
+      <button id="create-vault-btn" class="btn btn-success btn-block">Create Secure Vault</button>
+    </div>
+    
+    <!-- Unlock Vault (for returning users) -->
+    <div id="unlock-vault" class="master-password-setup fade-in">
+      <h1>Unlock Your Vault</h1>
+      
+      <div class="security-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        AES-256 Encryption
+      </div>
+      
+      <p>Enter your master password to decrypt your vault.</p>
+      
+      <div class="form-group password-field">
+        <label for="unlock-master-password">Master Password</label>
+        <input type="password" id="unlock-master-password" placeholder="Enter your master password">
+        <button type="button" class="toggle-password" id="toggle-unlock-password">👁️</button>
+      </div>
+      
+      <div id="unlock-error" class="alert alert-danger" style="display: none;">
+        Incorrect master password. Please try again.
+      </div>
+      
+      <button id="unlock-vault-btn" class="btn btn-primary btn-block">Unlock Vault</button>
+      
+      <p style="margin-top: 20px; font-size: 0.9rem;">
+        <span class="tooltip">
+          Forgot your master password?
+          <span class="tooltip-text">Since your data is encrypted with your master password, we cannot recover it. You'll need to reset your vault and start over.</span>
+        </span>
+        <button id="reset-vault-btn" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem; margin-left: 10px;">Reset Vault</button>
+      </p>
     </div>
     
     <!-- Main App (Hidden initially) -->
     <div id="app-container" class="app-container">
       <h1>Password Vault</h1>
+      
+      <div class="user-profile">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <div class="user-info">
+          <div class="user-name" id="user-name">User</div>
+          <div class="user-email" id="user-email">user@example.com</div>
+        </div>
+        <button id="sign-out-btn" class="btn btn-danger" style="padding: 8px 15px; font-size: 0.9rem;">Sign Out</button>
+      </div>
       
       <div class="security-badge">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1086,7 +1326,7 @@
         
         <button id="generate-password-btn" class="btn btn-primary btn-block">Generate Password</button>
         
-        <div class="alert alert-info" style="margin-top: 20px; font-size: 0.9rem; background: rgba(0, 123, 255, 0.1); border: 1px solid rgba(0, 123, 255, 0.3); color: var(--primary-color);">
+        <div class="alert alert-info" style="margin-top: 20px; font-size: 0.9rem;">
           <strong>Password Strength Explained:</strong><br>
           Very Weak: Easily guessable<br>
           Weak: Could be cracked with simple tools<br>
@@ -1157,7 +1397,7 @@
         </div>
         
         <div class="form-group" style="margin-top: 30px;">
-          <button id="logout-btn" class="btn btn-primary">Lock Vault</button>
+          <button id="lock-vault-btn" class="btn btn-primary">Lock Vault</button>
           <p style="font-size: 0.9rem; margin-top: 5px;">Lock your vault to protect your passwords.</p>
         </div>
         
@@ -1165,36 +1405,100 @@
           <button id="clear-data-btn" class="btn btn-danger">Clear All Data</button>
           <p style="font-size: 0.9rem; margin-top: 5px;">Permanently delete all saved passwords and reset the vault.</p>
         </div>
+        
+        <h2>Account</h2>
+        
+        <div class="form-group">
+          <button id="change-account-password-btn" class="btn btn-primary">Change Account Password</button>
+          <p style="font-size: 0.9rem; margin-top: 5px;">Change the password you use to sign in to your account.</p>
+        </div>
+        
+        <div class="form-group">
+          <button id="delete-account-btn" class="btn btn-danger">Delete Account</button>
+          <p style="font-size: 0.9rem; margin-top: 5px;">Permanently delete your account and all associated data.</p>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "your-project-id.firebaseapp.com",
+        projectId: "your-project-id",
+        storageBucket: "your-project-id.appspot.com",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+      };
+      
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+      
       // DOM elements
       const toggleBtn = document.getElementById("theme-toggle");
       const body = document.body;
-      const masterPasswordScreen = document.getElementById("master-password-screen");
-      const appContainer = document.getElementById("app-container");
-      const setupContainer = document.getElementById("setup-container");
-      const loginContainer = document.getElementById("login-container");
+      
+      // Auth elements
+      const authScreen = document.getElementById("auth-screen");
+      const authTabs = document.querySelectorAll(".auth-tab");
+      const authContents = document.querySelectorAll(".auth-content");
+      const loginContent = document.getElementById("login-content");
+      const signupContent = document.getElementById("signup-content");
+      const resetPasswordContent = document.getElementById("reset-password-content");
+      const authLoading = document.getElementById("auth-loading");
+      
+      // Login elements
+      const loginEmail = document.getElementById("login-email");
+      const loginPassword = document.getElementById("login-password");
+      const loginBtn = document.getElementById("login-btn");
+      const loginError = document.getElementById("login-error");
+      const forgotPasswordLink = document.getElementById("forgot-password-link");
+      
+      // Signup elements
+      const signupEmail = document.getElementById("signup-email");
+      const signupPassword = document.getElementById("signup-password");
+      const confirmPassword = document.getElementById("confirm-password");
+      const signupBtn = document.getElementById("signup-btn");
+      const signupError = document.getElementById("signup-error");
+      const signupPasswordStrengthMeter = document.getElementById("signup-password-strength-meter");
+      const signupPasswordStrengthText = document.getElementById("signup-password-strength-text");
+      
+      // Reset password elements
+      const resetEmail = document.getElementById("reset-email");
+      const resetPasswordBtn = document.getElementById("reset-password-btn");
+      const resetMessage = document.getElementById("reset-message");
+      const backToLoginLink = document.getElementById("back-to-login-link");
+      
+      // Master password setup elements
+      const masterPasswordSetup = document.getElementById("master-password-setup");
       const masterPasswordInput = document.getElementById("master-password");
       const confirmMasterPasswordInput = document.getElementById("confirm-master-password");
-      const loginMasterPasswordInput = document.getElementById("login-master-password");
       const createVaultBtn = document.getElementById("create-vault-btn");
-      const unlockVaultBtn = document.getElementById("unlock-vault-btn");
-      const resetVaultBtn = document.getElementById("reset-vault-btn");
-      const loginError = document.getElementById("login-error");
+      const masterPasswordError = document.getElementById("master-password-error");
       const masterPasswordStrengthMeter = document.getElementById("master-password-strength-meter");
       const masterPasswordStrengthText = document.getElementById("master-password-strength-text");
-      const addPasswordStrengthMeter = document.getElementById("add-password-strength-meter");
-      const addPasswordStrengthText = document.getElementById("add-password-strength-text");
-      const changePasswordStrengthMeter = document.getElementById("change-password-strength-meter");
-      const changePasswordStrengthText = document.getElementById("change-password-strength-text");
-      const generatedPasswordStrengthMeter = document.getElementById("generated-password-strength-meter");
-      const generatedPasswordStrengthText = document.getElementById("generated-password-strength-text");
+      
+      // Unlock vault elements
+      const unlockVault = document.getElementById("unlock-vault");
+      const unlockMasterPasswordInput = document.getElementById("unlock-master-password");
+      const unlockVaultBtn = document.getElementById("unlock-vault-btn");
+      const unlockError = document.getElementById("unlock-error");
+      const resetVaultBtn = document.getElementById("reset-vault-btn");
+      
+      // Main app elements
+      const appContainer = document.getElementById("app-container");
+      const userAvatar = document.getElementById("user-avatar");
+      const userName = document.getElementById("user-name");
+      const userEmail = document.getElementById("user-email");
+      const signOutBtn = document.getElementById("sign-out-btn");
       const tabs = document.querySelectorAll(".tab");
       const tabContents = document.querySelectorAll(".tab-content");
+      
+      // Password tab elements
       const websiteInput = document.getElementById("website");
       const usernameInput = document.getElementById("username");
       const passwordInput = document.getElementById("password");
@@ -1202,6 +1506,10 @@
       const generateForSiteBtn = document.getElementById("generate-for-site-btn");
       const passwordList = document.getElementById("password-list");
       const emptyPasswords = document.getElementById("empty-passwords");
+      const addPasswordStrengthMeter = document.getElementById("add-password-strength-meter");
+      const addPasswordStrengthText = document.getElementById("add-password-strength-text");
+      
+      // Generator tab elements
       const passwordLengthSlider = document.getElementById("password-length");
       const passwordLengthValue = document.getElementById("length-value");
       const includeUppercase = document.getElementById("include-uppercase");
@@ -1213,23 +1521,36 @@
       const generatePasswordBtn = document.getElementById("generate-password-btn");
       const generatedPassword = document.getElementById("generated-password");
       const copyGeneratedBtn = document.getElementById("copy-generated");
-      const logoutBtn = document.getElementById("logout-btn");
-      const clearDataBtn = document.getElementById("clear-data-btn");
+      const generatedPasswordStrengthMeter = document.getElementById("generated-password-strength-meter");
+      const generatedPasswordStrengthText = document.getElementById("generated-password-strength-text");
+      
+      // Settings tab elements
+      const autoLogoutSelect = document.getElementById("auto-logout");
+      const defaultPasswordLengthSelect = document.getElementById("default-password-length");
+      const clearClipboardCheckbox = document.getElementById("clear-clipboard");
       const changeMasterPasswordInput = document.getElementById("change-master-password");
       const updateMasterPasswordBtn = document.getElementById("update-master-password-btn");
       const exportDataBtn = document.getElementById("export-data-btn");
       const importDataBtn = document.getElementById("import-data-btn");
-      const autoLogoutSelect = document.getElementById("auto-logout");
-      const defaultPasswordLengthSelect = document.getElementById("default-password-length");
-      const clearClipboardCheckbox = document.getElementById("clear-clipboard");
-      const toggleMasterPasswordBtn = document.getElementById("toggle-master-password");
-      const toggleConfirmPasswordBtn = document.getElementById("toggle-confirm-password");
-      const toggleLoginPasswordBtn = document.getElementById("toggle-login-password");
-      const toggleAddPasswordBtn = document.getElementById("toggle-add-password");
-      const toggleChangePasswordBtn = document.getElementById("toggle-change-password");
+      const lockVaultBtn = document.getElementById("lock-vault-btn");
+      const clearDataBtn = document.getElementById("clear-data-btn");
+      const changeAccountPasswordBtn = document.getElementById("change-account-password-btn");
+      const deleteAccountBtn = document.getElementById("delete-account-btn");
+      const changePasswordStrengthMeter = document.getElementById("change-password-strength-meter");
+      const changePasswordStrengthText = document.getElementById("change-password-strength-text");
+      
+      // Password toggles
+      const toggleLoginPassword = document.getElementById("toggle-login-password");
+      const toggleSignupPassword = document.getElementById("toggle-signup-password");
+      const toggleConfirmPassword = document.getElementById("toggle-confirm-password");
+      const toggleMasterPassword = document.getElementById("toggle-master-password");
+      const toggleConfirmMaster = document.getElementById("toggle-confirm-master");
+      const toggleUnlockPassword = document.getElementById("toggle-unlock-password");
+      const toggleAddPassword = document.getElementById("toggle-add-password");
+      const toggleChangePassword = document.getElementById("toggle-change-password");
       
       // Application state
-      let masterPasswordHash = '';
+      let currentUser = null;
       let encryptionKey = '';
       let autoLogoutTimer = null;
       let passwords = [];
@@ -1238,6 +1559,7 @@
         defaultPasswordLength: 16,
         clearClipboard: true
       };
+      let vaultExists = false;
 
       // Create floating particles
       function createParticle() {
@@ -1282,243 +1604,52 @@
         toggleBtn.textContent = isDark ? "☀️" : "🌙";
       });
 
-      // Check if vault exists
-      function checkVaultExists() {
-        return localStorage.getItem('passwordVault') !== null;
-      }
-
-      // Initialize app
-      function initApp() {
-        if (checkVaultExists()) {
-          setupContainer.style.display = "none";
-          loginContainer.style.display = "block";
-        } else {
-          setupContainer.style.display = "block";
-          loginContainer.style.display = "none";
-        }
-      }
-
-      // Create password hash
-      async function hashPassword(password) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      }
-
-      // Derive encryption key from password
-      async function deriveKey(password) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        return Array.from(new Uint8Array(hashBuffer))
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('');
-      }
-
-      // Encrypt data
-      function encryptData(data, key) {
-        return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
-      }
-
-      // Decrypt data
-      function decryptData(ciphertext, key) {
-        try {
-          const bytes = CryptoJS.AES.decrypt(ciphertext, key);
-          const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-          return decryptedData;
-        } catch (error) {
-          console.error('Decryption failed:', error);
-          return null;
-        }
-      }
-
-      // Create vault with master password
-      async function createVault() {
-        const masterPassword = masterPasswordInput.value;
-        const confirmPassword = confirmMasterPasswordInput.value;
-        
-        if (masterPassword !== confirmPassword) {
-          alert("Passwords do not match!");
-          return;
-        }
-        
-        if (getPasswordStrength(masterPassword).score < 2) {
-          if (!confirm("Your master password is weak. This puts all your passwords at risk. Are you sure you want to continue?")) {
-            return;
-          }
-        }
-        
-        masterPasswordHash = await hashPassword(masterPassword);
-        encryptionKey = await deriveKey(masterPassword);
-        
-        // Initialize empty vault
-        passwords = [];
-        
-        // Save vault to localStorage
-        saveVault();
-        
-        // Save settings
-        saveSettings();
-        
-        // Switch to app view
-        showApp();
-      }
-
-      // Unlock vault with master password
-      async function unlockVault() {
-        const masterPassword = loginMasterPasswordInput.value;
-        const hash = await hashPassword(masterPassword);
-        
-        const storedHash = localStorage.getItem('masterPasswordHash');
-        
-        if (hash === storedHash) {
-          encryptionKey = await deriveKey(masterPassword);
+      // Auth tab switching
+      authTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Hide all auth contents
+          authContents.forEach(content => {
+            content.classList.remove('active');
+          });
           
-          // Load passwords from localStorage
-          loadVault();
+          // Remove active class from all tabs
+          authTabs.forEach(t => {
+            t.classList.remove('active');
+          });
           
-          // Load settings
-          loadSettings();
+          // Add active class to clicked tab
+          tab.classList.add('active');
           
-          // Switch to app view
-          showApp();
-          
-          // Reset error message
-          loginError.style.display = "none";
-          loginMasterPasswordInput.value = "";
-        } else {
-          loginError.style.display = "block";
-          loginMasterPasswordInput.focus();
-        }
-      }
+          // Show corresponding content
+          const tabId = tab.getAttribute('data-tab');
+          document.getElementById(`${tabId}-content`).classList.add('active');
+        });
+      });
 
-      // Reset vault (for forgotten password)
-      function resetVault() {
-        if (confirm("WARNING: This will permanently delete all your saved passwords. Are you sure you want to continue?")) {
-          localStorage.removeItem('passwordVault');
-          localStorage.removeItem('masterPasswordHash');
-          localStorage.removeItem('passwordSettings');
-          
-          setupContainer.style.display = "block";
-          loginContainer.style.display = "none";
-          masterPasswordInput.value = "";
-          confirmMasterPasswordInput.value = "";
-          loginMasterPasswordInput.value = "";
-          loginError.style.display = "none";
-        }
-      }
+      // Forgot password link
+      forgotPasswordLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Hide login content
+        loginContent.classList.remove('active');
+        
+        // Show reset password content
+        resetPasswordContent.classList.add('active');
+        
+        // Set reset email to login email
+        resetEmail.value = loginEmail.value;
+      });
 
-      // Save vault to localStorage
-      function saveVault() {
-        const encryptedData = encryptData(passwords, encryptionKey);
-        localStorage.setItem('passwordVault', encryptedData);
-        localStorage.setItem('masterPasswordHash', masterPasswordHash);
-      }
-
-      // Load vault from localStorage
-      function loadVault() {
-        const encryptedData = localStorage.getItem('passwordVault');
-        if (encryptedData) {
-          const decryptedData = decryptData(encryptedData, encryptionKey);
-          if (decryptedData) {
-            passwords = decryptedData;
-            renderPasswordList();
-          } else {
-            alert("Error decrypting password vault. This could indicate data corruption or tampering.");
-            logout();
-          }
-        }
-      }
-
-      // Save settings to localStorage
-      function saveSettings() {
-        const encryptedSettings = encryptData(settings, encryptionKey);
-        localStorage.setItem('passwordSettings', encryptedSettings);
+      // Back to login link
+      backToLoginLink.addEventListener('click', (e) => {
+        e.preventDefault();
         
-        // Update UI to reflect settings
-        autoLogoutSelect.value = settings.autoLogout.toString();
-        defaultPasswordLengthSelect.value = settings.defaultPasswordLength.toString();
-        clearClipboardCheckbox.checked = settings.clearClipboard;
+        // Hide reset password content
+        resetPasswordContent.classList.remove('active');
         
-        // Apply auto logout setting
-        setupAutoLogout();
-      }
-
-      // Load settings from localStorage
-      function loadSettings() {
-        const encryptedSettings = localStorage.getItem('passwordSettings');
-        if (encryptedSettings) {
-          const decryptedSettings = decryptData(encryptedSettings, encryptionKey);
-          if (decryptedSettings) {
-            settings = decryptedSettings;
-          }
-        }
-        
-        // Update UI to reflect settings
-        autoLogoutSelect.value = settings.autoLogout.toString();
-        defaultPasswordLengthSelect.value = settings.defaultPasswordLength.toString();
-        clearClipboardCheckbox.checked = settings.clearClipboard;
-        
-        // Apply auto logout setting
-        setupAutoLogout();
-      }
-
-      // Setup auto logout timer
-      function setupAutoLogout() {
-        // Clear existing timer
-        if (autoLogoutTimer) {
-          clearTimeout(autoLogoutTimer);
-        }
-        
-        // If auto logout is enabled
-        if (settings.autoLogout > 0) {
-          autoLogoutTimer = setTimeout(() => {
-            logout();
-          }, settings.autoLogout * 60 * 1000);
-        }
-      }
-
-      // Reset auto logout timer (on user activity)
-      function resetAutoLogout() {
-        setupAutoLogout();
-      }
-
-      // Show app (after successful login/creation)
-      function showApp() {
-        masterPasswordScreen.style.display = "none";
-        appContainer.style.display = "block";
-        
-        // Setup auto logout
-        setupAutoLogout();
-        
-        // Add activity listeners for auto logout
-        document.addEventListener('click', resetAutoLogout);
-        document.addEventListener('keypress', resetAutoLogout);
-      }
-
-      // Logout (lock vault)
-      function logout() {
-        appContainer.style.display = "none";
-        masterPasswordScreen.style.display = "block";
-        setupContainer.style.display = "none";
-        loginContainer.style.display = "block";
-        
-        // Clear sensitive data from memory
-        encryptionKey = '';
-        passwords = [];
-        
-        // Remove activity listeners
-        document.removeEventListener('click', resetAutoLogout);
-        document.removeEventListener('keypress', resetAutoLogout);
-        
-        // Clear auto logout timer
-        if (autoLogoutTimer) {
-          clearTimeout(autoLogoutTimer);
-          autoLogoutTimer = null;
-        }
-      }
+        // Show login content
+        loginContent.classList.add('active');
+      });
 
       // Password strength checker
       function getPasswordStrength(password) {
@@ -1623,6 +1754,67 @@
         textElement.textContent = feedback;
       }
 
+      // Password visibility toggle functionality
+      function setupPasswordToggle(inputId, toggleId) {
+        const input = document.getElementById(inputId);
+        const toggle = document.getElementById(toggleId);
+        
+        toggle.addEventListener('click', () => {
+          if (input.type === 'password') {
+            input.type = 'text';
+            toggle.textContent = '🔒';
+          } else {
+            input.type = 'password';
+            toggle.textContent = '👁️';
+          }
+        });
+      }
+
+      // Setup password toggles
+      setupPasswordToggle('login-password', 'toggle-login-password');
+      setupPasswordToggle('signup-password', 'toggle-signup-password');
+      setupPasswordToggle('confirm-password', 'toggle-confirm-password');
+      setupPasswordToggle('master-password', 'toggle-master-password');
+      setupPasswordToggle('confirm-master-password', 'toggle-confirm-master');
+      setupPasswordToggle('unlock-master-password', 'toggle-unlock-password');
+      setupPasswordToggle('password', 'toggle-add-password');
+      setupPasswordToggle('change-master-password', 'toggle-change-password');
+
+      // Password strength listeners
+      signupPassword.addEventListener('input', () => {
+        updateStrengthMeter(signupPassword.value, signupPasswordStrengthMeter, signupPasswordStrengthText);
+      });
+
+      masterPasswordInput.addEventListener('input', () => {
+        updateStrengthMeter(masterPasswordInput.value, masterPasswordStrengthMeter, masterPasswordStrengthText);
+      });
+
+      passwordInput.addEventListener('input', () => {
+        updateStrengthMeter(passwordInput.value, addPasswordStrengthMeter, addPasswordStrengthText);
+      });
+
+      changeMasterPasswordInput.addEventListener('input', () => {
+        updateStrengthMeter(changeMasterPasswordInput.value, changePasswordStrengthMeter, changePasswordStrengthText);
+      });
+
+      // Tab switching functionality
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs
+          tabs.forEach(t => t.classList.remove('active'));
+          
+          // Add active class to clicked tab
+          tab.classList.add('active');
+          
+          // Hide all tab contents
+          tabContents.forEach(content => content.classList.remove('active'));
+          
+          // Show corresponding tab content
+          const tabId = tab.getAttribute('data-tab');
+          document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+      });
+
       // Generate random password
       function generatePassword() {
         const length = parseInt(passwordLengthSlider.value);
@@ -1686,83 +1878,6 @@
         return password;
       }
 
-      // Add password to vault
-      function addPassword() {
-        const website = websiteInput.value.trim();
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value.trim();
-        
-        if (!website) {
-          alert("Please enter a website or service name.");
-          websiteInput.focus();
-          return;
-        }
-        
-        if (!password) {
-          alert("Please enter a password or generate one.");
-          passwordInput.focus();
-          return;
-        }
-        
-        // Create password object
-        const newPassword = {
-          id: Date.now().toString(),
-          website,
-          username,
-          password,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-        
-        // Add to passwords array
-        passwords.push(newPassword);
-        
-        // Save to localStorage
-        saveVault();
-        
-        // Update UI
-        renderPasswordList();
-        
-        // Clear form
-        websiteInput.value = '';
-        usernameInput.value = '';
-        passwordInput.value = '';
-        updateStrengthMeter('', addPasswordStrengthMeter, addPasswordStrengthText);
-        
-        // Focus on website input for next entry
-        websiteInput.focus();
-      }
-
-      // Delete password from vault
-      function deletePassword(id) {
-        if (confirm("Are you sure you want to delete this password?")) {
-          passwords = passwords.filter(p => p.id !== id);
-          saveVault();
-          renderPasswordList();
-        }
-      }
-
-      // Edit password
-      function editPassword(id) {
-        const password = passwords.find(p => p.id === id);
-        
-        if (password) {
-          // Fill form with password details
-          websiteInput.value = password.website;
-          usernameInput.value = password.username || '';
-          passwordInput.value = password.password;
-          updateStrengthMeter(password.password, addPasswordStrengthMeter, addPasswordStrengthText);
-          
-          // Remove password from list (will be re-added when saved)
-          passwords = passwords.filter(p => p.id !== id);
-          saveVault();
-          renderPasswordList();
-          
-          // Focus on website input
-          websiteInput.focus();
-        }
-      }
-
       // Copy password to clipboard
       function copyPassword(password) {
         navigator.clipboard.writeText(password).then(() => {
@@ -1795,6 +1910,174 @@
           console.error('Could not copy password: ', err);
           alert('Failed to copy password to clipboard');
         });
+      }
+
+      // Setup auto logout timer
+      function setupAutoLogout() {
+        // Clear existing timer
+        if (autoLogoutTimer) {
+          clearTimeout(autoLogoutTimer);
+        }
+        
+        // If auto logout is enabled
+        if (settings.autoLogout > 0) {
+          autoLogoutTimer = setTimeout(() => {
+            lockVault();
+          }, settings.autoLogout * 60 * 1000);
+        }
+      }
+
+      // Reset auto logout timer (on user activity)
+      function resetAutoLogout() {
+        setupAutoLogout();
+      }
+
+      // Create a hash from the master password
+      async function hashMasterPassword(password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+
+      // Derive encryption key from master password
+      async function deriveEncryptionKey(password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hashBuffer))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
+      }
+
+      // Encrypt data with the encryption key
+      function encryptData(data, key) {
+        return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
+      }
+
+      // Decrypt data with the encryption key
+      function decryptData(ciphertext, key) {
+        try {
+          const bytes = CryptoJS.AES.decrypt(ciphertext, key);
+          const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+          return decryptedData;
+        } catch (error) {
+          console.error('Decryption failed:', error);
+          return null;
+        }
+      }
+
+      // Save passwords to Firestore
+      async function savePasswords() {
+        if (!currentUser) return;
+        
+        try {
+          const encryptedData = encryptData(passwords, encryptionKey);
+          await db.collection('vaults').doc(currentUser.uid).update({
+            passwords: encryptedData,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        } catch (error) {
+          console.error('Error saving passwords:', error);
+          alert('Failed to save passwords. Please try again.');
+        }
+      }
+
+      // Save settings to Firestore
+      async function saveSettings() {
+        if (!currentUser) return;
+        
+        try {
+          const encryptedSettings = encryptData(settings, encryptionKey);
+          await db.collection('vaults').doc(currentUser.uid).update({
+            settings: encryptedSettings,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          // Apply auto logout setting
+          setupAutoLogout();
+        } catch (error) {
+          console.error('Error saving settings:', error);
+          alert('Failed to save settings. Please try again.');
+        }
+      }
+
+      // Add password to vault
+      async function addPassword() {
+        const website = websiteInput.value.trim();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+        
+        if (!website) {
+          alert("Please enter a website or service name.");
+          websiteInput.focus();
+          return;
+        }
+        
+        if (!password) {
+          alert("Please enter a password or generate one.");
+          passwordInput.focus();
+          return;
+        }
+        
+        // Create password object
+        const newPassword = {
+          id: Date.now().toString(),
+          website,
+          username,
+          password,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        // Add to passwords array
+        passwords.push(newPassword);
+        
+        // Save to Firestore
+        await savePasswords();
+        
+        // Update UI
+        renderPasswordList();
+        
+        // Clear form
+        websiteInput.value = '';
+        usernameInput.value = '';
+        passwordInput.value = '';
+        updateStrengthMeter('', addPasswordStrengthMeter, addPasswordStrengthText);
+        
+        // Focus on website input for next entry
+        websiteInput.focus();
+      }
+
+      // Delete password from vault
+      async function deletePassword(id) {
+        if (confirm("Are you sure you want to delete this password?")) {
+          passwords = passwords.filter(p => p.id !== id);
+          await savePasswords();
+          renderPasswordList();
+        }
+      }
+
+      // Edit password
+      function editPassword(id) {
+        const password = passwords.find(p => p.id === id);
+        
+        if (password) {
+          // Fill form with password details
+          websiteInput.value = password.website;
+          usernameInput.value = password.username || '';
+          passwordInput.value = password.password;
+          updateStrengthMeter(password.password, addPasswordStrengthMeter, addPasswordStrengthText);
+          
+          // Remove password from list (will be re-added when saved)
+          passwords = passwords.filter(p => p.id !== id);
+          savePasswords();
+          renderPasswordList();
+          
+          // Focus on website input
+          websiteInput.focus();
+        }
       }
 
       // Render password list
@@ -1874,112 +2157,218 @@
         });
       }
 
-      // Tab switching functionality
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          // Remove active class from all tabs
-          tabs.forEach(t => t.classList.remove('active'));
+      // Check if vault exists for user
+      async function checkVaultExists(userId) {
+        try {
+          const docRef = db.collection('vaults').doc(userId);
+          const doc = await docRef.get();
           
-          // Add active class to clicked tab
-          tab.classList.add('active');
-          
-          // Hide all tab contents
-          tabContents.forEach(content => content.classList.remove('active'));
-          
-          // Show corresponding tab content
-          const tabId = tab.getAttribute('data-tab');
-          document.getElementById(`${tabId}-tab`).classList.add('active');
-        });
-      });
+          return doc.exists;
+        } catch (error) {
+          console.error('Error checking if vault exists:', error);
+          return false;
+        }
+      }
 
-      // Password visibility toggle functionality
-      function setupPasswordToggle(inputId, toggleId) {
-        const input = document.getElementById(inputId);
-        const toggle = document.getElementById(toggleId);
+      // Create vault with master password
+      async function createVault() {
+        const masterPassword = masterPasswordInput.value;
+        const confirmPassword = confirmMasterPasswordInput.value;
         
-        toggle.addEventListener('click', () => {
-          if (input.type === 'password') {
-            input.type = 'text';
-            toggle.textContent = '🔒';
+        if (masterPassword !== confirmPassword) {
+          masterPasswordError.textContent = "Passwords do not match!";
+          masterPasswordError.style.display = "block";
+          return;
+        }
+        
+        if (getPasswordStrength(masterPassword).score < 2) {
+          if (!confirm("Your master password is weak. This puts all your passwords at risk. Are you sure you want to continue?")) {
+            return;
+          }
+        }
+        
+        try {
+          // Show loading
+          masterPasswordError.style.display = "none";
+          createVaultBtn.disabled = true;
+          createVaultBtn.innerHTML = '<div class="loader" style="width: 20px; height: 20px; margin-right: 10px;"></div> Creating vault...';
+          
+          // Generate master password hash
+          const masterPasswordHash = await hashMasterPassword(masterPassword);
+          
+          // Derive encryption key
+          encryptionKey = await deriveEncryptionKey(masterPassword);
+          
+          // Initialize empty vault
+          passwords = [];
+          
+          // Encrypt empty passwords array
+          const encryptedPasswords = encryptData(passwords, encryptionKey);
+          
+          // Encrypt settings
+          const encryptedSettings = encryptData(settings, encryptionKey);
+          
+          // Create vault document in Firestore
+          await db.collection('vaults').doc(currentUser.uid).set({
+            masterPasswordHash,
+            passwords: encryptedPasswords,
+            settings: encryptedSettings,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          // Show app
+          masterPasswordSetup.style.display = "none";
+          appContainer.style.display = "block";
+          
+          // Setup auto logout
+          setupAutoLogout();
+          
+          // Add activity listeners for auto logout
+          document.addEventListener('click', resetAutoLogout);
+          document.addEventListener('keypress', resetAutoLogout);
+          
+          // Update UI
+          renderPasswordList();
+          
+        } catch (error) {
+          console.error('Error creating vault:', error);
+          masterPasswordError.textContent = "Failed to create vault. Please try again.";
+          masterPasswordError.style.display = "block";
+        } finally {
+          createVaultBtn.disabled = false;
+          createVaultBtn.textContent = "Create Secure Vault";
+        }
+      }
+
+      // Unlock vault with master password
+      async function unlockVault() {
+        const masterPassword = unlockMasterPasswordInput.value;
+        
+        if (!masterPassword) {
+          unlockError.textContent = "Please enter your master password.";
+          unlockError.style.display = "block";
+          return;
+        }
+        
+        try {
+          // Show loading
+          unlockError.style.display = "none";
+          unlockVaultBtn.disabled = true;
+          unlockVaultBtn.innerHTML = '<div class="loader" style="width: 20px; height: 20px; margin-right: 10px;"></div> Unlocking...';
+          
+          // Get vault data
+          const vaultDoc = await db.collection('vaults').doc(currentUser.uid).get();
+          const vaultData = vaultDoc.data();
+          
+          // Generate hash from entered password
+          const hash = await hashMasterPassword(masterPassword);
+          
+          // Compare with stored hash
+          if (hash === vaultData.masterPasswordHash) {
+            // Derive encryption key
+            encryptionKey = await deriveEncryptionKey(masterPassword);
+            
+            // Decrypt passwords
+            const decryptedPasswords = decryptData(vaultData.passwords, encryptionKey);
+            
+            if (decryptedPasswords) {
+              passwords = decryptedPasswords;
+            } else {
+              throw new Error('Failed to decrypt passwords');
+            }
+            
+            // Decrypt settings
+            const decryptedSettings = decryptData(vaultData.settings, encryptionKey);
+            
+            if (decryptedSettings) {
+              settings = decryptedSettings;
+            }
+            
+            // Show app
+            unlockVault.style.display = "none";
+            appContainer.style.display = "block";
+            
+            // Setup auto logout
+            setupAutoLogout();
+            
+            // Add activity listeners for auto logout
+            document.addEventListener('click', resetAutoLogout);
+            document.addEventListener('keypress', resetAutoLogout);
+            
+            // Update UI
+            renderPasswordList();
+            
+            // Update settings UI
+            autoLogoutSelect.value = settings.autoLogout.toString();
+            defaultPasswordLengthSelect.value = settings.defaultPasswordLength.toString();
+            clearClipboardCheckbox.checked = settings.clearClipboard;
+            
+            // Clear input
+            unlockMasterPasswordInput.value = "";
           } else {
-            input.type = 'password';
-            toggle.textContent = '👁️';
+            unlockError.textContent = "Incorrect master password. Please try again.";
+            unlockError.style.display = "block";
           }
-        });
+        } catch (error) {
+          console.error('Error unlocking vault:', error);
+          unlockError.textContent = "Failed to unlock vault. Please try again.";
+          unlockError.style.display = "block";
+        } finally {
+          unlockVaultBtn.disabled = false;
+          unlockVaultBtn.textContent = "Unlock Vault";
+        }
       }
 
-      // Setup password toggles
-      setupPasswordToggle('master-password', 'toggle-master-password');
-      setupPasswordToggle('confirm-master-password', 'toggle-confirm-password');
-      setupPasswordToggle('login-master-password', 'toggle-login-password');
-      setupPasswordToggle('password', 'toggle-add-password');
-      setupPasswordToggle('change-master-password', 'toggle-change-password');
-
-      // Export encrypted data
-      function exportData() {
-        const data = {
-          passwords: localStorage.getItem('passwordVault'),
-          masterPasswordHash: localStorage.getItem('masterPasswordHash'),
-          settings: localStorage.getItem('passwordSettings'),
-          exportDate: new Date().toISOString()
-        };
-        
-        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `password_vault_backup_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        
-        URL.revokeObjectURL(url);
+      // Reset vault (for forgotten master password)
+      async function resetVault() {
+        if (confirm("WARNING: This will permanently delete all your saved passwords. Are you sure you want to continue?")) {
+          if (confirm("Are you REALLY sure? This action cannot be undone!")) {
+            try {
+              // Delete vault document
+              await db.collection('vaults').doc(currentUser.uid).delete();
+              
+              // Show master password setup
+              unlockVault.style.display = "none";
+              masterPasswordSetup.style.display = "block";
+              
+              // Clear fields
+              masterPasswordInput.value = "";
+              confirmMasterPasswordInput.value = "";
+              updateStrengthMeter("", masterPasswordStrengthMeter, masterPasswordStrengthText);
+              
+            } catch (error) {
+              console.error('Error resetting vault:', error);
+              alert('Failed to reset vault. Please try again.');
+            }
+          }
+        }
       }
 
-      // Import encrypted data
-      function importData() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
+      // Lock vault (sign out from vault, not from account)
+      function lockVault() {
+        // Hide app
+        appContainer.style.display = "none";
         
-        input.onchange = e => {
-          const file = e.target.files[0];
-          
-          if (file) {
-            const reader = new FileReader();
-            
-            reader.onload = event => {
-              try {
-                const data = JSON.parse(event.target.result);
-                
-                // Validate import data
-                if (!data.passwords || !data.masterPasswordHash) {
-                  throw new Error('Invalid backup file format');
-                }
-                
-                if (confirm('This will replace all your current passwords. Are you sure you want to continue?')) {
-                  // Import data
-                  localStorage.setItem('passwordVault', data.passwords);
-                  localStorage.setItem('masterPasswordHash', data.masterPasswordHash);
-                  
-                  if (data.settings) {
-                    localStorage.setItem('passwordSettings', data.settings);
-                  }
-                  
-                  alert('Data imported successfully. You will now be logged out and need to log back in with the master password from the imported vault.');
-                  
-                  // Logout to apply changes
-                  logout();
-                }
-              } catch (error) {
-                alert('Error importing data: ' + error.message);
-              }
-            };
-            
-            reader.readAsText(file);
-          }
-        };
+        // Show unlock screen
+        unlockVault.style.display = "block";
         
-        input.click();
+        // Clear sensitive data from memory
+        encryptionKey = '';
+        passwords = [];
+        
+        // Remove activity listeners
+        document.removeEventListener('click', resetAutoLogout);
+        document.removeEventListener('keypress', resetAutoLogout);
+        
+        // Clear auto logout timer
+        if (autoLogoutTimer) {
+          clearTimeout(autoLogoutTimer);
+          autoLogoutTimer = null;
+        }
+        
+        // Clear unlock error
+        unlockError.style.display = "none";
       }
 
       // Change master password
@@ -1997,68 +2386,377 @@
           }
         }
         
-        // Generate new hash and encryption key
-        const newHash = await hashPassword(newPassword);
-        const newKey = await deriveKey(newPassword);
-        
-        // Re-encrypt all passwords with new key
-        const encryptedData = encryptData(passwords, newKey);
-        
-        // Update localStorage
-        localStorage.setItem('passwordVault', encryptedData);
-        localStorage.setItem('masterPasswordHash', newHash);
-        
-        // Update settings with new key
-        const encryptedSettings = encryptData(settings, newKey);
-        localStorage.setItem('passwordSettings', encryptedSettings);
-        
-        // Update current key and hash
-        masterPasswordHash = newHash;
-        encryptionKey = newKey;
-        
-        // Clear input
-        changeMasterPasswordInput.value = '';
-        updateStrengthMeter('', changePasswordStrengthMeter, changePasswordStrengthText);
-        
-        alert('Master password changed successfully');
+        try {
+          // Prompt for current master password
+          const currentPassword = prompt("Please enter your current master password to continue:");
+          
+          if (!currentPassword) return;
+          
+          // Get vault data
+          const vaultDoc = await db.collection('vaults').doc(currentUser.uid).get();
+          const vaultData = vaultDoc.data();
+          
+          // Generate hash from entered password
+          const hash = await hashMasterPassword(currentPassword);
+          
+          // Compare with stored hash
+          if (hash !== vaultData.masterPasswordHash) {
+            alert("Incorrect current master password.");
+            return;
+          }
+          
+          // Generate new hash and encryption key
+          const newHash = await hashMasterPassword(newPassword);
+          const newKey = await deriveEncryptionKey(newPassword);
+          
+          // Re-encrypt all passwords with new key
+          const encryptedPasswords = encryptData(passwords, newKey);
+          
+          // Re-encrypt settings with new key
+          const encryptedSettings = encryptData(settings, newKey);
+          
+          // Update vault document
+          await db.collection('vaults').doc(currentUser.uid).update({
+            masterPasswordHash: newHash,
+            passwords: encryptedPasswords,
+            settings: encryptedSettings,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          // Update current key
+          encryptionKey = newKey;
+          
+          // Clear input
+          changeMasterPasswordInput.value = '';
+          updateStrengthMeter('', changePasswordStrengthMeter, changePasswordStrengthText);
+          
+          alert('Master password changed successfully');
+          
+        } catch (error) {
+          console.error('Error changing master password:', error);
+          alert('Failed to change master password. Please try again.');
+        }
       }
 
-      // Initialize password length slider
-      passwordLengthSlider.addEventListener('input', () => {
-        passwordLengthValue.textContent = passwordLengthSlider.value;
-      });
+      // Export encrypted data
+      async function exportData() {
+        if (!encryptionKey) {
+          alert('Please unlock your vault first.');
+          return;
+        }
+        
+        try {
+          // Get vault data
+          const vaultDoc = await db.collection('vaults').doc(currentUser.uid).get();
+          const vaultData = vaultDoc.data();
+          
+          const data = {
+            passwords: vaultData.passwords,
+            masterPasswordHash: vaultData.masterPasswordHash,
+            settings: vaultData.settings,
+            exportDate: new Date().toISOString()
+          };
+          
+          const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `password_vault_backup_${new Date().toISOString().split('T')[0]}.json`;
+          a.click();
+          
+          URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error('Error exporting data:', error);
+          alert('Failed to export data. Please try again.');
+        }
+      }
 
-      // Set initial password length from settings
-      passwordLengthSlider.value = settings.defaultPasswordLength;
-      passwordLengthValue.textContent = settings.defaultPasswordLength;
+      // Import encrypted data
+      function importData() {
+        if (!encryptionKey) {
+          alert('Please unlock your vault first.');
+          return;
+        }
+        
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = async (e) => {
+          const file = e.target.files[0];
+          
+          if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = async (event) => {
+              try {
+                const data = JSON.parse(event.target.result);
+                
+                // Validate import data
+                if (!data.passwords || !data.masterPasswordHash) {
+                  throw new Error('Invalid backup file format');
+                }
+                
+                if (confirm('This will replace all your current passwords. Are you sure you want to continue?')) {
+                  // Import data
+                  await db.collection('vaults').doc(currentUser.uid).update({
+                    passwords: data.passwords,
+                    masterPasswordHash: data.masterPasswordHash,
+                    settings: data.settings || vaultData.settings,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                  });
+                  
+                  alert('Data imported successfully. You will now be logged out and need to log back in with the master password from the imported vault.');
+                  
+                  // Lock vault
+                  lockVault();
+                }
+              } catch (error) {
+                console.error('Error importing data:', error);
+                alert('Error importing data: ' + error.message);
+              }
+            };
+            
+            reader.readAsText(file);
+          }
+        };
+        
+        input.click();
+      }
 
-      // Event listeners
-      masterPasswordInput.addEventListener('input', () => {
-        updateStrengthMeter(masterPasswordInput.value, masterPasswordStrengthMeter, masterPasswordStrengthText);
-      });
+      // Clear all data
+      async function clearAllData() {
+        if (confirm('This will permanently delete all your saved passwords. Are you sure you want to continue?')) {
+          if (confirm('Are you REALLY sure? This action cannot be undone!')) {
+            try {
+              // Initialize empty passwords array
+              passwords = [];
+              
+              // Encrypt empty passwords array
+              const encryptedPasswords = encryptData(passwords, encryptionKey);
+              
+              // Update vault document
+              await db.collection('vaults').doc(currentUser.uid).update({
+                passwords: encryptedPasswords,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+              
+              // Update UI
+              renderPasswordList();
+              
+              alert('All passwords have been deleted.');
+            } catch (error) {
+              console.error('Error clearing data:', error);
+              alert('Failed to clear data. Please try again.');
+            }
+          }
+        }
+      }
 
-      passwordInput.addEventListener('input', () => {
-        updateStrengthMeter(passwordInput.value, addPasswordStrengthMeter, addPasswordStrengthText);
-      });
+      // Change account password
+      async function changeAccountPassword() {
+        const newPassword = prompt("Enter your new account password:");
+        
+        if (!newPassword) return;
+        
+        if (getPasswordStrength(newPassword).score < 2) {
+          if (!confirm("Your new account password is weak. This puts your account at risk. Are you sure you want to continue?")) {
+            return;
+          }
+        }
+        
+        try {
+          const credential = prompt("For security, please enter your current password:");
+          
+          if (!credential) return;
+          
+          // Reauthenticate user
+          const emailCredential = firebase.auth.EmailAuthProvider.credential(
+            currentUser.email,
+            credential
+          );
+          
+          await currentUser.reauthenticateWithCredential(emailCredential);
+          
+          // Update password
+          await currentUser.updatePassword(newPassword);
+          
+          alert('Account password updated successfully!');
+        } catch (error) {
+          console.error('Error updating account password:', error);
+          alert('Failed to update account password: ' + error.message);
+        }
+      }
 
-      changeMasterPasswordInput.addEventListener('input', () => {
-        updateStrengthMeter(changeMasterPasswordInput.value, changePasswordStrengthMeter, changePasswordStrengthText);
-      });
+      // Delete account
+      async function deleteAccount() {
+        if (confirm('WARNING: This will permanently delete your account and all your data. Are you sure you want to continue?')) {
+          if (confirm('Are you REALLY sure? This action cannot be undone!')) {
+            try {
+              const credential = prompt("For security, please enter your current password:");
+              
+              if (!credential) return;
+              
+              // Reauthenticate user
+              const emailCredential = firebase.auth.EmailAuthProvider.credential(
+                currentUser.email,
+                credential
+              );
+              
+              await currentUser.reauthenticateWithCredential(emailCredential);
+              
+              // Delete vault document
+              await db.collection('vaults').doc(currentUser.uid).delete();
+              
+              // Delete user account
+              await currentUser.delete();
+              
+              alert('Your account has been deleted.');
+              
+              // Redirect to auth screen
+              window.location.reload();
+            } catch (error) {
+              console.error('Error deleting account:', error);
+              alert('Failed to delete account: ' + error.message);
+            }
+          }
+        }
+      }
 
-      createVaultBtn.addEventListener('click', createVault);
-      unlockVaultBtn.addEventListener('click', unlockVault);
-      resetVaultBtn.addEventListener('click', resetVault);
-      addPasswordBtn.addEventListener('click', addPassword);
+      // Login with email and password
+      async function login() {
+        const email = loginEmail.value;
+        const password = loginPassword.value;
+        
+        if (!email || !password) {
+          loginError.textContent = "Please enter both email and password.";
+          loginError.style.display = "block";
+          return;
+        }
+        
+        try {
+          // Show loading
+          loginError.style.display = "none";
+          authLoading.style.display = "block";
+          loginContent.style.display = "none";
+          
+          // Sign in
+          const userCredential = await auth.signInWithEmailAndPassword(email, password);
+          
+          // User will be handled by the auth state change listener
+        } catch (error) {
+          console.error('Login error:', error);
+          loginError.textContent = error.message;
+          loginError.style.display = "block";
+          authLoading.style.display = "none";
+          loginContent.style.display = "block";
+        }
+      }
+
+      // Sign up with email and password
+      async function signup() {
+        const email = signupEmail.value;
+        const password = signupPassword.value;
+        const confirmPass = confirmPassword.value;
+        
+        if (!email || !password) {
+          signupError.textContent = "Please enter both email and password.";
+          signupError.style.display = "block";
+          return;
+        }
+        
+        if (password !== confirmPass) {
+          signupError.textContent = "Passwords do not match.";
+          signupError.style.display = "block";
+          return;
+        }
+        
+        if (getPasswordStrength(password).score < 2) {
+          if (!confirm("Your account password is weak. Are you sure you want to continue?")) {
+            return;
+          }
+        }
+        
+        try {
+          // Show loading
+          signupError.style.display = "none";
+          authLoading.style.display = "block";
+          signupContent.style.display = "none";
+          
+          // Create user
+          const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+          
+          // User will be handled by the auth state change listener
+        } catch (error) {
+          console.error('Signup error:', error);
+          signupError.textContent = error.message;
+          signupError.style.display = "block";
+          authLoading.style.display = "none";
+          signupContent.style.display = "block";
+        }
+      }
+
+      // Send password reset email
+      async function sendPasswordResetEmail() {
+        const email = resetEmail.value;
+        
+        if (!email) {
+          resetMessage.textContent = "Please enter your email address.";
+          resetMessage.className = "alert alert-danger";
+          resetMessage.style.display = "block";
+          return;
+        }
+        
+        try {
+          // Show loading
+          resetMessage.style.display = "none";
+          resetPasswordBtn.disabled = true;
+          resetPasswordBtn.innerHTML = '<div class="loader" style="width: 20px; height: 20px; margin-right: 10px;"></div> Sending...';
+          
+          // Send reset email
+          await auth.sendPasswordResetEmail(email);
+          
+          // Show success message
+          resetMessage.textContent = "Password reset email sent! Check your inbox.";
+          resetMessage.className = "alert alert-success";
+          resetMessage.style.display = "block";
+        } catch (error) {
+          console.error('Reset password error:', error);
+          resetMessage.textContent = error.message;
+          resetMessage.className = "alert alert-danger";
+          resetMessage.style.display = "block";
+        } finally {
+          resetPasswordBtn.disabled = false;
+          resetPasswordBtn.textContent = "Send Reset Link";
+        }
+      }
+
+      // Sign out
+      async function signOut() {
+        try {
+          // Clear sensitive data
+          encryptionKey = '';
+          passwords = [];
+          
+          // Sign out
+          await auth.signOut();
+          
+          // User will be handled by the auth state change listener
+        } catch (error) {
+          console.error('Sign out error:', error);
+          alert('Failed to sign out. Please try again.');
+        }
+      }
+
+      // Generate password button handler
       generatePasswordBtn.addEventListener('click', () => {
         const password = generatePassword();
         generatedPassword.textContent = password;
         updateStrengthMeter(password, generatedPasswordStrengthMeter, generatedPasswordStrengthText);
       });
-      generateForSiteBtn.addEventListener('click', () => {
-        const password = generatePassword();
-        passwordInput.value = password;
-        updateStrengthMeter(password, addPasswordStrengthMeter, addPasswordStrengthText);
-      });
+
+      // Copy generated password button handler
       copyGeneratedBtn.addEventListener('click', () => {
         const password = generatedPassword.textContent;
         if (password && password !== 'Click "Generate" to create a password') {
@@ -2072,20 +2770,18 @@
           }, 2000);
         }
       });
-      logoutBtn.addEventListener('click', logout);
-      clearDataBtn.addEventListener('click', () => {
-        if (confirm('This will permanently delete all your saved passwords. Are you sure you want to continue?')) {
-          if (confirm('Are you REALLY sure? This action cannot be undone!')) {
-            localStorage.removeItem('passwordVault');
-            localStorage.removeItem('masterPasswordHash');
-            localStorage.removeItem('passwordSettings');
-            logout();
-          }
-        }
+
+      // Initialize password length slider
+      passwordLengthSlider.addEventListener('input', () => {
+        passwordLengthValue.textContent = passwordLengthSlider.value;
       });
-      updateMasterPasswordBtn.addEventListener('click', changeMasterPassword);
-      exportDataBtn.addEventListener('click', exportData);
-      importDataBtn.addEventListener('click', importData);
+
+      // Generate for site button handler
+      generateForSiteBtn.addEventListener('click', () => {
+        const password = generatePassword();
+        passwordInput.value = password;
+        updateStrengthMeter(password, addPasswordStrengthMeter, addPasswordStrengthText);
+      });
 
       // Settings change handlers
       autoLogoutSelect.addEventListener('change', () => {
@@ -2096,6 +2792,10 @@
       defaultPasswordLengthSelect.addEventListener('change', () => {
         settings.defaultPasswordLength = parseInt(defaultPasswordLengthSelect.value);
         saveSettings();
+        
+        // update generator length
+        passwordLengthSlider.value = settings.defaultPasswordLength;
+        passwordLengthValue.textContent = settings.defaultPasswordLength;
       });
 
       clearClipboardCheckbox.addEventListener('change', () => {
@@ -2103,15 +2803,106 @@
         saveSettings();
       });
 
-      // Login on Enter key press
-      loginMasterPasswordInput.addEventListener('keypress', (e) => {
+      // auth state change listener
+      auth.onAuthStateChanged(async (user) => {
+        authLoading.style.display = "none";
+        
+        if (user) {
+          // user is signed in
+          currentUser = user;
+          
+          // update user profile
+          userAvatar.textContent = user.email.charAt(0).toUpperCase();
+          userName.textContent = user.displayName || 'User';
+          userEmail.textContent = user.email;
+          
+          // check if vault exists
+          vaultExists = await checkVaultExists(user.uid);
+          
+          if (vaultExists) {
+            // show unlock screen
+            authScreen.style.display = "none";
+            unlockVault.style.display = "block";
+          } else {
+            // show master password setup
+            authScreen.style.display = "none";
+            masterPasswordSetup.style.display = "block";
+          }
+        } else {
+          // user is signed out
+          currentUser = null;
+          
+          // show auth screen
+          authScreen.style.display = "block";
+          masterPasswordSetup.style.display = "none";
+          unlockVault.style.display = "none";
+          appContainer.style.display = "none";
+          
+          // show login form
+          loginContent.style.display = "block";
+          signupContent.style.display = "none";
+          resetPasswordContent.style.display = "none";
+          
+          // clear auth forms
+          loginEmail.value = '';
+          loginPassword.value = '';
+          signupEmail.value = '';
+          signupPassword.value = '';
+          confirmPassword.value = '';
+          resetEmail.value = '';
+          loginError.style.display = "none";
+          signupError.style.display = "none";
+          resetMessage.style.display = "none";
+        }
+      });
+
+      // event Listeners
+      loginBtn.addEventListener('click', login);
+      signupBtn.addEventListener('click', signup);
+      resetPasswordBtn.addEventListener('click', sendPasswordResetEmail);
+      createVaultBtn.addEventListener('click', createVault);
+      unlockVaultBtn.addEventListener('click', unlockVault);
+      resetVaultBtn.addEventListener('click', resetVault);
+      signOutBtn.addEventListener('click', signOut);
+      addPasswordBtn.addEventListener('click', addPassword);
+      lockVaultBtn.addEventListener('click', lockVault);
+      clearDataBtn.addEventListener('click', clearAllData);
+      updateMasterPasswordBtn.addEventListener('click', changeMasterPassword);
+      exportDataBtn.addEventListener('click', exportData);
+      importDataBtn.addEventListener('click', importData);
+      changeAccountPasswordBtn.addEventListener('click', changeAccountPassword);
+      deleteAccountBtn.addEventListener('click', deleteAccount);
+
+      // enter key handlers
+      loginPassword.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          loginBtn.click();
+        }
+      });
+
+      confirmPassword.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          signupBtn.click();
+        }
+      });
+
+      resetEmail.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          resetPasswordBtn.click();
+        }
+      });
+
+      unlockMasterPasswordInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           unlockVaultBtn.click();
         }
       });
 
-      // Initialize app
-      initApp();
+      confirmMasterPasswordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          createVaultBtn.click();
+        }
+      });
     });
   </script>
 </body>
