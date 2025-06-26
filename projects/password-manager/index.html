@@ -44,7 +44,7 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: url("/Main-Website/assets/images/background-light.jpg") center/cover no-repeat;
+      background: url("assets/images/background-light.jpg") center/cover no-repeat;
       background-attachment: fixed;
       min-height: 100vh;
       display: flex;
@@ -56,7 +56,7 @@
     }
 
     body.dark {
-      background: url("/Main-Website/assets/images/background-dark.jpg") center/cover no-repeat;
+      background: url("assets/images/background-dark.jpg") center/cover no-repeat;
       background-attachment: fixed;
     }
 
@@ -1024,7 +1024,7 @@
   <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙</button>
 
   <!-- back to home link -->
-  <a href="https://finn1817.github.io/Main-Website/" class="back-to-home">← Back to Home</a>
+  <a href="/" class="back-to-home">← Back to Home</a>
   
   <div class="container">
     <!-- Authentication Screen -->
@@ -1423,28 +1423,28 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Firebase configuration - Replace with your actual Firebase config from the Firebase console
+      // Firebase configuration - Replace with your actual Firebase config
       const firebaseConfig = {
-        apiKey: "AIzaSyB_MP0NA6zHN48KU1oKAVP8q_VK4oGTGM",
+        apiKey: "AIzaSyB_MP0NA6zHN48KU1oKAVP8q_VK4oGTGMk",
         authDomain: "password-manager-2adbf.firebaseapp.com",
         projectId: "password-manager-2adbf",
-        storageBucket: "password-manager-2adbf.firebasestorage.app",
+        storageBucket: "password-manager-2adbf.appspot.com",
         messagingSenderId: "825116138544",
-        appId: "1:825116138544:web:c6795763a8dff3724a1f5",
-        measurementId: "G-1SHX7OWEK4"
+        appId: "1:825116138544:web:c6795763a8dff3724a1f5"
       };
       
       // Initialize Firebase
+      let db;
+      let auth;
       try {
         firebase.initializeApp(firebaseConfig);
         console.log("Firebase initialized successfully");
+        db = firebase.firestore();
+        auth = firebase.auth();
       } catch (error) {
         console.error("Firebase initialization error:", error);
         alert("There was an error connecting to the database. Please try again later.");
       }
-      
-      const auth = firebase.auth();
-      const db = firebase.firestore();
       
       // DOM elements
       const toggleBtn = document.getElementById("theme-toggle");
@@ -1612,25 +1612,26 @@
         toggleBtn.textContent = isDark ? "☀️" : "🌙";
       });
 
-      // Auth tab switching
+      // Auth tab switching - Fixed
       authTabs.forEach(tab => {
         tab.addEventListener('click', () => {
-          // Hide all auth contents
-          authContents.forEach(content => {
-            content.classList.remove('active');
-          });
+          const tabId = tab.getAttribute('data-tab');
           
           // Remove active class from all tabs
-          authTabs.forEach(t => {
-            t.classList.remove('active');
-          });
+          authTabs.forEach(t => t.classList.remove('active'));
           
           // Add active class to clicked tab
           tab.classList.add('active');
           
+          // Hide all auth contents
+          authContents.forEach(content => content.classList.remove('active'));
+          
           // Show corresponding content
-          const tabId = tab.getAttribute('data-tab');
-          document.getElementById(`${tabId}-content`).classList.add('active');
+          if (tabId === "login") {
+            loginContent.classList.add('active');
+          } else if (tabId === "signup") {
+            signupContent.classList.add('active');
+          }
         });
       });
 
@@ -1978,7 +1979,7 @@
 
       // Save passwords to Firestore
       async function savePasswords() {
-        if (!currentUser) return;
+        if (!currentUser || !db) return;
         
         try {
           const encryptedData = encryptData(passwords, encryptionKey);
@@ -1994,7 +1995,7 @@
 
       // Save settings to Firestore
       async function saveSettings() {
-        if (!currentUser) return;
+        if (!currentUser || !db) return;
         
         try {
           const encryptedSettings = encryptData(settings, encryptionKey);
@@ -2167,6 +2168,8 @@
 
       // Check if vault exists for user
       async function checkVaultExists(userId) {
+        if (!db) return false;
+        
         try {
           const docRef = db.collection('vaults').doc(userId);
           const doc = await docRef.get();
@@ -2180,6 +2183,11 @@
 
       // Create vault with master password
       async function createVault() {
+        if (!db) {
+          alert("Database connection error. Please refresh the page and try again.");
+          return;
+        }
+        
         const masterPassword = masterPasswordInput.value;
         const confirmPassword = confirmMasterPasswordInput.value;
         
@@ -2251,6 +2259,11 @@
 
       // Unlock vault with master password
       async function unlockVault() {
+        if (!db) {
+          alert("Database connection error. Please refresh the page and try again.");
+          return;
+        }
+        
         const masterPassword = unlockMasterPasswordInput.value;
         
         if (!masterPassword) {
@@ -2330,6 +2343,11 @@
 
       // Reset vault (for forgotten master password)
       async function resetVault() {
+        if (!db) {
+          alert("Database connection error. Please refresh the page and try again.");
+          return;
+        }
+        
         if (confirm("WARNING: This will permanently delete all your saved passwords. Are you sure you want to continue?")) {
           if (confirm("Are you REALLY sure? This action cannot be undone!")) {
             try {
@@ -2381,6 +2399,11 @@
 
       // Change master password
       async function changeMasterPassword() {
+        if (!db) {
+          alert("Database connection error. Please refresh the page and try again.");
+          return;
+        }
+        
         const newPassword = changeMasterPasswordInput.value;
         
         if (!newPassword) {
@@ -2448,6 +2471,11 @@
 
       // Export encrypted data
       async function exportData() {
+        if (!db) {
+          alert("Database connection error. Please refresh the page and try again.");
+          return;
+        }
+        
         if (!encryptionKey) {
           alert('Please unlock your vault first.');
           return;
@@ -2482,6 +2510,11 @@
 
       // Import encrypted data
       function importData() {
+        if (!db) {
+          alert("Database connection error. Please refresh the page and try again.");
+          return;
+        }
+        
         if (!encryptionKey) {
           alert('Please unlock your vault first.');
           return;
@@ -2539,22 +2572,27 @@
 
       // Clear all data
       async function clearAllData() {
+        if (!db) {
+          alert("Database connection error. Please refresh the page and try again.");
+          return;
+        }
+        
         if (confirm('This will permanently delete all your saved passwords. Are you sure you want to continue?')) {
           if (confirm('Are you REALLY sure? This action cannot be undone!')) {
             try {
-              // Initialize empty passwords array
+              // initialize empty passwords array
               passwords = [];
               
-              // Encrypt empty passwords array
+              // encrypt empty passwords array
               const encryptedPasswords = encryptData(passwords, encryptionKey);
               
-              // Update vault document
+              // update vault document
               await db.collection('vaults').doc(currentUser.uid).update({
                 passwords: encryptedPasswords,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
               });
               
-              // Update UI
+              // update UI
               renderPasswordList();
               
               alert('All passwords have been deleted.');
@@ -2566,8 +2604,13 @@
         }
       }
 
-      // Change account password
+      // change account password
       async function changeAccountPassword() {
+        if (!auth) {
+          alert("Authentication error. Please refresh the page and try again.");
+          return;
+        }
+        
         const newPassword = prompt("Enter your new account password:");
         
         if (!newPassword) return;
@@ -2583,7 +2626,7 @@
           
           if (!credential) return;
           
-          // Reauthenticate user
+          // reauthenticate user
           const emailCredential = firebase.auth.EmailAuthProvider.credential(
             currentUser.email,
             credential
@@ -2591,7 +2634,7 @@
           
           await currentUser.reauthenticateWithCredential(emailCredential);
           
-          // Update password
+          // update password
           await currentUser.updatePassword(newPassword);
           
           alert('Account password updated successfully!');
@@ -2601,8 +2644,13 @@
         }
       }
 
-      // Delete account
+      // delete account
       async function deleteAccount() {
+        if (!auth || !db) {
+          alert("Connection error. Please refresh the page and try again.");
+          return;
+        }
+        
         if (confirm('WARNING: This will permanently delete your account and all your data. Are you sure you want to continue?')) {
           if (confirm('Are you REALLY sure? This action cannot be undone!')) {
             try {
@@ -2610,7 +2658,7 @@
               
               if (!credential) return;
               
-              // Reauthenticate user
+              // reauthenticate user
               const emailCredential = firebase.auth.EmailAuthProvider.credential(
                 currentUser.email,
                 credential
@@ -2618,15 +2666,15 @@
               
               await currentUser.reauthenticateWithCredential(emailCredential);
               
-              // Delete vault document
+              // delete vault document
               await db.collection('vaults').doc(currentUser.uid).delete();
               
-              // Delete user account
+              // delete user account
               await currentUser.delete();
               
               alert('Your account has been deleted.');
               
-              // Redirect to auth screen
+              // redirect to auth screen
               window.location.reload();
             } catch (error) {
               console.error('Error deleting account:', error);
@@ -2636,8 +2684,13 @@
         }
       }
 
-      // Login with email and password
+      // login with email and password
       async function login() {
+        if (!auth) {
+          alert("Authentication error. Please refresh the page and try again.");
+          return;
+        }
+        
         const email = loginEmail.value;
         const password = loginPassword.value;
         
@@ -2648,16 +2701,16 @@
         }
         
         try {
-          // Show loading
+          // show loading
           loginError.style.display = "none";
           authLoading.style.display = "block";
           loginContent.style.display = "none";
           
-          // Sign in
+          // sign in
           const userCredential = await auth.signInWithEmailAndPassword(email, password);
           console.log("Login successful", userCredential.user);
           
-          // User will be handled by the auth state change listener
+          // user will be handled by the auth state change listener
         } catch (error) {
           console.error('Login error:', error);
           loginError.textContent = error.message;
@@ -2667,8 +2720,13 @@
         }
       }
 
-      // Sign up with email and password
+      // sign up with email and password
       async function signup() {
+        if (!auth) {
+          alert("Authentication error. Please refresh the page and try again.");
+          return;
+        }
+        
         console.log("Signup function called");
         
         const email = signupEmail.value;
@@ -2696,17 +2754,17 @@
         }
         
         try {
-          // Show loading
+          // show loading
           signupError.style.display = "none";
           authLoading.style.display = "block";
           signupContent.style.display = "none";
           
-          // Create user
+          // create user
           console.log("Attempting to create user with Firebase");
           const userCredential = await auth.createUserWithEmailAndPassword(email, password);
           console.log("Signup successful", userCredential.user);
           
-          // User will be handled by the auth state change listener
+          // user will be handled by the auth state change listener
         } catch (error) {
           console.error('Signup error:', error);
           signupError.textContent = error.message;
@@ -2716,8 +2774,13 @@
         }
       }
 
-      // Send password reset email
+      // send password reset email
       async function sendPasswordResetEmail() {
+        if (!auth) {
+          alert("Authentication error. Please refresh the page and try again.");
+          return;
+        }
+        
         const email = resetEmail.value;
         
         if (!email) {
@@ -2728,15 +2791,15 @@
         }
         
         try {
-          // Show loading
+          // show loading
           resetMessage.style.display = "none";
           resetPasswordBtn.disabled = true;
           resetPasswordBtn.innerHTML = '<div class="loader" style="width: 20px; height: 20px; margin-right: 10px;"></div> Sending...';
           
-          // Send reset email
+          // send reset email
           await auth.sendPasswordResetEmail(email);
           
-          // Show success message
+          // show success message
           resetMessage.textContent = "Password reset email sent! Check your inbox.";
           resetMessage.className = "alert alert-success";
           resetMessage.style.display = "block";
@@ -2751,32 +2814,37 @@
         }
       }
 
-      // Sign out
+      // sign out
       async function signOut() {
+        if (!auth) {
+          alert("Authentication error. Please refresh the page and try again.");
+          return;
+        }
+        
         try {
-          // Clear sensitive data
+          // clear sensitive data
           encryptionKey = '';
           passwords = [];
           
-          // Sign out
+          // sign out
           await auth.signOut();
           console.log("User signed out successfully");
           
-          // User will be handled by the auth state change listener
+          // user will be handled by the auth state change listener
         } catch (error) {
           console.error('Sign out error:', error);
           alert('Failed to sign out. Please try again.');
         }
       }
 
-      // Generate password button handler
+      // generate password button handler
       generatePasswordBtn.addEventListener('click', () => {
         const password = generatePassword();
         generatedPassword.textContent = password;
         updateStrengthMeter(password, generatedPasswordStrengthMeter, generatedPasswordStrengthText);
       });
 
-      // Copy generated password button handler
+      // copy generated password button handler
       copyGeneratedBtn.addEventListener('click', () => {
         const password = generatedPassword.textContent;
         if (password && password !== 'Click "Generate" to create a password') {
@@ -2791,19 +2859,19 @@
         }
       });
 
-      // Initialize password length slider
+      // initialize password length slider
       passwordLengthSlider.addEventListener('input', () => {
         passwordLengthValue.textContent = passwordLengthSlider.value;
       });
 
-      // Generate for site button handler
+      // generate for site button handler
       generateForSiteBtn.addEventListener('click', () => {
         const password = generatePassword();
         passwordInput.value = password;
         updateStrengthMeter(password, addPasswordStrengthMeter, addPasswordStrengthText);
       });
 
-      // Settings change handlers
+      // settings change handlers
       autoLogoutSelect.addEventListener('change', () => {
         settings.autoLogout = parseInt(autoLogoutSelect.value);
         saveSettings();
@@ -2823,73 +2891,72 @@
         saveSettings();
       });
 
-      // Auth state change listener
-      auth.onAuthStateChanged(async (user) => {
-        authLoading.style.display = "none";
-        
-        if (user) {
-          console.log("User is signed in:", user.email);
-          // User is signed in
-          currentUser = user;
+      // auth state change listener
+      if (auth) {
+        auth.onAuthStateChanged(async (user) => {
+          authLoading.style.display = "none";
           
-          // Update user profile
-          userAvatar.textContent = user.email.charAt(0).toUpperCase();
-          userName.textContent = user.displayName || 'User';
-          userEmail.textContent = user.email;
-          
-          // Check if vault exists
-          try {
-            vaultExists = await checkVaultExists(user.uid);
-            console.log("Vault exists:", vaultExists);
+          if (user) {
+            console.log("User is signed in:", user.email);
+            // user is signed in
+            currentUser = user;
             
-            if (vaultExists) {
-              // Show unlock screen
-              authScreen.style.display = "none";
-              unlockVault.style.display = "block";
-            } else {
-              // Show master password setup
-              authScreen.style.display = "none";
-              masterPasswordSetup.style.display = "block";
+            // update user profile
+            userAvatar.textContent = user.email.charAt(0).toUpperCase();
+            userName.textContent = user.displayName || 'User';
+            userEmail.textContent = user.email;
+            
+            // check if vault exists
+            try {
+              vaultExists = await checkVaultExists(user.uid);
+              console.log("Vault exists:", vaultExists);
+              
+              if (vaultExists) {
+                // show unlock screen
+                authScreen.style.display = "none";
+                unlockVault.style.display = "block";
+              } else {
+                // show master password setup
+                authScreen.style.display = "none";
+                masterPasswordSetup.style.display = "block";
+              }
+            } catch (error) {
+              console.error("Error checking vault:", error);
+              alert("Error connecting to the database. Please try again.");
             }
-          } catch (error) {
-            console.error("Error checking vault:", error);
-            alert("Error connecting to the database. Please try again.");
+          } else {
+            console.log("User is signed out");
+            // user is signed out
+            currentUser = null;
+            
+            // show auth screen
+            authScreen.style.display = "block";
+            masterPasswordSetup.style.display = "none";
+            unlockVault.style.display = "none";
+            appContainer.style.display = "none";
+            
+            // show login form
+            loginContent.style.display = "block";
+            signupContent.style.display = "none";
+            resetPasswordContent.style.display = "none";
+            
+            // clear auth forms
+            loginEmail.value = '';
+            loginPassword.value = '';
+            signupEmail.value = '';
+            signupPassword.value = '';
+            confirmPassword.value = '';
+            resetEmail.value = '';
+            loginError.style.display = "none";
+            signupError.style.display = "none";
+            resetMessage.style.display = "none";
           }
-        } else {
-          console.log("User is signed out");
-          // User is signed out
-          currentUser = null;
-          
-          // Show auth screen
-          authScreen.style.display = "block";
-          masterPasswordSetup.style.display = "none";
-          unlockVault.style.display = "none";
-          appContainer.style.display = "none";
-          
-          // Show login form
-          loginContent.style.display = "block";
-          signupContent.style.display = "none";
-          resetPasswordContent.style.display = "none";
-          
-          // Clear auth forms
-          loginEmail.value = '';
-          loginPassword.value = '';
-          signupEmail.value = '';
-          signupPassword.value = '';
-          confirmPassword.value = '';
-          resetEmail.value = '';
-          loginError.style.display = "none";
-          signupError.style.display = "none";
-          resetMessage.style.display = "none";
-        }
-      });
+        });
+      }
 
-      // Event Listeners
+      // event Listeners
       loginBtn.addEventListener('click', login);
-      signupBtn.addEventListener('click', function() {
-        console.log("Signup button clicked - direct handler");
-        signup();
-      });
+      signupBtn.addEventListener('click', signup);
       resetPasswordBtn.addEventListener('click', sendPasswordResetEmail);
       createVaultBtn.addEventListener('click', createVault);
       unlockVaultBtn.addEventListener('click', unlockVault);
@@ -2904,7 +2971,7 @@
       changeAccountPasswordBtn.addEventListener('click', changeAccountPassword);
       deleteAccountBtn.addEventListener('click', deleteAccount);
 
-      // Enter key handlers
+      // enter key handlers
       loginPassword.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           loginBtn.click();
