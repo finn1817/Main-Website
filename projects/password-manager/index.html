@@ -1423,9 +1423,9 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Firebase configuration
+      // Firebase configuration - Replace with your actual Firebase config from the Firebase console
       const firebaseConfig = {
-        apiKey: "AIza8yb_MP0NA6zHN48KU1oKAVP8q_VK4oGTGM",
+        apiKey: "AIzaSyB_MP0NA6zHN48KU1oKAVP8q_VK4oGTGM",
         authDomain: "password-manager-2adbf.firebaseapp.com",
         projectId: "password-manager-2adbf",
         storageBucket: "password-manager-2adbf.firebasestorage.app",
@@ -1433,10 +1433,16 @@
         appId: "1:825116138544:web:c6795763a8dff3724a1f5",
         measurementId: "G-1SHX7OWEK4"
       };
-
       
       // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
+      try {
+        firebase.initializeApp(firebaseConfig);
+        console.log("Firebase initialized successfully");
+      } catch (error) {
+        console.error("Firebase initialization error:", error);
+        alert("There was an error connecting to the database. Please try again later.");
+      }
+      
       const auth = firebase.auth();
       const db = firebase.firestore();
       
@@ -2501,6 +2507,10 @@
                 }
                 
                 if (confirm('This will replace all your current passwords. Are you sure you want to continue?')) {
+                  // Get vault data first to ensure vaultData is defined
+                  const vaultDoc = await db.collection('vaults').doc(currentUser.uid).get();
+                  const vaultData = vaultDoc.data();
+                  
                   // Import data
                   await db.collection('vaults').doc(currentUser.uid).update({
                     passwords: data.passwords,
@@ -2645,6 +2655,7 @@
           
           // Sign in
           const userCredential = await auth.signInWithEmailAndPassword(email, password);
+          console.log("Login successful", userCredential.user);
           
           // User will be handled by the auth state change listener
         } catch (error) {
@@ -2658,9 +2669,13 @@
 
       // Sign up with email and password
       async function signup() {
+        console.log("Signup function called");
+        
         const email = signupEmail.value;
         const password = signupPassword.value;
         const confirmPass = confirmPassword.value;
+        
+        console.log(`Email: ${email}, Password length: ${password.length}`);
         
         if (!email || !password) {
           signupError.textContent = "Please enter both email and password.";
@@ -2687,7 +2702,9 @@
           signupContent.style.display = "none";
           
           // Create user
+          console.log("Attempting to create user with Firebase");
           const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+          console.log("Signup successful", userCredential.user);
           
           // User will be handled by the auth state change listener
         } catch (error) {
@@ -2743,6 +2760,7 @@
           
           // Sign out
           await auth.signOut();
+          console.log("User signed out successfully");
           
           // User will be handled by the auth state change listener
         } catch (error) {
@@ -2805,47 +2823,55 @@
         saveSettings();
       });
 
-      // auth state change listener
+      // Auth state change listener
       auth.onAuthStateChanged(async (user) => {
         authLoading.style.display = "none";
         
         if (user) {
-          // user is signed in
+          console.log("User is signed in:", user.email);
+          // User is signed in
           currentUser = user;
           
-          // update user profile
+          // Update user profile
           userAvatar.textContent = user.email.charAt(0).toUpperCase();
           userName.textContent = user.displayName || 'User';
           userEmail.textContent = user.email;
           
-          // check if vault exists
-          vaultExists = await checkVaultExists(user.uid);
-          
-          if (vaultExists) {
-            // show unlock screen
-            authScreen.style.display = "none";
-            unlockVault.style.display = "block";
-          } else {
-            // show master password setup
-            authScreen.style.display = "none";
-            masterPasswordSetup.style.display = "block";
+          // Check if vault exists
+          try {
+            vaultExists = await checkVaultExists(user.uid);
+            console.log("Vault exists:", vaultExists);
+            
+            if (vaultExists) {
+              // Show unlock screen
+              authScreen.style.display = "none";
+              unlockVault.style.display = "block";
+            } else {
+              // Show master password setup
+              authScreen.style.display = "none";
+              masterPasswordSetup.style.display = "block";
+            }
+          } catch (error) {
+            console.error("Error checking vault:", error);
+            alert("Error connecting to the database. Please try again.");
           }
         } else {
-          // user is signed out
+          console.log("User is signed out");
+          // User is signed out
           currentUser = null;
           
-          // show auth screen
+          // Show auth screen
           authScreen.style.display = "block";
           masterPasswordSetup.style.display = "none";
           unlockVault.style.display = "none";
           appContainer.style.display = "none";
           
-          // show login form
+          // Show login form
           loginContent.style.display = "block";
           signupContent.style.display = "none";
           resetPasswordContent.style.display = "none";
           
-          // clear auth forms
+          // Clear auth forms
           loginEmail.value = '';
           loginPassword.value = '';
           signupEmail.value = '';
@@ -2858,9 +2884,12 @@
         }
       });
 
-      // event Listeners
+      // Event Listeners
       loginBtn.addEventListener('click', login);
-      signupBtn.addEventListener('click', signup);
+      signupBtn.addEventListener('click', function() {
+        console.log("Signup button clicked - direct handler");
+        signup();
+      });
       resetPasswordBtn.addEventListener('click', sendPasswordResetEmail);
       createVaultBtn.addEventListener('click', createVault);
       unlockVaultBtn.addEventListener('click', unlockVault);
@@ -2875,7 +2904,7 @@
       changeAccountPasswordBtn.addEventListener('click', changeAccountPassword);
       deleteAccountBtn.addEventListener('click', deleteAccount);
 
-      // enter key handlers
+      // Enter key handlers
       loginPassword.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           loginBtn.click();
@@ -2905,6 +2934,8 @@
           createVaultBtn.click();
         }
       });
+
+      console.log("Script initialization completed");
     });
   </script>
 </body>
