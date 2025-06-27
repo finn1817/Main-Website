@@ -303,6 +303,16 @@
             font-family: monospace;
         }
 
+        .short-link-info {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #1d4ed8;
+        }
+
         .btn {
             padding: 15px 25px;
             border: none;
@@ -551,15 +561,15 @@
     <div class="container">
         <div class="header">
             <h1>⚡ QuickShare</h1>
-            <p>Instant file sharing, completely free</p>
+            <p>Instant file sharing with tiny URLs</p>
             <p class="subtitle">No servers, optimized for large files</p>
         </div>
 
         <!-- Features Section -->
         <div class="features">
             <div class="feature">
-                <div class="feature-icon">🚀</div>
-                <div>Instant Sharing</div>
+                <div class="feature-icon">⚡</div>
+                <div>Short URLs</div>
             </div>
             <div class="feature">
                 <div class="feature-icon">🔒</div>
@@ -567,7 +577,7 @@
             </div>
             <div class="feature">
                 <div class="feature-icon">💾</div>
-                <div>Large Files Optimized</div>
+                <div>Large Files OK</div>
             </div>
             <div class="feature">
                 <div class="feature-icon">🌐</div>
@@ -580,7 +590,7 @@
             <div class="upload-zone" id="upload-zone">
                 <div class="upload-icon">📁</div>
                 <div class="upload-text">Drop files here or click to browse</div>
-                <div class="upload-subtext">Optimized for files up to 500MB • Larger files may need alternative methods</div>
+                <div class="upload-subtext">Creates short, shareable links • Optimized for files up to 500MB</div>
                 <input type="file" id="file-input" class="file-input" multiple>
             </div>
 
@@ -621,9 +631,9 @@
                     <input type="text" class="link-input" id="share-link" readonly>
                     <button class="btn btn-success" onclick="copyLink()">📋 Copy Link</button>
                 </div>
-                <p style="color: #059669; font-size: 1rem; margin-top: 15px; font-weight: 500;">
-                    🎯 Share this link with anyone to let them download your file instantly!
-                </p>
+                <div class="short-link-info">
+                    🎯 <strong>Tiny URL created!</strong> This short link will work as long as the sender keeps their browser session active.
+                </div>
             </div>
 
             <button class="btn btn-primary" id="upload-btn" onclick="selectFile()" style="width: 100%; margin-top: 25px; font-size: 1.1rem;">
@@ -661,7 +671,7 @@
         </div>
 
         <div class="footer">
-            <p>🌟 Completely free • No registration required • Files processed locally in your browser</p>
+            <p>🌟 Completely free • No registration required • Files stored locally in sender's browser</p>
         </div>
     </div>
 
@@ -678,13 +688,96 @@
             HUGE: 500 * 1024 * 1024     // 500MB
         };
 
+        // Short link storage
+        class ShortLinkManager {
+            constructor() {
+                this.storageKey = 'quickshare_links';
+                this.cleanup();
+            }
+
+            generateShortId() {
+                return Math.random().toString(36).substr(2, 8) + Date.now().toString(36);
+            }
+
+            store(data) {
+                const shortId = this.generateShortId();
+                const linkData = {
+                    id: shortId,
+                    data: data,
+                    timestamp: Date.now(),
+                    expires: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+                };
+
+                try {
+                    const stored = this.getStored();
+                    stored[shortId] = linkData;
+                    localStorage.setItem(this.storageKey, JSON.stringify(stored));
+                    return shortId;
+                } catch (e) {
+                    console.error('Storage failed:', e);
+                    throw new Error('File too large for browser storage');
+                }
+            }
+
+            retrieve(shortId) {
+                const stored = this.getStored();
+                const linkData = stored[shortId];
+                
+                if (!linkData) {
+                    return null;
+                }
+
+                if (Date.now() > linkData.expires) {
+                    delete stored[shortId];
+                    localStorage.setItem(this.storageKey, JSON.stringify(stored));
+                    return null;
+                }
+
+                return linkData.data;
+            }
+
+            getStored() {
+                try {
+                    return JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+                } catch (e) {
+                    return {};
+                }
+            }
+
+            cleanup() {
+                const stored = this.getStored();
+                const now = Date.now();
+                let cleaned = false;
+
+                for (const [id, linkData] of Object.entries(stored)) {
+                    if (now > linkData.expires) {
+                        delete stored[id];
+                        cleaned = true;
+                    }
+                }
+
+                if (cleaned) {
+                    localStorage.setItem(this.storageKey, JSON.stringify(stored));
+                }
+            }
+
+            getStorageInfo() {
+                const stored = this.getStored();
+                const count = Object.keys(stored).length;
+                const sizeEstimate = JSON.stringify(stored).length;
+                return { count, sizeEstimate };
+            }
+        }
+
+        const linkManager = new ShortLinkManager();
+
         // Check if this is a download link
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const data = urlParams.get('d');
+            const shortId = urlParams.get('s');
             
-            if (data) {
-                showDownloadSection(data);
+            if (shortId) {
+                showDownloadSection(shortId);
             }
         });
 
@@ -770,7 +863,7 @@
             showSizeWarning(totalSize, maxSize, sizeWarning);
 
             fileInfo.style.display = 'block';
-            uploadBtn.textContent = '🚀 Create Share Link';
+            uploadBtn.textContent = '🚀 Create Short Link';
             uploadBtn.onclick = processFiles;
         }
 
@@ -787,7 +880,7 @@
             } else if (maxSize > FILE_SIZE_LIMITS.LARGE) {
                 warningElement.innerHTML = `
                     ⚠️ <strong>Large file detected!</strong> Files over 100MB may be slow to process. 
-                    Make sure you have a stable internet connection.
+                    Make sure you have stable internet and don't close this tab.
                 `;
                 warningElement.className = 'size-warning';
                 warningElement.classList.remove('hidden');
@@ -853,7 +946,7 @@
                 }
 
                 // Create share package
-                progressText.textContent = 'Creating share link...';
+                progressText.textContent = 'Creating short link...';
                 progressFill.style.width = '90%';
                 
                 const sharePackage = {
@@ -864,22 +957,18 @@
                     isMultiple: isMultipleFiles
                 };
 
-                // Compress more efficiently
-                await new Promise(resolve => setTimeout(resolve, 50)); // Allow UI update
-                const jsonString = JSON.stringify(sharePackage);
-                
-                // Simple base64 encoding (more memory efficient than complex compression)
-                const compressed = btoa(unescape(encodeURIComponent(jsonString)));
-                const shareLink = `${window.location.origin}${window.location.pathname}?d=${encodeURIComponent(compressed)}`;
+                // Store in browser storage and get short ID
+                const shortId = linkManager.store(sharePackage);
+                const shareLink = `${window.location.origin}${window.location.pathname}?s=${shortId}`;
                 
                 progressFill.style.width = '100%';
-                progressText.textContent = 'Ready to share! 100%';
+                progressText.textContent = 'Short link ready! 100%';
                 
                 document.getElementById('share-link').value = shareLink;
                 document.getElementById('share-section').style.display = 'block';
                 
-                uploadBtn.textContent = '✅ Share Link Created!';
-                showAlert('Share link created successfully! 🎉', 'success');
+                uploadBtn.textContent = '✅ Short Link Created!';
+                showAlert('Short link created successfully! 🎉', 'success');
 
                 // Clean up memory
                 fileData.length = 0;
@@ -888,7 +977,9 @@
                 console.error('Error:', error);
                 let errorMessage = 'Failed to create share link.';
                 
-                if (error.message.includes('memory') || error.message.includes('Maximum call stack')) {
+                if (error.message.includes('storage') || error.message.includes('quota')) {
+                    errorMessage = 'Not enough browser storage space. Try clearing your browser data or using smaller files.';
+                } else if (error.message.includes('memory') || error.message.includes('Maximum call stack')) {
                     errorMessage = 'File too large for browser memory. Try a smaller file or use WeTransfer for files over 200MB.';
                 }
                 
@@ -945,17 +1036,19 @@
             }
         }
 
-        // Download functionality (optimized for large files)
-        async function showDownloadSection(encodedData) {
+        // Download functionality (uses short IDs)
+        async function showDownloadSection(shortId) {
             document.getElementById('upload-section').classList.add('hidden');
             document.getElementById('download-section').classList.remove('hidden');
 
             try {
-                const decodedData = decodeURIComponent(encodedData);
-                const jsonString = decodeURIComponent(escape(atob(decodedData)));
-                const sharePackage = JSON.parse(jsonString);
+                const sharePackage = linkManager.retrieve(shortId);
                 
-                if (!sharePackage || !sharePackage.files) {
+                if (!sharePackage) {
+                    throw new Error('File not found - it may have expired or been deleted');
+                }
+
+                if (!sharePackage.files) {
                     throw new Error('Invalid share link');
                 }
 
@@ -986,7 +1079,7 @@
 
             } catch (error) {
                 console.error('Error loading share:', error);
-                showAlert('Invalid or corrupted share link.', 'error');
+                showAlert(`❌ ${error.message}`, 'error');
             }
         }
 
@@ -1053,11 +1146,11 @@
             linkInput.setSelectionRange(0, 99999);
             
             navigator.clipboard.writeText(linkInput.value).then(() => {
-                showAlert('Link copied to clipboard! 📋', 'success');
+                showAlert('Short link copied to clipboard! 📋', 'success');
             }).catch(() => {
                 try {
                     document.execCommand('copy');
-                    showAlert('Link copied to clipboard! 📋', 'success');
+                    showAlert('Short link copied to clipboard! 📋', 'success');
                 } catch (err) {
                     showAlert('Please manually copy the link', 'info');
                 }
