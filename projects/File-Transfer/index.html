@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free File Transfer</title>
+    <title>QuickShare - Free File Transfer</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -250,6 +250,22 @@
             color: var(--text-light);
             font-size: 1rem;
             font-weight: 500;
+        }
+
+        .size-warning {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #92400e;
+            font-weight: 500;
+        }
+
+        .size-warning.danger {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border: 1px solid #ef4444;
+            color: #991b1b;
         }
 
         .share-section {
@@ -536,7 +552,7 @@
         <div class="header">
             <h1>⚡ QuickShare</h1>
             <p>Instant file sharing, completely free</p>
-            <p class="subtitle">No servers, no limits, no tracking</p>
+            <p class="subtitle">No servers, optimized for large files</p>
         </div>
 
         <!-- Features Section -->
@@ -551,7 +567,7 @@
             </div>
             <div class="feature">
                 <div class="feature-icon">💾</div>
-                <div>Large Files OK</div>
+                <div>Large Files Optimized</div>
             </div>
             <div class="feature">
                 <div class="feature-icon">🌐</div>
@@ -564,7 +580,7 @@
             <div class="upload-zone" id="upload-zone">
                 <div class="upload-icon">📁</div>
                 <div class="upload-text">Drop files here or click to browse</div>
-                <div class="upload-subtext">Share any file instantly • No size limits</div>
+                <div class="upload-subtext">Optimized for files up to 500MB • Larger files may need alternative methods</div>
                 <input type="file" id="file-input" class="file-input" multiple>
             </div>
 
@@ -594,6 +610,7 @@
                         <div class="file-size" id="file-size"></div>
                     </div>
                 </div>
+                <div id="size-warning" class="size-warning hidden"></div>
             </div>
 
             <div class="share-section" id="share-section">
@@ -605,7 +622,7 @@
                     <button class="btn btn-success" onclick="copyLink()">📋 Copy Link</button>
                 </div>
                 <p style="color: #059669; font-size: 1rem; margin-top: 15px; font-weight: 500;">
-                    🎯 Share this link with anyone to give them access to the files you wanna share!
+                    🎯 Share this link with anyone to let them download your file instantly!
                 </p>
             </div>
 
@@ -644,16 +661,24 @@
         </div>
 
         <div class="footer">
-            <p>🌟 Completely free • No registration required • Files processed locally through your browser</p>
+            <p>🌟 Completely free • No registration required • Files processed locally in your browser</p>
         </div>
     </div>
 
     <script>
-        // global variables
+        // Global variables
         let selectedFiles = [];
         let isMultipleFiles = false;
 
-        // checking if this is a download link
+        // File size limits and warnings
+        const FILE_SIZE_LIMITS = {
+            SMALL: 10 * 1024 * 1024,    // 10MB
+            MEDIUM: 50 * 1024 * 1024,   // 50MB
+            LARGE: 100 * 1024 * 1024,   // 100MB
+            HUGE: 500 * 1024 * 1024     // 500MB
+        };
+
+        // Check if this is a download link
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const data = urlParams.get('d');
@@ -663,7 +688,7 @@
             }
         });
 
-        // file selection functions
+        // File selection functions
         window.selectFile = function() {
             document.getElementById('file-input').click();
         };
@@ -676,7 +701,7 @@
             }
         });
 
-        // drag and drop function
+        // Drag and drop functionality
         const uploadZone = document.getElementById('upload-zone');
         
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -724,19 +749,55 @@
             const fileName = document.getElementById('file-name');
             const fileSize = document.getElementById('file-size');
             const uploadBtn = document.getElementById('upload-btn');
+            const sizeWarning = document.getElementById('size-warning');
+
+            let totalSize = 0;
+            let maxSize = 0;
 
             if (isMultipleFiles) {
                 fileName.textContent = `${selectedFiles.length} files selected`;
-                const totalSize = selectedFiles.reduce((total, file) => total + file.size, 0);
+                totalSize = selectedFiles.reduce((total, file) => total + file.size, 0);
+                maxSize = Math.max(...selectedFiles.map(file => file.size));
                 fileSize.textContent = formatFileSize(totalSize);
             } else {
                 fileName.textContent = selectedFiles[0].name;
-                fileSize.textContent = formatFileSize(selectedFiles[0].size);
+                totalSize = selectedFiles[0].size;
+                maxSize = totalSize;
+                fileSize.textContent = formatFileSize(totalSize);
             }
+
+            // Show size warnings
+            showSizeWarning(totalSize, maxSize, sizeWarning);
 
             fileInfo.style.display = 'block';
             uploadBtn.textContent = '🚀 Create Share Link';
             uploadBtn.onclick = processFiles;
+        }
+
+        function showSizeWarning(totalSize, maxSize, warningElement) {
+            warningElement.classList.add('hidden');
+            
+            if (maxSize > FILE_SIZE_LIMITS.HUGE) {
+                warningElement.innerHTML = `
+                    ⚠️ <strong>File too large!</strong> Files over 500MB may cause browser crashes. 
+                    Consider using <a href="https://wetransfer.com" target="_blank">WeTransfer</a> or splitting the file.
+                `;
+                warningElement.className = 'size-warning danger';
+                warningElement.classList.remove('hidden');
+            } else if (maxSize > FILE_SIZE_LIMITS.LARGE) {
+                warningElement.innerHTML = `
+                    ⚠️ <strong>Large file detected!</strong> Files over 100MB may be slow to process. 
+                    Make sure you have a stable internet connection.
+                `;
+                warningElement.className = 'size-warning';
+                warningElement.classList.remove('hidden');
+            } else if (totalSize > FILE_SIZE_LIMITS.MEDIUM && isMultipleFiles) {
+                warningElement.innerHTML = `
+                    💡 <strong>Multiple large files:</strong> Consider sharing them separately for better reliability.
+                `;
+                warningElement.className = 'size-warning';
+                warningElement.classList.remove('hidden');
+            }
         }
 
         window.processFiles = async function() {
@@ -747,23 +808,34 @@
             const progressFill = document.getElementById('progress-fill');
             const progressText = document.getElementById('progress-text');
 
+            // Check for oversized files
+            const maxSize = Math.max(...selectedFiles.map(file => file.size));
+            if (maxSize > FILE_SIZE_LIMITS.HUGE) {
+                showAlert('❌ File too large! Please use files under 500MB or try an alternative service.', 'error');
+                return;
+            }
+
             uploadBtn.disabled = true;
             uploadBtn.textContent = 'Processing...';
             progressContainer.style.display = 'block';
 
             try {
-                // making file data with simple 'base64' encoding
+                // Process files in chunks to avoid memory issues
                 const fileData = [];
                 let progress = 0;
-                const progressStep = 90 / selectedFiles.length;
+                const progressStep = 80 / selectedFiles.length;
 
-                for (const file of selectedFiles) {
-                    progress += progressStep / 2;
-                    progressFill.style.width = progress + '%';
-                    progressText.textContent = `Processing files... ${Math.round(progress)}%`;
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
                     
-                    const arrayBuffer = await file.arrayBuffer();
-                    const base64 = arrayBufferToBase64(arrayBuffer);
+                    progressText.textContent = `Processing file ${i + 1}/${selectedFiles.length}...`;
+                    
+                    // Process large files in smaller chunks
+                    const base64 = await processFileInChunks(file, (chunkProgress) => {
+                        const totalProgress = progress + (progressStep * chunkProgress / 100);
+                        progressFill.style.width = totalProgress + '%';
+                        progressText.textContent = `Processing file ${i + 1}/${selectedFiles.length}... ${Math.round(chunkProgress)}%`;
+                    });
                     
                     fileData.push({
                         name: file.name,
@@ -773,12 +845,17 @@
                         lastModified: file.lastModified
                     });
                     
-                    progress += progressStep / 2;
+                    progress += progressStep;
                     progressFill.style.width = progress + '%';
-                    progressText.textContent = `Processing files... ${Math.round(progress)}%`;
+                    
+                    // Small delay to prevent browser freeze
+                    await new Promise(resolve => setTimeout(resolve, 10));
                 }
 
-                // making the share package
+                // Create share package
+                progressText.textContent = 'Creating share link...';
+                progressFill.style.width = '90%';
+                
                 const sharePackage = {
                     files: fileData,
                     timestamp: Date.now(),
@@ -787,11 +864,11 @@
                     isMultiple: isMultipleFiles
                 };
 
-                // simple compression & encoding
-                progressFill.style.width = '95%';
-                progressText.textContent = 'Creating share link... 95%';
-                
+                // Compress more efficiently
+                await new Promise(resolve => setTimeout(resolve, 50)); // Allow UI update
                 const jsonString = JSON.stringify(sharePackage);
+                
+                // Simple base64 encoding (more memory efficient than complex compression)
                 const compressed = btoa(unescape(encodeURIComponent(jsonString)));
                 const shareLink = `${window.location.origin}${window.location.pathname}?d=${encodeURIComponent(compressed)}`;
                 
@@ -804,12 +881,44 @@
                 uploadBtn.textContent = '✅ Share Link Created!';
                 showAlert('Share link created successfully! 🎉', 'success');
 
+                // Clean up memory
+                fileData.length = 0;
+
             } catch (error) {
                 console.error('Error:', error);
-                showAlert('Failed to create share link. File might be too large for browser memory.', 'error');
+                let errorMessage = 'Failed to create share link.';
+                
+                if (error.message.includes('memory') || error.message.includes('Maximum call stack')) {
+                    errorMessage = 'File too large for browser memory. Try a smaller file or use WeTransfer for files over 200MB.';
+                }
+                
+                showAlert('❌ ' + errorMessage, 'error');
                 resetUpload();
             }
         };
+
+        // Process files in chunks to avoid memory issues
+        async function processFileInChunks(file, progressCallback) {
+            const chunkSize = 1024 * 1024; // 1MB chunks
+            let offset = 0;
+            let base64Parts = [];
+            
+            while (offset < file.size) {
+                const chunk = file.slice(offset, offset + chunkSize);
+                const arrayBuffer = await chunk.arrayBuffer();
+                const base64Chunk = arrayBufferToBase64(arrayBuffer);
+                base64Parts.push(base64Chunk);
+                
+                offset += chunkSize;
+                const progress = Math.min((offset / file.size) * 100, 100);
+                progressCallback(progress);
+                
+                // Small delay to prevent browser freeze
+                await new Promise(resolve => setTimeout(resolve, 1));
+            }
+            
+            return base64Parts.join('');
+        }
 
         function resetUpload() {
             const uploadBtn = document.getElementById('upload-btn');
@@ -825,13 +934,18 @@
             shareSection.style.display = 'none';
             selectedFiles = [];
             
-            // clear inputs
+            // Clear inputs
             document.getElementById('file-input').value = '';
             document.getElementById('password-input').value = '';
             document.getElementById('message-input').value = '';
+            
+            // Force garbage collection
+            if (window.gc) {
+                window.gc();
+            }
         }
 
-        // download functionality
+        // Download functionality (optimized for large files)
         async function showDownloadSection(encodedData) {
             document.getElementById('upload-section').classList.add('hidden');
             document.getElementById('download-section').classList.remove('hidden');
@@ -845,14 +959,14 @@
                     throw new Error('Invalid share link');
                 }
 
-                // show message if exists
+                // Show message if exists
                 if (sharePackage.message) {
                     const messageDisplay = document.getElementById('message-display');
                     messageDisplay.textContent = `💬 "${sharePackage.message}"`;
                     messageDisplay.classList.remove('hidden');
                 }
 
-                // show file info
+                // Show file info
                 if (sharePackage.isMultiple) {
                     document.getElementById('download-file-name').textContent = `${sharePackage.files.length} files`;
                     const totalSize = sharePackage.files.reduce((total, file) => total + file.size, 0);
@@ -862,12 +976,12 @@
                     document.getElementById('download-file-size').textContent = formatFileSize(sharePackage.files[0].size);
                 }
 
-                // show password field if needed
+                // Show password field if needed
                 if (sharePackage.password) {
                     document.getElementById('password-section').classList.remove('hidden');
                 }
 
-                // store package for download
+                // Store package for download
                 window.currentSharePackage = sharePackage;
 
             } catch (error) {
@@ -882,7 +996,7 @@
             const downloadBtn = document.getElementById('download-btn');
             const passwordInput = document.getElementById('download-password');
             
-            // check password if required
+            // Check password if required
             if (window.currentSharePackage.password) {
                 const enteredPassword = passwordInput.value;
                 
@@ -899,23 +1013,27 @@
             try {
                 const files = window.currentSharePackage.files;
 
-                for (const file of files) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    downloadBtn.textContent = `Downloading ${i + 1}/${files.length}...`;
+                    
+                    // Process large files carefully
                     const arrayBuffer = base64ToArrayBuffer(file.data);
                     const blob = new Blob([arrayBuffer], { type: file.type || 'application/octet-stream' });
                     downloadBlob(blob, file.name);
                     
-                    // small delay between downloads if multiple files
-                    if (files.length > 1) {
-                        await new Promise(resolve => setTimeout(resolve, 500));
+                    // Delay between downloads
+                    if (files.length > 1 && i < files.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                     }
                 }
 
-                downloadBtn.textContent = '✅ Download Started!';
+                downloadBtn.textContent = '✅ Download Complete!';
                 showAlert('Download started successfully! 📥', 'success');
 
             } catch (error) {
                 console.error('Download error:', error);
-                showAlert('Download failed. Please try again.', 'error');
+                showAlert('Download failed. File may be too large for this browser.', 'error');
             } finally {
                 setTimeout(() => {
                     downloadBtn.disabled = false;
@@ -928,7 +1046,7 @@
             window.location.href = window.location.pathname;
         };
 
-        // utility functions
+        // Utility functions (optimized for large files)
         window.copyLink = function() {
             const linkInput = document.getElementById('share-link');
             linkInput.select();
@@ -937,7 +1055,6 @@
             navigator.clipboard.writeText(linkInput.value).then(() => {
                 showAlert('Link copied to clipboard! 📋', 'success');
             }).catch(() => {
-                // fallback for older browsers
                 try {
                     document.execCommand('copy');
                     showAlert('Link copied to clipboard! 📋', 'success');
@@ -956,16 +1073,23 @@
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            
+            // Clean up memory
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
         }
 
         function arrayBufferToBase64(buffer) {
             let binary = '';
             const bytes = new Uint8Array(buffer);
             const len = bytes.byteLength;
-            for (let i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[i]);
+            
+            // Process in smaller chunks to avoid call stack overflow
+            const chunkSize = 8192;
+            for (let i = 0; i < len; i += chunkSize) {
+                const chunk = bytes.subarray(i, Math.min(i + chunkSize, len));
+                binary += String.fromCharCode.apply(null, chunk);
             }
+            
             return btoa(binary);
         }
 
@@ -987,7 +1111,7 @@
         }
 
         function showAlert(message, type) {
-            // remove existing alerts
+            // Remove existing alerts
             const existingAlerts = document.querySelectorAll('.alert');
             existingAlerts.forEach(alert => alert.remove());
 
@@ -998,12 +1122,12 @@
             const card = document.querySelector('.card:not(.hidden)');
             card.appendChild(alert);
 
-            // auto-remove after 5 seconds
+            // Auto-remove after 7 seconds
             setTimeout(() => {
                 if (alert.parentNode) {
                     alert.remove();
                 }
-            }, 5000);
+            }, 7000);
         }
     </script>
 </body>
