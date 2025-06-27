@@ -36,7 +36,7 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: url("https://github.com/finn1817/Main-Website/blob/main/assets/images/background-light.jpg?raw=true") center/cover no-repeat;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       background-attachment: fixed;
       min-height: 100vh;
       display: flex;
@@ -49,7 +49,7 @@
     }
 
     body.dark {
-      background: url("https://github.com/finn1817/Main-Website/blob/main/assets/images/background-dark.jpg?raw=true") center/cover no-repeat;
+      background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
       background-attachment: fixed;
     }
 
@@ -65,15 +65,15 @@
 
     .particle {
       position: absolute;
-      width: 4px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.3);
+      width: 3px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.4);
       border-radius: 50%;
-      animation: float 6s infinite linear;
+      animation: float 8s infinite linear;
     }
 
     body.dark .particle {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.3);
     }
 
     @keyframes float {
@@ -196,7 +196,7 @@
       padding: 40px;
       border-radius: var(--border-radius);
       box-shadow: var(--shadow-light);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       transition: all var(--transition-speed) ease;
     }
@@ -363,6 +363,12 @@
       overflow: hidden;
     }
 
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
     .btn-block {
       width: 100%;
     }
@@ -372,7 +378,7 @@
       color: white;
     }
 
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
       background: var(--primary-hover);
       transform: translateY(-2px);
     }
@@ -382,7 +388,7 @@
       color: white;
     }
 
-    .btn-success:hover {
+    .btn-success:hover:not(:disabled) {
       background: var(--success-hover);
       transform: translateY(-2px);
     }
@@ -392,7 +398,7 @@
       color: white;
     }
 
-    .btn-danger:hover {
+    .btn-danger:hover:not(:disabled) {
       background: var(--danger-hover);
       transform: translateY(-2px);
     }
@@ -402,7 +408,7 @@
       color: #333;
     }
 
-    .btn-warning:hover {
+    .btn-warning:hover:not(:disabled) {
       background: var(--warning-hover);
       transform: translateY(-2px);
     }
@@ -533,6 +539,7 @@
       background: rgba(0, 0, 0, 0.05);
       border-radius: 5px;
       border: 1px solid rgba(0, 0, 0, 0.1);
+      word-break: break-all;
     }
 
     body.dark .password-item-value {
@@ -549,6 +556,7 @@
       cursor: pointer;
       font-size: 12px;
       transition: all var(--transition-speed) ease;
+      white-space: nowrap;
     }
 
     .copy-btn:hover {
@@ -593,6 +601,13 @@
       color: var(--success-color);
       word-break: break-all;
       margin-bottom: 15px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 8px;
+    }
+
+    body.dark .generated-password-text {
+      background: rgba(40, 40, 40, 0.5);
     }
 
     .strength-indicator {
@@ -646,6 +661,27 @@
       display: none !important;
     }
 
+    .vault-stats {
+      background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .vault-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .export-btn, .import-btn, .lock-btn {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+
     @media (max-width: 768px) {
       .container {
         padding: 10px;
@@ -680,6 +716,10 @@
 
       .password-item-label {
         min-width: auto;
+      }
+
+      .vault-actions {
+        flex-direction: column;
       }
     }
   </style>
@@ -748,6 +788,16 @@
 
     <!-- Main App -->
     <div id="app-container" class="app-container hidden">
+      <div class="vault-stats" id="vault-stats">
+        <strong>🔐 Secure Vault Unlocked</strong> | <span id="password-count">0</span> passwords stored
+      </div>
+
+      <div class="vault-actions">
+        <button id="export-vault-btn" class="btn btn-warning export-btn">📤 Export Vault</button>
+        <button id="import-vault-btn" class="btn btn-warning import-btn">📥 Import Vault</button>
+        <button id="lock-vault-btn" class="btn btn-danger lock-btn">🔒 Lock Vault</button>
+      </div>
+
       <div class="tabs">
         <button class="tab active" data-tab="vault">🔐 My Vault</button>
         <button class="tab" data-tab="generator">⚡ Generator</button>
@@ -757,7 +807,7 @@
       <!-- Vault Tab -->
       <div id="vault-tab" class="tab-content active">
         <div class="search-bar">
-          <input type="text" id="search-passwords" placeholder="Search passwords..." />
+          <input type="text" id="search-passwords" placeholder="🔍 Search passwords..." />
         </div>
         <div class="password-list" id="password-list">
           <div class="no-passwords">
@@ -849,19 +899,22 @@
     </div>
   </div>
 
+  <!-- Hidden file input for import -->
+  <input type="file" id="import-file-input" accept=".json" style="display: none;">
+
   <script>
     // Global variables for the app
     let encryptionKey = null;
     let masterPasswordHash = null;
     
     // Constants
-    const VAULT_KEY = "passwordVault";
-    const SALT_KEY = "vaultSalt";
+    const VAULT_KEY = "passwordVault_v2";
+    const SALT_KEY = "vaultSalt_v2";
     
     // Initialize when everything is ready
     document.addEventListener('DOMContentLoaded', function() {
       // Wait a bit for CryptoJS to fully load
-      setTimeout(initializeApp, 500);
+      setTimeout(initializeApp, 100);
     });
     
     function initializeApp() {
@@ -934,14 +987,14 @@
       const container = document.getElementById("particlesContainer");
       if (!container) return;
       
-      const particleCount = 50;
+      const particleCount = 30;
 
       for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement("div");
         particle.className = "particle";
         particle.style.left = Math.random() * 100 + "%";
-        particle.style.animationDelay = Math.random() * 6 + "s";
-        particle.style.animationDuration = (Math.random() * 3 + 3) + "s";
+        particle.style.animationDelay = Math.random() * 8 + "s";
+        particle.style.animationDuration = (Math.random() * 4 + 6) + "s";
         container.appendChild(particle);
       }
     }
@@ -951,7 +1004,7 @@
       if (transition) {
         setTimeout(() => {
           transition.classList.add("hidden");
-        }, 1000);
+        }, 800);
       }
     }
 
@@ -1001,6 +1054,7 @@
     function setupEventListeners() {
       // Master password setup
       const masterPasswordInput = document.getElementById("master-password");
+      const confirmPasswordInput = document.getElementById("confirm-master-password");
       const createVaultBtn = document.getElementById("create-vault-btn");
 
       if (masterPasswordInput) {
@@ -1010,6 +1064,20 @@
             document.getElementById("master-password-strength-meter"),
             document.getElementById("master-password-strength-text")
           );
+        });
+        
+        masterPasswordInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            confirmPasswordInput?.focus();
+          }
+        });
+      }
+
+      if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            handleCreateVault();
+          }
         });
       }
 
@@ -1041,6 +1109,28 @@
             handleUnlockVault();
           }
         });
+      }
+
+      // Vault actions
+      const exportBtn = document.getElementById("export-vault-btn");
+      const importBtn = document.getElementById("import-vault-btn");
+      const lockBtn = document.getElementById("lock-vault-btn");
+      const importInput = document.getElementById("import-file-input");
+
+      if (exportBtn) {
+        exportBtn.addEventListener("click", handleExportVault);
+      }
+
+      if (importBtn) {
+        importBtn.addEventListener("click", () => importInput?.click());
+      }
+
+      if (lockBtn) {
+        lockBtn.addEventListener("click", handleLockVault);
+      }
+
+      if (importInput) {
+        importInput.addEventListener("change", handleImportVault);
       }
 
       // Password generator
@@ -1095,97 +1185,60 @@
       }
     }
 
-    // Simple crypto functions using built-in browser crypto when possible
-    function generateRandomBytes(size) {
-      const array = new Uint8Array(size);
-      crypto.getRandomValues(array);
-      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-    }
-
+    // Improved crypto functions using CryptoJS properly
     function generateSalt() {
       try {
-        // Use browser crypto for better randomness
-        return generateRandomBytes(16);
+        return CryptoJS.lib.WordArray.random(256/8).toString();
       } catch (e) {
-        // Fallback to CryptoJS
-        return CryptoJS.lib.WordArray.random(128/8).toString();
+        console.error('Salt generation failed:', e);
+        throw new Error('Failed to generate encryption salt');
       }
     }
 
     function deriveKey(password, salt) {
       try {
-        // Use a simpler approach that's more reliable
-        const combined = password + salt;
-        let hash = CryptoJS.SHA256(combined).toString();
-        
-        // Multiple rounds for security
-        for (let i = 0; i < 1000; i++) {
-          hash = CryptoJS.SHA256(hash + combined).toString();
-        }
-        
-        return hash;
+        // Use PBKDF2 for proper key derivation
+        const key = CryptoJS.PBKDF2(password, salt, {
+          keySize: 256/32,
+          iterations: 10000
+        });
+        return key.toString();
       } catch (error) {
         console.error('Key derivation failed:', error);
         throw new Error('Failed to create encryption key');
       }
     }
 
-    function simpleEncrypt(text, key) {
-      try {
-        // Simple XOR encryption for reliability
-        const keyBytes = key.split('').map(c => c.charCodeAt(0));
-        const textBytes = text.split('').map(c => c.charCodeAt(0));
-        
-        const encrypted = textBytes.map((byte, i) => {
-          return byte ^ keyBytes[i % keyBytes.length];
-        });
-        
-        return btoa(String.fromCharCode.apply(null, encrypted));
-      } catch (error) {
-        console.error('Encryption failed:', error);
-        throw new Error('Encryption failed');
-      }
-    }
-
-    function simpleDecrypt(encryptedText, key) {
-      try {
-        const keyBytes = key.split('').map(c => c.charCodeAt(0));
-        const encryptedBytes = atob(encryptedText).split('').map(c => c.charCodeAt(0));
-        
-        const decrypted = encryptedBytes.map((byte, i) => {
-          return byte ^ keyBytes[i % keyBytes.length];
-        });
-        
-        return String.fromCharCode.apply(null, decrypted);
-      } catch (error) {
-        console.error('Decryption failed:', error);
-        throw new Error('Decryption failed');
-      }
-    }
-
     function encrypt(data, key) {
       try {
         const jsonString = JSON.stringify(data);
-        return simpleEncrypt(jsonString, key);
+        const encrypted = CryptoJS.AES.encrypt(jsonString, key).toString();
+        return encrypted;
       } catch (error) {
-        console.error('Data encryption failed:', error);
+        console.error('Encryption failed:', error);
         throw new Error('Failed to encrypt data');
       }
     }
 
     function decrypt(encryptedData, key) {
       try {
-        const jsonString = simpleDecrypt(encryptedData, key);
+        const decrypted = CryptoJS.AES.decrypt(encryptedData, key);
+        const jsonString = decrypted.toString(CryptoJS.enc.Utf8);
+        
+        if (!jsonString) {
+          throw new Error('Invalid decryption key or corrupted data');
+        }
+        
         return JSON.parse(jsonString);
       } catch (error) {
-        console.error('Data decryption failed:', error);
-        throw new Error('Failed to decrypt data');
+        console.error('Decryption failed:', error);
+        throw new Error('Failed to decrypt data - incorrect password or corrupted vault');
       }
     }
 
     // Vault management
     function isVaultSetup() {
-      return localStorage.getItem(VAULT_KEY) !== null;
+      return localStorage.getItem(VAULT_KEY) !== null && localStorage.getItem(SALT_KEY) !== null;
     }
 
     function saveVault(passwords) {
@@ -1194,7 +1247,13 @@
       }
       
       try {
-        const encryptedData = encrypt(passwords, encryptionKey);
+        const vaultData = {
+          passwords: passwords,
+          timestamp: new Date().toISOString(),
+          version: "2.0"
+        };
+        
+        const encryptedData = encrypt(vaultData, encryptionKey);
         localStorage.setItem(VAULT_KEY, encryptedData);
         return true;
       } catch (error) {
@@ -1214,10 +1273,31 @@
           return [];
         }
         
-        return decrypt(encryptedData, encryptionKey) || [];
+        const vaultData = decrypt(encryptedData, encryptionKey);
+        
+        // Handle different vault versions
+        if (vaultData.passwords) {
+          return vaultData.passwords;
+        } else if (Array.isArray(vaultData)) {
+          return vaultData;
+        } else {
+          return [];
+        }
       } catch (error) {
         console.error("Error loading vault:", error);
         throw error;
+      }
+    }
+
+    function updateVaultStats() {
+      try {
+        const vault = loadVault();
+        const countElement = document.getElementById("password-count");
+        if (countElement) {
+          countElement.textContent = vault.length;
+        }
+      } catch (error) {
+        console.error("Error updating vault stats:", error);
       }
     }
 
@@ -1289,24 +1369,32 @@
     function handleCreateVault() {
       console.log("Creating vault...");
       
+      const createBtn = document.getElementById("create-vault-btn");
+      
       try {
+        // Disable button during creation
+        createBtn.disabled = true;
+        createBtn.textContent = "Creating Vault...";
+        
         const masterPassword = document.getElementById("master-password")?.value || "";
         const confirmPassword = document.getElementById("confirm-master-password")?.value || "";
 
         // Validation
         if (!masterPassword || !confirmPassword) {
-          showAlert("master-password-error", "Please fill in both password fields.");
-          return;
+          throw new Error("Please fill in both password fields.");
         }
 
         if (masterPassword !== confirmPassword) {
-          showAlert("master-password-error", "Passwords do not match.");
-          return;
+          throw new Error("Passwords do not match.");
         }
 
         if (masterPassword.length < 8) {
-          showAlert("master-password-error", "Master password must be at least 8 characters long.");
-          return;
+          throw new Error("Master password must be at least 8 characters long.");
+        }
+
+        const strengthResult = checkPasswordStrength(masterPassword);
+        if (strengthResult.score < 3) {
+          throw new Error("Master password is too weak. Please use a stronger password.");
         }
 
         // Test localStorage
@@ -1314,49 +1402,57 @@
           localStorage.setItem('test', 'test');
           localStorage.removeItem('test');
         } catch (e) {
-          throw new Error('Browser storage is not available');
+          throw new Error('Browser storage is not available. Please enable local storage.');
         }
 
         // Generate salt and key
         const salt = generateSalt();
         encryptionKey = deriveKey(masterPassword, salt);
         
-        // Test encryption
-        const testData = [{test: "data", id: "1"}];
-        const testEncrypted = encrypt(testData, encryptionKey);
-        const testDecrypted = decrypt(testEncrypted, encryptionKey);
+        // Test encryption with empty vault
+        const testData = [];
+        saveVault(testData);
+        const testLoad = loadVault();
         
-        if (!testDecrypted || !Array.isArray(testDecrypted) || testDecrypted[0].test !== "data") {
+        if (!Array.isArray(testLoad)) {
           throw new Error('Encryption test failed');
         }
         
-        // Save salt and create vault
+        // Save salt
         localStorage.setItem(SALT_KEY, salt);
-        saveVault([]);
         
         console.log("Vault created successfully");
         showScreen("app-container");
         renderPasswordList();
+        updateVaultStats();
         
       } catch (error) {
         console.error("Vault creation error:", error);
-        showAlert("master-password-error", "Failed to create vault: " + error.message);
+        showAlert("master-password-error", error.message);
+        encryptionKey = null;
+      } finally {
+        // Re-enable button
+        createBtn.disabled = false;
+        createBtn.textContent = "Create Local Vault";
       }
     }
 
     function handleUnlockVault() {
+      const unlockBtn = document.getElementById("unlock-vault-btn");
+      
       try {
+        unlockBtn.disabled = true;
+        unlockBtn.textContent = "Unlocking...";
+        
         const password = document.getElementById("unlock-master-password")?.value;
         
         if (!password) {
-          showAlert("unlock-error", "Please enter your master password.");
-          return;
+          throw new Error("Please enter your master password.");
         }
 
         const salt = localStorage.getItem(SALT_KEY);
         if (!salt) {
-          showAlert("unlock-error", "Vault data corrupted. Please reset vault.");
-          return;
+          throw new Error("Vault data corrupted. Please reset vault.");
         }
 
         encryptionKey = deriveKey(password, salt);
@@ -1365,21 +1461,122 @@
         console.log("Vault unlocked successfully");
         showScreen("app-container");
         renderPasswordList();
+        updateVaultStats();
+        
+        // Clear password field
+        document.getElementById("unlock-master-password").value = "";
+        
       } catch (error) {
         console.error("Unlock error:", error);
         showAlert("unlock-error", "Incorrect master password or corrupted vault data.");
         encryptionKey = null;
+      } finally {
+        unlockBtn.disabled = false;
+        unlockBtn.textContent = "Unlock Vault";
       }
     }
 
     function handleResetVault() {
-      if (confirm("Are you sure you want to reset your vault? All stored passwords will be permanently deleted.")) {
-        localStorage.removeItem(VAULT_KEY);
-        localStorage.removeItem(SALT_KEY);
-        encryptionKey = null;
-        masterPasswordHash = null;
-        showScreen("master-password-setup");
+      if (confirm("⚠️ DANGER: This will permanently delete ALL your stored passwords!\n\nThis action cannot be undone. Are you absolutely sure you want to reset your vault?")) {
+        if (confirm("Last chance! All your passwords will be lost forever. Continue?")) {
+          localStorage.removeItem(VAULT_KEY);
+          localStorage.removeItem(SALT_KEY);
+          encryptionKey = null;
+          masterPasswordHash = null;
+          showScreen("master-password-setup");
+          
+          // Clear form fields
+          ["master-password", "confirm-master-password", "unlock-master-password"].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.value = "";
+          });
+        }
       }
+    }
+
+    function handleLockVault() {
+      encryptionKey = null;
+      showScreen("unlock-vault");
+      
+      // Clear password field
+      const unlockInput = document.getElementById("unlock-master-password");
+      if (unlockInput) {
+        unlockInput.value = "";
+      }
+    }
+
+    function handleExportVault() {
+      try {
+        const vault = loadVault();
+        const exportData = {
+          passwords: vault,
+          exported: new Date().toISOString(),
+          version: "2.0"
+        };
+        
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `password-vault-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert("✅ Vault exported successfully! Keep this file secure.");
+      } catch (error) {
+        console.error("Export error:", error);
+        alert("❌ Failed to export vault: " + error.message);
+      }
+    }
+
+    function handleImportVault(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importData = JSON.parse(e.target.result);
+          
+          if (!importData.passwords || !Array.isArray(importData.passwords)) {
+            throw new Error("Invalid vault file format");
+          }
+          
+          const currentVault = loadVault();
+          let importedCount = 0;
+          
+          importData.passwords.forEach(importedPassword => {
+            // Check for duplicates
+            const exists = currentVault.some(existing => 
+              existing.siteName === importedPassword.siteName && 
+              existing.username === importedPassword.username
+            );
+            
+            if (!exists) {
+              importedPassword.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+              importedPassword.dateAdded = importedPassword.dateAdded || new Date().toISOString();
+              currentVault.push(importedPassword);
+              importedCount++;
+            }
+          });
+          
+          saveVault(currentVault);
+          renderPasswordList();
+          updateVaultStats();
+          
+          alert(`✅ Import successful! Added ${importedCount} new passwords.`);
+        } catch (error) {
+          console.error("Import error:", error);
+          alert("❌ Failed to import vault: " + error.message);
+        }
+      };
+      
+      reader.readAsText(file);
+      event.target.value = ""; // Reset file input
     }
 
     function handleGeneratePassword() {
@@ -1397,7 +1594,7 @@
       if (includeSymbols) charset += "!@#$%^&*()_+-=[]{}|;:,.<>?";
 
       if (excludeAmbiguous) {
-        charset = charset.replace(/[0O1lI]/g, "");
+        charset = charset.replace(/[0OoLl1I]/g, "");
       }
 
       if (!charset) {
@@ -1405,9 +1602,13 @@
         return;
       }
 
+      // Generate cryptographically secure password
       let password = "";
+      const array = new Uint8Array(length);
+      crypto.getRandomValues(array);
+      
       for (let i = 0; i < length; i++) {
-        password += charset.charAt(Math.floor(Math.random() * charset.length));
+        password += charset.charAt(array[i] % charset.length);
       }
 
       const passwordText = document.getElementById("generated-password-text");
@@ -1447,11 +1648,11 @@
     function handleAddPassword(e) {
       e.preventDefault();
       
-      const siteName = document.getElementById("site-name")?.value;
-      const username = document.getElementById("username")?.value;
-      const siteUrl = document.getElementById("site-url")?.value;
+      const siteName = document.getElementById("site-name")?.value?.trim();
+      const username = document.getElementById("username")?.value?.trim();
+      const siteUrl = document.getElementById("site-url")?.value?.trim();
       const password = document.getElementById("password")?.value;
-      const notes = document.getElementById("notes")?.value;
+      const notes = document.getElementById("notes")?.value?.trim();
       const editId = e.target.dataset.editId;
 
       if (!siteName || !password) {
@@ -1479,7 +1680,7 @@
           e.target.querySelector('button[type="submit"]').textContent = "Save Password";
         } else {
           const newEntry = {
-            id: Date.now().toString(),
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
             siteName,
             username,
             siteUrl,
@@ -1500,6 +1701,7 @@
         
         document.querySelector('.tab[data-tab="vault"]')?.click();
         renderPasswordList();
+        updateVaultStats();
       } catch (error) {
         console.error("Error saving password:", error);
         showAlert("add-password-error", "Failed to save password: " + error.message);
@@ -1534,6 +1736,7 @@
         showCopySuccess(button);
       } catch (err) {
         console.error('Copy failed:', err);
+        alert('Failed to copy to clipboard');
       }
       
       document.body.removeChild(textArea);
@@ -1557,6 +1760,15 @@
       return div.innerHTML;
     }
 
+    function formatDate(dateString) {
+      if (!dateString) return "";
+      try {
+        return new Date(dateString).toLocaleDateString();
+      } catch (e) {
+        return "";
+      }
+    }
+
     function renderPasswordList(searchTerm = "") {
       try {
         const vault = loadVault();
@@ -1567,7 +1779,7 @@
         if (!vault || vault.length === 0) {
           passwordList.innerHTML = `
             <div class="no-passwords">
-              <h3>No passwords saved yet</h3>
+              <h3>🔐 No passwords saved yet</h3>
               <p>Add your first password using the "Add Password" tab</p>
             </div>
           `;
@@ -1577,13 +1789,14 @@
         const filteredVault = vault.filter(entry => 
           entry.siteName.toLowerCase().includes(searchTerm.toLowerCase()) ||
           (entry.username && entry.username.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (entry.siteUrl && entry.siteUrl.toLowerCase().includes(searchTerm.toLowerCase()))
+          (entry.siteUrl && entry.siteUrl.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (entry.notes && entry.notes.toLowerCase().includes(searchTerm.toLowerCase()))
         );
 
         if (filteredVault.length === 0 && searchTerm) {
           passwordList.innerHTML = `
             <div class="no-passwords">
-              <h3>No passwords found</h3>
+              <h3>🔍 No passwords found</h3>
               <p>No passwords match your search term "${escapeHtml(searchTerm)}"</p>
             </div>
           `;
@@ -1595,36 +1808,41 @@
             <div class="password-item-header">
               <div class="password-item-title">${escapeHtml(entry.siteName)}</div>
               <div class="password-item-actions">
-                <button class="btn btn-warning" onclick="editPassword('${entry.id}')" style="padding: 5px 10px; font-size: 12px;">Edit</button>
-                <button class="btn btn-danger" onclick="deletePassword('${entry.id}')" style="padding: 5px 10px; font-size: 12px;">Delete</button>
+                <button class="btn btn-warning" onclick="editPassword('${entry.id}')" style="padding: 5px 10px; font-size: 12px;">✏️ Edit</button>
+                <button class="btn btn-danger" onclick="deletePassword('${entry.id}')" style="padding: 5px 10px; font-size: 12px;">🗑️ Delete</button>
               </div>
             </div>
             ${entry.username ? `
               <div class="password-item-field">
-                <span class="password-item-label">Username:</span>
+                <span class="password-item-label">👤 Username:</span>
                 <span class="password-item-value">${escapeHtml(entry.username)}</span>
                 <button class="copy-btn" onclick="copyToClipboard('${escapeHtml(entry.username)}', this)">Copy</button>
               </div>
             ` : ''}
             <div class="password-item-field">
-              <span class="password-item-label">Password:</span>
+              <span class="password-item-label">🔑 Password:</span>
               <span class="password-item-value password-hidden">••••••••••••</span>
               <button class="copy-btn" onclick="copyToClipboard('${escapeHtml(entry.password)}', this)">Copy</button>
               <button class="copy-btn show-password-btn" onclick="togglePasswordVisibility('${entry.id}')" style="background: var(--primary-color);">Show</button>
             </div>
             ${entry.siteUrl ? `
               <div class="password-item-field">
-                <span class="password-item-label">URL:</span>
-                <span class="password-item-value"><a href="${escapeHtml(entry.siteUrl)}" target="_blank" rel="noopener">${escapeHtml(entry.siteUrl)}</a></span>
+                <span class="password-item-label">🌐 URL:</span>
+                <span class="password-item-value"><a href="${escapeHtml(entry.siteUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(entry.siteUrl)}</a></span>
                 <button class="copy-btn" onclick="copyToClipboard('${escapeHtml(entry.siteUrl)}', this)">Copy</button>
               </div>
             ` : ''}
             ${entry.notes ? `
               <div class="password-item-field">
-                <span class="password-item-label">Notes:</span>
+                <span class="password-item-label">📝 Notes:</span>
                 <span class="password-item-value">${escapeHtml(entry.notes)}</span>
               </div>
             ` : ''}
+            <div class="password-item-field" style="font-size: 0.8rem; color: var(--text-secondary-light);">
+              <span class="password-item-label">📅 Added:</span>
+              <span class="password-item-value">${formatDate(entry.dateAdded)}</span>
+              ${entry.dateModified ? `<span style="margin-left: 15px;">✏️ Modified: ${formatDate(entry.dateModified)}</span>` : ''}
+            </div>
           </div>
         `).join("");
       } catch (error) {
@@ -1633,8 +1851,9 @@
         if (passwordList) {
           passwordList.innerHTML = `
             <div class="no-passwords">
-              <h3>Error loading passwords</h3>
+              <h3>❌ Error loading passwords</h3>
               <p>Please try unlocking your vault again</p>
+              <button class="btn btn-primary" onclick="handleLockVault()">Return to Unlock</button>
             </div>
           `;
         }
@@ -1660,10 +1879,12 @@
           passwordValue.textContent = entry.password;
           passwordValue.classList.remove("password-hidden");
           toggleBtn.textContent = "Hide";
+          toggleBtn.style.background = "#ffc107";
         } else {
           passwordValue.textContent = "••••••••••••";
           passwordValue.classList.add("password-hidden");
           toggleBtn.textContent = "Show";
+          toggleBtn.style.background = "var(--primary-color)";
         }
       } catch (error) {
         console.error("Error toggling password:", error);
@@ -1671,16 +1892,21 @@
     };
 
     window.deletePassword = function(id) {
-      if (confirm("Are you sure you want to delete this password?")) {
-        try {
-          const vault = loadVault();
+      try {
+        const vault = loadVault();
+        const entry = vault.find(e => e.id === id);
+        
+        if (!entry) return;
+        
+        if (confirm(`🗑️ Delete password for "${entry.siteName}"?\n\nThis action cannot be undone.`)) {
           const updatedVault = vault.filter(entry => entry.id !== id);
           saveVault(updatedVault);
           renderPasswordList();
-        } catch (error) {
-          console.error("Error deleting password:", error);
-          alert("Failed to delete password");
+          updateVaultStats();
         }
+      } catch (error) {
+        console.error("Error deleting password:", error);
+        alert("Failed to delete password: " + error.message);
       }
     };
 
@@ -1710,11 +1936,13 @@
         );
       } catch (error) {
         console.error("Error editing password:", error);
-        alert("Failed to load password for editing");
+        alert("Failed to load password for editing: " + error.message);
       }
     };
 
+    // Expose functions globally
     window.copyToClipboard = copyToClipboard;
+    window.handleLockVault = handleLockVault;
   </script>
 </body>
 </html>
