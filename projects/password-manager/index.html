@@ -850,6 +850,12 @@
   </div>
 
   <script>
+    // Check if CryptoJS is loaded
+    if (typeof CryptoJS === 'undefined') {
+      console.error('CryptoJS library failed to load');
+      alert('Security library failed to load. Please refresh the page.');
+    }
+
     // Global variables for the app
     let encryptionKey = null;
     let masterPasswordHash = null;
@@ -858,34 +864,56 @@
     const VAULT_KEY = "passwordVault";
     const SALT_KEY = "vaultSalt";
     
-    document.addEventListener("DOMContentLoaded", function () {
-      console.log("DOM loaded, initializing app...");
+    // Wait for both DOM and CryptoJS to be ready
+    function initializeWhenReady() {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startApp);
+      } else {
+        startApp();
+      }
+    }
+    
+    function startApp() {
+      console.log("Starting password manager app...");
       
-      // Theme management
-      initializeTheme();
+      // Verify CryptoJS is available
+      if (typeof CryptoJS === 'undefined') {
+        console.error('CryptoJS not available');
+        return;
+      }
       
-      // Initialize particles and UI
-      createParticles();
-      hidePageTransition();
-      
-      // Setup password toggles
-      setupPasswordToggles();
-      
-      // Setup tab management
-      setupTabs();
-      
-      // Setup event listeners
-      setupEventListeners();
-      
-      // Check if vault exists and show appropriate screen
-      initializeApp();
-      
-      console.log("App initialization complete");
-    });
+      try {
+        // Theme management
+        initializeTheme();
+        
+        // Initialize particles and UI
+        createParticles();
+        hidePageTransition();
+        
+        // Setup password toggles
+        setupPasswordToggles();
+        
+        // Setup tab management
+        setupTabs();
+        
+        // Setup event listeners
+        setupEventListeners();
+        
+        // Check if vault exists and show appropriate screen
+        initializeApp();
+        
+        console.log("App initialization complete");
+      } catch (error) {
+        console.error("Error during app initialization:", error);
+        alert("Failed to initialize the password manager. Please refresh the page.");
+      }
+    }
 
     function initializeTheme() {
       const body = document.body;
       const toggleBtn = document.getElementById("theme-toggle");
+      
+      if (!toggleBtn) return;
       
       function setTheme(isDark) {
         if (isDark) {
@@ -916,6 +944,8 @@
 
     function createParticles() {
       const container = document.getElementById("particlesContainer");
+      if (!container) return;
+      
       const particleCount = 50;
 
       for (let i = 0; i < particleCount; i++) {
@@ -930,9 +960,11 @@
 
     function hidePageTransition() {
       const transition = document.querySelector(".page-transition");
-      setTimeout(() => {
-        transition.classList.add("hidden");
-      }, 1000);
+      if (transition) {
+        setTimeout(() => {
+          transition.classList.add("hidden");
+        }, 1000);
+      }
     }
 
     function setupPasswordToggles() {
@@ -948,7 +980,8 @@
         const inputField = document.getElementById(input);
         
         if (toggleBtn && inputField) {
-          toggleBtn.addEventListener("click", () => {
+          toggleBtn.addEventListener("click", (e) => {
+            e.preventDefault();
             const type = inputField.type === "password" ? "text" : "password";
             inputField.type = type;
             toggleBtn.textContent = type === "password" ? "👁️" : "🙈";
@@ -978,10 +1011,14 @@
     }
 
     function setupEventListeners() {
+      console.log("Setting up event listeners...");
+      
       // Master password setup
       const masterPasswordInput = document.getElementById("master-password");
       const confirmMasterPasswordInput = document.getElementById("confirm-master-password");
       const createVaultBtn = document.getElementById("create-vault-btn");
+
+      console.log("Create vault button found:", !!createVaultBtn);
 
       if (masterPasswordInput) {
         masterPasswordInput.addEventListener("input", () => {
@@ -994,7 +1031,14 @@
       }
 
       if (createVaultBtn) {
-        createVaultBtn.addEventListener("click", handleCreateVault);
+        createVaultBtn.addEventListener("click", (e) => {
+          console.log("Create vault button clicked!");
+          e.preventDefault();
+          handleCreateVault();
+        });
+        console.log("Create vault event listener attached");
+      } else {
+        console.error("Create vault button not found!");
       }
 
       // Vault unlock
@@ -1003,16 +1047,23 @@
       const unlockPasswordInput = document.getElementById("unlock-master-password");
 
       if (unlockVaultBtn) {
-        unlockVaultBtn.addEventListener("click", handleUnlockVault);
+        unlockVaultBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          handleUnlockVault();
+        });
       }
 
       if (resetVaultBtn) {
-        resetVaultBtn.addEventListener("click", handleResetVault);
+        resetVaultBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          handleResetVault();
+        });
       }
 
       if (unlockPasswordInput) {
         unlockPasswordInput.addEventListener("keypress", (e) => {
           if (e.key === "Enter") {
+            e.preventDefault();
             handleUnlockVault();
           }
         });
@@ -1031,11 +1082,15 @@
       }
 
       if (generateBtn) {
-        generateBtn.addEventListener("click", handleGeneratePassword);
+        generateBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          handleGeneratePassword();
+        });
       }
 
       if (copyGeneratedBtn) {
-        copyGeneratedBtn.addEventListener("click", () => {
+        copyGeneratedBtn.addEventListener("click", (e) => {
+          e.preventDefault();
           const passwordText = document.getElementById("generated-password-text");
           if (passwordText && passwordText.textContent) {
             copyToClipboard(passwordText.textContent, copyGeneratedBtn);
@@ -1068,6 +1123,8 @@
           renderPasswordList(e.target.value);
         });
       }
+      
+      console.log("All event listeners set up");
     }
 
     // Crypto functions
@@ -1184,6 +1241,8 @@
 
     // Password strength checker
     function checkPasswordStrength(password) {
+      if (!password) return { score: 0, strength: "Very Weak", color: "#dc3545", feedback: [] };
+      
       let score = 0;
       let feedback = [];
 
@@ -1223,31 +1282,35 @@
 
     // Event handlers
     function handleCreateVault() {
-      console.log("Creating vault...");
+      console.log("handleCreateVault called");
       
-      const masterPassword = document.getElementById("master-password")?.value;
-      const confirmPassword = document.getElementById("confirm-master-password")?.value;
-
-      // Validation
-      if (!masterPassword || !confirmPassword) {
-        showAlert("master-password-error", "Please fill in both password fields.");
-        return;
-      }
-
-      if (masterPassword !== confirmPassword) {
-        showAlert("master-password-error", "Passwords do not match.");
-        return;
-      }
-
-      if (masterPassword.length < 8) {
-        showAlert("master-password-error", "Master password must be at least 8 characters long.");
-        return;
-      }
-
       try {
+        const masterPassword = document.getElementById("master-password")?.value || "";
+        const confirmPassword = document.getElementById("confirm-master-password")?.value || "";
+
+        console.log("Password lengths:", masterPassword.length, confirmPassword.length);
+
+        // Validation
+        if (!masterPassword || !confirmPassword) {
+          showAlert("master-password-error", "Please fill in both password fields.");
+          return;
+        }
+
+        if (masterPassword !== confirmPassword) {
+          showAlert("master-password-error", "Passwords do not match.");
+          return;
+        }
+
+        if (masterPassword.length < 8) {
+          showAlert("master-password-error", "Master password must be at least 8 characters long.");
+          return;
+        }
+
+        console.log("Validation passed, creating vault...");
+
         // Generate salt and derive key
         const salt = generateSalt();
-        console.log("Generated salt:", salt);
+        console.log("Generated salt");
         
         encryptionKey = deriveKey(masterPassword, salt);
         console.log("Derived encryption key");
@@ -1271,27 +1334,27 @@
         }
       } catch (error) {
         console.error("Error creating vault:", error);
-        showAlert("master-password-error", "Failed to create vault. Please try again.");
+        showAlert("master-password-error", "Failed to create vault: " + error.message);
       }
     }
 
     function handleUnlockVault() {
       console.log("Unlocking vault...");
       
-      const password = document.getElementById("unlock-master-password")?.value;
-      
-      if (!password) {
-        showAlert("unlock-error", "Please enter your master password.");
-        return;
-      }
-
-      const salt = localStorage.getItem(SALT_KEY);
-      if (!salt) {
-        showAlert("unlock-error", "Vault data corrupted. Please reset.");
-        return;
-      }
-
       try {
+        const password = document.getElementById("unlock-master-password")?.value;
+        
+        if (!password) {
+          showAlert("unlock-error", "Please enter your master password.");
+          return;
+        }
+
+        const salt = localStorage.getItem(SALT_KEY);
+        if (!salt) {
+          showAlert("unlock-error", "Vault data corrupted. Please reset.");
+          return;
+        }
+
         encryptionKey = deriveKey(password, salt);
         const testVault = loadVault();
 
@@ -1441,7 +1504,7 @@
           );
           
           // Switch to vault tab and refresh
-          document.querySelector('.tab[data-tab="vault"]').click();
+          document.querySelector('.tab[data-tab="vault"]')?.click();
           renderPasswordList();
         } else {
           showAlert("add-password-error", "Failed to save password.");
@@ -1615,7 +1678,7 @@
       if (!entry) return;
 
       // Switch to add tab
-      document.querySelector('.tab[data-tab="add"]').click();
+      document.querySelector('.tab[data-tab="add"]')?.click();
       
       // Populate form
       document.getElementById("site-name").value = entry.siteName;
@@ -1640,6 +1703,9 @@
 
     // Make copyToClipboard globally available
     window.copyToClipboard = copyToClipboard;
+
+    // Start the app when ready
+    initializeWhenReady();
   </script>
 </body>
 </html>
