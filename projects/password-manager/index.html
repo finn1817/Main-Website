@@ -44,8 +44,7 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: url("assets/images/background-light.jpg") center/cover no-repeat;
-      background-attachment: fixed;
+      background-color: #f0f0f0; /* Fallback background color */
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -56,8 +55,7 @@
     }
 
     body.dark {
-      background: url("assets/images/background-dark.jpg") center/cover no-repeat;
-      background-attachment: fixed;
+      background-color: #1a1a1a; /* Fallback dark background color */
     }
 
     /* animated background particles */
@@ -1041,8 +1039,8 @@
       <p>Your passwords are securely encrypted and stored in the cloud. Access them from any device.</p>
       
       <div class="auth-tabs">
-        <div class="auth-tab active" data-tab="login">Login</div>
-        <div class="auth-tab" data-tab="signup">Sign Up</div>
+        <div class="auth-tab active" id="login-tab">Login</div>
+        <div class="auth-tab" id="signup-tab">Sign Up</div>
       </div>
       
       <!-- Login Form -->
@@ -1423,14 +1421,15 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Firebase configuration - Replace with your actual Firebase config
+      // Firebase configuration
       const firebaseConfig = {
-        apiKey: "AIzaSyB_MP0NA6zHN48KU1oKAVP8q_VK4oGTGMk",
-        authDomain: "password-manager-2adbf.firebaseapp.com",
-        projectId: "password-manager-2adbf",
-        storageBucket: "password-manager-2adbf.appspot.com",
-        messagingSenderId: "825116138544",
-        appId: "1:825116138544:web:c6795763a8dff3724a1f5"
+        // Replace with your actual Firebase config
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
       };
       
       // Initialize Firebase
@@ -1452,8 +1451,8 @@
       
       // Auth elements
       const authScreen = document.getElementById("auth-screen");
-      const authTabs = document.querySelectorAll(".auth-tab");
-      const authContents = document.querySelectorAll(".auth-content");
+      const loginTab = document.getElementById("login-tab");
+      const signupTab = document.getElementById("signup-tab");
       const loginContent = document.getElementById("login-content");
       const signupContent = document.getElementById("signup-content");
       const resetPasswordContent = document.getElementById("reset-password-content");
@@ -1613,26 +1612,20 @@
       });
 
       // Auth tab switching - Fixed
-      authTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          const tabId = tab.getAttribute('data-tab');
-          
-          // Remove active class from all tabs
-          authTabs.forEach(t => t.classList.remove('active'));
-          
-          // Add active class to clicked tab
-          tab.classList.add('active');
-          
-          // Hide all auth contents
-          authContents.forEach(content => content.classList.remove('active'));
-          
-          // Show corresponding content
-          if (tabId === "login") {
-            loginContent.classList.add('active');
-          } else if (tabId === "signup") {
-            signupContent.classList.add('active');
-          }
-        });
+      loginTab.addEventListener('click', () => {
+        loginTab.classList.add('active');
+        signupTab.classList.remove('active');
+        loginContent.classList.add('active');
+        signupContent.classList.remove('active');
+        resetPasswordContent.classList.remove('active');
+      });
+
+      signupTab.addEventListener('click', () => {
+        signupTab.classList.add('active');
+        loginTab.classList.remove('active');
+        signupContent.classList.add('active');
+        loginContent.classList.remove('active');
+        resetPasswordContent.classList.remove('active');
       });
 
       // Forgot password link
@@ -2580,19 +2573,19 @@
         if (confirm('This will permanently delete all your saved passwords. Are you sure you want to continue?')) {
           if (confirm('Are you REALLY sure? This action cannot be undone!')) {
             try {
-              // initialize empty passwords array
+              // Initialize empty passwords array
               passwords = [];
               
-              // encrypt empty passwords array
+              // Encrypt empty passwords array
               const encryptedPasswords = encryptData(passwords, encryptionKey);
               
-              // update vault document
+              // Update vault document
               await db.collection('vaults').doc(currentUser.uid).update({
                 passwords: encryptedPasswords,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
               });
               
-              // update UI
+              // Update UI
               renderPasswordList();
               
               alert('All passwords have been deleted.');
@@ -2604,7 +2597,7 @@
         }
       }
 
-      // change account password
+      // Change account password
       async function changeAccountPassword() {
         if (!auth) {
           alert("Authentication error. Please refresh the page and try again.");
@@ -2626,7 +2619,7 @@
           
           if (!credential) return;
           
-          // reauthenticate user
+          // Reauthenticate user
           const emailCredential = firebase.auth.EmailAuthProvider.credential(
             currentUser.email,
             credential
@@ -2634,7 +2627,7 @@
           
           await currentUser.reauthenticateWithCredential(emailCredential);
           
-          // update password
+          // Update password
           await currentUser.updatePassword(newPassword);
           
           alert('Account password updated successfully!');
@@ -2644,7 +2637,7 @@
         }
       }
 
-      // delete account
+      // Delete account
       async function deleteAccount() {
         if (!auth || !db) {
           alert("Connection error. Please refresh the page and try again.");
@@ -2658,7 +2651,7 @@
               
               if (!credential) return;
               
-              // reauthenticate user
+              // Reauthenticate user
               const emailCredential = firebase.auth.EmailAuthProvider.credential(
                 currentUser.email,
                 credential
@@ -2666,15 +2659,15 @@
               
               await currentUser.reauthenticateWithCredential(emailCredential);
               
-              // delete vault document
+              // Delete vault document
               await db.collection('vaults').doc(currentUser.uid).delete();
               
-              // delete user account
+              // Delete user account
               await currentUser.delete();
               
               alert('Your account has been deleted.');
               
-              // redirect to auth screen
+              // Redirect to auth screen
               window.location.reload();
             } catch (error) {
               console.error('Error deleting account:', error);
@@ -2684,7 +2677,7 @@
         }
       }
 
-      // login with email and password
+      // Login with email and password
       async function login() {
         if (!auth) {
           alert("Authentication error. Please refresh the page and try again.");
@@ -2701,16 +2694,16 @@
         }
         
         try {
-          // show loading
+          // Show loading
           loginError.style.display = "none";
           authLoading.style.display = "block";
           loginContent.style.display = "none";
           
-          // sign in
+          // Sign in
           const userCredential = await auth.signInWithEmailAndPassword(email, password);
           console.log("Login successful", userCredential.user);
           
-          // user will be handled by the auth state change listener
+          // User will be handled by the auth state change listener
         } catch (error) {
           console.error('Login error:', error);
           loginError.textContent = error.message;
@@ -2720,7 +2713,7 @@
         }
       }
 
-      // sign up with email and password
+      // Sign up with email and password
       async function signup() {
         if (!auth) {
           alert("Authentication error. Please refresh the page and try again.");
@@ -2754,17 +2747,17 @@
         }
         
         try {
-          // show loading
+          // Show loading
           signupError.style.display = "none";
           authLoading.style.display = "block";
           signupContent.style.display = "none";
           
-          // create user
+          // Create user
           console.log("Attempting to create user with Firebase");
           const userCredential = await auth.createUserWithEmailAndPassword(email, password);
           console.log("Signup successful", userCredential.user);
           
-          // user will be handled by the auth state change listener
+          // User will be handled by the auth state change listener
         } catch (error) {
           console.error('Signup error:', error);
           signupError.textContent = error.message;
@@ -2774,7 +2767,7 @@
         }
       }
 
-      // send password reset email
+      // Send password reset email
       async function sendPasswordResetEmail() {
         if (!auth) {
           alert("Authentication error. Please refresh the page and try again.");
@@ -2791,15 +2784,15 @@
         }
         
         try {
-          // show loading
+          // Show loading
           resetMessage.style.display = "none";
           resetPasswordBtn.disabled = true;
           resetPasswordBtn.innerHTML = '<div class="loader" style="width: 20px; height: 20px; margin-right: 10px;"></div> Sending...';
           
-          // send reset email
+          // Send reset email
           await auth.sendPasswordResetEmail(email);
           
-          // show success message
+          // Show success message
           resetMessage.textContent = "Password reset email sent! Check your inbox.";
           resetMessage.className = "alert alert-success";
           resetMessage.style.display = "block";
@@ -2814,7 +2807,7 @@
         }
       }
 
-      // sign out
+      // Sign out
       async function signOut() {
         if (!auth) {
           alert("Authentication error. Please refresh the page and try again.");
@@ -2822,29 +2815,29 @@
         }
         
         try {
-          // clear sensitive data
+          // Clear sensitive data
           encryptionKey = '';
           passwords = [];
           
-          // sign out
+          // Sign out
           await auth.signOut();
           console.log("User signed out successfully");
           
-          // user will be handled by the auth state change listener
+          // User will be handled by the auth state change listener
         } catch (error) {
           console.error('Sign out error:', error);
           alert('Failed to sign out. Please try again.');
         }
       }
 
-      // generate password button handler
+      // Generate password button handler
       generatePasswordBtn.addEventListener('click', () => {
         const password = generatePassword();
         generatedPassword.textContent = password;
         updateStrengthMeter(password, generatedPasswordStrengthMeter, generatedPasswordStrengthText);
       });
 
-      // copy generated password button handler
+      // Copy generated password button handler
       copyGeneratedBtn.addEventListener('click', () => {
         const password = generatedPassword.textContent;
         if (password && password !== 'Click "Generate" to create a password') {
@@ -2859,19 +2852,19 @@
         }
       });
 
-      // initialize password length slider
+      // Initialize password length slider
       passwordLengthSlider.addEventListener('input', () => {
         passwordLengthValue.textContent = passwordLengthSlider.value;
       });
 
-      // generate for site button handler
+      // Generate for site button handler
       generateForSiteBtn.addEventListener('click', () => {
         const password = generatePassword();
         passwordInput.value = password;
         updateStrengthMeter(password, addPasswordStrengthMeter, addPasswordStrengthText);
       });
 
-      // settings change handlers
+      // Settings change handlers
       autoLogoutSelect.addEventListener('change', () => {
         settings.autoLogout = parseInt(autoLogoutSelect.value);
         saveSettings();
@@ -2891,32 +2884,32 @@
         saveSettings();
       });
 
-      // auth state change listener
+      // Auth state change listener
       if (auth) {
         auth.onAuthStateChanged(async (user) => {
           authLoading.style.display = "none";
           
           if (user) {
             console.log("User is signed in:", user.email);
-            // user is signed in
+            // User is signed in
             currentUser = user;
             
-            // update user profile
+            // Update user profile
             userAvatar.textContent = user.email.charAt(0).toUpperCase();
             userName.textContent = user.displayName || 'User';
             userEmail.textContent = user.email;
             
-            // check if vault exists
+            // Check if vault exists
             try {
               vaultExists = await checkVaultExists(user.uid);
               console.log("Vault exists:", vaultExists);
               
               if (vaultExists) {
-                // show unlock screen
+                // Show unlock screen
                 authScreen.style.display = "none";
                 unlockVault.style.display = "block";
               } else {
-                // show master password setup
+                // Show master password setup
                 authScreen.style.display = "none";
                 masterPasswordSetup.style.display = "block";
               }
@@ -2926,21 +2919,21 @@
             }
           } else {
             console.log("User is signed out");
-            // user is signed out
+            // User is signed out
             currentUser = null;
             
-            // show auth screen
+            // Show auth screen
             authScreen.style.display = "block";
             masterPasswordSetup.style.display = "none";
             unlockVault.style.display = "none";
             appContainer.style.display = "none";
             
-            // show login form
+            // Show login form
             loginContent.style.display = "block";
             signupContent.style.display = "none";
             resetPasswordContent.style.display = "none";
             
-            // clear auth forms
+            // Clear auth forms
             loginEmail.value = '';
             loginPassword.value = '';
             signupEmail.value = '';
@@ -2954,7 +2947,7 @@
         });
       }
 
-      // event Listeners
+      // Event Listeners
       loginBtn.addEventListener('click', login);
       signupBtn.addEventListener('click', signup);
       resetPasswordBtn.addEventListener('click', sendPasswordResetEmail);
@@ -2971,7 +2964,7 @@
       changeAccountPasswordBtn.addEventListener('click', changeAccountPassword);
       deleteAccountBtn.addEventListener('click', deleteAccount);
 
-      // enter key handlers
+      // Enter key handlers
       loginPassword.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           loginBtn.click();
