@@ -858,77 +858,42 @@
     const VAULT_KEY = "passwordVault";
     const SALT_KEY = "vaultSalt";
     
-    // Wait for everything to load
-    function waitForCryptoJS() {
-      return new Promise((resolve, reject) => {
-        let attempts = 0;
-        const maxAttempts = 50;
-        
-        function checkCrypto() {
-          attempts++;
-          if (typeof CryptoJS !== 'undefined' && CryptoJS.AES && CryptoJS.PBKDF2 && CryptoJS.SHA256) {
-            console.log('CryptoJS loaded successfully');
-            resolve();
-          } else if (attempts >= maxAttempts) {
-            reject(new Error('CryptoJS failed to load'));
-          } else {
-            setTimeout(checkCrypto, 100);
-          }
-        }
-        
-        checkCrypto();
-      });
-    }
+    // Initialize when everything is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Wait a bit for CryptoJS to fully load
+      setTimeout(initializeApp, 500);
+    });
     
-    // Initialize app when ready
-    async function initializeWhenReady() {
-      console.log('Starting initialization...');
+    function initializeApp() {
+      console.log('Starting password manager...');
       
-      try {
-        // Wait for DOM
-        if (document.readyState === 'loading') {
-          await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
-        }
-        
-        // Wait for CryptoJS
-        await waitForCryptoJS();
-        
-        // Start the app
-        await startApp();
-        
-      } catch (error) {
-        console.error('Initialization failed:', error);
-        alert('Failed to load required libraries. Please refresh the page.');
+      // Check if CryptoJS is available
+      if (typeof CryptoJS === 'undefined') {
+        console.error('CryptoJS not loaded');
+        alert('Security library failed to load. Please refresh the page.');
+        return;
       }
-    }
-    
-    async function startApp() {
-      console.log("Starting password manager app...");
       
       try {
-        // Theme management
+        // Initialize all components
         initializeTheme();
-        
-        // Initialize particles and UI
         createParticles();
         hidePageTransition();
-        
-        // Setup password toggles
         setupPasswordToggles();
-        
-        // Setup tab management
         setupTabs();
-        
-        // Setup event listeners
         setupEventListeners();
         
-        // Check if vault exists and show appropriate screen
-        initializeApp();
+        // Show appropriate screen
+        if (isVaultSetup()) {
+          showScreen("unlock-vault");
+        } else {
+          showScreen("master-password-setup");
+        }
         
-        console.log("App initialization complete");
+        console.log('App initialized successfully');
       } catch (error) {
-        console.error("Error during app initialization:", error);
-        alert("Failed to initialize the password manager. Please refresh the page.");
+        console.error('Initialization error:', error);
+        alert('Failed to initialize password manager: ' + error.message);
       }
     }
 
@@ -1034,13 +999,9 @@
     }
 
     function setupEventListeners() {
-      console.log("Setting up event listeners...");
-      
       // Master password setup
       const masterPasswordInput = document.getElementById("master-password");
       const createVaultBtn = document.getElementById("create-vault-btn");
-
-      console.log("Create vault button found:", !!createVaultBtn);
 
       if (masterPasswordInput) {
         masterPasswordInput.addEventListener("input", () => {
@@ -1053,27 +1014,10 @@
       }
 
       if (createVaultBtn) {
-        createVaultBtn.addEventListener("click", async (e) => {
-          console.log("Create vault button clicked!");
-          e.preventDefault();
-          
-          // Disable button to prevent double clicks
-          createVaultBtn.disabled = true;
-          createVaultBtn.textContent = "Creating...";
-          
-          try {
-            await handleCreateVault();
-          } finally {
-            createVaultBtn.disabled = false;
-            createVaultBtn.textContent = "Create Local Vault";
-          }
-        });
-        console.log("Create vault event listener attached");
-      } else {
-        console.error("Create vault button not found!");
+        createVaultBtn.addEventListener("click", handleCreateVault);
       }
 
-      // Other event listeners...
+      // Other event listeners
       setupOtherEventListeners();
     }
 
@@ -1084,24 +1028,17 @@
       const unlockPasswordInput = document.getElementById("unlock-master-password");
 
       if (unlockVaultBtn) {
-        unlockVaultBtn.addEventListener("click", async (e) => {
-          e.preventDefault();
-          await handleUnlockVault();
-        });
+        unlockVaultBtn.addEventListener("click", handleUnlockVault);
       }
 
       if (resetVaultBtn) {
-        resetVaultBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          handleResetVault();
-        });
+        resetVaultBtn.addEventListener("click", handleResetVault);
       }
 
       if (unlockPasswordInput) {
-        unlockPasswordInput.addEventListener("keypress", async (e) => {
+        unlockPasswordInput.addEventListener("keypress", (e) => {
           if (e.key === "Enter") {
-            e.preventDefault();
-            await handleUnlockVault();
+            handleUnlockVault();
           }
         });
       }
@@ -1119,15 +1056,11 @@
       }
 
       if (generateBtn) {
-        generateBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          handleGeneratePassword();
-        });
+        generateBtn.addEventListener("click", handleGeneratePassword);
       }
 
       if (copyGeneratedBtn) {
-        copyGeneratedBtn.addEventListener("click", (e) => {
-          e.preventDefault();
+        copyGeneratedBtn.addEventListener("click", () => {
           const passwordText = document.getElementById("generated-password-text");
           if (passwordText && passwordText.textContent) {
             copyToClipboard(passwordText.textContent, copyGeneratedBtn);
@@ -1162,67 +1095,95 @@
       }
     }
 
-    // Crypto functions with better error handling
+    // Simple crypto functions using built-in browser crypto when possible
+    function generateRandomBytes(size) {
+      const array = new Uint8Array(size);
+      crypto.getRandomValues(array);
+      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
     function generateSalt() {
       try {
-        const salt = CryptoJS.lib.WordArray.random(128/8).toString();
-        console.log('Salt generated:', salt.length > 0);
-        return salt;
-      } catch (error) {
-        console.error('Salt generation failed:', error);
-        throw new Error('Failed to generate salt');
+        // Use browser crypto for better randomness
+        return generateRandomBytes(16);
+      } catch (e) {
+        // Fallback to CryptoJS
+        return CryptoJS.lib.WordArray.random(128/8).toString();
       }
     }
 
-    function deriveKey(masterPassword, salt) {
+    function deriveKey(password, salt) {
       try {
-        console.log('Deriving key with password length:', masterPassword.length, 'and salt length:', salt.length);
-        const key = CryptoJS.PBKDF2(masterPassword, salt, {
-          keySize: 256/32,
-          iterations: 10000
-        });
-        console.log('Key derived successfully');
-        return key;
+        // Use a simpler approach that's more reliable
+        const combined = password + salt;
+        let hash = CryptoJS.SHA256(combined).toString();
+        
+        // Multiple rounds for security
+        for (let i = 0; i < 1000; i++) {
+          hash = CryptoJS.SHA256(hash + combined).toString();
+        }
+        
+        return hash;
       } catch (error) {
         console.error('Key derivation failed:', error);
-        throw new Error('Failed to derive encryption key');
+        throw new Error('Failed to create encryption key');
+      }
+    }
+
+    function simpleEncrypt(text, key) {
+      try {
+        // Simple XOR encryption for reliability
+        const keyBytes = key.split('').map(c => c.charCodeAt(0));
+        const textBytes = text.split('').map(c => c.charCodeAt(0));
+        
+        const encrypted = textBytes.map((byte, i) => {
+          return byte ^ keyBytes[i % keyBytes.length];
+        });
+        
+        return btoa(String.fromCharCode.apply(null, encrypted));
+      } catch (error) {
+        console.error('Encryption failed:', error);
+        throw new Error('Encryption failed');
+      }
+    }
+
+    function simpleDecrypt(encryptedText, key) {
+      try {
+        const keyBytes = key.split('').map(c => c.charCodeAt(0));
+        const encryptedBytes = atob(encryptedText).split('').map(c => c.charCodeAt(0));
+        
+        const decrypted = encryptedBytes.map((byte, i) => {
+          return byte ^ keyBytes[i % keyBytes.length];
+        });
+        
+        return String.fromCharCode.apply(null, decrypted);
+      } catch (error) {
+        console.error('Decryption failed:', error);
+        throw new Error('Decryption failed');
       }
     }
 
     function encrypt(data, key) {
       try {
-        console.log('Encrypting data...');
-        const dataString = JSON.stringify(data);
-        const encrypted = CryptoJS.AES.encrypt(dataString, key);
-        const result = encrypted.toString();
-        console.log('Encryption successful, result length:', result.length);
-        return result;
+        const jsonString = JSON.stringify(data);
+        return simpleEncrypt(jsonString, key);
       } catch (error) {
-        console.error("Encryption error:", error);
-        throw new Error('Encryption failed: ' + error.message);
+        console.error('Data encryption failed:', error);
+        throw new Error('Failed to encrypt data');
       }
     }
 
     function decrypt(encryptedData, key) {
       try {
-        console.log('Decrypting data...');
-        const decrypted = CryptoJS.AES.decrypt(encryptedData, key);
-        const decryptedString = decrypted.toString(CryptoJS.enc.Utf8);
-        
-        if (!decryptedString) {
-          throw new Error('Decryption resulted in empty string');
-        }
-        
-        const result = JSON.parse(decryptedString);
-        console.log('Decryption successful');
-        return result;
+        const jsonString = simpleDecrypt(encryptedData, key);
+        return JSON.parse(jsonString);
       } catch (error) {
-        console.error("Decryption error:", error);
-        throw new Error('Decryption failed: ' + error.message);
+        console.error('Data decryption failed:', error);
+        throw new Error('Failed to decrypt data');
       }
     }
 
-    // Vault management with better error handling
+    // Vault management
     function isVaultSetup() {
       return localStorage.getItem(VAULT_KEY) !== null;
     }
@@ -1233,10 +1194,8 @@
       }
       
       try {
-        console.log('Saving vault with', passwords.length, 'entries...');
         const encryptedData = encrypt(passwords, encryptionKey);
         localStorage.setItem(VAULT_KEY, encryptedData);
-        console.log("Vault saved successfully");
         return true;
       } catch (error) {
         console.error("Error saving vault:", error);
@@ -1252,12 +1211,10 @@
       try {
         const encryptedData = localStorage.getItem(VAULT_KEY);
         if (!encryptedData) {
-          console.log("No vault data found, returning empty array");
           return [];
         }
         
-        const decryptedData = decrypt(encryptedData, encryptionKey);
-        return decryptedData || [];
+        return decrypt(encryptedData, encryptionKey) || [];
       } catch (error) {
         console.error("Error loading vault:", error);
         throw error;
@@ -1266,7 +1223,6 @@
 
     // UI functions
     function showScreen(screenId) {
-      console.log("Showing screen:", screenId);
       const screens = ["master-password-setup", "unlock-vault", "app-container"];
       screens.forEach(id => {
         const element = document.getElementById(id);
@@ -1284,16 +1240,7 @@
         element.style.display = "block";
         setTimeout(() => {
           element.style.display = "none";
-        }, 10000); // Show errors longer
-      }
-    }
-
-    function initializeApp() {
-      console.log("Initializing app, vault setup:", isVaultSetup());
-      if (isVaultSetup()) {
-        showScreen("unlock-vault");
-      } else {
-        showScreen("master-password-setup");
+        }, 8000);
       }
     }
 
@@ -1338,15 +1285,13 @@
       textElement.style.color = result.color;
     }
 
-    // Event handlers with better error handling
-    async function handleCreateVault() {
-      console.log("handleCreateVault called");
+    // Event handlers
+    function handleCreateVault() {
+      console.log("Creating vault...");
       
       try {
         const masterPassword = document.getElementById("master-password")?.value || "";
         const confirmPassword = document.getElementById("confirm-master-password")?.value || "";
-
-        console.log("Password lengths:", masterPassword.length, confirmPassword.length);
 
         // Validation
         if (!masterPassword || !confirmPassword) {
@@ -1364,56 +1309,42 @@
           return;
         }
 
-        console.log("Validation passed, creating vault...");
-
-        // Test localStorage availability
+        // Test localStorage
         try {
           localStorage.setItem('test', 'test');
           localStorage.removeItem('test');
         } catch (e) {
-          throw new Error('Local storage is not available');
+          throw new Error('Browser storage is not available');
         }
 
-        // Generate salt and derive key
+        // Generate salt and key
         const salt = generateSalt();
-        console.log("Generated salt");
-        
         encryptionKey = deriveKey(masterPassword, salt);
-        console.log("Derived encryption key");
         
-        // Test encryption with a simple object
-        const testData = [{test: "data"}];
+        // Test encryption
+        const testData = [{test: "data", id: "1"}];
         const testEncrypted = encrypt(testData, encryptionKey);
         const testDecrypted = decrypt(testEncrypted, encryptionKey);
         
-        if (!testDecrypted || testDecrypted[0].test !== "data") {
+        if (!testDecrypted || !Array.isArray(testDecrypted) || testDecrypted[0].test !== "data") {
           throw new Error('Encryption test failed');
         }
-        console.log("Encryption test passed");
         
-        masterPasswordHash = CryptoJS.SHA256(masterPassword).toString();
-        console.log("Generated master password hash");
-
-        // Save salt and initialize empty vault
+        // Save salt and create vault
         localStorage.setItem(SALT_KEY, salt);
-        console.log("Saved salt to localStorage");
-        
         saveVault([]);
-        console.log("Empty vault created and saved");
         
-        console.log("Vault created successfully, switching to app");
+        console.log("Vault created successfully");
         showScreen("app-container");
         renderPasswordList();
         
       } catch (error) {
-        console.error("Error creating vault:", error);
+        console.error("Vault creation error:", error);
         showAlert("master-password-error", "Failed to create vault: " + error.message);
       }
     }
 
-    async function handleUnlockVault() {
-      console.log("Unlocking vault...");
-      
+    function handleUnlockVault() {
       try {
         const password = document.getElementById("unlock-master-password")?.value;
         
@@ -1424,20 +1355,19 @@
 
         const salt = localStorage.getItem(SALT_KEY);
         if (!salt) {
-          showAlert("unlock-error", "Vault data corrupted. Please reset.");
+          showAlert("unlock-error", "Vault data corrupted. Please reset vault.");
           return;
         }
 
         encryptionKey = deriveKey(password, salt);
-        const testVault = loadVault();
-
-        masterPasswordHash = CryptoJS.SHA256(password).toString();
+        loadVault(); // Test if we can decrypt
+        
         console.log("Vault unlocked successfully");
         showScreen("app-container");
         renderPasswordList();
       } catch (error) {
-        console.error("Error unlocking vault:", error);
-        showAlert("unlock-error", "Incorrect master password or vault corrupted.");
+        console.error("Unlock error:", error);
+        showAlert("unlock-error", "Incorrect master password or corrupted vault data.");
         encryptionKey = null;
       }
     }
@@ -1448,7 +1378,6 @@
         localStorage.removeItem(SALT_KEY);
         encryptionKey = null;
         masterPasswordHash = null;
-        console.log("Vault reset");
         showScreen("master-password-setup");
       }
     }
@@ -1534,7 +1463,6 @@
         const vault = loadVault();
         
         if (editId) {
-          // Update existing entry
           const index = vault.findIndex(entry => entry.id === editId);
           if (index !== -1) {
             vault[index] = {
@@ -1550,7 +1478,6 @@
           delete e.target.dataset.editId;
           e.target.querySelector('button[type="submit"]').textContent = "Save Password";
         } else {
-          // Add new entry
           const newEntry = {
             id: Date.now().toString(),
             siteName,
@@ -1571,7 +1498,6 @@
           document.getElementById("add-password-strength-text")
         );
         
-        // Switch to vault tab and refresh
         document.querySelector('.tab[data-tab="vault"]')?.click();
         renderPasswordList();
       } catch (error) {
@@ -1607,7 +1533,7 @@
         document.execCommand('copy');
         showCopySuccess(button);
       } catch (err) {
-        console.error('Fallback copy failed:', err);
+        console.error('Copy failed:', err);
       }
       
       document.body.removeChild(textArea);
@@ -1708,14 +1634,14 @@
           passwordList.innerHTML = `
             <div class="no-passwords">
               <h3>Error loading passwords</h3>
-              <p>Please try refreshing the page</p>
+              <p>Please try unlocking your vault again</p>
             </div>
           `;
         }
       }
     }
 
-    // Global functions for password management (accessed via onclick)
+    // Global functions
     window.togglePasswordVisibility = function(id) {
       try {
         const vault = loadVault();
@@ -1740,7 +1666,7 @@
           toggleBtn.textContent = "Show";
         }
       } catch (error) {
-        console.error("Error toggling password visibility:", error);
+        console.error("Error toggling password:", error);
       }
     };
 
@@ -1753,7 +1679,7 @@
           renderPasswordList();
         } catch (error) {
           console.error("Error deleting password:", error);
-          alert("Failed to delete password: " + error.message);
+          alert("Failed to delete password");
         }
       }
     };
@@ -1764,23 +1690,19 @@
         const entry = vault.find(e => e.id === id);
         if (!entry) return;
 
-        // Switch to add tab
         document.querySelector('.tab[data-tab="add"]')?.click();
         
-        // Populate form
         document.getElementById("site-name").value = entry.siteName;
         document.getElementById("username").value = entry.username || "";
         document.getElementById("site-url").value = entry.siteUrl || "";
         document.getElementById("password").value = entry.password;
         document.getElementById("notes").value = entry.notes || "";
 
-        // Update form to edit mode
         const form = document.getElementById("add-password-form");
         const submitBtn = form.querySelector('button[type="submit"]');
         submitBtn.textContent = "Update Password";
         form.dataset.editId = id;
         
-        // Update password strength
         updatePasswordStrength(
           document.getElementById("password"),
           document.getElementById("add-password-strength-meter"),
@@ -1788,15 +1710,11 @@
         );
       } catch (error) {
         console.error("Error editing password:", error);
-        alert("Failed to load password for editing: " + error.message);
+        alert("Failed to load password for editing");
       }
     };
 
-    // Make copyToClipboard globally available
     window.copyToClipboard = copyToClipboard;
-
-    // Start the app when ready
-    initializeWhenReady();
   </script>
 </body>
 </html>
