@@ -580,6 +580,207 @@
     </div>
   </div>
 
+  <!-- Firebase & bcryptjs imports -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+<script>
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDDKiZsbGxeYA0_vzB40Gx2cpuagL1ByLM",
+  authDomain: "mywebappdb.firebaseapp.com",
+  projectId: "mywebappdb",
+  storageBucket: "mywebappdb.firebasestorage.app",
+  messagingSenderId: "505396456908",
+  appId: "1:505396456908:web:ae62308ccbd47addef8169"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// --- UI Elements ---
+// Add login/register button next to theme toggle
+const themeBtn = document.getElementById('theme-toggle');
+const loginBtn = document.createElement('button');
+loginBtn.id = 'login-btn';
+loginBtn.className = 'toggle-btn';
+loginBtn.style.right = '80px';
+loginBtn.style.position = 'fixed';
+loginBtn.style.top = themeBtn.style.top || '20px';
+loginBtn.style.zIndex = 101;
+loginBtn.innerHTML = '🔑 Login';
+document.body.appendChild(loginBtn);
+
+// Modal HTML (injected)
+const modal = document.createElement('div');
+modal.id = 'auth-modal';
+modal.style.display = 'none';
+modal.style.position = 'fixed';
+modal.style.top = 0;
+modal.style.left = 0;
+modal.style.width = '100vw';
+modal.style.height = '100vh';
+modal.style.background = 'rgba(0,0,0,0.5)';
+modal.style.zIndex = 2000;
+modal.innerHTML = `
+  <div style="background: var(--card-bg-light); color: var(--text-light); max-width: 350px; margin: 8vh auto; padding: 32px 24px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); position: relative;">
+    <button id="close-auth-modal" style="position:absolute;top:10px;right:10px;font-size:1.2em;background:none;border:none;cursor:pointer;">&times;</button>
+    <h2 id="auth-modal-title">Login</h2>
+    <form id="auth-form">
+      <div id="auth-form-fields"></div>
+      <button type="submit" style="margin-top:18px;width:100%;padding:10px 0;background:var(--primary-color);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Login</button>
+    </form>
+    <div style="margin-top:16px;text-align:center;">
+      <span id="toggle-auth-mode" style="color:var(--primary-color);cursor:pointer;text-decoration:underline;">Don't have an account? Register</span>
+    </div>
+    <div id="auth-error" style="color:#e55a2b;margin-top:10px;text-align:center;"></div>
+  </div>
+`;
+document.body.appendChild(modal);
+
+// --- Auth Logic ---
+let isLoginMode = true;
+let currentUser = null;
+
+function showAuthModal(loginMode = true) {
+  isLoginMode = loginMode;
+  modal.style.display = 'block';
+  document.getElementById('auth-modal-title').textContent = loginMode ? 'Login' : 'Register';
+  document.getElementById('auth-form').querySelector('button[type="submit"]').textContent = loginMode ? 'Login' : 'Register';
+  document.getElementById('toggle-auth-mode').textContent = loginMode ? "Don't have an account? Register" : "Already have an account? Login";
+  document.getElementById('auth-error').textContent = '';
+  renderAuthFields();
+}
+
+function hideAuthModal() {
+  modal.style.display = 'none';
+}
+
+document.getElementById('close-auth-modal').onclick = hideAuthModal;
+window.onclick = function(e) { if (e.target === modal) hideAuthModal(); };
+
+loginBtn.onclick = () => showAuthModal(true);
+document.getElementById('toggle-auth-mode').onclick = () => showAuthModal(!isLoginMode);
+
+function renderAuthFields() {
+  const fields = document.getElementById('auth-form-fields');
+  fields.innerHTML = '';
+  if (!isLoginMode) {
+    fields.innerHTML += '<input type="text" id="reg-firstname" placeholder="First Name" required style="margin-bottom:10px;width:100%;padding:8px;">';
+    fields.innerHTML += '<input type="text" id="reg-lastname" placeholder="Last Name" required style="margin-bottom:10px;width:100%;padding:8px;">';
+  }
+  fields.innerHTML += '<input type="email" id="auth-email" placeholder="Email" required style="margin-bottom:10px;width:100%;padding:8px;">';
+  fields.innerHTML += '<input type="password" id="auth-password" placeholder="Password" required style="margin-bottom:10px;width:100%;padding:8px;">';
+}
+
+renderAuthFields();
+
+// --- Registration/Login Handlers ---
+document.getElementById('auth-form').onsubmit = async function(e) {
+  e.preventDefault();
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errorDiv = document.getElementById('auth-error');
+  errorDiv.textContent = '';
+  if (!email.includes('@')) { errorDiv.textContent = 'Email must contain @'; return; }
+  if (password.length < 6) { errorDiv.textContent = 'Password must be at least 6 characters.'; return; }
+  if (isLoginMode) {
+    // Login
+    try {
+      const q = await db.collection('Users').where('email', '==', email).get();
+      if (q.empty) { errorDiv.textContent = 'No user found.'; return; }
+      const userDoc = q.docs[0];
+      const user = userDoc.data();
+      if (!bcrypt.compareSync(password, user.hashedPassword)) {
+        errorDiv.textContent = 'Incorrect password.'; return;
+      }
+      // Update login info
+      const now = new Date();
+      await db.collection('Users').doc(userDoc.id).update({
+        lastLoginDate: now.toISOString().split('T')[0],
+        lastLoginTime: now.toTimeString().split(' ')[0],
+        lastKnownIP: await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip),
+        loginCount: (user.loginCount || 0) + 1
+      });
+      currentUser = { ...user, id: userDoc.id };
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      updateLoginUI();
+      hideAuthModal();
+    } catch (err) {
+      errorDiv.textContent = 'Login failed.';
+    }
+  } else {
+    // Register
+    const firstName = document.getElementById('reg-firstname').value.trim();
+    const lastName = document.getElementById('reg-lastname').value.trim();
+    if (!firstName || !lastName) { errorDiv.textContent = 'Please enter your name.'; return; }
+    try {
+      const q = await db.collection('Users').where('email', '==', email).get();
+      if (!q.empty) { errorDiv.textContent = 'Email already registered.'; return; }
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      const now = new Date();
+      await db.collection('Users').add({
+        email,
+        firstName,
+        lastName,
+        isAdmin: 0,
+        lastLoginDate: now.toISOString().split('T')[0],
+        lastLoginTime: now.toTimeString().split(' ')[0],
+        lastKnownIP: await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip),
+        profilePicture: '',
+        accountCreated: now.toISOString().split('T')[0],
+        loginCount: 1,
+        hashedPassword
+      });
+      errorDiv.style.color = 'green';
+      errorDiv.textContent = 'Registration successful! Please login.';
+      setTimeout(() => showAuthModal(true), 1200);
+    } catch (err) {
+      errorDiv.textContent = 'Registration failed.';
+    }
+  }
+};
+
+// --- Session Management & UI ---
+function updateLoginUI() {
+  const userStr = localStorage.getItem('currentUser');
+  if (userStr) {
+    const user = JSON.parse(userStr);
+    loginBtn.innerHTML = `👤 ${user.firstName} <span style='font-size:0.8em;'>(Logout)</span>`;
+    loginBtn.onclick = () => { localStorage.removeItem('currentUser'); currentUser = null; loginBtn.innerHTML = '🔑 Login'; loginBtn.onclick = () => showAuthModal(true); };
+    // Optionally, show admin link if user.isAdmin === 1
+    if (user.isAdmin === 1 && !document.getElementById('admin-link')) {
+      const adminLink = document.createElement('a');
+      adminLink.id = 'admin-link';
+      adminLink.href = '/Main-Website/admin.html';
+      adminLink.textContent = 'Admin';
+      adminLink.style.position = 'fixed';
+      adminLink.style.top = loginBtn.style.top;
+      adminLink.style.right = '160px';
+      adminLink.style.zIndex = 101;
+      adminLink.style.background = 'var(--primary-color)';
+      adminLink.style.color = 'white';
+      adminLink.style.padding = '10px 18px';
+      adminLink.style.borderRadius = '10px';
+      adminLink.style.fontWeight = '600';
+      adminLink.style.textDecoration = 'none';
+      adminLink.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+      document.body.appendChild(adminLink);
+    }
+  } else {
+    loginBtn.innerHTML = '🔑 Login';
+    loginBtn.onclick = () => showAuthModal(true);
+    const adminLink = document.getElementById('admin-link');
+    if (adminLink) adminLink.remove();
+  }
+}
+
+// On page load, restore session
+updateLoginUI();
+</script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const toggleBtn = document.getElementById("theme-toggle");
