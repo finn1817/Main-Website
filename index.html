@@ -269,11 +269,12 @@
       position: relative;
     }
 
-    /* typing cursor effect for main title */
+    /* typing cursor effect for main title - REMOVED cursor for normal viewing */
     .typing-text {
       display: inline-block;
+      /* Removed cursor effect for production:
       border-right: 2px solid #007bff;
-      animation: blink 1s step-end infinite;
+      animation: blink 1s step-end infinite; */
     }
 
     p {
@@ -468,6 +469,229 @@
       transition: width 0.3s ease;
     }
 
+    /* Universal Search Modal */
+    .search-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .search-modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .search-modal-content {
+      background: var(--card-bg-light);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark .search-modal-content {
+      background: var(--card-bg-dark);
+      color: #f0f0f0;
+    }
+
+    .search-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      color: #f0f0f0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    .search-close:hover {
+      color: #007bff;
+      transform: scale(1.1);
+    }
+
+    .search-modal h2 {
+      margin-bottom: 20px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.5em;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #f0f0f0;
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    body.light .search-input {
+      background: rgba(0, 0, 0, 0.1);
+      border-color: rgba(0, 0, 0, 0.2);
+      color: #333;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    body.light .search-input::placeholder {
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    }
+
+    .search-btn {
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+    }
+
+    .search-filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: #f0f0f0;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    body.light .filter-btn {
+      background: rgba(0, 0, 0, 0.1);
+      border-color: rgba(0, 0, 0, 0.2);
+      color: #333;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--primary-gradient);
+      border-color: transparent;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .search-results {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .search-result-item {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-left: 4px solid #007bff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    body.light .search-result-item {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .search-result-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(5px);
+    }
+
+    body.light .search-result-item:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .result-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #007bff;
+    }
+
+    .result-path {
+      font-size: 0.8em;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 5px;
+    }
+
+    body.light .result-path {
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .result-description {
+      font-size: 0.9em;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    body.light .result-description {
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    .highlight {
+      background: rgba(255, 255, 0, 0.3);
+      padding: 1px 3px;
+      border-radius: 3px;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    body.light .no-results {
+      color: rgba(0, 0, 0, 0.6);
+    }
+
     /* responsive design enhancements */
     @media (max-width: 768px) {
       .homepage-card {
@@ -482,6 +706,31 @@
       .toggle-btn {
         top: 15px;
         right: 15px;
+      }
+
+      #search-toggle {
+        right: 75px;
+        font-size: 1em;
+        padding: 8px 12px;
+      }
+
+      .search-modal-content {
+        padding: 20px;
+        margin: 10px;
+      }
+
+      .search-box {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .search-filters {
+        gap: 8px;
+      }
+
+      .filter-btn {
+        font-size: 0.8em;
+        padding: 6px 12px;
       }
 
       .datetime-display {
@@ -550,6 +799,28 @@
   </div>
 
   <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙</button>
+  <button class="toggle-btn" id="search-toggle" aria-label="Search" style="right: 140px;">🔍</button>
+
+  <!-- Universal Search Modal -->
+  <div class="search-modal" id="searchModal" style="display: none;">
+    <div class="search-modal-content">
+      <button class="search-close" id="searchClose">&times;</button>
+      <h2>🔍 Search Everything</h2>
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search projects, pages, or content..." autocomplete="off">
+        <button class="search-btn" onclick="performSearch()">Search</button>
+      </div>
+      <div class="search-filters">
+        <button class="filter-btn active" data-filter="all">All Content</button>
+        <button class="filter-btn" data-filter="projects">Projects</button>
+        <button class="filter-btn" data-filter="pages">Pages</button>
+        <button class="filter-btn" data-filter="tools">Tools</button>
+      </div>
+      <div class="search-results" id="searchResults">
+        <div id="resultsContainer"></div>
+      </div>
+    </div>
+  </div>
 
   <div class="content-wrapper">
     <div class="homepage-card">
@@ -973,6 +1244,248 @@ updateLoginUI();
       const darkBg = new Image();
       lightBg.src = './assets/images/background-light.jpg';
       darkBg.src = './assets/images/background-dark.jpg';
+
+      // === UNIVERSAL SEARCH FUNCTIONALITY ===
+      
+      // Website content data for search
+      const siteContent = [
+        {
+          title: "Calculator Project",
+          path: "Home › Projects › Calculator",
+          url: "projects/calculator/",
+          type: "projects",
+          description: "A fully functional calculator built with JavaScript featuring advanced operations and memory functions.",
+          keywords: ["calculator", "math", "javascript", "tool", "arithmetic", "numbers", "compute"]
+        },
+        {
+          title: "About Me",
+          path: "Home › About",
+          url: "about/",
+          type: "pages",
+          description: "Learn more about Dan Finn, his background, skills, and professional experience.",
+          keywords: ["about", "dan", "finn", "background", "skills", "experience", "bio", "profile"]
+        },
+        {
+          title: "My Resume",
+          path: "Home › Resume",
+          url: "resume/",
+          type: "pages",
+          description: "Download or view Dan Finn's professional resume and career accomplishments.",
+          keywords: ["resume", "cv", "career", "experience", "download", "professional", "work"]
+        },
+        {
+          title: "Contact Information",
+          path: "Home › Contact",
+          url: "contact/",
+          type: "pages",
+          description: "Get in touch with Dan Finn through various contact methods and social media.",
+          keywords: ["contact", "email", "social", "media", "reach", "touch", "phone", "connect"]
+        },
+        {
+          title: "Text Editor Tool",
+          path: "Home › Projects › Text Editor",
+          url: "projects/text-editor/",
+          type: "projects",
+          description: "A powerful online text editor with syntax highlighting and multiple features.",
+          keywords: ["text", "editor", "code", "syntax", "highlighting", "tool", "writing", "development"]
+        },
+        {
+          title: "Password Manager",
+          path: "Home › Projects › Password Manager",
+          url: "projects/password-manager/",
+          type: "projects",
+          description: "Secure password manager for storing and generating strong passwords.",
+          keywords: ["password", "manager", "security", "generator", "secure", "storage", "encryption"]
+        },
+        {
+          title: "Finance Checker",
+          path: "Home › Projects › Finance Check",
+          url: "projects/finance-check/",
+          type: "tools",
+          description: "Personal finance tracking and budgeting tool with expense analysis.",
+          keywords: ["finance", "budget", "money", "expense", "tracking", "financial", "banking"]
+        },
+        {
+          title: "Unit Converter",
+          path: "Home › Projects › Unit Converter",
+          url: "projects/unit-converter/",
+          type: "tools",
+          description: "Convert between different units of measurement including length, weight, and temperature.",
+          keywords: ["unit", "converter", "measurement", "length", "weight", "temperature", "convert"]
+        },
+        {
+          title: "Word Counter",
+          path: "Home › Projects › Word Counter",
+          url: "projects/word-counter/",
+          type: "tools",
+          description: "Count words, characters, and analyze text statistics in real-time.",
+          keywords: ["word", "counter", "text", "statistics", "characters", "analysis", "count"]
+        },
+        {
+          title: "Resume Builder",
+          path: "Home › Projects › Resume Builder",
+          url: "projects/resume-builder/",
+          type: "tools",
+          description: "Create professional resumes with customizable templates and layouts.",
+          keywords: ["resume", "builder", "create", "template", "professional", "job", "career"]
+        },
+        {
+          title: "File Transfer",
+          path: "Home › Projects › File Transfer",
+          url: "projects/File-Transfer/",
+          type: "tools",
+          description: "Secure file transfer and sharing tool with encryption capabilities.",
+          keywords: ["file", "transfer", "share", "upload", "download", "secure", "sharing"]
+        },
+        {
+          title: "My Interests",
+          path: "Home › Interests",
+          url: "interests/",
+          type: "pages",
+          description: "Discover Dan Finn's hobbies, interests, and personal projects outside of work.",
+          keywords: ["interests", "hobbies", "personal", "activities", "passion", "leisure", "fun"]
+        },
+        {
+          title: "Education & School",
+          path: "Home › Education",
+          url: "education/",
+          type: "pages",
+          description: "Information about Dan Finn's educational background and school involvement.",
+          keywords: ["education", "school", "college", "university", "learning", "academic", "degree"]
+        }
+      ];
+
+      let currentFilter = 'all';
+
+      // Search modal elements
+      const searchModal = document.getElementById('searchModal');
+      const searchToggle = document.getElementById('search-toggle');
+      const searchClose = document.getElementById('searchClose');
+      const searchInput = document.getElementById('searchInput');
+      const resultsContainer = document.getElementById('resultsContainer');
+
+      // Show search modal
+      function showSearchModal() {
+        searchModal.style.display = 'flex';
+        setTimeout(() => {
+          searchModal.classList.add('active');
+          searchInput.focus();
+        }, 10);
+      }
+
+      // Hide search modal
+      function hideSearchModal() {
+        searchModal.classList.remove('active');
+        setTimeout(() => {
+          searchModal.style.display = 'none';
+          searchInput.value = '';
+          resultsContainer.innerHTML = '';
+        }, 300);
+      }
+
+      // Search functionality
+      function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        
+        if (searchTerm === '') {
+          resultsContainer.innerHTML = '<div class="no-results">Start typing to search...</div>';
+          return;
+        }
+
+        // Filter content based on search term and current filter
+        let filteredContent = siteContent.filter(item => {
+          const matchesFilter = currentFilter === 'all' || item.type === currentFilter;
+          const matchesSearch = 
+            item.title.toLowerCase().includes(searchTerm) ||
+            item.description.toLowerCase().includes(searchTerm) ||
+            item.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm));
+          
+          return matchesFilter && matchesSearch;
+        });
+
+        // Display results
+        if (filteredContent.length === 0) {
+          resultsContainer.innerHTML = '<div class="no-results">No results found. Try different keywords or check your spelling.</div>';
+        } else {
+          resultsContainer.innerHTML = filteredContent.map(item => {
+            const highlightedTitle = highlightText(item.title, searchTerm);
+            const highlightedDescription = highlightText(item.description, searchTerm);
+            
+            return `
+              <div class="search-result-item" onclick="navigateToResult('${item.url}')">
+                <div class="result-title">${highlightedTitle}</div>
+                <div class="result-path">${item.path}</div>
+                <div class="result-description">${highlightedDescription}</div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Highlight search terms in text
+      function highlightText(text, searchTerm) {
+        const regex = new RegExp(`(${searchTerm})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+      }
+
+      // Navigate to search result
+      function navigateToResult(url) {
+        hideSearchModal();
+        window.location.href = url;
+      }
+
+      // Event listeners
+      searchToggle.addEventListener('click', showSearchModal);
+      searchClose.addEventListener('click', hideSearchModal);
+
+      // Close modal when clicking outside
+      searchModal.addEventListener('click', (e) => {
+        if (e.target === searchModal) {
+          hideSearchModal();
+        }
+      });
+
+      // Filter functionality
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.filter;
+          performSearch();
+        });
+      });
+
+      // Search on Enter key
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+
+      // Search as you type (debounced)
+      let searchTimeout;
+      searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 300);
+      });
+
+      // Keyboard shortcuts for search
+      document.addEventListener('keydown', (e) => {
+        // Ctrl/Cmd + K to open search
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+          showSearchModal();
+        }
+        // Escape to close search
+        if (e.key === 'Escape' && searchModal.classList.contains('active')) {
+          hideSearchModal();
+        }
+      });
+
+      // Make performSearch and navigateToResult global for onclick handlers
+      window.performSearch = performSearch;
+      window.navigateToResult = navigateToResult;
+
     });
   </script>
 </body>
