@@ -1527,24 +1527,37 @@
         document.getElementById('signin-form-element').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = document.getElementById('signin-email').value.trim();
+            const emailOrUsername = document.getElementById('signin-email').value.trim();
             const password = document.getElementById('signin-password').value;
 
             showAuthLoading(true);
 
             try {
                 // First try test user login (username-based)
-                const testLoginSuccess = await loginWithTestCredentials(email, password);
+                const testLoginSuccess = await loginWithTestCredentials(emailOrUsername, password);
                 
                 if (!testLoginSuccess) {
-                    // If test login fails, try regular Firebase auth (email-based)
-                    await signInWithEmailAndPassword(auth, email, password);
+                    // If test login fails, try regular Firebase auth (email-based only)
+                    if (emailOrUsername.includes('@')) {
+                        await signInWithEmailAndPassword(auth, emailOrUsername, password);
+                        showAlert('Welcome back!', 'success');
+                    } else {
+                        throw new Error('Invalid username or password');
+                    }
+                } else {
+                    showAlert('Welcome back!', 'success');
                 }
-                
-                showAlert('Welcome back!', 'success');
             } catch (error) {
                 console.error('Signin error:', error);
-                showAlert(error.message, 'error');
+                if (error.code === 'auth/invalid-email') {
+                    showAlert('Please enter a valid email address', 'error');
+                } else if (error.code === 'auth/user-not-found') {
+                    showAlert('No account found with this email', 'error');
+                } else if (error.code === 'auth/wrong-password') {
+                    showAlert('Incorrect password', 'error');
+                } else {
+                    showAlert(error.message || 'Sign in failed', 'error');
+                }
             } finally {
                 showAuthLoading(false);
             }
@@ -1553,8 +1566,20 @@
         // Sign Out
         window.signOut = async function() {
             try {
-                await firebaseSignOut(auth);
-                showAlert('Signed out successfully', 'info');
+                // Handle custom auth users
+                if (currentUser && currentUser.isCustomAuth) {
+                    currentUser = null;
+                    showAuthSection();
+                    if (eventsListener) {
+                        eventsListener();
+                        eventsListener = null;
+                    }
+                    showAlert('Signed out successfully', 'info');
+                } else {
+                    // Handle Firebase auth users
+                    await firebaseSignOut(auth);
+                    showAlert('Signed out successfully', 'info');
+                }
             } catch (error) {
                 console.error('Signout error:', error);
                 showAlert('Error signing out', 'error');
@@ -1694,26 +1719,20 @@
                             loginCount: (userData.loginCount || 0) + 1
                         });
 
-                        // Try to sign in with Firebase Auth if email exists
-                        if (userData.email) {
-                            try {
-                                await signInWithEmailAndPassword(auth, userData.email, password);
-                                return true;
-                            } catch (authError) {
-                                console.log('Firebase Auth signin failed, but custom auth succeeded');
-                                // Create a mock user session for non-Firebase auth users
-                                currentUser = {
-                                    uid: userDoc.id,
-                                    email: userData.email,
-                                    displayName: userData.name || userData.username
-                                };
-                                await loadUserProfile();
-                                showMainApp();
-                                await loadDefaultCalendar();
-                                renderCalendar();
-                                return true;
-                            }
-                        }
+                        // Create a mock user session for custom auth users
+                        currentUser = {
+                            uid: userDoc.id,
+                            email: userData.email || '',
+                            displayName: userData.name || userData.username,
+                            isCustomAuth: true
+                        };
+                        
+                        console.log('Custom auth successful for:', userData.username);
+                        await loadUserProfile();
+                        showMainApp();
+                        await loadDefaultCalendar();
+                        renderCalendar();
+                        return true;
                     } else {
                         showAlert('Invalid password', 'error');
                         return false;
