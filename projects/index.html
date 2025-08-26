@@ -341,6 +341,69 @@
       opacity: 0.3;
     }
 
+    /* Category Filter Styling */
+    .filter-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 25px 0;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(0, 123, 255, 0.3);
+      color: var(--text-light);
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 0.95em;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+      backdrop-filter: blur(10px);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body.dark .filter-btn {
+      color: var(--text-dark);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .filter-btn:hover {
+      background: rgba(0, 123, 255, 0.1);
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, var(--primary-color), #4dabf7);
+      border-color: var(--primary-color);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+    }
+
+    .filter-btn.active:hover {
+      background: linear-gradient(135deg, #0056b3, var(--primary-color));
+      box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4);
+    }
+
+    /* Project sections for filtering */
+    .project-section {
+      transition: all 0.5s ease;
+    }
+
+    .project-section.hidden {
+      opacity: 0;
+      transform: translateY(-20px);
+      height: 0;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
     /* enhanced scrollbar */
     .container::-webkit-scrollbar {
       width: 8px;
@@ -496,92 +559,110 @@
     <h1 class="fade-in">Welcome to My Public Websites!</h1>
     <p class="fade-in">Here are some of my current projects organized by category:</p>
     
+    <!-- Category Filter Buttons -->
+    <div class="filter-container">
+      <button class="filter-btn active" data-category="all">🔍 All Projects</button>
+      <button class="filter-btn" data-category="school">🎓 School Projects</button>
+      <button class="filter-btn" data-category="personal">💼 Personal Projects</button>
+      <button class="filter-btn" data-category="games">🎮 Games & Fun</button>
+      <button class="filter-btn" data-category="other">🚀 Other Projects</button>
+    </div>
+    
     <div class="section-divider"></div>
     
-    <h2 class="fade-in">📚 School Projects</h2>
-    <div class="projects-grid">
-      <a href="https://finn1817.github.io/Main-Website/projects/calculator/" target="_blank" class="project-link school">
-        <span>My Calculator</span>
-        <div class="category-badge">Tool</div>
-      </a>
-      <a href="https://finn1817.github.io/Main-Website/projects/word-counter/" target="_blank" class="project-link school">
-        <span>Word Counter</span>
-        <div class="category-badge">Utility</div>
-      </a>
-      <a href="https://finn1817.github.io/Main-Website/projects/unit-converter/" target="_blank" class="project-link school">
-        <span>Unit Conversion Site</span>
-        <div class="category-badge">Tool</div>
-      </a>
-      <a href="https://finn1817.github.io/Main-Website/projects/finance-check/" target="_blank" class="project-link school">
-        <span>Finance Checker</span>
-        <div class="category-badge">Finance</div>
-      </a>
-      <a href="https://dfinn.me/CSIT-471/" target="_blank" class="project-link school">
-        <span>Info Systems Course</span>
-        <div class="category-badge">Exercises</div>
-      </a>
-      <a href="https://finn1817.github.io/Main-Website/projects/resume-builder/" target="_blank" class="project-link school">
-        <span>Resume Builder</span>
-        <div class="category-badge">Career</div>
-      </a>
+    <!-- School Projects Section -->
+    <div class="project-section" data-category="school">
+      <h2 class="fade-in">📚 School Projects</h2>
+      <div class="projects-grid">
+        <a href="https://finn1817.github.io/Main-Website/projects/calculator/" target="_blank" class="project-link school">
+          <span>My Calculator</span>
+          <div class="category-badge">Tool</div>
+        </a>
+        <a href="https://finn1817.github.io/Main-Website/projects/word-counter/" target="_blank" class="project-link school">
+          <span>Word Counter</span>
+          <div class="category-badge">Utility</div>
+        </a>
+        <a href="https://finn1817.github.io/Main-Website/projects/unit-converter/" target="_blank" class="project-link school">
+          <span>Unit Conversion Site</span>
+          <div class="category-badge">Tool</div>
+        </a>
+        <a href="https://finn1817.github.io/Main-Website/projects/finance-check/" target="_blank" class="project-link school">
+          <span>Finance Checker</span>
+          <div class="category-badge">Finance</div>
+        </a>
+        <a href="https://dfinn.me/CSIT-471/" target="_blank" class="project-link school">
+          <span>Info Systems Course</span>
+          <div class="category-badge">Exercises</div>
+        </a>
+        <a href="https://finn1817.github.io/Main-Website/projects/resume-builder/" target="_blank" class="project-link school">
+          <span>Resume Builder</span>
+          <div class="category-badge">Career</div>
+        </a>
+      </div>
+      <div class="section-divider"></div>
     </div>
-
-    <div class="section-divider"></div>
     
-    <h2>⚽ Personal Projects</h2>
-    <div class="projects-grid">
-      <a href="https://finn1817.github.io/LaxTimer/" target="_blank" class="project-link personal">
-        <span>Lacrosse Timer (PC)</span>
-        <div class="category-badge">Sports</div>
-      </a>
-      <a href="https://finn1817.github.io/Lax-Timer-Phone-/" target="_blank" class="project-link personal">
-        <span>Lacrosse Timer (Mobile)</span>
-        <div class="category-badge">Sports</div>
-      </a>
-       <a href="https://finn1817.github.io/Main-Website/projects/text-editor/" target="_blank" class="project-link personal">
-        <span>Text Editor</span>
-        <div class="category-badge">Typing</div>
-      </a>
-      <a href="https://finn1817.github.io/Main-Website/projects/password-manager/" target="_blank" class="project-link personal">
-        <span>Password Manager</span>
-        <div class="category-badge">Computer Tool</div>
-      </a>
-      <a href="https://finn1817.github.io/Main-Website/projects/File-Transfer/" target="_blank" class="project-link personal">
-        <span>File Share</span>
-        <div class="category-badge">Computer Tool</div>
-      </a>
+    <!-- Personal Projects Section -->
+    <div class="project-section" data-category="personal">
+      <h2>⚽ Personal Projects</h2>
+      <div class="projects-grid">
+        <a href="https://finn1817.github.io/LaxTimer/" target="_blank" class="project-link personal">
+          <span>Lacrosse Timer (PC)</span>
+          <div class="category-badge">Sports</div>
+        </a>
+        <a href="https://finn1817.github.io/Lax-Timer-Phone-/" target="_blank" class="project-link personal">
+          <span>Lacrosse Timer (Mobile)</span>
+          <div class="category-badge">Sports</div>
+        </a>
+         <a href="https://finn1817.github.io/Main-Website/projects/text-editor/" target="_blank" class="project-link personal">
+          <span>Text Editor</span>
+          <div class="category-badge">Typing</div>
+        </a>
+        <a href="https://finn1817.github.io/Main-Website/projects/password-manager/" target="_blank" class="project-link personal">
+          <span>Password Manager</span>
+          <div class="category-badge">Computer Tool</div>
+        </a>
+        <a href="https://finn1817.github.io/Main-Website/projects/File-Transfer/" target="_blank" class="project-link personal">
+          <span>File Share</span>
+          <div class="category-badge">Computer Tool</div>
+        </a>
+      </div>
+      <div class="section-divider"></div>
     </div>
 
-    <div class="section-divider"></div>
-    
-    <h2>🎮 Games & Fun</h2>
-    <div class="projects-grid">
-      <a href="https://finn1817.github.io/TikTakToeGame/" target="_blank" class="project-link games">
-        <span>Tic-Tac-Toe Game</span>
-        <div class="category-badge">Game</div>
-      </a>
-      <a href="https://finn1817.github.io/Snake-Game/" target="_blank" class="project-link games">
-        <span>Snake Game</span>
-        <div class="category-badge">Game</div>
-      </a>
-      <a href="https://finn1817.github.io/Dans-Tetris/" target="_blank" class="project-link games">
-        <span>Tetris (Beta)</span>
-        <div class="category-badge">Game</div>
-      </a>
-      <a href="https://finn1817.github.io/my-flappy-bird/" target="_blank" class="project-link games">
-        <span>Flappy Bird Remake</span>
-        <div class="category-badge">Game</div>
-      </a>
+    <!-- Games & Fun Section -->
+    <div class="project-section" data-category="games">
+      <h2>🎮 Games & Fun</h2>
+      <div class="projects-grid">
+        <a href="https://finn1817.github.io/TikTakToeGame/" target="_blank" class="project-link games">
+          <span>Tic-Tac-Toe Game</span>
+          <div class="category-badge">Game</div>
+        </a>
+        <a href="https://finn1817.github.io/Snake-Game/" target="_blank" class="project-link games">
+          <span>Snake Game</span>
+          <div class="category-badge">Game</div>
+        </a>
+        <a href="https://finn1817.github.io/Dans-Tetris/" target="_blank" class="project-link games">
+          <span>Tetris (Beta)</span>
+          <div class="category-badge">Game</div>
+        </a>
+        <a href="https://finn1817.github.io/my-flappy-bird/" target="_blank" class="project-link games">
+          <span>Flappy Bird Remake</span>
+          <div class="category-badge">Game</div>
+        </a>
+      </div>
+      <div class="section-divider"></div>
     </div>
 
-    <div class="section-divider"></div>
-
-    <h2>🚀 Other Projects</h2>
-    <div class="projects-grid">
-      <a href="https://github.com/finn1817/NATracker" target="_blank" class="project-link other">
-        <span>NATracker - Journal Tracker</span>
-        <div class="category-badge">GitHub</div>
-      </a>
+    <!-- Other Projects Section -->
+    <div class="project-section" data-category="other">
+      <h2>🚀 Other Projects</h2>
+      <div class="projects-grid">
+        <a href="https://github.com/finn1817/NATracker" target="_blank" class="project-link other">
+          <span>NATracker - Journal Tracker</span>
+          <div class="category-badge">GitHub</div>
+        </a>
+      </div>
     </div>
   </div>
 
@@ -924,6 +1005,54 @@ updateLoginUI();
         // disable some animations
         document.body.style.setProperty('--transition-speed', '0.2s');
       }
+
+      // Category Filtering Functionality
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      const projectSections = document.querySelectorAll('.project-section');
+
+      function filterProjects(category) {
+        projectSections.forEach(section => {
+          if (category === 'all' || section.dataset.category === category) {
+            section.classList.remove('hidden');
+          } else {
+            section.classList.add('hidden');
+          }
+        });
+      }
+
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Remove active class from all buttons
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          
+          // Add active class to clicked button
+          button.classList.add('active');
+          
+          // Filter projects
+          const category = button.dataset.category;
+          filterProjects(category);
+        });
+      });
+
+      // Add count to filter buttons
+      function updateFilterCounts() {
+        filterButtons.forEach(button => {
+          const category = button.dataset.category;
+          let count = 0;
+          
+          if (category === 'all') {
+            count = document.querySelectorAll('.project-link').length;
+          } else {
+            count = document.querySelectorAll(`[data-category="${category}"] .project-link`).length;
+          }
+          
+          const originalText = button.textContent.split(' (')[0];
+          button.textContent = `${originalText} (${count})`;
+        });
+      }
+
+      // Initialize filter counts
+      updateFilterCounts();
     });
   </script>
   <script src="../assets/js/universal-search.js"></script>
