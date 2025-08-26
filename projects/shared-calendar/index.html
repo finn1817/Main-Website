@@ -1,0 +1,2347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareCal - Collaborative Calendar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Universal Search Component -->
+    <link rel="stylesheet" href="../../assets/css/universal-search.css">
+    <script src="../../assets/js/universal-search.js" defer></script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #dbeafe;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --text-muted: #94a3b8;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gradient-primary);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 25s infinite linear;
+        }
+
+        .shape:nth-child(1) { width: 60px; height: 60px; left: 10%; animation-delay: 0s; }
+        .shape:nth-child(2) { width: 80px; height: 80px; left: 20%; animation-delay: 3s; }
+        .shape:nth-child(3) { width: 40px; height: 40px; left: 60%; animation-delay: 6s; }
+        .shape:nth-child(4) { width: 70px; height: 70px; left: 80%; animation-delay: 9s; }
+        .shape:nth-child(5) { width: 30px; height: 30px; left: 70%; animation-delay: 12s; }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Main App Container */
+        .app-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .app-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Auth Section */
+        .auth-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .auth-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-subtitle {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: white;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .toggle-auth {
+            margin-top: 20px;
+            color: var(--text-light);
+        }
+
+        .toggle-auth a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .toggle-auth a:hover {
+            text-decoration: underline;
+        }
+
+        /* Calendar Main Content */
+        .calendar-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 600px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .calendar-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text);
+            min-width: 200px;
+        }
+
+        .nav-btn {
+            padding: 10px 15px;
+            background: var(--primary-light);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .calendar-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-sm {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .calendar-day-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day {
+            background: white;
+            min-height: 100px;
+            padding: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .calendar-day:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .calendar-day.other-month {
+            background: #f8f9fa;
+            color: var(--text-muted);
+        }
+
+        .calendar-day.today {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .day-events {
+            font-size: 0.8rem;
+        }
+
+        .event-item {
+            background: var(--primary);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #fef2f2, #fecaca);
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Event Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .modal-overlay.show .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-field {
+            position: relative;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: white;
+        }
+
+        .form-field textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .color-option {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .color-option.selected {
+            border-color: var(--text);
+            transform: scale(1.1);
+        }
+
+        .color-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .reminder-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .reminder-option {
+            padding: 10px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: #fafafa;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .reminder-option:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .reminder-option.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .recurrence-options {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .recurrence-options.show {
+            display: block;
+        }
+
+        .days-of-week {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .day-option {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .day-option:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .day-option.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .attendance-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .attendee-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .attendee-input input {
+            flex: 1;
+        }
+
+        .attendee-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .attendee-tag {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .attendee-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .priority-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .priority-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: #fafafa;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .priority-option.low {
+            border-color: var(--success);
+        }
+
+        .priority-option.medium {
+            border-color: var(--warning);
+        }
+
+        .priority-option.high {
+            border-color: var(--danger);
+        }
+
+        .priority-option.selected.low {
+            background: var(--success);
+            color: white;
+        }
+
+        .priority-option.selected.medium {
+            background: var(--warning);
+            color: white;
+        }
+
+        .priority-option.selected.high {
+            background: var(--danger);
+            color: white;
+        }
+
+        .modal-actions {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-radius: 0 0 20px 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        /* Share Modal Styles */
+        .share-code {
+            background: #f8f9fa;
+            border: 2px dashed var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .share-code-display {
+            font-family: monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            letter-spacing: 2px;
+            margin: 10px 0;
+        }
+
+        .permission-settings {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .permission-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .permission-option:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            left: 28px;
+        }
+
+        /* Hidden utility */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 15px;
+            }
+
+            .app-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .calendar-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .calendar-actions {
+                flex-wrap: wrap;
+            }
+
+            .calendar-grid {
+                font-size: 0.9rem;
+            }
+
+            .calendar-day {
+                min-height: 80px;
+                padding: 5px;
+            }
+
+            .auth-card {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+
+            /* Modal Responsive */
+            .modal {
+                width: 95%;
+                max-height: 95vh;
+                margin: 10px;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-actions {
+                padding: 20px 25px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .color-picker-wrapper {
+                flex-wrap: wrap;
+            }
+
+            .reminder-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .priority-options {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .days-of-week {
+                justify-content: center;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .modal-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
+
+    <!-- Authentication Section -->
+    <div id="auth-section" class="auth-section">
+        <div class="auth-card">
+            <h1 class="auth-title">📅 ShareCal</h1>
+            <p class="auth-subtitle">Collaborative calendar for teams and friends</p>
+            
+            <!-- Sign In Form -->
+            <div id="signin-form">
+                <form id="signin-form-element">
+                    <div class="form-group">
+                        <label class="form-label" for="signin-email">Email Address</label>
+                        <input type="email" id="signin-email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signin-password">Password</label>
+                        <input type="password" id="signin-password" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="signin-btn">
+                        🔐 Sign In
+                    </button>
+                </form>
+                <div class="toggle-auth">
+                    Don't have an account? <a href="#" onclick="showSignUp()">Create one here</a>
+                </div>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signup-form" class="hidden">
+                <form id="signup-form-element">
+                    <div class="form-group">
+                        <label class="form-label" for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signup-email">Email Address</label>
+                        <input type="email" id="signup-email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signup-password">Password</label>
+                        <input type="password" id="signup-password" class="form-input" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signup-confirm">Confirm Password</label>
+                        <input type="password" id="signup-confirm" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="signup-btn">
+                        ✨ Create Account
+                    </button>
+                </form>
+                <div class="toggle-auth">
+                    Already have an account? <a href="#" onclick="showSignIn()">Sign in here</a>
+                </div>
+            </div>
+
+            <div id="auth-loading" class="loading hidden">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="app-container hidden">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="app-title">
+                <h1>📅 ShareCal</h1>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <span class="user-name" id="user-name">User</span>
+                <button class="btn btn-secondary btn-sm" onclick="signOut()">Sign Out</button>
+            </div>
+        </header>
+
+        <!-- Calendar Container -->
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <div class="calendar-nav">
+                    <button class="nav-btn" onclick="previousMonth()">‹ Previous</button>
+                    <h2 class="calendar-title" id="calendar-title">Loading...</h2>
+                    <button class="nav-btn" onclick="nextMonth()">Next ›</button>
+                </div>
+                <div class="calendar-actions">
+                    <button class="btn btn-primary btn-sm" onclick="showEventModal()">+ Add Event</button>
+                    <button class="btn btn-secondary btn-sm" onclick="showShareModal()">🔗 Share Calendar</button>
+                    <button class="btn btn-secondary btn-sm" onclick="todayView()">Today</button>
+                </div>
+            </div>
+
+            <div id="calendar-loading" class="loading">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div id="calendar-grid" class="calendar-grid hidden">
+                <!-- Day headers -->
+                <div class="calendar-day-header">Sun</div>
+                <div class="calendar-day-header">Mon</div>
+                <div class="calendar-day-header">Tue</div>
+                <div class="calendar-day-header">Wed</div>
+                <div class="calendar-day-header">Thu</div>
+                <div class="calendar-day-header">Fri</div>
+                <div class="calendar-day-header">Sat</div>
+                <!-- Calendar days will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Creation/Edit Modal -->
+    <div id="event-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="event-modal-title">Create New Event</h3>
+                <button class="modal-close" onclick="closeEventModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="event-form">
+                    <!-- Basic Event Info -->
+                    <div class="form-row full">
+                        <div class="form-field">
+                            <label for="event-title">Event Title *</label>
+                            <input type="text" id="event-title" placeholder="Enter event title..." required>
+                        </div>
+                    </div>
+
+                    <div class="form-row full">
+                        <div class="form-field">
+                            <label for="event-description">Description</label>
+                            <textarea id="event-description" placeholder="Add event description..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Date and Time -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="event-start-date">Start Date *</label>
+                            <input type="date" id="event-start-date" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="event-start-time">Start Time</label>
+                            <input type="time" id="event-start-time">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="event-end-date">End Date</label>
+                            <input type="date" id="event-end-date">
+                        </div>
+                        <div class="form-field">
+                            <label for="event-end-time">End Time</label>
+                            <input type="time" id="event-end-time">
+                        </div>
+                    </div>
+
+                    <!-- All Day Toggle -->
+                    <div class="form-row full">
+                        <div class="form-field">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="event-all-day" onchange="toggleAllDay()">
+                                All Day Event
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="form-row full">
+                        <div class="form-field">
+                            <label for="event-location">Location</label>
+                            <input type="text" id="event-location" placeholder="Add location...">
+                        </div>
+                    </div>
+
+                    <!-- Event Color -->
+                    <div class="form-row full">
+                        <div class="form-field">
+                            <label>Event Color</label>
+                            <div class="color-picker-wrapper">
+                                <div class="color-option selected" data-color="#3b82f6" style="background: #3b82f6;"></div>
+                                <div class="color-option" data-color="#10b981" style="background: #10b981;"></div>
+                                <div class="color-option" data-color="#f59e0b" style="background: #f59e0b;"></div>
+                                <div class="color-option" data-color="#ef4444" style="background: #ef4444;"></div>
+                                <div class="color-option" data-color="#8b5cf6" style="background: #8b5cf6;"></div>
+                                <div class="color-option" data-color="#06b6d4" style="background: #06b6d4;"></div>
+                                <div class="color-option" data-color="#84cc16" style="background: #84cc16;"></div>
+                                <div class="color-option" data-color="#f97316" style="background: #f97316;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Priority -->
+                    <div class="form-row full">
+                        <div class="form-field">
+                            <label>Priority Level</label>
+                            <div class="priority-options">
+                                <div class="priority-option low" data-priority="low">
+                                    🟢 Low
+                                </div>
+                                <div class="priority-option medium selected" data-priority="medium">
+                                    🟡 Medium
+                                </div>
+                                <div class="priority-option high" data-priority="high">
+                                    🔴 High
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reminder Settings -->
+                    <div class="form-row full">
+                        <div class="form-field">
+                            <label>Reminder</label>
+                            <div class="reminder-options">
+                                <div class="reminder-option" data-reminder="none">None</div>
+                                <div class="reminder-option selected" data-reminder="15">15 min</div>
+                                <div class="reminder-option" data-reminder="30">30 min</div>
+                                <div class="reminder-option" data-reminder="60">1 hour</div>
+                                <div class="reminder-option" data-reminder="1440">1 day</div>
+                                <div class="reminder-option" data-reminder="10080">1 week</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recurrence Settings -->
+                    <div class="form-row full">
+                        <div class="form-field">
+                            <label for="event-recurrence">Repeat</label>
+                            <select id="event-recurrence" onchange="toggleRecurrenceOptions()">
+                                <option value="none">Does not repeat</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            
+                            <div id="recurrence-options" class="recurrence-options">
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label for="recurrence-interval">Repeat every</label>
+                                        <select id="recurrence-interval">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="recurrence-unit">Period</label>
+                                        <select id="recurrence-unit">
+                                            <option value="days">Days</option>
+                                            <option value="weeks">Weeks</option>
+                                            <option value="months">Months</option>
+                                            <option value="years">Years</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div id="weekly-options" class="hidden">
+                                    <label>Repeat on</label>
+                                    <div class="days-of-week">
+                                        <div class="day-option" data-day="0">S</div>
+                                        <div class="day-option" data-day="1">M</div>
+                                        <div class="day-option" data-day="2">T</div>
+                                        <div class="day-option" data-day="3">W</div>
+                                        <div class="day-option" data-day="4">T</div>
+                                        <div class="day-option" data-day="5">F</div>
+                                        <div class="day-option" data-day="6">S</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label for="recurrence-end-date">End date (optional)</label>
+                                        <input type="date" id="recurrence-end-date">
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="recurrence-count">Or after # occurrences</label>
+                                        <input type="number" id="recurrence-count" min="1" max="999">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attendees -->
+                    <div class="attendance-section">
+                        <h4 style="margin-bottom: 15px; color: var(--text);">👥 Attendees</h4>
+                        <div class="attendee-input">
+                            <input type="email" id="attendee-email" placeholder="Enter email address...">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="addAttendee()">Add</button>
+                        </div>
+                        <div class="attendee-list" id="attendee-list">
+                            <!-- Attendees will be added here -->
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="send-invitations">
+                                Send email invitations to attendees
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Additional Options -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="event-category">Category</label>
+                            <select id="event-category">
+                                <option value="general">General</option>
+                                <option value="work">Work</option>
+                                <option value="personal">Personal</option>
+                                <option value="meeting">Meeting</option>
+                                <option value="appointment">Appointment</option>
+                                <option value="birthday">Birthday</option>
+                                <option value="holiday">Holiday</option>
+                                <option value="reminder">Reminder</option>
+                                <option value="deadline">Deadline</option>
+                                <option value="travel">Travel</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="event-url">Event URL</label>
+                            <input type="url" id="event-url" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <!-- Privacy Settings -->
+                    <div class="form-row full">
+                        <div class="form-field">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="event-private">
+                                Private event (only you can see this)
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-cancel" onclick="closeEventModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEvent()">
+                    <span id="save-btn-text">Create Event</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Sharing Modal -->
+    <div id="share-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Share Calendar</h3>
+                <button class="modal-close" onclick="closeShareModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="share-code">
+                    <h4>Calendar Share Code</h4>
+                    <div class="share-code-display" id="calendar-share-code">
+                        Loading...
+                    </div>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 10px;">
+                        Share this code with others to give them access to your calendar
+                    </p>
+                    <button class="btn btn-primary btn-sm" onclick="copyShareCode()" style="margin-top: 15px;">
+                        📋 Copy Code
+                    </button>
+                </div>
+
+                <div class="permission-settings">
+                    <h4 style="margin-bottom: 15px;">Permission Settings</h4>
+                    
+                    <div class="permission-option">
+                        <div>
+                            <strong>Public Access</strong>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">Anyone with the code can view</p>
+                        </div>
+                        <div class="toggle-switch" id="public-access-toggle" onclick="togglePermission('public')"></div>
+                    </div>
+
+                    <div class="permission-option">
+                        <div>
+                            <strong>Allow Event Creation</strong>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">Others can add events</p>
+                        </div>
+                        <div class="toggle-switch" id="create-events-toggle" onclick="togglePermission('create')"></div>
+                    </div>
+
+                    <div class="permission-option">
+                        <div>
+                            <strong>Allow Event Editing</strong>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">Others can modify events</p>
+                        </div>
+                        <div class="toggle-switch" id="edit-events-toggle" onclick="togglePermission('edit')"></div>
+                    </div>
+
+                    <div class="permission-option">
+                        <div>
+                            <strong>Email Notifications</strong>
+                            <p style="font-size: 0.9rem; color: var(--text-light); margin: 0;">Notify you of changes</p>
+                        </div>
+                        <div class="toggle-switch active" id="notifications-toggle" onclick="togglePermission('notifications')"></div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <label for="join-calendar-code">Join Another Calendar</label>
+                    <div style="display: flex; gap: 10px; margin-top: 8px;">
+                        <input type="text" id="join-calendar-code" placeholder="Enter calendar code..." style="flex: 1;">
+                        <button class="btn btn-success btn-sm" onclick="joinCalendar()">Join</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-cancel" onclick="closeShareModal()">Close</button>
+                <button type="button" class="btn btn-success" onclick="generateNewShareCode()">
+                    🔄 Generate New Code
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase and App Scripts -->
+    <script type="module">
+        // Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCl5DIursKTk6lWz2trEebcwexmywdJ_vA",
+            authDomain: "calendar-app-5e02a.firebaseapp.com",
+            projectId: "calendar-app-5e02a",
+            storageBucket: "calendar-app-5e02a.firebasestorage.app",
+            messagingSenderId: "326997250821",
+            appId: "1:326997250821:web:3674e28132d99968539d6c"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global variables
+        let currentUser = null;
+        let currentDate = new Date();
+        let currentCalendarId = null;
+        let eventsListener = null;
+
+        // Database Collections Structure:
+        // - accounts: user profiles and settings
+        // - calendars: calendar metadata and sharing settings
+        // - events: individual calendar events
+        // - shares: calendar sharing permissions
+
+        // Authentication Functions
+        window.showSignUp = function() {
+            document.getElementById('signin-form').classList.add('hidden');
+            document.getElementById('signup-form').classList.remove('hidden');
+        };
+
+        window.showSignIn = function() {
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('signin-form').classList.remove('hidden');
+        };
+
+        // Sign Up
+        document.getElementById('signup-form-element').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm').value;
+
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match!', 'error');
+                return;
+            }
+
+            showAuthLoading(true);
+
+            try {
+                // Create user with Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Update the user's display name
+                await updateProfile(user, { displayName: name });
+
+                // Create user profile in Firestore
+                await setDoc(doc(db, 'accounts', user.uid), {
+                    name: name,
+                    email: email,
+                    createdAt: new Date(),
+                    preferences: {
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        theme: 'light',
+                        notifications: true
+                    }
+                });
+
+                // Create default calendar for the user
+                const defaultCalendarRef = await addDoc(collection(db, 'calendars'), {
+                    name: `${name}'s Calendar`,
+                    description: 'My personal calendar',
+                    owner: user.uid,
+                    createdAt: new Date(),
+                    isPublic: false,
+                    settings: {
+                        color: '#3b82f6',
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                    }
+                });
+
+                showAlert('Account created successfully! Welcome to ShareCal!', 'success');
+                
+            } catch (error) {
+                console.error('Signup error:', error);
+                showAlert(error.message, 'error');
+            } finally {
+                showAuthLoading(false);
+            }
+        });
+
+        // Sign In
+        document.getElementById('signin-form-element').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+
+            showAuthLoading(true);
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showAlert('Welcome back!', 'success');
+            } catch (error) {
+                console.error('Signin error:', error);
+                showAlert(error.message, 'error');
+            } finally {
+                showAuthLoading(false);
+            }
+        });
+
+        // Sign Out
+        window.signOut = async function() {
+            try {
+                await firebaseSignOut(auth);
+                showAlert('Signed out successfully', 'info');
+            } catch (error) {
+                console.error('Signout error:', error);
+                showAlert('Error signing out', 'error');
+            }
+        };
+
+        // Auth State Observer
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserProfile();
+                showMainApp();
+                await loadDefaultCalendar();
+                renderCalendar();
+            } else {
+                currentUser = null;
+                showAuthSection();
+                if (eventsListener) {
+                    eventsListener();
+                    eventsListener = null;
+                }
+            }
+        });
+
+        // Load user profile and set up UI
+        async function loadUserProfile() {
+            try {
+                const userDoc = await getDoc(doc(db, 'accounts', currentUser.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    document.getElementById('user-name').textContent = userData.name;
+                    document.getElementById('user-avatar').textContent = userData.name.charAt(0).toUpperCase();
+                } else {
+                    document.getElementById('user-name').textContent = currentUser.displayName || 'User';
+                    document.getElementById('user-avatar').textContent = (currentUser.displayName || 'U').charAt(0).toUpperCase();
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        // Load default calendar for user
+        async function loadDefaultCalendar() {
+            try {
+                const calendarsQuery = query(
+                    collection(db, 'calendars'),
+                    where('owner', '==', currentUser.uid),
+                    orderBy('createdAt', 'asc')
+                );
+                
+                const calendarsSnapshot = await getDocs(calendarsQuery);
+                
+                if (!calendarsSnapshot.empty) {
+                    currentCalendarId = calendarsSnapshot.docs[0].id;
+                    setupEventsListener();
+                } else {
+                    // Create a default calendar if none exists
+                    const defaultCalendarRef = await addDoc(collection(db, 'calendars'), {
+                        name: `${currentUser.displayName || 'My'} Calendar`,
+                        description: 'My personal calendar',
+                        owner: currentUser.uid,
+                        createdAt: new Date(),
+                        isPublic: false,
+                        settings: {
+                            color: '#3b82f6',
+                            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                        }
+                    });
+                    currentCalendarId = defaultCalendarRef.id;
+                    setupEventsListener();
+                }
+            } catch (error) {
+                console.error('Error loading calendar:', error);
+                showAlert('Error loading calendar', 'error');
+            }
+        }
+
+        // Setup real-time events listener
+        function setupEventsListener() {
+            if (eventsListener) {
+                eventsListener();
+            }
+
+            const eventsQuery = query(
+                collection(db, 'events'),
+                where('calendarId', '==', currentCalendarId),
+                orderBy('startDate', 'asc')
+            );
+
+            eventsListener = onSnapshot(eventsQuery, (snapshot) => {
+                renderCalendar();
+            });
+        }
+
+        // Calendar Functions
+        function renderCalendar() {
+            document.getElementById('calendar-loading').classList.add('hidden');
+            document.getElementById('calendar-grid').classList.remove('hidden');
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Update calendar title
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calendar-title').textContent = `${monthNames[month]} ${year}`;
+            
+            // Clear existing calendar days (keep headers)
+            const calendarGrid = document.getElementById('calendar-grid');
+            const dayElements = calendarGrid.querySelectorAll('.calendar-day');
+            dayElements.forEach(el => el.remove());
+            
+            // Generate calendar days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            const today = new Date();
+            
+            for (let i = 0; i < 42; i++) {
+                const currentDay = new Date(startDate);
+                currentDay.setDate(startDate.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                if (currentDay.getMonth() !== month) {
+                    dayElement.classList.add('other-month');
+                }
+                
+                if (currentDay.toDateString() === today.toDateString()) {
+                    dayElement.classList.add('today');
+                }
+                
+                dayElement.innerHTML = `
+                    <div class="day-number">${currentDay.getDate()}</div>
+                    <div class="day-events" id="events-${currentDay.getTime()}"></div>
+                `;
+                
+                dayElement.onclick = () => showEventModal(currentDay);
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Load and display events
+            loadEventsForMonth();
+        }
+
+        // Load events for current month
+        async function loadEventsForMonth() {
+            if (!currentCalendarId) return;
+            
+            try {
+                const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+                
+                const eventsQuery = query(
+                    collection(db, 'events'),
+                    where('calendarId', '==', currentCalendarId),
+                    where('startDate', '>=', startOfMonth),
+                    where('startDate', '<=', endOfMonth),
+                    orderBy('startDate', 'asc')
+                );
+                
+                const eventsSnapshot = await getDocs(eventsQuery);
+                
+                // Clear existing events
+                document.querySelectorAll('.day-events').forEach(el => el.innerHTML = '');
+                
+                // Display events
+                eventsSnapshot.forEach(doc => {
+                    const event = doc.data();
+                    const eventDate = event.startDate.toDate();
+                    
+                    // Find the matching day element
+                    const dayElements = document.querySelectorAll('.calendar-day');
+                    dayElements.forEach(dayEl => {
+                        const dayNumberEl = dayEl.querySelector('.day-number');
+                        if (dayNumberEl) {
+                            const dayNumber = parseInt(dayNumberEl.textContent);
+                            const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber);
+                            
+                            // Check if this event belongs to this day
+                            if (eventDate.toDateString() === dayDate.toDateString()) {
+                                const dayEventsEl = dayEl.querySelector('.day-events');
+                                if (dayEventsEl) {
+                                    const eventElement = document.createElement('div');
+                                    eventElement.className = 'event-item';
+                                    eventElement.style.background = event.color || '#3b82f6';
+                                    eventElement.textContent = event.title;
+                                    eventElement.title = event.description || event.title;
+                                    eventElement.onclick = (e) => {
+                                        e.stopPropagation();
+                                        showEventDetails(doc.id, event);
+                                    };
+                                    dayEventsEl.appendChild(eventElement);
+                                }
+                            }
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        // Calendar navigation
+        window.previousMonth = function() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        };
+
+        window.nextMonth = function() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        };
+
+        window.todayView = function() {
+            currentDate = new Date();
+            renderCalendar();
+        };
+
+        // UI Helper Functions
+        function showAuthSection() {
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+        }
+
+        function showAuthLoading(show) {
+            const loadingEl = document.getElementById('auth-loading');
+            const signInForm = document.getElementById('signin-form');
+            const signUpForm = document.getElementById('signup-form');
+            
+            if (show) {
+                loadingEl.classList.remove('hidden');
+                signInForm.classList.add('hidden');
+                signUpForm.classList.add('hidden');
+            } else {
+                loadingEl.classList.add('hidden');
+                if (signUpForm.classList.contains('hidden')) {
+                    signInForm.classList.remove('hidden');
+                } else {
+                    signUpForm.classList.remove('hidden');
+                }
+            }
+        }
+
+        function showAlert(message, type) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+
+            // Add to auth card if visible, otherwise to main app
+            const container = document.getElementById('auth-section').classList.contains('hidden') 
+                ? document.querySelector('.calendar-container')
+                : document.querySelector('.auth-card');
+            
+            container.appendChild(alert);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Modal Functions
+        let currentEventId = null;
+        let selectedEventColor = '#3b82f6';
+        let selectedPriority = 'medium';
+        let selectedReminder = '15';
+        let attendeesList = [];
+
+        // Event Modal Functions
+        window.showEventModal = function(date = null, eventId = null, eventData = null) {
+            const modal = document.getElementById('event-modal');
+            const modalTitle = document.getElementById('event-modal-title');
+            const saveBtnText = document.getElementById('save-btn-text');
+            
+            // Reset form
+            document.getElementById('event-form').reset();
+            attendeesList = [];
+            updateAttendeeList();
+            resetSelections();
+            
+            if (eventId && eventData) {
+                // Edit mode
+                currentEventId = eventId;
+                modalTitle.textContent = 'Edit Event';
+                saveBtnText.textContent = 'Update Event';
+                populateEventForm(eventData);
+            } else {
+                // Create mode
+                currentEventId = null;
+                modalTitle.textContent = 'Create New Event';
+                saveBtnText.textContent = 'Create Event';
+                
+                if (date) {
+                    const dateStr = date.toISOString().split('T')[0];
+                    document.getElementById('event-start-date').value = dateStr;
+                    document.getElementById('event-end-date').value = dateStr;
+                }
+            }
+            
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeEventModal = function() {
+            const modal = document.getElementById('event-modal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+            currentEventId = null;
+        };
+
+        function resetSelections() {
+            // Reset color selection
+            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector('.color-option[data-color="#3b82f6"]').classList.add('selected');
+            selectedEventColor = '#3b82f6';
+            
+            // Reset priority selection
+            document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector('.priority-option[data-priority="medium"]').classList.add('selected');
+            selectedPriority = 'medium';
+            
+            // Reset reminder selection
+            document.querySelectorAll('.reminder-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector('.reminder-option[data-reminder="15"]').classList.add('selected');
+            selectedReminder = '15';
+        }
+
+        function populateEventForm(eventData) {
+            document.getElementById('event-title').value = eventData.title || '';
+            document.getElementById('event-description').value = eventData.description || '';
+            document.getElementById('event-location').value = eventData.location || '';
+            document.getElementById('event-url').value = eventData.url || '';
+            document.getElementById('event-category').value = eventData.category || 'general';
+            
+            if (eventData.startDate) {
+                const startDate = eventData.startDate.toDate();
+                document.getElementById('event-start-date').value = startDate.toISOString().split('T')[0];
+                if (!eventData.allDay) {
+                    document.getElementById('event-start-time').value = startDate.toTimeString().slice(0, 5);
+                }
+            }
+            
+            if (eventData.endDate) {
+                const endDate = eventData.endDate.toDate();
+                document.getElementById('event-end-date').value = endDate.toISOString().split('T')[0];
+                if (!eventData.allDay) {
+                    document.getElementById('event-end-time').value = endDate.toTimeString().slice(0, 5);
+                }
+            }
+            
+            document.getElementById('event-all-day').checked = eventData.allDay || false;
+            document.getElementById('event-private').checked = eventData.private || false;
+            document.getElementById('send-invitations').checked = false;
+            
+            // Set color
+            if (eventData.color) {
+                selectedEventColor = eventData.color;
+                document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                const colorOpt = document.querySelector(`[data-color="${eventData.color}"]`);
+                if (colorOpt) colorOpt.classList.add('selected');
+            }
+            
+            // Set priority
+            if (eventData.priority) {
+                selectedPriority = eventData.priority;
+                document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
+                const priorityOpt = document.querySelector(`[data-priority="${eventData.priority}"]`);
+                if (priorityOpt) priorityOpt.classList.add('selected');
+            }
+            
+            // Set reminder
+            if (eventData.reminder !== undefined) {
+                selectedReminder = eventData.reminder.toString();
+                document.querySelectorAll('.reminder-option').forEach(opt => opt.classList.remove('selected'));
+                const reminderOpt = document.querySelector(`[data-reminder="${eventData.reminder}"]`);
+                if (reminderOpt) reminderOpt.classList.add('selected');
+            }
+            
+            // Set attendees
+            attendeesList = eventData.attendees || [];
+            updateAttendeeList();
+            
+            toggleAllDay();
+        }
+
+        // Color selection
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('color-option')) {
+                document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                e.target.classList.add('selected');
+                selectedEventColor = e.target.dataset.color;
+            }
+            
+            if (e.target.classList.contains('priority-option')) {
+                document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
+                e.target.classList.add('selected');
+                selectedPriority = e.target.dataset.priority;
+            }
+            
+            if (e.target.classList.contains('reminder-option')) {
+                document.querySelectorAll('.reminder-option').forEach(opt => opt.classList.remove('selected'));
+                e.target.classList.add('selected');
+                selectedReminder = e.target.dataset.reminder;
+            }
+            
+            if (e.target.classList.contains('day-option')) {
+                e.target.classList.toggle('selected');
+            }
+        });
+
+        window.toggleAllDay = function() {
+            const allDay = document.getElementById('event-all-day').checked;
+            const startTime = document.getElementById('event-start-time');
+            const endTime = document.getElementById('event-end-time');
+            
+            if (allDay) {
+                startTime.disabled = true;
+                endTime.disabled = true;
+                startTime.value = '';
+                endTime.value = '';
+            } else {
+                startTime.disabled = false;
+                endTime.disabled = false;
+            }
+        };
+
+        window.toggleRecurrenceOptions = function() {
+            const recurrence = document.getElementById('event-recurrence').value;
+            const options = document.getElementById('recurrence-options');
+            const weeklyOptions = document.getElementById('weekly-options');
+            
+            if (recurrence === 'none') {
+                options.classList.remove('show');
+            } else {
+                options.classList.add('show');
+                
+                if (recurrence === 'weekly') {
+                    weeklyOptions.classList.remove('hidden');
+                } else {
+                    weeklyOptions.classList.add('hidden');
+                }
+            }
+        };
+
+        // Attendee management
+        window.addAttendee = function() {
+            const emailInput = document.getElementById('attendee-email');
+            const email = emailInput.value.trim();
+            
+            if (email && email.includes('@')) {
+                if (!attendeesList.includes(email)) {
+                    attendeesList.push(email);
+                    updateAttendeeList();
+                    emailInput.value = '';
+                } else {
+                    showAlert('This person is already invited!', 'error');
+                }
+            } else {
+                showAlert('Please enter a valid email address', 'error');
+            }
+        };
+
+        function updateAttendeeList() {
+            const container = document.getElementById('attendee-list');
+            container.innerHTML = '';
+            
+            attendeesList.forEach(email => {
+                const tag = document.createElement('div');
+                tag.className = 'attendee-tag';
+                tag.innerHTML = `
+                    ${email}
+                    <span class="remove" onclick="removeAttendee('${email}')">&times;</span>
+                `;
+                container.appendChild(tag);
+            });
+        }
+
+        window.removeAttendee = function(email) {
+            attendeesList = attendeesList.filter(e => e !== email);
+            updateAttendeeList();
+        };
+
+        // Save Event
+        window.saveEvent = async function() {
+            const title = document.getElementById('event-title').value.trim();
+            if (!title) {
+                showAlert('Please enter an event title', 'error');
+                return;
+            }
+            
+            const startDate = document.getElementById('event-start-date').value;
+            if (!startDate) {
+                showAlert('Please select a start date', 'error');
+                return;
+            }
+            
+            const allDay = document.getElementById('event-all-day').checked;
+            const startTime = document.getElementById('event-start-time').value;
+            const endDate = document.getElementById('event-end-date').value || startDate;
+            const endTime = document.getElementById('event-end-time').value;
+            
+            // Create start and end timestamps
+            let startDateTime, endDateTime;
+            
+            if (allDay) {
+                startDateTime = new Date(startDate);
+                endDateTime = new Date(endDate);
+                endDateTime.setHours(23, 59, 59);
+            } else {
+                const startTimeStr = startTime || '09:00';
+                const endTimeStr = endTime || '10:00';
+                
+                startDateTime = new Date(`${startDate}T${startTimeStr}`);
+                endDateTime = new Date(`${endDate}T${endTimeStr}`);
+            }
+            
+            // Get recurrence settings
+            const recurrence = document.getElementById('event-recurrence').value;
+            let recurrenceData = null;
+            
+            if (recurrence !== 'none') {
+                recurrenceData = {
+                    type: recurrence,
+                    interval: document.getElementById('recurrence-interval').value,
+                    unit: document.getElementById('recurrence-unit').value,
+                    endDate: document.getElementById('recurrence-end-date').value,
+                    count: document.getElementById('recurrence-count').value,
+                    daysOfWeek: recurrence === 'weekly' ? 
+                        Array.from(document.querySelectorAll('.day-option.selected')).map(el => el.dataset.day) : null
+                };
+            }
+            
+            const eventData = {
+                title: title,
+                description: document.getElementById('event-description').value.trim(),
+                location: document.getElementById('event-location').value.trim(),
+                url: document.getElementById('event-url').value.trim(),
+                category: document.getElementById('event-category').value,
+                startDate: startDateTime,
+                endDate: endDateTime,
+                allDay: allDay,
+                color: selectedEventColor,
+                priority: selectedPriority,
+                reminder: selectedReminder === 'none' ? null : parseInt(selectedReminder),
+                attendees: attendeesList,
+                private: document.getElementById('event-private').checked,
+                recurrence: recurrenceData,
+                calendarId: currentCalendarId,
+                createdBy: currentUser.uid,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+            
+            try {
+                if (currentEventId) {
+                    // Update existing event
+                    await updateDoc(doc(db, 'events', currentEventId), {
+                        ...eventData,
+                        updatedAt: new Date()
+                    });
+                    showAlert('Event updated successfully!', 'success');
+                } else {
+                    // Create new event
+                    await addDoc(collection(db, 'events'), eventData);
+                    showAlert('Event created successfully!', 'success');
+                }
+                
+                closeEventModal();
+                renderCalendar();
+            } catch (error) {
+                console.error('Error saving event:', error);
+                showAlert('Error saving event. Please try again.', 'error');
+            }
+        };
+
+        // Share Modal Functions
+        window.showShareModal = async function() {
+            const modal = document.getElementById('share-modal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            await generateShareCode();
+        };
+
+        window.closeShareModal = function() {
+            const modal = document.getElementById('share-modal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        };
+
+        async function generateShareCode() {
+            try {
+                // Get or create share code for current calendar
+                const calendarDoc = await getDoc(doc(db, 'calendars', currentCalendarId));
+                let shareCode = calendarDoc.data().shareCode;
+                
+                if (!shareCode) {
+                    shareCode = generateRandomCode();
+                    await updateDoc(doc(db, 'calendars', currentCalendarId), {
+                        shareCode: shareCode,
+                        shareSettings: {
+                            public: false,
+                            allowCreate: false,
+                            allowEdit: false,
+                            notifications: true
+                        }
+                    });
+                }
+                
+                document.getElementById('calendar-share-code').textContent = shareCode;
+                
+                // Update toggle states
+                const settings = calendarDoc.data().shareSettings || {};
+                updateToggleState('public-access-toggle', settings.public);
+                updateToggleState('create-events-toggle', settings.allowCreate);
+                updateToggleState('edit-events-toggle', settings.allowEdit);
+                updateToggleState('notifications-toggle', settings.notifications !== false);
+                
+            } catch (error) {
+                console.error('Error generating share code:', error);
+                document.getElementById('calendar-share-code').textContent = 'Error';
+            }
+        }
+
+        function generateRandomCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 8; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        window.copyShareCode = function() {
+            const code = document.getElementById('calendar-share-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showAlert('Share code copied to clipboard!', 'success');
+            }).catch(() => {
+                showAlert('Failed to copy code', 'error');
+            });
+        };
+
+        window.togglePermission = async function(type) {
+            const toggle = document.getElementById(`${type === 'public' ? 'public-access' : 
+                                                  type === 'create' ? 'create-events' :
+                                                  type === 'edit' ? 'edit-events' : 'notifications'}-toggle`);
+            
+            const isActive = toggle.classList.contains('active');
+            
+            if (isActive) {
+                toggle.classList.remove('active');
+            } else {
+                toggle.classList.add('active');
+            }
+            
+            // Update in database
+            try {
+                const updateData = {};
+                updateData[`shareSettings.${type === 'public' ? 'public' : 
+                                               type === 'create' ? 'allowCreate' :
+                                               type === 'edit' ? 'allowEdit' : 'notifications'}`] = !isActive;
+                
+                await updateDoc(doc(db, 'calendars', currentCalendarId), updateData);
+            } catch (error) {
+                console.error('Error updating permission:', error);
+                // Revert toggle on error
+                if (isActive) {
+                    toggle.classList.add('active');
+                } else {
+                    toggle.classList.remove('active');
+                }
+            }
+        };
+
+        function updateToggleState(elementId, isActive) {
+            const toggle = document.getElementById(elementId);
+            if (isActive) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+        }
+
+        window.generateNewShareCode = async function() {
+            try {
+                const newCode = generateRandomCode();
+                await updateDoc(doc(db, 'calendars', currentCalendarId), {
+                    shareCode: newCode
+                });
+                
+                document.getElementById('calendar-share-code').textContent = newCode;
+                showAlert('New share code generated!', 'success');
+            } catch (error) {
+                console.error('Error generating new code:', error);
+                showAlert('Error generating new code', 'error');
+            }
+        };
+
+        window.joinCalendar = async function() {
+            const code = document.getElementById('join-calendar-code').value.trim().toUpperCase();
+            
+            if (!code) {
+                showAlert('Please enter a calendar code', 'error');
+                return;
+            }
+            
+            try {
+                const calendarsQuery = query(
+                    collection(db, 'calendars'),
+                    where('shareCode', '==', code)
+                );
+                
+                const calendarsSnapshot = await getDocs(calendarsQuery);
+                
+                if (calendarsSnapshot.empty) {
+                    showAlert('Calendar not found. Please check the code.', 'error');
+                    return;
+                }
+                
+                const calendar = calendarsSnapshot.docs[0];
+                const calendarData = calendar.data();
+                
+                if (!calendarData.shareSettings?.public) {
+                    showAlert('This calendar is not publicly accessible', 'error');
+                    return;
+                }
+                
+                // Add user to calendar shares
+                await addDoc(collection(db, 'shares'), {
+                    calendarId: calendar.id,
+                    userId: currentUser.uid,
+                    permissions: {
+                        view: true,
+                        create: calendarData.shareSettings?.allowCreate || false,
+                        edit: calendarData.shareSettings?.allowEdit || false
+                    },
+                    joinedAt: new Date()
+                });
+                
+                showAlert(`Successfully joined "${calendarData.name}"!`, 'success');
+                document.getElementById('join-calendar-code').value = '';
+                
+                // Could add logic here to switch to the joined calendar
+                
+            } catch (error) {
+                console.error('Error joining calendar:', error);
+                showAlert('Error joining calendar', 'error');
+            }
+        };
+
+        // Enhanced Event Details Modal
+        window.showEventDetails = function(eventId, eventData) {
+            showEventModal(null, eventId, eventData);
+        };
+
+        // Add Enter key support for attendee input
+        document.addEventListener('keydown', (e) => {
+            if (e.target.id === 'attendee-email' && e.key === 'Enter') {
+                e.preventDefault();
+                addAttendee();
+            }
+            
+            if (e.target.id === 'join-calendar-code' && e.key === 'Enter') {
+                e.preventDefault();
+                joinCalendar();
+            }
+        });
+
+        // Close modals on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const eventModal = document.getElementById('event-modal');
+                const shareModal = document.getElementById('share-modal');
+                
+                if (eventModal.classList.contains('show')) {
+                    closeEventModal();
+                } else if (shareModal.classList.contains('show')) {
+                    closeShareModal();
+                }
+            }
+        });
+
+        // Close modals on backdrop click
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                if (e.target.id === 'event-modal') {
+                    closeEventModal();
+                } else if (e.target.id === 'share-modal') {
+                    closeShareModal();
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
