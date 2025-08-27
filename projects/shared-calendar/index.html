@@ -1073,6 +1073,10 @@
         <header class="app-header">
             <div class="app-title">
                 <h1>📅 ShareCal</h1>
+                <select id="calendar-selector" style="margin-left: 20px; padding: 8px 12px; border-radius: 8px; border: 2px solid var(--border); background: white; font-size: 0.9rem; font-weight: 500;">
+                    <option value="">Select Calendar...</option>
+                </select>
+                <button class="btn btn-success btn-sm" onclick="showCreateCalendarModal()" style="margin-left: 10px;">+ New Calendar</button>
             </div>
             <div class="user-info">
                 <div class="user-avatar" id="user-avatar">U</div>
@@ -1413,6 +1417,25 @@
                     </div>
                 </div>
 
+                <div style="margin-top: 25px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                    <h4 style="margin-bottom: 15px;">Invite Users</h4>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <input type="text" id="invite-username" placeholder="Enter username..." style="flex: 1; padding: 8px 12px; border: 2px solid var(--border); border-radius: 6px;">
+                        <select id="invite-role" style="padding: 8px 12px; border: 2px solid var(--border); border-radius: 6px;">
+                            <option value="viewer">Viewer</option>
+                            <option value="editor">Editor</option>
+                            <option value="owner">Owner</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm" onclick="inviteUser()">Invite</button>
+                    </div>
+                    <div id="current-users" style="margin-top: 15px;">
+                        <h5 style="margin-bottom: 10px; color: var(--text-light);">Current Users:</h5>
+                        <div id="users-list" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <!-- Users will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
                 <div style="margin-top: 20px;">
                     <label for="join-calendar-code">Join Another Calendar</label>
                     <div style="display: flex; gap: 10px; margin-top: 8px;">
@@ -1426,6 +1449,64 @@
                 <button type="button" class="btn btn-success" onclick="generateNewShareCode()">
                     🔄 Generate New Code
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- create calendar modal -->
+    <div id="create-calendar-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Calendar</h3>
+                <button class="modal-close" onclick="closeCreateCalendarModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row full">
+                    <div class="form-field">
+                        <label for="new-calendar-name">Calendar Name *</label>
+                        <input type="text" id="new-calendar-name" placeholder="e.g., Work Calendar, Family Events" required>
+                    </div>
+                </div>
+                
+                <div class="form-row full">
+                    <div class="form-field">
+                        <label for="new-calendar-description">Description</label>
+                        <textarea id="new-calendar-description" placeholder="Brief description of this calendar..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="new-calendar-color">Calendar Color</label>
+                        <div class="color-picker-wrapper">
+                            <div class="color-option selected" data-color="#3b82f6" style="background: #3b82f6;"></div>
+                            <div class="color-option" data-color="#ef4444" style="background: #ef4444;"></div>
+                            <div class="color-option" data-color="#10b981" style="background: #10b981;"></div>
+                            <div class="color-option" data-color="#f59e0b" style="background: #f59e0b;"></div>
+                            <div class="color-option" data-color="#8b5cf6" style="background: #8b5cf6;"></div>
+                            <div class="color-option" data-color="#06b6d4" style="background: #06b6d4;"></div>
+                            <div class="color-option" data-color="#84cc16" style="background: #84cc16;"></div>
+                            <div class="color-option" data-color="#f97316" style="background: #f97316;"></div>
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label for="new-calendar-timezone">Timezone</label>
+                        <select id="new-calendar-timezone">
+                            <option value="auto">Auto-detect</option>
+                            <option value="America/New_York">Eastern Time</option>
+                            <option value="America/Chicago">Central Time</option>
+                            <option value="America/Denver">Mountain Time</option>
+                            <option value="America/Los_Angeles">Pacific Time</option>
+                            <option value="Europe/London">London</option>
+                            <option value="Europe/Paris">Paris</option>
+                            <option value="Asia/Tokyo">Tokyo</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-cancel" onclick="closeCreateCalendarModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createNewCalendar()">Create Calendar</button>
             </div>
         </div>
     </div>
@@ -1458,6 +1539,8 @@
         let currentCalendarId = null;
         let eventsListener = null;
         let currentEvents = [];
+        let userCalendars = [];
+        let currentCalendarPermissions = null;
 
         // utility function for generating random codes
         function generateRandomCode() {
@@ -1515,9 +1598,11 @@
                 await updateProfile(user, { displayName: name });
 
                 // create user profile in firestore
-                await setDoc(doc(db, 'accounts', user.uid), {
+                await setDoc(doc(db, 'users', user.uid), {
+                    uid: user.uid,
                     name: name,
                     email: email,
+                    username: email.split('@')[0], // default username from email
                     createdAt: Timestamp.now(),
                     preferences: {
                         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -1532,7 +1617,6 @@
                     description: 'My personal calendar',
                     owner: user.uid,
                     createdAt: Timestamp.now(),
-                    isPublic: false,
                     shareCode: generateRandomCode(),
                     shareSettings: {
                         public: false,
@@ -1544,6 +1628,22 @@
                         color: '#3b82f6',
                         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
                     }
+                });
+
+                // create user-calendar relationship
+                await setDoc(doc(db, 'user_calendars', `${user.uid}_${defaultCalendarRef.id}`), {
+                    userId: user.uid,
+                    calendarId: defaultCalendarRef.id,
+                    role: 'owner',
+                    permissions: {
+                        view: true,
+                        create: true,
+                        edit: true,
+                        delete: true,
+                        manage: true,
+                        share: true
+                    },
+                    addedAt: Timestamp.now()
                 });
 
                 showAlert('Account created successfully! Welcome to ShareCal!', 'success');
@@ -1637,13 +1737,18 @@
         // auth state observer
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                // User is signed in
                 currentUser = user;
+                console.log('User signed in:', user.email);
                 await loadUserProfile();
+                await loadUserCalendars();
                 showMainApp();
-                await loadDefaultCalendar();
                 renderCalendar();
             } else if (!currentUser || !currentUser.isCustomAuth) {
+                // User is signed out
                 currentUser = null;
+                currentCalendarId = null;
+                userCalendars = [];
                 showAuthSection();
                 if (eventsListener) {
                     eventsListener();
@@ -1797,7 +1902,7 @@
         // load user profile and set up UI
         async function loadUserProfile() {
             try {
-                const userDoc = await getDoc(doc(db, 'accounts', currentUser.uid));
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
                     document.getElementById('user-name').textContent = userData.name || userData.username || 'User';
@@ -1818,6 +1923,190 @@
                 document.getElementById('user-avatar').textContent = (currentUser.displayName || currentUser.email || 'U').charAt(0).toUpperCase();
             }
         }
+
+        // load user calendars
+        async function loadUserCalendars() {
+            try {
+                const userCalendarsQuery = query(
+                    collection(db, 'user_calendars'),
+                    where('userId', '==', currentUser.uid)
+                );
+                
+                const userCalendarsSnapshot = await getDocs(userCalendarsQuery);
+                userCalendars = [];
+                
+                for (const docSnap of userCalendarsSnapshot.docs) {
+                    const relationshipData = docSnap.data();
+                    
+                    // get calendar details
+                    const calendarDoc = await getDoc(doc(db, 'calendars', relationshipData.calendarId));
+                    if (calendarDoc.exists()) {
+                        const calendarData = calendarDoc.data();
+                        
+                        userCalendars.push({
+                            id: relationshipData.calendarId,
+                            name: calendarData.name,
+                            description: calendarData.description,
+                            color: calendarData.settings?.color || '#3b82f6',
+                            role: relationshipData.role,
+                            permissions: relationshipData.permissions,
+                            owner: calendarData.owner,
+                            shareCode: calendarData.shareCode
+                        });
+                    }
+                }
+                
+                // set default calendar if none selected
+                if (userCalendars.length > 0 && !currentCalendarId) {
+                    currentCalendarId = userCalendars[0].id;
+                    currentCalendarPermissions = userCalendars[0].permissions;
+                }
+                
+                updateCalendarSelector();
+                setupEventsListener();
+                
+            } catch (error) {
+                console.error('Error loading user calendars:', error);
+                showAlert('Error loading calendars', 'error');
+            }
+        }
+
+        // update calendar selector dropdown
+        function updateCalendarSelector() {
+            const selector = document.getElementById('calendar-selector');
+            selector.innerHTML = '<option value="">Select Calendar...</option>';
+            
+            userCalendars.forEach(calendar => {
+                const option = document.createElement('option');
+                option.value = calendar.id;
+                option.textContent = `${calendar.name} (${calendar.role})`;
+                if (calendar.id === currentCalendarId) {
+                    option.selected = true;
+                }
+                selector.appendChild(option);
+            });
+            
+            // add event listener for calendar changes
+            selector.onchange = function() {
+                if (this.value) {
+                    switchCalendar(this.value);
+                }
+            };
+        }
+
+        // switch to different calendar
+        function switchCalendar(calendarId) {
+            const selectedCalendar = userCalendars.find(cal => cal.id === calendarId);
+            if (selectedCalendar) {
+                currentCalendarId = calendarId;
+                currentCalendarPermissions = selectedCalendar.permissions;
+                
+                // update calendar title
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'];
+                const calendarTitle = document.getElementById('calendar-title');
+                calendarTitle.textContent = `${selectedCalendar.name} - ${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+                
+                // stop existing events listener
+                if (eventsListener) {
+                    eventsListener();
+                }
+                
+                // setup new events listener for selected calendar
+                setupEventsListener();
+                renderCalendar();
+                
+                showAlert(`Switched to ${selectedCalendar.name}`, 'success');
+            }
+        }
+
+        // create calendar modal functions
+        window.showCreateCalendarModal = function() {
+            document.getElementById('create-calendar-modal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            // reset form
+            document.getElementById('new-calendar-name').value = '';
+            document.getElementById('new-calendar-description').value = '';
+            document.getElementById('new-calendar-timezone').value = 'auto';
+            
+            // reset color selection
+            document.querySelectorAll('#create-calendar-modal .color-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector('#create-calendar-modal .color-option[data-color="#3b82f6"]').classList.add('selected');
+        };
+
+        window.closeCreateCalendarModal = function() {
+            document.getElementById('create-calendar-modal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        };
+
+        // create new calendar
+        window.createNewCalendar = async function() {
+            const name = document.getElementById('new-calendar-name').value.trim();
+            const description = document.getElementById('new-calendar-description').value.trim();
+            const selectedColorOption = document.querySelector('#create-calendar-modal .color-option.selected');
+            const color = selectedColorOption ? selectedColorOption.dataset.color : '#3b82f6';
+            const timezone = document.getElementById('new-calendar-timezone').value;
+            
+            if (!name) {
+                showAlert('Please enter a calendar name', 'error');
+                return;
+            }
+            
+            try {
+                // create calendar
+                const calendarData = {
+                    name: name,
+                    description: description,
+                    owner: currentUser.uid,
+                    createdAt: Timestamp.now(),
+                    shareCode: generateRandomCode(),
+                    shareSettings: {
+                        public: false,
+                        allowCreate: false,
+                        allowEdit: false,
+                        notifications: true
+                    },
+                    settings: {
+                        color: color,
+                        timezone: timezone === 'auto' ? Intl.DateTimeFormat().resolvedOptions().timeZone : timezone
+                    }
+                };
+                
+                const calendarRef = await addDoc(collection(db, 'calendars'), calendarData);
+                
+                // create user-calendar relationship
+                await setDoc(doc(db, 'user_calendars', `${currentUser.uid}_${calendarRef.id}`), {
+                    userId: currentUser.uid,
+                    calendarId: calendarRef.id,
+                    role: 'owner',
+                    permissions: {
+                        view: true,
+                        create: true,
+                        edit: true,
+                        delete: true,
+                        manage: true,
+                        share: true
+                    },
+                    addedAt: Timestamp.now()
+                });
+                
+                showAlert('Calendar created successfully!', 'success');
+                closeCreateCalendarModal();
+                
+                // reload user calendars
+                await loadUserCalendars();
+                
+                // switch to new calendar
+                switchCalendar(calendarRef.id);
+                
+            } catch (error) {
+                console.error('Error creating calendar:', error);
+                showAlert('Error creating calendar. Please try again.', 'error');
+            }
+        };
 
         // load default calendar for user
         async function loadDefaultCalendar() {
@@ -1897,10 +2186,13 @@
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             
-            // update calendar title
+            // update calendar title with calendar name
             const monthNames = ["January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"];
-            document.getElementById('calendar-title').textContent = `${monthNames[month]} ${year}`;
+            
+            const currentCalendar = userCalendars.find(cal => cal.id === currentCalendarId);
+            const calendarName = currentCalendar ? currentCalendar.name : 'Calendar';
+            document.getElementById('calendar-title').textContent = `${calendarName} - ${monthNames[month]} ${year}`;
             
             // clear existing calendar days (keep headers)
             const calendarGrid = document.getElementById('calendar-grid');
@@ -2199,9 +2491,20 @@
         // color selection
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('color-option')) {
-                document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
-                e.target.classList.add('selected');
-                selectedEventColor = e.target.dataset.color;
+                // find the modal container to determine which modal we're in
+                const modal = e.target.closest('.modal');
+                const modalId = modal ? modal.parentElement.id : null;
+                
+                if (modalId === 'create-calendar-modal') {
+                    // handle create calendar modal color selection
+                    modal.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                    e.target.classList.add('selected');
+                } else {
+                    // handle event modal color selection
+                    document.querySelectorAll('#event-modal .color-option').forEach(opt => opt.classList.remove('selected'));
+                    e.target.classList.add('selected');
+                    selectedEventColor = e.target.dataset.color;
+                }
             }
             
             if (e.target.classList.contains('priority-option')) {
@@ -2414,6 +2717,7 @@
             document.body.style.overflow = 'hidden';
             
             await generateShareCode();
+            await loadCurrentUsers();
         };
 
         window.closeShareModal = function() {
@@ -2424,9 +2728,21 @@
 
         async function generateShareCode() {
             try {
+                if (!currentCalendarId) {
+                    document.getElementById('calendar-share-code').textContent = 'No calendar selected';
+                    return;
+                }
+
                 // get or create share code for current calendar
                 const calendarDoc = await getDoc(doc(db, 'calendars', currentCalendarId));
-                let shareCode = calendarDoc.data().shareCode;
+                
+                if (!calendarDoc.exists()) {
+                    document.getElementById('calendar-share-code').textContent = 'Calendar not found';
+                    return;
+                }
+
+                const calendarData = calendarDoc.data();
+                let shareCode = calendarData.shareCode;
                 
                 if (!shareCode) {
                     shareCode = generateRandomCode();
@@ -2443,16 +2759,17 @@
                 
                 document.getElementById('calendar-share-code').textContent = shareCode;
                 
-                // update toggle states
-                const settings = calendarDoc.data().shareSettings || {};
-                updateToggleState('public-access-toggle', settings.public);
-                updateToggleState('create-events-toggle', settings.allowCreate);
-                updateToggleState('edit-events-toggle', settings.allowEdit);
+                // update toggle states safely
+                const settings = calendarData.shareSettings || {};
+                updateToggleState('public-access-toggle', settings.public || false);
+                updateToggleState('create-events-toggle', settings.allowCreate || false);
+                updateToggleState('edit-events-toggle', settings.allowEdit || false);
                 updateToggleState('notifications-toggle', settings.notifications !== false);
                 
             } catch (error) {
                 console.error('Error generating share code:', error);
-                document.getElementById('calendar-share-code').textContent = 'Error';
+                document.getElementById('calendar-share-code').textContent = 'Error loading code';
+                showAlert('Error loading share settings', 'error');
             }
         }
 
@@ -2526,6 +2843,11 @@
 
         window.generateNewShareCode = async function() {
             try {
+                if (!currentCalendarId) {
+                    showAlert('No calendar selected', 'error');
+                    return;
+                }
+
                 const newCode = generateRandomCode();
                 await updateDoc(doc(db, 'calendars', currentCalendarId), {
                     shareCode: newCode
@@ -2536,6 +2858,173 @@
             } catch (error) {
                 console.error('Error generating new code:', error);
                 showAlert('Error generating new code', 'error');
+            }
+        };
+
+        // invite user to calendar
+        window.inviteUser = async function() {
+            const username = document.getElementById('invite-username').value.trim();
+            const role = document.getElementById('invite-role').value;
+            
+            if (!username) {
+                showAlert('Please enter a username', 'error');
+                return;
+            }
+            
+            try {
+                // find user by username
+                const usersQuery = query(
+                    collection(db, 'users'),
+                    where('username', '==', username)
+                );
+                
+                const usersSnapshot = await getDocs(usersQuery);
+                
+                if (usersSnapshot.empty) {
+                    showAlert('User not found. Please check the username.', 'error');
+                    return;
+                }
+                
+                const targetUser = usersSnapshot.docs[0];
+                const targetUserData = targetUser.data();
+                
+                // check if user already has access
+                const userCalendarId = `${targetUserData.uid}_${currentCalendarId}`;
+                const existingRelationship = await getDoc(doc(db, 'user_calendars', userCalendarId));
+                
+                if (existingRelationship.exists()) {
+                    showAlert('User already has access to this calendar', 'info');
+                    return;
+                }
+                
+                // determine permissions based on role
+                let permissions = {};
+                switch (role) {
+                    case 'viewer':
+                        permissions = {
+                            view: true,
+                            create: false,
+                            edit: false,
+                            delete: false,
+                            manage: false,
+                            share: false
+                        };
+                        break;
+                    case 'editor':
+                        permissions = {
+                            view: true,
+                            create: true,
+                            edit: true,
+                            delete: false,
+                            manage: false,
+                            share: false
+                        };
+                        break;
+                    case 'owner':
+                        permissions = {
+                            view: true,
+                            create: true,
+                            edit: true,
+                            delete: true,
+                            manage: true,
+                            share: true
+                        };
+                        break;
+                }
+                
+                // add user to calendar
+                await setDoc(doc(db, 'user_calendars', userCalendarId), {
+                    userId: targetUserData.uid,
+                    calendarId: currentCalendarId,
+                    role: role,
+                    permissions: permissions,
+                    addedAt: Timestamp.now(),
+                    invitedBy: currentUser.uid
+                });
+                
+                showAlert(`Successfully invited ${targetUserData.name || username} as ${role}!`, 'success');
+                document.getElementById('invite-username').value = '';
+                
+                // reload current users list
+                await loadCurrentUsers();
+                
+            } catch (error) {
+                console.error('Error inviting user:', error);
+                showAlert('Error inviting user. Please try again.', 'error');
+            }
+        };
+
+        // load current users for the calendar
+        async function loadCurrentUsers() {
+            try {
+                const userCalendarsQuery = query(
+                    collection(db, 'user_calendars'),
+                    where('calendarId', '==', currentCalendarId)
+                );
+                
+                const userCalendarsSnapshot = await getDocs(userCalendarsQuery);
+                const usersList = document.getElementById('users-list');
+                usersList.innerHTML = '';
+                
+                for (const docSnap of userCalendarsSnapshot.docs) {
+                    const relationshipData = docSnap.data();
+                    
+                    // get user details
+                    const userDoc = await getDoc(doc(db, 'users', relationshipData.userId));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        
+                        const userTag = document.createElement('div');
+                        userTag.style.cssText = `
+                            background: var(--primary-light);
+                            color: var(--primary);
+                            padding: 5px 12px;
+                            border-radius: 20px;
+                            font-size: 0.85rem;
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                        `;
+                        
+                        const roleColor = relationshipData.role === 'owner' ? '#ef4444' : 
+                                        relationshipData.role === 'editor' ? '#f59e0b' : '#10b981';
+                        
+                        userTag.innerHTML = `
+                            <span>${userData.name || userData.username}</span>
+                            <span style="background: ${roleColor}; color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.7rem;">${relationshipData.role}</span>
+                            ${relationshipData.userId !== currentUser.uid && currentCalendarPermissions?.manage ? 
+                                `<span style="cursor: pointer; color: var(--danger); margin-left: 4px;" onclick="removeUser('${relationshipData.userId}')">&times;</span>` : 
+                                ''}
+                        `;
+                        
+                        usersList.appendChild(userTag);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading current users:', error);
+            }
+        }
+
+        // remove user from calendar
+        window.removeUser = async function(userId) {
+            if (!currentCalendarPermissions?.manage) {
+                showAlert('You do not have permission to remove users', 'error');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to remove this user from the calendar?')) {
+                try {
+                    const userCalendarId = `${userId}_${currentCalendarId}`;
+                    await deleteDoc(doc(db, 'user_calendars', userCalendarId));
+                    
+                    showAlert('User removed successfully', 'success');
+                    await loadCurrentUsers();
+                    
+                } catch (error) {
+                    console.error('Error removing user:', error);
+                    showAlert('Error removing user', 'error');
+                }
             }
         };
 
@@ -2569,33 +3058,38 @@
                 }
                 
                 // check if user already has access
-                const existingShareQuery = query(
-                    collection(db, 'shares'),
-                    where('calendarId', '==', calendar.id),
-                    where('userId', '==', currentUser.uid)
-                );
+                const userCalendarId = `${currentUser.uid}_${calendar.id}`;
+                const existingRelationship = await getDoc(doc(db, 'user_calendars', userCalendarId));
                 
-                const existingShareSnapshot = await getDocs(existingShareQuery);
-                
-                if (!existingShareSnapshot.empty) {
+                if (existingRelationship.exists()) {
                     showAlert('You already have access to this calendar', 'info');
                     return;
                 }
                 
-                // add user to calendar shares
-                await addDoc(collection(db, 'shares'), {
-                    calendarId: calendar.id,
+                // determine permissions based on calendar settings
+                const permissions = {
+                    view: true,
+                    create: calendarData.shareSettings?.allowCreate || false,
+                    edit: calendarData.shareSettings?.allowEdit || false,
+                    delete: false, // only owners can delete by default
+                    manage: false, // only owners can manage by default
+                    share: false   // only owners can share by default
+                };
+                
+                // add user to calendar
+                await setDoc(doc(db, 'user_calendars', userCalendarId), {
                     userId: currentUser.uid,
-                    permissions: {
-                        view: true,
-                        create: calendarData.shareSettings?.allowCreate || false,
-                        edit: calendarData.shareSettings?.allowEdit || false
-                    },
-                    joinedAt: Timestamp.now()
+                    calendarId: calendar.id,
+                    role: 'member',
+                    permissions: permissions,
+                    addedAt: Timestamp.now()
                 });
                 
                 showAlert(`Successfully joined "${calendarData.name}"!`, 'success');
                 document.getElementById('join-calendar-code').value = '';
+                
+                // reload user calendars to show the new one
+                await loadUserCalendars();
                 
             } catch (error) {
                 console.error('Error joining calendar:', error);
