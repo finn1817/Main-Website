@@ -122,6 +122,144 @@
             background-clip: text;
         }
 
+        /* calendar selector dropdown */
+        .calendar-selector {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .calendar-dropdown {
+            position: relative;
+        }
+
+        .calendar-dropdown-btn {
+            background: var(--primary-light);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--primary);
+            transition: all 0.3s ease;
+            min-width: 200px;
+            justify-content: space-between;
+        }
+
+        .calendar-dropdown-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-dropdown-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .calendar-dropdown-btn.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .calendar-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .calendar-dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .calendar-dropdown-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .calendar-dropdown-item:hover {
+            background: var(--primary-light);
+        }
+
+        .calendar-dropdown-item.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-info h4 {
+            margin: 0 0 3px 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .calendar-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .calendar-role {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .calendar-dropdown-item.selected .calendar-role {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 5px 0;
+        }
+
+        .dropdown-action {
+            padding: 12px 20px;
+            cursor: pointer;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-action:hover {
+            background: var(--primary-light);
+        }
+
         .user-info {
             display: flex;
             align-items: center;
@@ -378,12 +516,12 @@
             background: var(--primary-light);
         }
 
-        .calendar-info h3 {
+        .calendar-item-info h3 {
             margin: 0 0 5px 0;
             color: var(--text);
         }
 
-        .calendar-info p {
+        .calendar-item-info p {
             margin: 0;
             color: var(--text-light);
             font-size: 0.9rem;
@@ -930,6 +1068,15 @@
                 gap: 15px;
             }
 
+            .calendar-selector {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .calendar-dropdown-btn {
+                min-width: 250px;
+            }
+
             .calendar-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -1066,6 +1213,29 @@
             <div class="app-title">
                 <h1>📅 ShareCal</h1>
             </div>
+            
+            <!-- calendar selector dropdown -->
+            <div class="calendar-selector">
+                <div class="calendar-dropdown">
+                    <button class="calendar-dropdown-btn" id="calendar-dropdown-btn" onclick="toggleCalendarDropdown()">
+                        <span id="selected-calendar-text">Select a Calendar</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div class="calendar-dropdown-menu" id="calendar-dropdown-menu">
+                        <div id="calendar-dropdown-list">
+                            <!-- calendars will be loaded here -->
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-action" onclick="showCreateCalendarModal(); closeCalendarDropdown();">
+                            ➕ Create New Calendar
+                        </div>
+                        <div class="dropdown-action" onclick="showJoinCalendarModal(); closeCalendarDropdown();">
+                            🔗 Join Calendar
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="user-info">
                 <div class="user-avatar" id="user-avatar-select" onclick="showAccountModal()">U</div>
                 <span class="user-name" id="user-name-select" onclick="showAccountModal()">User</span>
@@ -1106,12 +1276,36 @@
         <header class="app-header">
             <div class="app-title">
                 <h1>📅 ShareCal</h1>
-                <span id="current-calendar-name" style="font-size: 1rem; color: var(--text-light); font-weight: 500;"></span>
             </div>
+            
+            <!-- calendar selector dropdown -->
+            <div class="calendar-selector">
+                <div class="calendar-dropdown">
+                    <button class="calendar-dropdown-btn" id="main-calendar-dropdown-btn" onclick="toggleMainCalendarDropdown()">
+                        <span id="main-selected-calendar-text">Loading...</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div class="calendar-dropdown-menu" id="main-calendar-dropdown-menu">
+                        <div id="main-calendar-dropdown-list">
+                            <!-- calendars will be loaded here -->
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-action" onclick="showCreateCalendarModal(); closeMainCalendarDropdown();">
+                            ➕ Create New Calendar
+                        </div>
+                        <div class="dropdown-action" onclick="showJoinCalendarModal(); closeMainCalendarDropdown();">
+                            🔗 Join Calendar
+                        </div>
+                        <div class="dropdown-action" onclick="backToCalendarSelection(); closeMainCalendarDropdown();">
+                            ⚙️ Manage Calendars
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="user-info">
                 <div class="user-avatar" id="user-avatar" onclick="showAccountModal()">U</div>
                 <span class="user-name" id="user-name" onclick="showAccountModal()">User</span>
-                <button class="btn btn-secondary btn-sm" onclick="backToCalendarSelection()">Switch Calendar</button>
                 <button class="btn btn-secondary btn-sm" onclick="signOut()">Sign Out</button>
             </div>
         </header>
@@ -1335,7 +1529,7 @@
         </div>
     </div>
 
-    <!-- event modal (simplified for brevity - same as before) -->
+    <!-- event modal -->
     <div id="event-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -1479,6 +1673,7 @@
         let eventsListener = null;
         let userSession = null;
         let currentEventId = null;
+        let userCalendars = [];
 
         // utility function for generating random codes
         function generateRandomCode() {
@@ -1523,6 +1718,121 @@
 
         function clearUserSession() {
             localStorage.removeItem('sharecal_session');
+        }
+
+        // calendar dropdown functions
+        window.toggleCalendarDropdown = function() {
+            const btn = document.getElementById('calendar-dropdown-btn');
+            const menu = document.getElementById('calendar-dropdown-menu');
+            
+            btn.classList.toggle('active');
+            menu.classList.toggle('show');
+            
+            if (menu.classList.contains('show')) {
+                loadCalendarDropdown();
+            }
+        };
+
+        window.toggleMainCalendarDropdown = function() {
+            const btn = document.getElementById('main-calendar-dropdown-btn');
+            const menu = document.getElementById('main-calendar-dropdown-menu');
+            
+            btn.classList.toggle('active');
+            menu.classList.toggle('show');
+            
+            if (menu.classList.contains('show')) {
+                loadMainCalendarDropdown();
+            }
+        };
+
+        window.closeCalendarDropdown = function() {
+            document.getElementById('calendar-dropdown-btn').classList.remove('active');
+            document.getElementById('calendar-dropdown-menu').classList.remove('show');
+        };
+
+        window.closeMainCalendarDropdown = function() {
+            document.getElementById('main-calendar-dropdown-btn').classList.remove('active');
+            document.getElementById('main-calendar-dropdown-menu').classList.remove('show');
+        };
+
+        // close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.calendar-dropdown')) {
+                closeCalendarDropdown();
+                closeMainCalendarDropdown();
+            }
+        });
+
+        async function loadCalendarDropdown() {
+            const container = document.getElementById('calendar-dropdown-list');
+            container.innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-light);">Loading calendars...</div>';
+            
+            await loadUserCalendars();
+            
+            container.innerHTML = '';
+            
+            if (userCalendars.length === 0) {
+                container.innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-light);">No calendars found</div>';
+                return;
+            }
+            
+            userCalendars.forEach(cal => {
+                const item = document.createElement('div');
+                item.className = 'calendar-dropdown-item';
+                item.onclick = () => {
+                    selectCalendar(cal.id, cal.data);
+                    closeCalendarDropdown();
+                };
+                
+                const roleText = cal.isOwner ? 'Owner' : 'Member';
+                
+                item.innerHTML = `
+                    <div class="calendar-info">
+                        <h4>${cal.data.name}</h4>
+                        <p>${cal.data.description || 'No description'}</p>
+                    </div>
+                    <div class="calendar-role">${roleText}</div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        async function loadMainCalendarDropdown() {
+            const container = document.getElementById('main-calendar-dropdown-list');
+            container.innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-light);">Loading calendars...</div>';
+            
+            await loadUserCalendars();
+            
+            container.innerHTML = '';
+            
+            userCalendars.forEach(cal => {
+                const item = document.createElement('div');
+                item.className = 'calendar-dropdown-item';
+                
+                if (cal.id === currentCalendarId) {
+                    item.classList.add('selected');
+                }
+                
+                item.onclick = () => {
+                    if (cal.id !== currentCalendarId) {
+                        selectCalendar(cal.id, cal.data);
+                    }
+                    closeMainCalendarDropdown();
+                };
+                
+                const roleText = cal.isOwner ? 'Owner' : 'Member';
+                
+                item.innerHTML = `
+                    <div class="calendar-info">
+                        <h4>${cal.data.name}</h4>
+                        <p>${cal.data.description || 'No description'}</p>
+                    </div>
+                    <div class="calendar-role">${roleText}</div>
+                `;
+                
+                container.appendChild(item);
+            });
         }
 
         // authentication functions
@@ -1662,6 +1972,7 @@
                 await loadUserProfile();
                 showCalendarSelection();
                 await loadUserCalendars();
+                updateCalendarDropdowns();
             } else {
                 // check for custom auth session
                 const session = loadUserSession();
@@ -1671,6 +1982,7 @@
                     await loadUserProfile();
                     showCalendarSelection();
                     await loadUserCalendars();
+                    updateCalendarDropdowns();
                 } else {
                     currentUser = null;
                     userSession = null;
@@ -1731,6 +2043,29 @@
                     });
 
                     console.log('Test admin user created');
+                    
+                    // create default calendar for test user
+                    await addDoc(collection(db, 'calendars'), {
+                        name: 'Danny\'s Admin Calendar',
+                        description: 'Admin test calendar for development',
+                        type: 'personal',
+                        owner: testUserRef.id,
+                        createdAt: new Date(),
+                        isPublic: true,
+                        shareCode: 'ADMIN001',
+                        shareSettings: {
+                            public: true,
+                            allowCreate: true,
+                            allowEdit: true,
+                            notifications: true
+                        },
+                        settings: {
+                            color: '#3b82f6',
+                            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                        }
+                    });
+
+                    console.log('Test admin calendar created');
                 } else {
                     console.log('Test admin user already exists');
                 }
@@ -1780,6 +2115,7 @@
                         await loadUserProfile();
                         showCalendarSelection();
                         await loadUserCalendars();
+                        updateCalendarDropdowns();
                         return true;
                     } else {
                         showAlert('Invalid password', 'error');
@@ -1844,6 +2180,8 @@
         // calendar management functions
         async function loadUserCalendars() {
             try {
+                userCalendars = [];
+                
                 // get calendars owned by user
                 const ownedQuery = query(
                     collection(db, 'calendars'),
@@ -1853,6 +2191,14 @@
                 
                 const ownedSnapshot = await getDocs(ownedQuery);
                 
+                ownedSnapshot.forEach(doc => {
+                    userCalendars.push({
+                        id: doc.id,
+                        data: doc.data(),
+                        isOwner: true
+                    });
+                });
+                
                 // get calendars shared with user
                 const sharedQuery = query(
                     collection(db, 'user_calendars'),
@@ -1861,33 +2207,32 @@
                 
                 const sharedSnapshot = await getDocs(sharedQuery);
                 
-                const calendarsContainer = document.getElementById('calendars-container');
-                calendarsContainer.innerHTML = '';
-                
-                let hasCalendars = false;
-                
-                // display owned calendars
-                ownedSnapshot.forEach(doc => {
-                    hasCalendars = true;
-                    const calendar = doc.data();
-                    createCalendarItem(doc.id, calendar, true);
-                });
-                
-                // display shared calendars
                 for (const shareDoc of sharedSnapshot.docs) {
                     const shareData = shareDoc.data();
                     const calendarDoc = await getDoc(doc(db, 'calendars', shareData.calendarId));
                     if (calendarDoc.exists()) {
-                        hasCalendars = true;
-                        const calendar = calendarDoc.data();
-                        createCalendarItem(calendarDoc.id, calendar, false, shareData.permissions);
+                        userCalendars.push({
+                            id: calendarDoc.id,
+                            data: calendarDoc.data(),
+                            isOwner: false,
+                            permissions: shareData.permissions
+                        });
                     }
                 }
                 
-                if (hasCalendars) {
-                    document.getElementById('user-calendars').classList.remove('hidden');
-                } else {
-                    document.getElementById('user-calendars').classList.add('hidden');
+                // update calendar list in selection screen
+                const calendarsContainer = document.getElementById('calendars-container');
+                if (calendarsContainer) {
+                    calendarsContainer.innerHTML = '';
+                    
+                    if (userCalendars.length > 0) {
+                        userCalendars.forEach(cal => {
+                            createCalendarItem(cal.id, cal.data, cal.isOwner, cal.permissions);
+                        });
+                        document.getElementById('user-calendars').classList.remove('hidden');
+                    } else {
+                        document.getElementById('user-calendars').classList.add('hidden');
+                    }
                 }
                 
             } catch (error) {
@@ -1905,7 +2250,7 @@
             const roleText = isOwner ? 'Owner' : `Member (${permissions?.role || 'viewer'})`;
             
             calendarItem.innerHTML = `
-                <div class="calendar-info">
+                <div class="calendar-item-info">
                     <h3>${calendarData.name}</h3>
                     <p>${calendarData.description || 'No description'} • ${roleText}</p>
                 </div>
@@ -1917,6 +2262,20 @@
             `;
             
             calendarsContainer.appendChild(calendarItem);
+        }
+
+        function updateCalendarDropdowns() {
+            // update dropdown button text
+            if (userCalendars.length > 0) {
+                document.getElementById('selected-calendar-text').textContent = 
+                    userCalendars.length === 1 ? userCalendars[0].data.name : `${userCalendars.length} calendars available`;
+            } else {
+                document.getElementById('selected-calendar-text').textContent = 'No calendars found';
+            }
+            
+            if (currentCalendarData) {
+                document.getElementById('main-selected-calendar-text').textContent = currentCalendarData.name;
+            }
         }
 
         // calendar selection functions
@@ -1947,6 +2306,7 @@
             currentCalendarData = null;
             showCalendarSelection();
             loadUserCalendars();
+            updateCalendarDropdowns();
         };
 
         async function selectCalendar(calendarId, calendarData) {
@@ -1954,7 +2314,7 @@
             currentCalendarData = calendarData;
             
             // update UI
-            document.getElementById('current-calendar-name').textContent = calendarData.name;
+            document.getElementById('main-selected-calendar-text').textContent = calendarData.name;
             
             showMainApp();
             setupEventsListener();
@@ -2011,7 +2371,9 @@
                 showAlert('Calendar created successfully!', 'success');
                 closeCreateCalendarModal();
                 
-                // automatically select the new calendar
+                // refresh calendars and automatically select the new one
+                await loadUserCalendars();
+                updateCalendarDropdowns();
                 selectCalendar(calendarRef.id, calendarData);
                 
             } catch (error) {
@@ -2091,7 +2453,8 @@
                 
                 showAlert(`Successfully joined "${calendarData.name}"!`, 'success');
                 closeJoinCalendarModal();
-                loadUserCalendars();
+                await loadUserCalendars();
+                updateCalendarDropdowns();
                 
             } catch (error) {
                 console.error('Error joining calendar:', error);
