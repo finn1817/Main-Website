@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShareCal - Collaborative Calendar</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Universal Search Component -->
-    <link rel="stylesheet" href="../../assets/css/universal-search.css">
-    <script src="../../assets/js/universal-search.js" defer></script>
     <style>
         :root {
             --primary: #3b82f6;
@@ -86,7 +83,7 @@
             }
         }
 
-        /* Main App Container */
+        /* main app container */
         .app-container {
             position: relative;
             z-index: 10;
@@ -96,7 +93,7 @@
             min-height: 100vh;
         }
 
-        /* Header */
+        /* header */
         .app-header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -149,7 +146,7 @@
             color: var(--text);
         }
 
-        /* Auth Section */
+        /* auth section */
         .auth-section {
             position: fixed;
             top: 0;
@@ -260,6 +257,24 @@
             color: white;
         }
 
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -281,7 +296,7 @@
             text-decoration: underline;
         }
 
-        /* Calendar Main Content */
+        /* calendar main content */
         .calendar-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -294,7 +309,7 @@
 
         .calendar-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
             flex-wrap: wrap;
@@ -405,9 +420,14 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            cursor: pointer;
         }
 
-        /* Loading States */
+        .event-item:hover {
+            opacity: 0.8;
+        }
+
+        /* loading states */
         .loading {
             display: flex;
             align-items: center;
@@ -429,7 +449,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Alert Messages */
+        /* alert messages */
         .alert {
             padding: 15px 20px;
             border-radius: 10px;
@@ -467,7 +487,7 @@
             }
         }
 
-        /* Event Modal Styles */
+        /* event modal styles */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -603,6 +623,7 @@
             align-items: center;
             gap: 15px;
             margin-top: 8px;
+            flex-wrap: wrap;
         }
 
         .color-option {
@@ -818,7 +839,7 @@
             background: #5a6268;
         }
 
-        /* Share Modal Styles */
+        /* share modal styles */
         .share-code {
             background: #f8f9fa;
             border: 2px dashed var(--primary);
@@ -886,12 +907,12 @@
             left: 28px;
         }
 
-        /* Hidden utility */
+        /* hidden utility */
         .hidden {
             display: none !important;
         }
 
-        /* Responsive */
+        /* responsive */
         @media (max-width: 768px) {
             .app-container {
                 padding: 15px;
@@ -925,7 +946,6 @@
                 padding: 30px 25px;
             }
 
-            /* Modal Responsive */
             .modal {
                 width: 95%;
                 max-height: 95vh;
@@ -982,13 +1002,13 @@
         </div>
     </div>
 
-    <!-- Authentication Section -->
+    <!-- authentication section -->
     <div id="auth-section" class="auth-section">
         <div class="auth-card">
             <h1 class="auth-title">📅 ShareCal</h1>
             <p class="auth-subtitle">Collaborative calendar for teams and friends</p>
             
-            <!-- Sign In Form -->
+            <!-- sign in form -->
             <div id="signin-form">
                 <form id="signin-form-element">
                     <div class="form-group">
@@ -1013,7 +1033,7 @@
                 </div>
             </div>
 
-            <!-- Sign Up Form -->
+            <!-- sign up form -->
             <div id="signup-form" class="hidden">
                 <form id="signup-form-element">
                     <div class="form-group">
@@ -1047,9 +1067,9 @@
         </div>
     </div>
 
-    <!-- Main App -->
+    <!-- main app -->
     <div id="main-app" class="app-container hidden">
-        <!-- Header -->
+        <!-- header -->
         <header class="app-header">
             <div class="app-title">
                 <h1>📅 ShareCal</h1>
@@ -1061,7 +1081,7 @@
             </div>
         </header>
 
-        <!-- Calendar Container -->
+        <!-- calendar container -->
         <div class="calendar-container">
             <div class="calendar-header">
                 <div class="calendar-nav">
@@ -1080,9 +1100,9 @@
                 <div class="spinner"></div>
             </div>
 
-            <!-- Calendar Grid -->
+            <!-- calendar grid -->
             <div id="calendar-grid" class="calendar-grid hidden">
-                <!-- Day headers -->
+                <!-- day headers -->
                 <div class="calendar-day-header">Sun</div>
                 <div class="calendar-day-header">Mon</div>
                 <div class="calendar-day-header">Tue</div>
@@ -1090,12 +1110,12 @@
                 <div class="calendar-day-header">Thu</div>
                 <div class="calendar-day-header">Fri</div>
                 <div class="calendar-day-header">Sat</div>
-                <!-- Calendar days will be generated here -->
+                <!-- calendar days will be generated here -->
             </div>
         </div>
     </div>
 
-    <!-- Event Creation/Edit Modal -->
+    <!-- event creation/edit modal -->
     <div id="event-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -1104,7 +1124,7 @@
             </div>
             <div class="modal-body">
                 <form id="event-form">
-                    <!-- Basic Event Info -->
+                    <!-- basic event info -->
                     <div class="form-row full">
                         <div class="form-field">
                             <label for="event-title">Event Title *</label>
@@ -1119,7 +1139,7 @@
                         </div>
                     </div>
 
-                    <!-- Date and Time -->
+                    <!-- date and time -->
                     <div class="form-row">
                         <div class="form-field">
                             <label for="event-start-date">Start Date *</label>
@@ -1142,7 +1162,7 @@
                         </div>
                     </div>
 
-                    <!-- All Day Toggle -->
+                    <!-- all day toggle -->
                     <div class="form-row full">
                         <div class="form-field">
                             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
@@ -1152,7 +1172,7 @@
                         </div>
                     </div>
 
-                    <!-- Location -->
+                    <!-- location -->
                     <div class="form-row full">
                         <div class="form-field">
                             <label for="event-location">Location</label>
@@ -1160,7 +1180,7 @@
                         </div>
                     </div>
 
-                    <!-- Event Color -->
+                    <!-- event color -->
                     <div class="form-row full">
                         <div class="form-field">
                             <label>Event Color</label>
@@ -1177,7 +1197,7 @@
                         </div>
                     </div>
 
-                    <!-- Priority -->
+                    <!-- priority -->
                     <div class="form-row full">
                         <div class="form-field">
                             <label>Priority Level</label>
@@ -1195,7 +1215,7 @@
                         </div>
                     </div>
 
-                    <!-- Reminder Settings -->
+                    <!-- reminder settings -->
                     <div class="form-row full">
                         <div class="form-field">
                             <label>Reminder</label>
@@ -1210,7 +1230,7 @@
                         </div>
                     </div>
 
-                    <!-- Recurrence Settings -->
+                    <!-- recurrence settings -->
                     <div class="form-row full">
                         <div class="form-field">
                             <label for="event-recurrence">Repeat</label>
@@ -1273,7 +1293,7 @@
                         </div>
                     </div>
 
-                    <!-- Attendees -->
+                    <!-- attendees -->
                     <div class="attendance-section">
                         <h4 style="margin-bottom: 15px; color: var(--text);">👥 Attendees</h4>
                         <div class="attendee-input">
@@ -1281,7 +1301,7 @@
                             <button type="button" class="btn btn-primary btn-sm" onclick="addAttendee()">Add</button>
                         </div>
                         <div class="attendee-list" id="attendee-list">
-                            <!-- Attendees will be added here -->
+                            <!-- attendees will be added here -->
                         </div>
                         
                         <div style="margin-top: 15px;">
@@ -1292,7 +1312,7 @@
                         </div>
                     </div>
 
-                    <!-- Additional Options -->
+                    <!-- additional options -->
                     <div class="form-row">
                         <div class="form-field">
                             <label for="event-category">Category</label>
@@ -1315,7 +1335,7 @@
                         </div>
                     </div>
 
-                    <!-- Privacy Settings -->
+                    <!-- privacy settings -->
                     <div class="form-row full">
                         <div class="form-field">
                             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
@@ -1328,6 +1348,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-cancel" onclick="closeEventModal()">Cancel</button>
+                <button type="button" class="btn btn-danger" id="delete-event-btn" onclick="deleteEvent()" style="display: none;">Delete</button>
                 <button type="button" class="btn btn-primary" onclick="saveEvent()">
                     <span id="save-btn-text">Create Event</span>
                 </button>
@@ -1335,7 +1356,7 @@
         </div>
     </div>
 
-    <!-- Calendar Sharing Modal -->
+    <!-- calendar sharing modal -->
     <div id="share-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -1409,14 +1430,14 @@
         </div>
     </div>
 
-    <!-- Firebase and App Scripts -->
+    <!-- firebase and app scripts -->
     <script type="module">
-        // Import Firebase functions
+        // import firebase functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-        // Firebase configuration
+        // firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCl5DIursKTk6lWz2trEebcwexmywdJ_vA",
             authDomain: "calendar-app-5e02a.firebaseapp.com",
@@ -1426,18 +1447,19 @@
             appId: "1:326997250821:web:3674e28132d99968539d6c"
         };
 
-        // Initialize Firebase
+        // initialize firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Global variables
+        // global variables
         let currentUser = null;
         let currentDate = new Date();
         let currentCalendarId = null;
         let eventsListener = null;
+        let currentEvents = [];
 
-        // Utility function for generating random codes
+        // utility function for generating random codes
         function generateRandomCode() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
@@ -1447,13 +1469,7 @@
             return result;
         }
 
-        // Database Collections Structure:
-        // - accounts: user profiles and settings
-        // - calendars: calendar metadata and sharing settings
-        // - events: individual calendar events
-        // - shares: calendar sharing permissions
-
-        // Authentication Functions
+        // authentication functions
         window.showSignUp = function() {
             document.getElementById('signin-form').classList.add('hidden');
             document.getElementById('signup-form').classList.remove('hidden');
@@ -1464,35 +1480,45 @@
             document.getElementById('signin-form').classList.remove('hidden');
         };
 
-        // Sign Up
+        // sign up
         document.getElementById('signup-form-element').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const name = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
+            const name = document.getElementById('signup-name').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
             const password = document.getElementById('signup-password').value;
             const confirmPassword = document.getElementById('signup-confirm').value;
+
+            if (!name) {
+                showAlert('Please enter your full name', 'error');
+                return;
+            }
 
             if (password !== confirmPassword) {
                 showAlert('Passwords do not match!', 'error');
                 return;
             }
 
+            if (password.length < 6) {
+                showAlert('Password must be at least 6 characters long', 'error');
+                return;
+            }
+
             showAuthLoading(true);
 
             try {
-                // Create user with Firebase Auth
+                // create user with firebase auth
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // Update the user's display name
+                // update the user's display name
                 await updateProfile(user, { displayName: name });
 
-                // Create user profile in Firestore
+                // create user profile in firestore
                 await setDoc(doc(db, 'accounts', user.uid), {
                     name: name,
                     email: email,
-                    createdAt: new Date(),
+                    createdAt: Timestamp.now(),
                     preferences: {
                         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                         theme: 'light',
@@ -1500,13 +1526,20 @@
                     }
                 });
 
-                // Create default calendar for the user
+                // create default calendar for the user
                 const defaultCalendarRef = await addDoc(collection(db, 'calendars'), {
                     name: `${name}'s Calendar`,
                     description: 'My personal calendar',
                     owner: user.uid,
-                    createdAt: new Date(),
+                    createdAt: Timestamp.now(),
                     isPublic: false,
+                    shareCode: generateRandomCode(),
+                    shareSettings: {
+                        public: false,
+                        allowCreate: false,
+                        allowEdit: false,
+                        notifications: true
+                    },
                     settings: {
                         color: '#3b82f6',
                         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -1517,27 +1550,40 @@
                 
             } catch (error) {
                 console.error('Signup error:', error);
-                showAlert(error.message, 'error');
+                if (error.code === 'auth/email-already-in-use') {
+                    showAlert('An account with this email already exists', 'error');
+                } else if (error.code === 'auth/weak-password') {
+                    showAlert('Password is too weak', 'error');
+                } else if (error.code === 'auth/invalid-email') {
+                    showAlert('Please enter a valid email address', 'error');
+                } else {
+                    showAlert(error.message || 'Failed to create account', 'error');
+                }
             } finally {
                 showAuthLoading(false);
             }
         });
 
-        // Sign In
+        // sign in
         document.getElementById('signin-form-element').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const emailOrUsername = document.getElementById('signin-email').value.trim();
             const password = document.getElementById('signin-password').value;
 
+            if (!emailOrUsername || !password) {
+                showAlert('Please enter both email/username and password', 'error');
+                return;
+            }
+
             showAuthLoading(true);
 
             try {
-                // First try test user login (username-based)
+                // first try test user login (username-based)
                 const testLoginSuccess = await loginWithTestCredentials(emailOrUsername, password);
                 
                 if (!testLoginSuccess) {
-                    // If test login fails, try regular Firebase auth (email-based only)
+                    // if test login fails, try regular firebase auth (email-based only)
                     if (emailOrUsername.includes('@')) {
                         await signInWithEmailAndPassword(auth, emailOrUsername, password);
                         showAlert('Welcome back!', 'success');
@@ -1555,6 +1601,8 @@
                     showAlert('No account found with this email', 'error');
                 } else if (error.code === 'auth/wrong-password') {
                     showAlert('Incorrect password', 'error');
+                } else if (error.code === 'auth/invalid-credential') {
+                    showAlert('Invalid email or password', 'error');
                 } else {
                     showAlert(error.message || 'Sign in failed', 'error');
                 }
@@ -1563,10 +1611,10 @@
             }
         });
 
-        // Sign Out
+        // sign out
         window.signOut = async function() {
             try {
-                // Handle custom auth users
+                // handle custom auth users
                 if (currentUser && currentUser.isCustomAuth) {
                     currentUser = null;
                     showAuthSection();
@@ -1576,7 +1624,7 @@
                     }
                     showAlert('Signed out successfully', 'info');
                 } else {
-                    // Handle Firebase auth users
+                    // handle firebase auth users
                     await firebaseSignOut(auth);
                     showAlert('Signed out successfully', 'info');
                 }
@@ -1586,7 +1634,7 @@
             }
         };
 
-        // Auth State Observer
+        // auth state observer
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
@@ -1594,7 +1642,7 @@
                 showMainApp();
                 await loadDefaultCalendar();
                 renderCalendar();
-            } else {
+            } else if (!currentUser || !currentUser.isCustomAuth) {
                 currentUser = null;
                 showAuthSection();
                 if (eventsListener) {
@@ -1604,15 +1652,15 @@
             }
         });
 
-        // Initialize test admin user on page load
+        // initialize test admin user on page load
         document.addEventListener('DOMContentLoaded', async () => {
             await createTestAdminUser();
         });
 
-        // Create test admin user if it doesn't exist
+        // create test admin user if it doesn't exist
         async function createTestAdminUser() {
             try {
-                // Check if admin user already exists
+                // check if admin user already exists
                 const adminQuery = query(
                     collection(db, 'accounts'),
                     where('username', '==', 'dfinn')
@@ -1623,14 +1671,14 @@
                 if (adminSnapshot.empty) {
                     console.log('Creating test admin user...');
                     
-                    // Create the test admin user account document
+                    // create the test admin user account document
                     const testUserRef = await addDoc(collection(db, 'accounts'), {
                         username: 'dfinn',
-                        password: 'p@ssw0rd', // In production, this would be hashed
+                        password: 'p@ssw0rd', // in production, this would be hashed
                         isAdmin: 1,
                         email: 'dfinn@testcalendar.com',
                         name: 'Danny Finn',
-                        createdDate: new Date(),
+                        createdDate: new Date().toISOString().split('T')[0],
                         lastLoggedIP: '127.0.0.1',
                         lastLoginDate: null,
                         lastLoginTime: null,
@@ -1653,37 +1701,27 @@
 
                     console.log('Test admin user created with ID:', testUserRef.id);
                     
-                    // Also try to create a Firebase Auth user (this might fail in some cases, but we'll have the Firestore record)
-                    try {
-                        const testAuthUser = await createUserWithEmailAndPassword(auth, 'dfinn@testcalendar.com', 'p@ssw0rd');
-                        await updateProfile(testAuthUser.user, { displayName: 'Danny Finn' });
-                        
-                        // Create default calendar for test user
-                        await addDoc(collection(db, 'calendars'), {
-                            name: 'Danny\'s Test Calendar',
-                            description: 'Admin test calendar',
-                            owner: testAuthUser.user.uid,
-                            createdAt: new Date(),
-                            isPublic: false,
-                            shareCode: 'ADMIN001',
-                            shareSettings: {
-                                public: true,
-                                allowCreate: true,
-                                allowEdit: true,
-                                notifications: true
-                            },
-                            settings: {
-                                color: '#3b82f6',
-                                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-                            }
-                        });
+                    // create default calendar for test user
+                    await addDoc(collection(db, 'calendars'), {
+                        name: 'Danny\'s Test Calendar',
+                        description: 'Admin test calendar',
+                        owner: testUserRef.id,
+                        createdAt: Timestamp.now(),
+                        isPublic: false,
+                        shareCode: 'ADMIN001',
+                        shareSettings: {
+                            public: true,
+                            allowCreate: true,
+                            allowEdit: true,
+                            notifications: true
+                        },
+                        settings: {
+                            color: '#3b82f6',
+                            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                        }
+                    });
 
-                        console.log('Firebase Auth user and calendar created for test admin');
-                    } catch (authError) {
-                        console.log('Note: Firebase Auth user creation failed (may already exist):', authError.message);
-                        // This is okay - we still have the Firestore account record
-                    }
-                    
+                    console.log('Test admin calendar created');
                     showAlert('Test admin user created! Username: dfinn, Password: p@ssw0rd', 'info');
                 } else {
                     console.log('Test admin user already exists');
@@ -1693,7 +1731,7 @@
             }
         }
 
-        // Enhanced Login System for Test User
+        // enhanced login system for test user
         async function loginWithTestCredentials(username, password) {
             try {
                 const userQuery = query(
@@ -1708,7 +1746,7 @@
                     const userData = userDoc.data();
                     
                     if (userData.password === password) {
-                        // Successful login - update login info
+                        // successful login - update login info
                         const now = new Date();
                         const currentIP = await getCurrentIP();
                         
@@ -1719,7 +1757,7 @@
                             loginCount: (userData.loginCount || 0) + 1
                         });
 
-                        // Create a mock user session for custom auth users
+                        // create a mock user session for custom auth users
                         currentUser = {
                             uid: userDoc.id,
                             email: userData.email || '',
@@ -1738,7 +1776,7 @@
                         return false;
                     }
                 } else {
-                    return false; // User not found, try regular Firebase auth
+                    return false; // user not found, try regular firebase auth
                 }
             } catch (error) {
                 console.error('Error with test login:', error);
@@ -1752,11 +1790,11 @@
                 const data = await response.json();
                 return data.ip;
             } catch (error) {
-                return '127.0.0.1'; // Fallback IP
+                return '127.0.0.1'; // fallback IP
             }
         }
 
-        // Load user profile and set up UI
+        // load user profile and set up UI
         async function loadUserProfile() {
             try {
                 const userDoc = await getDoc(doc(db, 'accounts', currentUser.uid));
@@ -1765,7 +1803,7 @@
                     document.getElementById('user-name').textContent = userData.name || userData.username || 'User';
                     document.getElementById('user-avatar').textContent = (userData.name || userData.username || 'U').charAt(0).toUpperCase();
                     
-                    // Show admin indicator if user is admin
+                    // show admin indicator if user is admin
                     if (userData.isAdmin === 1) {
                         const userName = document.getElementById('user-name');
                         userName.innerHTML = `${userData.name || userData.username} <span style="background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px;">ADMIN</span>`;
@@ -1781,7 +1819,7 @@
             }
         }
 
-        // Load default calendar for user
+        // load default calendar for user
         async function loadDefaultCalendar() {
             try {
                 const calendarsQuery = query(
@@ -1796,13 +1834,13 @@
                     currentCalendarId = calendarsSnapshot.docs[0].id;
                     setupEventsListener();
                 } else {
-                    // Create a default calendar if none exists
+                    // create a default calendar if none exists
                     const userName = currentUser.displayName || currentUser.email || 'User';
                     const defaultCalendarRef = await addDoc(collection(db, 'calendars'), {
                         name: `${userName}'s Calendar`,
                         description: 'My personal calendar',
                         owner: currentUser.uid,
-                        createdAt: new Date(),
+                        createdAt: Timestamp.now(),
                         isPublic: false,
                         shareCode: generateRandomCode(),
                         shareSettings: {
@@ -1825,7 +1863,7 @@
             }
         }
 
-        // Setup real-time events listener
+        // setup real-time events listener
         function setupEventsListener() {
             if (eventsListener) {
                 eventsListener();
@@ -1838,11 +1876,20 @@
             );
 
             eventsListener = onSnapshot(eventsQuery, (snapshot) => {
+                currentEvents = [];
+                snapshot.forEach(doc => {
+                    currentEvents.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
                 renderCalendar();
+            }, (error) => {
+                console.error('Error listening to events:', error);
             });
         }
 
-        // Calendar Functions
+        // calendar functions
         function renderCalendar() {
             document.getElementById('calendar-loading').classList.add('hidden');
             document.getElementById('calendar-grid').classList.remove('hidden');
@@ -1850,17 +1897,17 @@
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             
-            // Update calendar title
+            // update calendar title
             const monthNames = ["January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"];
             document.getElementById('calendar-title').textContent = `${monthNames[month]} ${year}`;
             
-            // Clear existing calendar days (keep headers)
+            // clear existing calendar days (keep headers)
             const calendarGrid = document.getElementById('calendar-grid');
             const dayElements = calendarGrid.querySelectorAll('.calendar-day');
             dayElements.forEach(el => el.remove());
             
-            // Generate calendar days
+            // generate calendar days
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             const startDate = new Date(firstDay);
@@ -1892,62 +1939,57 @@
                 calendarGrid.appendChild(dayElement);
             }
             
-            // Load and display events
+            // load and display events
             loadEventsForMonth();
         }
 
-        // Load events for current month
-        async function loadEventsForMonth() {
-            if (!currentCalendarId) return;
+        // load events for current month
+        function loadEventsForMonth() {
+            if (!currentCalendarId || !currentEvents) return;
             
             try {
                 const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
                 const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
                 
-                const eventsQuery = query(
-                    collection(db, 'events'),
-                    where('calendarId', '==', currentCalendarId),
-                    where('startDate', '>=', startOfMonth),
-                    where('startDate', '<=', endOfMonth),
-                    orderBy('startDate', 'asc')
-                );
-                
-                const eventsSnapshot = await getDocs(eventsQuery);
-                
-                // Clear existing events
+                // clear existing events
                 document.querySelectorAll('.day-events').forEach(el => el.innerHTML = '');
                 
-                // Display events
-                eventsSnapshot.forEach(doc => {
-                    const event = doc.data();
-                    const eventDate = event.startDate.toDate();
+                // display events
+                currentEvents.forEach(event => {
+                    if (!event.startDate) return;
                     
-                    // Find the matching day element
-                    const dayElements = document.querySelectorAll('.calendar-day');
-                    dayElements.forEach(dayEl => {
-                        const dayNumberEl = dayEl.querySelector('.day-number');
-                        if (dayNumberEl) {
-                            const dayNumber = parseInt(dayNumberEl.textContent);
-                            const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber);
-                            
-                            // Check if this event belongs to this day
-                            if (eventDate.toDateString() === dayDate.toDateString()) {
-                                const dayEventsEl = dayEl.querySelector('.day-events');
-                                if (dayEventsEl) {
-                                    const eventElement = document.createElement('div');
-                                    eventElement.className = 'event-item';
-                                    eventElement.style.background = event.color || '#3b82f6';
-                                    eventElement.textContent = event.title;
-                                    eventElement.title = event.description || event.title;
-                                    eventElement.onclick = (e) => {
-                                        e.stopPropagation();
-                                        showEventDetails(doc.id, event);
-                                    };
-                                    dayEventsEl.appendChild(eventElement);
+                    // handle both Timestamp and Date objects
+                    const eventDate = event.startDate.toDate ? event.startDate.toDate() : new Date(event.startDate);
+                    
+                    // check if event is in current month view
+                    if (eventDate >= startOfMonth && eventDate <= endOfMonth) {
+                        // find the matching day element
+                        const dayElements = document.querySelectorAll('.calendar-day');
+                        dayElements.forEach(dayEl => {
+                            const dayNumberEl = dayEl.querySelector('.day-number');
+                            if (dayNumberEl) {
+                                const dayNumber = parseInt(dayNumberEl.textContent);
+                                const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber);
+                                
+                                // check if this event belongs to this day
+                                if (eventDate.toDateString() === dayDate.toDateString()) {
+                                    const dayEventsEl = dayEl.querySelector('.day-events');
+                                    if (dayEventsEl) {
+                                        const eventElement = document.createElement('div');
+                                        eventElement.className = 'event-item';
+                                        eventElement.style.background = event.color || '#3b82f6';
+                                        eventElement.textContent = event.title;
+                                        eventElement.title = event.description || event.title;
+                                        eventElement.onclick = (e) => {
+                                            e.stopPropagation();
+                                            showEventDetails(event.id, event);
+                                        };
+                                        dayEventsEl.appendChild(eventElement);
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 });
                 
             } catch (error) {
@@ -1955,7 +1997,7 @@
             }
         }
 
-        // Calendar navigation
+        // calendar navigation
         window.previousMonth = function() {
             currentDate.setMonth(currentDate.getMonth() - 1);
             renderCalendar();
@@ -1971,7 +2013,7 @@
             renderCalendar();
         };
 
-        // UI Helper Functions
+        // UI helper functions
         function showAuthSection() {
             document.getElementById('auth-section').classList.remove('hidden');
             document.getElementById('main-app').classList.add('hidden');
@@ -2002,7 +2044,7 @@
         }
 
         function showAlert(message, type) {
-            // Remove existing alerts
+            // remove existing alerts
             const existingAlerts = document.querySelectorAll('.alert');
             existingAlerts.forEach(alert => alert.remove());
 
@@ -2010,51 +2052,56 @@
             alert.className = `alert alert-${type}`;
             alert.textContent = message;
 
-            // Add to auth card if visible, otherwise to main app
+            // add to auth card if visible, otherwise to main app
             const container = document.getElementById('auth-section').classList.contains('hidden') 
                 ? document.querySelector('.calendar-container')
                 : document.querySelector('.auth-card');
             
-            container.appendChild(alert);
+            if (container) {
+                container.appendChild(alert);
 
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (alert.parentNode) {
-                    alert.remove();
-                }
-            }, 5000);
+                // auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 5000);
+            }
         }
 
-        // Modal Functions
+        // modal functions
         let currentEventId = null;
         let selectedEventColor = '#3b82f6';
         let selectedPriority = 'medium';
         let selectedReminder = '15';
         let attendeesList = [];
 
-        // Event Modal Functions
+        // event modal functions
         window.showEventModal = function(date = null, eventId = null, eventData = null) {
             const modal = document.getElementById('event-modal');
             const modalTitle = document.getElementById('event-modal-title');
             const saveBtnText = document.getElementById('save-btn-text');
+            const deleteBtn = document.getElementById('delete-event-btn');
             
-            // Reset form
+            // reset form
             document.getElementById('event-form').reset();
             attendeesList = [];
             updateAttendeeList();
             resetSelections();
             
             if (eventId && eventData) {
-                // Edit mode
+                // edit mode
                 currentEventId = eventId;
                 modalTitle.textContent = 'Edit Event';
                 saveBtnText.textContent = 'Update Event';
+                deleteBtn.style.display = 'inline-flex';
                 populateEventForm(eventData);
             } else {
-                // Create mode
+                // create mode
                 currentEventId = null;
                 modalTitle.textContent = 'Create New Event';
                 saveBtnText.textContent = 'Create Event';
+                deleteBtn.style.display = 'none';
                 
                 if (date) {
                     const dateStr = date.toISOString().split('T')[0];
@@ -2075,17 +2122,17 @@
         };
 
         function resetSelections() {
-            // Reset color selection
+            // reset color selection
             document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
             document.querySelector('.color-option[data-color="#3b82f6"]').classList.add('selected');
             selectedEventColor = '#3b82f6';
             
-            // Reset priority selection
+            // reset priority selection
             document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
             document.querySelector('.priority-option[data-priority="medium"]').classList.add('selected');
             selectedPriority = 'medium';
             
-            // Reset reminder selection
+            // reset reminder selection
             document.querySelectorAll('.reminder-option').forEach(opt => opt.classList.remove('selected'));
             document.querySelector('.reminder-option[data-reminder="15"]').classList.add('selected');
             selectedReminder = '15';
@@ -2099,7 +2146,7 @@
             document.getElementById('event-category').value = eventData.category || 'general';
             
             if (eventData.startDate) {
-                const startDate = eventData.startDate.toDate();
+                const startDate = eventData.startDate.toDate ? eventData.startDate.toDate() : new Date(eventData.startDate);
                 document.getElementById('event-start-date').value = startDate.toISOString().split('T')[0];
                 if (!eventData.allDay) {
                     document.getElementById('event-start-time').value = startDate.toTimeString().slice(0, 5);
@@ -2107,7 +2154,7 @@
             }
             
             if (eventData.endDate) {
-                const endDate = eventData.endDate.toDate();
+                const endDate = eventData.endDate.toDate ? eventData.endDate.toDate() : new Date(eventData.endDate);
                 document.getElementById('event-end-date').value = endDate.toISOString().split('T')[0];
                 if (!eventData.allDay) {
                     document.getElementById('event-end-time').value = endDate.toTimeString().slice(0, 5);
@@ -2118,7 +2165,7 @@
             document.getElementById('event-private').checked = eventData.private || false;
             document.getElementById('send-invitations').checked = false;
             
-            // Set color
+            // set color
             if (eventData.color) {
                 selectedEventColor = eventData.color;
                 document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
@@ -2126,7 +2173,7 @@
                 if (colorOpt) colorOpt.classList.add('selected');
             }
             
-            // Set priority
+            // set priority
             if (eventData.priority) {
                 selectedPriority = eventData.priority;
                 document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
@@ -2134,22 +2181,22 @@
                 if (priorityOpt) priorityOpt.classList.add('selected');
             }
             
-            // Set reminder
+            // set reminder
             if (eventData.reminder !== undefined) {
-                selectedReminder = eventData.reminder.toString();
+                selectedReminder = eventData.reminder ? eventData.reminder.toString() : 'none';
                 document.querySelectorAll('.reminder-option').forEach(opt => opt.classList.remove('selected'));
-                const reminderOpt = document.querySelector(`[data-reminder="${eventData.reminder}"]`);
+                const reminderOpt = document.querySelector(`[data-reminder="${selectedReminder}"]`);
                 if (reminderOpt) reminderOpt.classList.add('selected');
             }
             
-            // Set attendees
+            // set attendees
             attendeesList = eventData.attendees || [];
             updateAttendeeList();
             
             toggleAllDay();
         }
 
-        // Color selection
+        // color selection
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('color-option')) {
                 document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
@@ -2208,7 +2255,7 @@
             }
         };
 
-        // Attendee management
+        // attendee management
         window.addAttendee = function() {
             const emailInput = document.getElementById('attendee-email');
             const email = emailInput.value.trim();
@@ -2246,7 +2293,7 @@
             updateAttendeeList();
         };
 
-        // Save Event
+        // save event
         window.saveEvent = async function() {
             const title = document.getElementById('event-title').value.trim();
             if (!title) {
@@ -2265,7 +2312,7 @@
             const endDate = document.getElementById('event-end-date').value || startDate;
             const endTime = document.getElementById('event-end-time').value;
             
-            // Create start and end timestamps
+            // create start and end timestamps
             let startDateTime, endDateTime;
             
             if (allDay) {
@@ -2279,20 +2326,26 @@
                 startDateTime = new Date(`${startDate}T${startTimeStr}`);
                 endDateTime = new Date(`${endDate}T${endTimeStr}`);
             }
+
+            // validate dates
+            if (endDateTime < startDateTime) {
+                showAlert('End date/time cannot be before start date/time', 'error');
+                return;
+            }
             
-            // Get recurrence settings
+            // get recurrence settings
             const recurrence = document.getElementById('event-recurrence').value;
             let recurrenceData = null;
             
             if (recurrence !== 'none') {
                 recurrenceData = {
                     type: recurrence,
-                    interval: document.getElementById('recurrence-interval').value,
+                    interval: parseInt(document.getElementById('recurrence-interval').value) || 1,
                     unit: document.getElementById('recurrence-unit').value,
-                    endDate: document.getElementById('recurrence-end-date').value,
-                    count: document.getElementById('recurrence-count').value,
+                    endDate: document.getElementById('recurrence-end-date').value || null,
+                    count: parseInt(document.getElementById('recurrence-count').value) || null,
                     daysOfWeek: recurrence === 'weekly' ? 
-                        Array.from(document.querySelectorAll('.day-option.selected')).map(el => el.dataset.day) : null
+                        Array.from(document.querySelectorAll('.day-option.selected')).map(el => parseInt(el.dataset.day)) : null
                 };
             }
             
@@ -2302,8 +2355,8 @@
                 location: document.getElementById('event-location').value.trim(),
                 url: document.getElementById('event-url').value.trim(),
                 category: document.getElementById('event-category').value,
-                startDate: startDateTime,
-                endDate: endDateTime,
+                startDate: Timestamp.fromDate(startDateTime),
+                endDate: Timestamp.fromDate(endDateTime),
                 allDay: allDay,
                 color: selectedEventColor,
                 priority: selectedPriority,
@@ -2313,33 +2366,48 @@
                 recurrence: recurrenceData,
                 calendarId: currentCalendarId,
                 createdBy: currentUser.uid,
-                createdAt: new Date(),
-                updatedAt: new Date()
+                createdAt: Timestamp.now(),
+                updatedAt: Timestamp.now()
             };
             
             try {
                 if (currentEventId) {
-                    // Update existing event
+                    // update existing event
                     await updateDoc(doc(db, 'events', currentEventId), {
                         ...eventData,
-                        updatedAt: new Date()
+                        updatedAt: Timestamp.now()
                     });
                     showAlert('Event updated successfully!', 'success');
                 } else {
-                    // Create new event
+                    // create new event
                     await addDoc(collection(db, 'events'), eventData);
                     showAlert('Event created successfully!', 'success');
                 }
                 
                 closeEventModal();
-                renderCalendar();
             } catch (error) {
                 console.error('Error saving event:', error);
                 showAlert('Error saving event. Please try again.', 'error');
             }
         };
 
-        // Share Modal Functions
+        // delete event
+        window.deleteEvent = async function() {
+            if (!currentEventId) return;
+            
+            if (confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+                try {
+                    await deleteDoc(doc(db, 'events', currentEventId));
+                    showAlert('Event deleted successfully!', 'success');
+                    closeEventModal();
+                } catch (error) {
+                    console.error('Error deleting event:', error);
+                    showAlert('Error deleting event. Please try again.', 'error');
+                }
+            }
+        };
+
+        // share modal functions
         window.showShareModal = async function() {
             const modal = document.getElementById('share-modal');
             modal.classList.add('show');
@@ -2356,7 +2424,7 @@
 
         async function generateShareCode() {
             try {
-                // Get or create share code for current calendar
+                // get or create share code for current calendar
                 const calendarDoc = await getDoc(doc(db, 'calendars', currentCalendarId));
                 let shareCode = calendarDoc.data().shareCode;
                 
@@ -2375,7 +2443,7 @@
                 
                 document.getElementById('calendar-share-code').textContent = shareCode;
                 
-                // Update toggle states
+                // update toggle states
                 const settings = calendarDoc.data().shareSettings || {};
                 updateToggleState('public-access-toggle', settings.public);
                 updateToggleState('create-events-toggle', settings.allowCreate);
@@ -2390,11 +2458,26 @@
 
         window.copyShareCode = function() {
             const code = document.getElementById('calendar-share-code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                showAlert('Share code copied to clipboard!', 'success');
-            }).catch(() => {
-                showAlert('Failed to copy code', 'error');
-            });
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(code).then(() => {
+                    showAlert('Share code copied to clipboard!', 'success');
+                }).catch(() => {
+                    showAlert('Failed to copy code', 'error');
+                });
+            } else {
+                // fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showAlert('Share code copied to clipboard!', 'success');
+                } catch (err) {
+                    showAlert('Failed to copy code', 'error');
+                }
+                document.body.removeChild(textArea);
+            }
         };
 
         window.togglePermission = async function(type) {
@@ -2410,7 +2493,7 @@
                 toggle.classList.add('active');
             }
             
-            // Update in database
+            // update in database
             try {
                 const updateData = {};
                 updateData[`shareSettings.${type === 'public' ? 'public' : 
@@ -2420,21 +2503,24 @@
                 await updateDoc(doc(db, 'calendars', currentCalendarId), updateData);
             } catch (error) {
                 console.error('Error updating permission:', error);
-                // Revert toggle on error
+                // revert toggle on error
                 if (isActive) {
                     toggle.classList.add('active');
                 } else {
                     toggle.classList.remove('active');
                 }
+                showAlert('Error updating permission', 'error');
             }
         };
 
         function updateToggleState(elementId, isActive) {
             const toggle = document.getElementById(elementId);
-            if (isActive) {
-                toggle.classList.add('active');
-            } else {
-                toggle.classList.remove('active');
+            if (toggle) {
+                if (isActive) {
+                    toggle.classList.add('active');
+                } else {
+                    toggle.classList.remove('active');
+                }
             }
         }
 
@@ -2482,7 +2568,21 @@
                     return;
                 }
                 
-                // Add user to calendar shares
+                // check if user already has access
+                const existingShareQuery = query(
+                    collection(db, 'shares'),
+                    where('calendarId', '==', calendar.id),
+                    where('userId', '==', currentUser.uid)
+                );
+                
+                const existingShareSnapshot = await getDocs(existingShareQuery);
+                
+                if (!existingShareSnapshot.empty) {
+                    showAlert('You already have access to this calendar', 'info');
+                    return;
+                }
+                
+                // add user to calendar shares
                 await addDoc(collection(db, 'shares'), {
                     calendarId: calendar.id,
                     userId: currentUser.uid,
@@ -2491,13 +2591,11 @@
                         create: calendarData.shareSettings?.allowCreate || false,
                         edit: calendarData.shareSettings?.allowEdit || false
                     },
-                    joinedAt: new Date()
+                    joinedAt: Timestamp.now()
                 });
                 
                 showAlert(`Successfully joined "${calendarData.name}"!`, 'success');
                 document.getElementById('join-calendar-code').value = '';
-                
-                // Could add logic here to switch to the joined calendar
                 
             } catch (error) {
                 console.error('Error joining calendar:', error);
@@ -2505,12 +2603,12 @@
             }
         };
 
-        // Enhanced Event Details Modal
+        // enhanced event details modal
         window.showEventDetails = function(eventId, eventData) {
             showEventModal(null, eventId, eventData);
         };
 
-        // Add Enter key support for attendee input
+        // add enter key support for attendee input
         document.addEventListener('keydown', (e) => {
             if (e.target.id === 'attendee-email' && e.key === 'Enter') {
                 e.preventDefault();
@@ -2523,7 +2621,7 @@
             }
         });
 
-        // Close modals on escape key
+        // close modals on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 const eventModal = document.getElementById('event-modal');
@@ -2537,7 +2635,7 @@
             }
         });
 
-        // Close modals on backdrop click
+        // close modals on backdrop click
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal-overlay')) {
                 if (e.target.id === 'event-modal') {
