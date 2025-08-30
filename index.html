@@ -386,47 +386,48 @@
       box-shadow: 0 12px 35px rgba(40, 167, 69, 0.5);
     }
 
-    /* quick access toolbar */
+    /* quick access toolbar - moved to a vertical left column so it doesn't overlap the resume button */
     .quick-access {
       position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
       display: flex;
-      gap: 15px;
-      background: rgba(0, 0, 0, 0.8);
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.65);
       backdrop-filter: blur(15px);
-      padding: 10px 20px;
-      border-radius: 25px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 100;
       transition: all var(--transition-speed) ease;
     }
 
     .quick-access:hover {
-      transform: translateX(-50%) translateY(-5px);
-      box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+      transform: translateY(-50%) translateX(6px);
+      box-shadow: 0 10px 30px rgba(0, 123, 255, 0.25);
     }
 
     .quick-btn {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
       text-decoration: none;
-      transition: all 0.3s ease;
-      font-size: 1.2em;
+      transition: all 0.16s ease;
+      font-size: 1.1em;
     }
 
     .quick-btn:hover {
       background: var(--primary-gradient);
-      transform: scale(1.1);
-      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+      transform: scale(1.08);
+      box-shadow: 0 5px 12px rgba(0, 123, 255, 0.32);
     }
 
     /* loading screen animation */
@@ -750,8 +751,13 @@
       }
 
       .quick-access {
+        left: 50%;
+        top: auto;
         bottom: 20px;
+        transform: translateX(-50%);
+        flex-direction: row;
         padding: 8px 15px;
+        border-radius: 25px;
       }
 
       .quick-btn {
