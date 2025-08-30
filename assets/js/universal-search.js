@@ -129,6 +129,14 @@ class UniversalSearch {
         description: "Remake of the popular Flappy Bird game with improved graphics.",
         keywords: ["flappy", "bird", "game", "remake", "arcade", "javascript", "fun", "flying"]
       },
+      {
+        title: "2048",
+        path: "Home › Projects › Games › 2048",
+        url: "/Main-Website/projects/2048/",
+        type: "games",
+        description: "Classic 2048 sliding tile puzzle game implemented in JavaScript.",
+        keywords: ["2048", "game", "puzzle", "sliding", "tiles", "javascript", "numbers"]
+      },
 
       // === OTHER PROJECTS ===
       {
