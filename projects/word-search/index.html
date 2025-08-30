@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Search Game - Dan Finn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- floating particles background -->
+  <div class="particles-container" id="particlesContainer"></div>
+
+  <!-- theme toggle button -->
+  <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙</button>
+
+  <!-- back to projects link -->
+  <a href="../" class="back-to-projects">← Back to Projects</a>
+  
+  <!-- main game container -->
+  <div class="game-container">
+    <!-- main menu screen -->
+    <div class="screen active" id="menuScreen">
+      <div class="menu-card">
+        <h1>🔍 Word Search Game</h1>
+        <p>Find hidden words in the letter grid!</p>
+        
+        <div class="menu-buttons">
+          <button class="menu-btn" onclick="showScreen('difficultyScreen')">
+            <span>🎮 Start Game</span>
+          </button>
+          <button class="menu-btn" onclick="showScreen('statsScreen')">
+            <span>📊 View Stats</span>
+          </button>
+          <button class="menu-btn" onclick="showScreen('rulesScreen')">
+            <span>📖 How to Play</span>
+          </button>
+          <button class="menu-btn" onclick="showScreen('customScreen')">
+            <span>✏️ Custom Game</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- difficulty selection screen -->
+    <div class="screen" id="difficultyScreen">
+      <div class="difficulty-card">
+        <h2>Select Difficulty & Category</h2>
+        
+        <div class="category-grid">
+          <div class="category-item" data-category="animals">
+            <div class="category-icon">🐾</div>
+            <div class="category-name">Animals</div>
+          </div>
+          <div class="category-item" data-category="countries">
+            <div class="category-icon">🌍</div>
+            <div class="category-name">Countries</div>
+          </div>
+          <div class="category-item" data-category="food">
+            <div class="category-icon">🍕</div>
+            <div class="category-name">Food</div>
+          </div>
+          <div class="category-item" data-category="sports">
+            <div class="category-icon">⚽</div>
+            <div class="category-name">Sports</div>
+          </div>
+          <div class="category-item" data-category="technology">
+            <div class="category-icon">💻</div>
+            <div class="category-name">Technology</div>
+          </div>
+          <div class="category-item" data-category="mixed">
+            <div class="category-icon">🎲</div>
+            <div class="category-name">Mixed</div>
+          </div>
+        </div>
+        
+        <div class="difficulty-selection">
+          <h3>Select Difficulty</h3>
+          <div class="difficulty-buttons">
+            <button class="difficulty-btn" data-difficulty="easy">
+              <span>🟢 Easy</span>
+              <small>10x10 grid, 8 words</small>
+            </button>
+            <button class="difficulty-btn" data-difficulty="medium">
+              <span>🟡 Medium</span>
+              <small>15x15 grid, 12 words</small>
+            </button>
+            <button class="difficulty-btn" data-difficulty="hard">
+              <span>🔴 Hard</span>
+              <small>20x20 grid, 16 words</small>
+            </button>
+          </div>
+        </div>
+        
+        <button class="start-game-btn" onclick="startGame()" disabled>Generate Puzzle</button>
+        <button class="back-btn" onclick="showScreen('menuScreen')">← Back</button>
+      </div>
+    </div>
+
+    <!-- custom game screen -->
+    <div class="screen" id="customScreen">
+      <div class="custom-card">
+        <h2>Create Custom Word Search</h2>
+        <p>Enter your own words to create a personalized puzzle!</p>
+        
+        <div class="custom-input-container">
+          <div class="word-input-section">
+            <label for="customWords">Enter Words (one per line):</label>
+            <textarea id="customWords" placeholder="EXAMPLE&#10;CUSTOM&#10;PUZZLE&#10;WORDS&#10;SEARCH" rows="8"></textarea>
+            <div class="input-requirements">
+              <small>• Enter 5-15 words</small>
+              <small>• Each word 3-12 letters</small>
+              <small>• Only letters allowed</small>
+              <small>• One word per line</small>
+            </div>
+          </div>
+          
+          <div class="grid-size-section">
+            <label>Grid Size:</label>
+            <div class="grid-size-buttons">
+              <button class="grid-size-btn" data-size="12">12x12</button>
+              <button class="grid-size-btn selected" data-size="15">15x15</button>
+              <button class="grid-size-btn" data-size="18">18x18</button>
+            </div>
+          </div>
+        </div>
+        
+        <button class="start-game-btn" onclick="startCustomGame()">Create Puzzle</button>
+        <button class="back-btn" onclick="showScreen('menuScreen')">← Back</button>
+      </div>
+    </div>
+
+    <!-- main game screen -->
+    <div class="screen" id="gameScreen">
+      <div class="game-board">
+        <!-- game header -->
+        <div class="game-header">
+          <div class="game-info">
+            <div class="current-mode" id="currentMode">Easy - Animals</div>
+            <div class="game-timer">Time: <span id="gameTimer">00:00</span></div>
+          </div>
+          <div class="game-stats">
+            <div class="words-found">Found: <span id="wordsFound">0</span>/<span id="totalWords">8</span></div>
+            <div class="hints-left">Hints: <span id="hintsLeft">3</span></div>
+          </div>
+        </div>
+
+        <!-- main game area -->
+        <div class="game-area">
+          <!-- word search grid -->
+          <div class="grid-container">
+            <div class="word-grid" id="wordGrid"></div>
+            <div class="selection-overlay" id="selectionOverlay"></div>
+          </div>
+
+          <!-- word list sidebar -->
+          <div class="word-list-container">
+            <h3>Find These Words:</h3>
+            <div class="word-list" id="wordList"></div>
+            
+            <div class="game-actions">
+              <button class="action-btn hint-btn" onclick="useHint()" id="hintBtn">
+                💡 Hint
+              </button>
+              <button class="action-btn shuffle-btn" onclick="shuffleHighlight()">
+                🔄 Highlight
+              </button>
+              <button class="action-btn new-game-btn" onclick="showScreen('menuScreen')">
+                🎮 New Game
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- game complete screen -->
+    <div class="screen" id="gameCompleteScreen">
+      <div class="game-complete-card">
+        <div class="completion-result">
+          <div class="result-icon">🎉</div>
+          <div class="result-text">Puzzle Complete!</div>
+        </div>
+        
+        <div class="completion-stats">
+          <div class="stat-item">
+            <span class="stat-label">Time Taken:</span>
+            <span class="stat-value" id="finalTime">02:45</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Words Found:</span>
+            <span class="stat-value" id="finalWordsFound">8/8</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Hints Used:</span>
+            <span class="stat-value" id="finalHintsUsed">1</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Difficulty:</span>
+            <span class="stat-value" id="finalDifficulty">Easy</span>
+          </div>
+        </div>
+        
+        <div class="completion-actions">
+          <button class="action-btn play-again-btn" onclick="playAgain()">
+            🔄 Play Again
+          </button>
+          <button class="action-btn menu-btn" onclick="showScreen('menuScreen')">
+            🏠 Main Menu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- statistics screen -->
+    <div class="screen" id="statsScreen">
+      <div class="stats-card">
+        <h2>📊 Your Statistics</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number" id="totalGames">0</div>
+            <div class="stat-label">Games Played</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="totalCompleted">0</div>
+            <div class="stat-label">Games Completed</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="averageTime">0:00</div>
+            <div class="stat-label">Average Time</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="bestTime">0:00</div>
+            <div class="stat-label">Best Time</div>
+          </div>
+        </div>
+        
+        <div class="stats-by-difficulty">
+          <h3>Stats by Difficulty</h3>
+          <div class="difficulty-stats">
+            <div class="difficulty-stat-row">
+              <span>Easy:</span>
+              <span id="easyStats">0 completed / 0 played</span>
+            </div>
+            <div class="difficulty-stat-row">
+              <span>Medium:</span>
+              <span id="mediumStats">0 completed / 0 played</span>
+            </div>
+            <div class="difficulty-stat-row">
+              <span>Hard:</span>
+              <span id="hardStats">0 completed / 0 played</span>
+            </div>
+            <div class="difficulty-stat-row">
+              <span>Custom:</span>
+              <span id="customStats">0 completed / 0 played</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stats-actions">
+          <button class="action-btn reset-stats-btn" onclick="resetStats()">
+            🗑️ Reset Stats
+          </button>
+          <button class="back-btn" onclick="showScreen('menuScreen')">← Back</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- rules screen -->
+    <div class="screen" id="rulesScreen">
+      <div class="rules-card">
+        <h2>📖 How to Play</h2>
+        
+        <div class="rules-content">
+          <div class="rule-section">
+            <h3>🎯 Objective</h3>
+            <p>Find all hidden words in the letter grid. Words can be placed horizontally, vertically, or diagonally in any direction!</p>
+          </div>
+          
+          <div class="rule-section">
+            <h3>🎮 How to Select Words</h3>
+            <ul>
+              <li><strong>Mouse:</strong> Click and drag from the first letter to the last letter of a word</li>
+              <li><strong>Touch:</strong> Tap and drag across the letters on mobile devices</li>
+              <li>Words can go in 8 directions: horizontal, vertical, and diagonal</li>
+              <li>Words can be forwards or backwards</li>
+            </ul>
+          </div>
+          
+          <div class="rule-section">
+            <h3>⚡ Game Features</h3>
+            <ul>
+              <li><strong>Timer:</strong> Track how long it takes to complete the puzzle</li>
+              <li><strong>Hints:</strong> Get 3 hints per game to reveal word locations</li>
+              <li><strong>Highlight:</strong> Briefly highlight all hidden words</li>
+              <li><strong>Categories:</strong> Choose from different themed word lists</li>
+            </ul>
+          </div>
+          
+          <div class="rule-section">
+            <h3>🏆 Difficulty Levels</h3>
+            <ul>
+              <li><strong>Easy:</strong> 10x10 grid with 8 words</li>
+              <li><strong>Medium:</strong> 15x15 grid with 12 words</li>
+              <li><strong>Hard:</strong> 20x20 grid with 16 words</li>
+              <li><strong>Custom:</strong> Create your own puzzle with custom words</li>
+            </ul>
+          </div>
+          
+          <div class="rule-section">
+            <h3>📱 Tips</h3>
+            <ul>
+              <li>Look for common letter patterns</li>
+              <li>Check all 8 directions from each letter</li>
+              <li>Use hints sparingly for better scores</li>
+              <li>Words never overlap letters</li>
+            </ul>
+          </div>
+        </div>
+        
+        <button class="back-btn" onclick="showScreen('menuScreen')">← Back</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
