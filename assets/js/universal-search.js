@@ -3,207 +3,170 @@
 
 class UniversalSearch {
   constructor() {
+    // Auto-generated siteContent: includes every project folder found under /projects and top-level pages
     this.siteContent = [
-      // === SCHOOL PROJECTS ===
+      // Projects (scanned from the projects/ directory)
       {
-        title: "My Calculator",
-        path: "Home › Projects › School Projects › Calculator",
+        title: "2048",
+        path: "Home › Projects › 2048",
+        url: "/Main-Website/projects/2048/",
+        type: "projects",
+        description: "Classic 2048 sliding tile puzzle game.",
+        keywords: ["2048", "game", "puzzle", "tiles", "javascript"]
+      },
+      {
+        title: "Calculator",
+        path: "Home › Projects › Calculator",
         url: "/Main-Website/projects/calculator/",
         type: "projects",
-        description: "A fully functional calculator built with JavaScript featuring advanced operations and memory functions.",
-        keywords: ["calculator", "math", "javascript", "tool", "arithmetic", "numbers", "compute", "school"]
+        description: "A fully functional calculator built with JavaScript.",
+        keywords: ["calculator", "math", "javascript", "compute"]
       },
       {
-        title: "Word Counter",
-        path: "Home › Projects › School Projects › Word Counter",
-        url: "/Main-Website/projects/word-counter/",
+        title: "File Transfer",
+        path: "Home › Projects › File Transfer",
+        url: "/Main-Website/projects/File-Transfer/",
         type: "projects",
-        description: "Count words, characters, and analyze text statistics in real-time.",
-        keywords: ["word", "counter", "text", "statistics", "characters", "analysis", "count", "utility", "school"]
+        description: "Secure file transfer and sharing tool.",
+        keywords: ["file", "transfer", "share", "upload", "download"]
       },
       {
-        title: "Unit Conversion Site",
-        path: "Home › Projects › School Projects › Unit Converter",
-        url: "/Main-Website/projects/unit-converter/",
-        type: "projects",
-        description: "Convert between different units of measurement including length, weight, and temperature.",
-        keywords: ["unit", "converter", "measurement", "length", "weight", "temperature", "convert", "tool", "school"]
-      },
-      {
-        title: "Finance Checker",
-        path: "Home › Projects › School Projects › Finance Check",
+        title: "Finance Check",
+        path: "Home › Projects › Finance Check",
         url: "/Main-Website/projects/finance-check/",
         type: "projects",
-        description: "Personal finance tracking and budgeting tool with expense analysis.",
-        keywords: ["finance", "budget", "money", "expense", "tracking", "financial", "banking", "checker", "school"]
+        description: "Personal finance tracking and budgeting tool.",
+        keywords: ["finance", "budget", "money", "expense", "tracking"]
       },
       {
-        title: "Resume Builder",
-        path: "Home › Projects › School Projects › Resume Builder",
-        url: "/Main-Website/projects/resume-builder/",
+        title: "Hangman",
+        path: "Home › Projects › Hangman",
+        url: "/Main-Website/projects/hangman/",
         type: "projects",
-        description: "Create professional resumes with customizable templates and layouts.",
-        keywords: ["resume", "builder", "create", "template", "professional", "job", "career", "cv", "school"]
-      },
-      {
-        title: "Info Systems Course",
-        path: "Home › Projects › School Projects › Info Systems",
-        url: "/Main-Website/education/",
-        type: "projects",
-        description: "Information Systems course exercises and projects.",
-        keywords: ["info", "information", "systems", "course", "exercises", "education", "school", "learning"]
-      },
-
-      // === PERSONAL PROJECTS ===
-      {
-        title: "Lacrosse Timer (PC)",
-        path: "Home › Projects › Personal Projects › Lacrosse Timer PC",
-        url: "/Main-Website/projects/lacrosse-timer-pc/",
-        type: "projects",
-        description: "Desktop lacrosse game timer application for PC with advanced timing features.",
-        keywords: ["lacrosse", "timer", "pc", "desktop", "sports", "timing", "game", "personal"]
-      },
-      {
-        title: "Lacrosse Timer (Mobile)",
-        path: "Home › Projects › Personal Projects › Lacrosse Timer Mobile",
-        url: "/Main-Website/projects/lacrosse-timer-mobile/",
-        type: "projects",
-        description: "Mobile lacrosse game timer application optimized for smartphones and tablets.",
-        keywords: ["lacrosse", "timer", "mobile", "smartphone", "sports", "timing", "game", "personal"]
-      },
-      {
-        title: "Text Editor",
-        path: "Home › Projects › Personal Projects › Text Editor",
-        url: "/Main-Website/projects/text-editor/",
-        type: "projects",
-        description: "A powerful online text editor with syntax highlighting and multiple features.",
-        keywords: ["text", "editor", "code", "syntax", "highlighting", "tool", "writing", "development", "personal"]
+        description: "Classic hangman word-guessing game implemented in JavaScript.",
+        keywords: ["hangman", "game", "word", "javascript"]
       },
       {
         title: "Password Manager",
-        path: "Home › Projects › Personal Projects › Password Manager",
+        path: "Home › Projects › Password Manager",
         url: "/Main-Website/projects/password-manager/",
         type: "projects",
-        description: "Secure password manager for storing and generating strong passwords.",
-        keywords: ["password", "manager", "security", "generator", "secure", "storage", "encryption", "personal"]
+        description: "Secure password manager for storing and generating passwords.",
+        keywords: ["password", "manager", "security", "generator"]
       },
       {
-        title: "File Share",
-        path: "Home › Projects › Personal Projects › File Share",
-        url: "/Main-Website/projects/File-Transfer/",
+        title: "Resume Builder",
+        path: "Home › Projects › Resume Builder",
+        url: "/Main-Website/projects/resume-builder/",
         type: "projects",
-        description: "Secure file transfer and sharing tool with encryption capabilities.",
-        keywords: ["file", "transfer", "share", "upload", "download", "secure", "sharing", "personal"]
+        description: "Create professional resumes with customizable templates.",
+        keywords: ["resume", "builder", "template", "cv"]
+      },
+      {
+        title: "Shared Calendar",
+        path: "Home › Projects › Shared Calendar",
+        url: "/Main-Website/projects/shared-calendar/",
+        type: "projects",
+        description: "Shared calendar project with event management features.",
+        keywords: ["calendar", "shared", "events", "scheduling"]
+      },
+      {
+        title: "Template",
+        path: "Home › Projects › Template",
+        url: "/Main-Website/projects/template/",
+        type: "projects",
+        description: "Project template with starter code and styles.",
+        keywords: ["template", "starter", "project", "boilerplate"]
+      },
+      {
+        title: "Text Editor",
+        path: "Home › Projects › Text Editor",
+        url: "/Main-Website/projects/text-editor/",
+        type: "projects",
+        description: "A powerful online text editor with syntax highlighting.",
+        keywords: ["text", "editor", "syntax", "code"]
+      },
+      {
+        title: "Unit Converter",
+        path: "Home › Projects › Unit Converter",
+        url: "/Main-Website/projects/unit-converter/",
+        type: "projects",
+        description: "Convert between different units of measurement.",
+        keywords: ["unit", "converter", "measurement", "convert"]
+      },
+      {
+        title: "Word Counter",
+        path: "Home › Projects › Word Counter",
+        url: "/Main-Website/projects/word-counter/",
+        type: "projects",
+        description: "Count words, characters, and analyze text statistics.",
+        keywords: ["word", "counter", "text", "statistics"]
+      },
+      {
+        title: "Word Search",
+        path: "Home › Projects › Word Search",
+        url: "/Main-Website/projects/word-search/",
+        type: "projects",
+        description: "Word search puzzle generator and solver.",
+        keywords: ["word", "search", "puzzle", "game"]
       },
 
-      // === GAMES & FUN ===
-      {
-        title: "Tic-Tac-Toe Game",
-        path: "Home › Projects › Games › Tic-Tac-Toe",
-        url: "/Main-Website/projects/tic-tac-toe/",
-        type: "games",
-        description: "Classic tic-tac-toe game built with JavaScript and interactive UI.",
-        keywords: ["tic", "tac", "toe", "game", "javascript", "interactive", "fun", "classic"]
-      },
-      {
-        title: "Snake Game",
-        path: "Home › Projects › Games › Snake",
-        url: "/Main-Website/projects/snake/",
-        type: "games",
-        description: "Classic snake game with modern graphics and smooth gameplay.",
-        keywords: ["snake", "game", "classic", "arcade", "javascript", "fun", "retro"]
-      },
-      {
-        title: "Tetris (Beta)",
-        path: "Home › Projects › Games › Tetris",
-        url: "/Main-Website/projects/tetris/",
-        type: "games",
-        description: "Tetris game implementation with falling blocks and line clearing mechanics.",
-        keywords: ["tetris", "game", "blocks", "puzzle", "beta", "javascript", "fun", "classic"]
-      },
-      {
-        title: "Flappy Bird Remake",
-        path: "Home › Projects › Games › Flappy Bird",
-        url: "/Main-Website/projects/flappy-bird/",
-        type: "games",
-        description: "Remake of the popular Flappy Bird game with improved graphics.",
-        keywords: ["flappy", "bird", "game", "remake", "arcade", "javascript", "fun", "flying"]
-      },
-      {
-        title: "2048",
-        path: "Home › Projects › Games › 2048",
-        url: "/Main-Website/projects/2048/",
-        type: "games",
-        description: "Classic 2048 sliding tile puzzle game implemented in JavaScript.",
-        keywords: ["2048", "game", "puzzle", "sliding", "tiles", "javascript", "numbers"]
-      },
-
-      // === OTHER PROJECTS ===
-      {
-        title: "NATracker - Journal Tracker",
-        path: "Home › Projects › Other › NATracker",
-        url: "/Main-Website/projects/natracker/",
-        type: "tools",
-        description: "Personal journal and habit tracking application with GitHub integration.",
-        keywords: ["natracker", "journal", "tracker", "habits", "github", "personal", "logging"]
-      },
-
-      // === MAIN PAGES ===
-      {
-        title: "About Me",
-        path: "Home › About",
-        url: "/Main-Website/about/",
-        type: "pages",
-        description: "Learn more about Dan Finn, his background, skills, and professional experience.",
-        keywords: ["about", "dan", "finn", "background", "skills", "experience", "bio", "profile"]
-      },
-      {
-        title: "My Resume",
-        path: "Home › Resume", 
-        url: "/Main-Website/resume/",
-        type: "pages",
-        description: "Download or view Dan Finn's professional resume and career accomplishments.",
-        keywords: ["resume", "cv", "career", "experience", "download", "professional", "work"]
-      },
-      {
-        title: "Contact Information",
-        path: "Home › Contact",
-        url: "/Main-Website/contact/",
-        type: "pages",
-        description: "Get in touch with Dan Finn through various contact methods and social media.",
-        keywords: ["contact", "email", "social", "media", "reach", "touch", "phone", "connect"]
-      },
-      {
-        title: "My Interests",
-        path: "Home › Interests",
-        url: "/Main-Website/interests/",
-        type: "pages",
-        description: "Discover Dan Finn's hobbies, interests, and personal projects outside of work.",
-        keywords: ["interests", "hobbies", "personal", "activities", "passion", "leisure", "fun"]
-      },
-      {
-        title: "Education & School",
-        path: "Home › Education",
-        url: "/Main-Website/education/",
-        type: "pages",
-        description: "Information about Dan Finn's educational background and school involvement.",
-        keywords: ["education", "school", "college", "university", "learning", "academic", "degree"]
-      },
+      // Top-level pages
       {
         title: "All Projects",
         path: "Home › Projects",
         url: "/Main-Website/projects/",
         type: "pages",
-        description: "Browse all of Dan Finn's projects, tools, and web applications organized by category.",
-        keywords: ["projects", "portfolio", "apps", "tools", "development", "coding", "programming", "showcase"]
+        description: "Browse all projects and web applications.",
+        keywords: ["projects", "portfolio", "apps"]
       },
       {
-        title: "Main Website",
+        title: "About Me",
+        path: "Home › About",
+        url: "/Main-Website/about/",
+        type: "pages",
+        description: "Learn more about Dan Finn and his background.",
+        keywords: ["about", "dan", "finn", "bio"]
+      },
+      {
+        title: "Contact",
+        path: "Home › Contact",
+        url: "/Main-Website/contact/",
+        type: "pages",
+        description: "Get in touch with Dan Finn.",
+        keywords: ["contact", "email", "get in touch"]
+      },
+      {
+        title: "Education",
+        path: "Home › Education",
+        url: "/Main-Website/education/",
+        type: "pages",
+        description: "Information about educational background and courses.",
+        keywords: ["education", "school", "college"]
+      },
+      {
+        title: "Interests",
+        path: "Home › Interests",
+        url: "/Main-Website/interests/",
+        type: "pages",
+        description: "Personal hobbies and interests.",
+        keywords: ["interests", "hobbies", "personal"]
+      },
+      {
+        title: "Resume",
+        path: "Home › Resume",
+        url: "/Main-Website/resume/",
+        type: "pages",
+        description: "Download or view Dan Finn's professional resume.",
+        keywords: ["resume", "cv", "career"]
+      },
+      {
+        title: "Home",
         path: "Home",
         url: "/Main-Website/",
         type: "pages",
-        description: "Dan Finn's main website homepage with links to all projects and information.",
-        keywords: ["home", "main", "website", "homepage", "dan", "finn", "portfolio"]
+        description: "Main website homepage.",
+        keywords: ["home", "main", "website"]
       }
     ];
 
