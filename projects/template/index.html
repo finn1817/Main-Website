@@ -12,33 +12,28 @@
 	<button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙</button>
 	<a href="../" class="back-to-projects">← Back to Projects</a>
 
-	<!-- Search and Filter Bar -->
-	<div class="search-container">
-		<div class="search-bar">
-			<input type="text" id="searchInput" placeholder="Search templates..." />
-			<button id="searchBtn">🔍</button>
-		</div>
-		<div class="filter-tabs">
-			<button class="filter-tab active" data-category="all">All</button>
-			<button class="filter-tab" data-category="landing">Landing</button>
-			<button class="filter-tab" data-category="business">Business</button>
-			<button class="filter-tab" data-category="portfolio">Portfolio</button>
-			<button class="filter-tab" data-category="blog">Blog</button>
-			<button class="filter-tab" data-category="ecommerce">E-commerce</button>
-			<button class="filter-tab" data-category="forms">Forms</button>
-		</div>
-	</div>
-
 	<main class="container">
 		<header class="page-header">
 			<h1>🎨 HTML Templates</h1>
 			<p>Professional, responsive HTML templates ready to use. Copy, download, or preview any template to kickstart your next project.</p>
-			<div class="stats-bar">
-				<span class="stat">📄 <span id="templateCount">0</span> Templates</span>
-				<span class="stat">📁 <span id="categoryCount">6</span> Categories</span>
-				<span class="stat">⭐ Free & Open Source</span>
-			</div>
 		</header>
+
+		<!-- Search and Filter -->
+		<div class="search-section">
+			<div class="search-bar">
+				<input type="text" id="searchInput" placeholder="Search templates..." />
+				<button id="searchBtn">🔍</button>
+			</div>
+			<div class="filter-tabs">
+				<button class="filter-tab active" data-category="all">All</button>
+				<button class="filter-tab" data-category="landing">Landing</button>
+				<button class="filter-tab" data-category="business">Business</button>
+				<button class="filter-tab" data-category="portfolio">Portfolio</button>
+				<button class="filter-tab" data-category="blog">Blog</button>
+				<button class="filter-tab" data-category="ecommerce">E-commerce</button>
+				<button class="filter-tab" data-category="forms">Forms</button>
+			</div>
+		</div>
 
 		<!-- Template Grid -->
 		<section class="templates-grid" id="templatesGrid">
@@ -50,60 +45,6 @@
 			<div class="no-results-icon">🔍</div>
 			<h3>No templates found</h3>
 			<p>Try adjusting your search or filter criteria</p>
-		</div>
-
-		<!-- Template Details Modal -->
-		<div class="modal-overlay" id="modalOverlay">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h2 id="modalTitle">Template Preview</h2>
-					<button class="modal-close" id="modalClose">&times;</button>
-				</div>
-				<div class="modal-body">
-					<div class="modal-tabs">
-						<button class="modal-tab active" data-tab="preview">Preview</button>
-						<button class="modal-tab" data-tab="code">HTML Code</button>
-						<button class="modal-tab" data-tab="info">Details</button>
-					</div>
-					<div class="modal-tab-content">
-						<div class="tab-panel active" id="previewPanel">
-							<iframe id="previewFrame" sandbox="allow-same-origin"></iframe>
-						</div>
-						<div class="tab-panel" id="codePanel">
-							<div class="code-header">
-								<span>HTML Source Code</span>
-								<button class="copy-code-btn" id="copyCodeBtn">📋 Copy Code</button>
-							</div>
-							<pre><code id="codeContent"></code></pre>
-						</div>
-						<div class="tab-panel" id="infoPanel">
-							<div class="template-info">
-								<div class="info-section">
-									<h4>📋 Description</h4>
-									<p id="templateDescription"></p>
-								</div>
-								<div class="info-section">
-									<h4>🏷️ Features</h4>
-									<ul id="templateFeatures"></ul>
-								</div>
-								<div class="info-section">
-									<h4>📱 Responsive</h4>
-									<p id="templateResponsive"></p>
-								</div>
-								<div class="info-section">
-									<h4>🎨 Styling</h4>
-									<p id="templateStyling"></p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button class="btn btn-secondary" id="modalCopyBtn">📋 Copy HTML</button>
-					<button class="btn btn-primary" id="modalDownloadBtn">📥 Download</button>
-					<button class="btn btn-success" id="modalPreviewNewTab">🔗 Open in New Tab</button>
-				</div>
-			</div>
 		</div>
 
 		<!-- Usage Guide -->
@@ -125,21 +66,60 @@
 					<h4>Download</h4>
 					<p>Download complete HTML files with embedded CSS and JavaScript</p>
 				</div>
-				<div class="guide-item">
-					<div class="guide-icon">🎨</div>
-					<h4>Customize</h4>
-					<p>All templates are fully customizable - modify colors, fonts, and layout</p>
-				</div>
 			</div>
 		</div>
-
-		<!-- Footer -->
-		<footer class="page-footer">
-			<p>All templates are free to use for personal and other projects.</p>
-			<p>Built by Dan Finn</p>
-		</footer>
 	</main>
 
-	<script src="script.js" defer></script>
+	<!-- Template Preview Modal -->
+	<div class="modal-overlay" id="modalOverlay">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 id="modalTitle">Template Preview</h2>
+				<button class="modal-close" id="modalClose">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="modal-tabs">
+					<button class="modal-tab active" data-tab="preview">Preview</button>
+					<button class="modal-tab" data-tab="code">HTML Code</button>
+					<button class="modal-tab" data-tab="info">Details</button>
+				</div>
+				<div class="modal-tab-content">
+					<div class="tab-panel active" id="previewPanel">
+						<iframe id="previewFrame" sandbox="allow-same-origin"></iframe>
+					</div>
+					<div class="tab-panel" id="codePanel">
+						<div class="code-header">
+							<span>HTML Source Code</span>
+							<button class="copy-code-btn" id="copyCodeBtn">📋 Copy Code</button>
+						</div>
+						<pre><code id="codeContent"></code></pre>
+					</div>
+					<div class="tab-panel" id="infoPanel">
+						<div class="template-info">
+							<div class="info-section">
+								<h4>📋 Description</h4>
+								<p id="templateDescription"></p>
+							</div>
+							<div class="info-section">
+								<h4>🏷️ Features</h4>
+								<ul id="templateFeatures"></ul>
+							</div>
+							<div class="info-section">
+								<h4>📱 Responsive</h4>
+								<p id="templateResponsive"></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary" id="modalCopyBtn">📋 Copy HTML</button>
+				<button class="btn btn-primary" id="modalDownloadBtn">📥 Download</button>
+				<button class="btn btn-success" id="modalPreviewNewTab">🔗 Open in New Tab</button>
+			</div>
+		</div>
+	</div>
+
+	<script src="script.js"></script>
 </body>
 </html>
