@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hangman Game - Dan Finn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- floating particles background -->
+  <div class="particles-container" id="particlesContainer"></div>
+
+  <!-- theme toggle button -->
+  <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙</button>
+
+  <!-- back to projects link -->
+  <a href="../" class="back-to-projects">← Back to Projects</a>
+  
+  <!-- main game container -->
+  <div class="game-container">
+    <!-- main menu screen -->
+    <div class="screen active" id="menuScreen">
+      <div class="menu-card">
+        <h1>🎯 Hangman Game</h1>
+        <p>Choose your game mode and start playing!</p>
+        
+        <div class="menu-buttons">
+          <button class="menu-btn" onclick="showScreen('modeScreen')">
+            <span>🎮 Start Game</span>
+          </button>
+          <button class="menu-btn" onclick="showScreen('statsScreen')">
+            <span>📊 View Stats</span>
+          </button>
+          <button class="menu-btn" onclick="showScreen('rulesScreen')">
+            <span>📖 How to Play</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- game mode selection screen -->
+    <div class="screen" id="modeScreen">
+      <div class="mode-card">
+        <h2>Select Game Mode</h2>
+        
+        <div class="mode-buttons">
+          <button class="mode-btn" onclick="setGameMode('twoPlayer')">
+            <div class="mode-icon">👥</div>
+            <div class="mode-title">Two Player</div>
+            <div class="mode-desc">One player sets word, other guesses</div>
+          </button>
+          
+          <button class="mode-btn" onclick="setGameMode('vsAI')">
+            <div class="mode-icon">🤖</div>
+            <div class="mode-title">VS Computer</div>
+            <div class="mode-desc">Play against AI with different difficulties</div>
+          </button>
+          
+          <button class="mode-btn" onclick="setGameMode('alternating')">
+            <div class="mode-icon">🔄</div>
+            <div class="mode-title">Alternating</div>
+            <div class="mode-desc">Take turns setting words for each other</div>
+          </button>
+        </div>
+        
+        <button class="back-btn" onclick="showScreen('menuScreen')">← Back</button>
+      </div>
+    </div>
+
+    <!-- category and difficulty selection -->
+    <div class="screen" id="categoryScreen">
+      <div class="category-card">
+        <h2>Choose Category & Difficulty</h2>
+        
+        <div class="category-grid">
+          <div class="category-item" data-category="animals">
+            <div class="category-icon">🐾</div>
+            <div class="category-name">Animals</div>
+          </div>
+          <div class="category-item" data-category="movies">
+            <div class="category-icon">🎬</div>
+            <div class="category-name">Movies</div>
+          </div>
+          <div class="category-item" data-category="countries">
+            <div class="category-icon">🌍</div>
+            <div class="category-name">Countries</div>
+          </div>
+          <div class="category-item" data-category="food">
+            <div class="category-icon">🍕</div>
+            <div class="category-name">Food</div>
+          </div>
+          <div class="category-item" data-category="sports">
+            <div class="category-icon">⚽</div>
+            <div class="category-name">Sports</div>
+          </div>
+          <div class="category-item" data-category="technology">
+            <div class="category-icon">💻</div>
+            <div class="category-name">Technology</div>
+          </div>
+        </div>
+        
+        <div class="difficulty-selection">
+          <h3>Select Difficulty</h3>
+          <div class="difficulty-buttons">
+            <button class="difficulty-btn" data-difficulty="easy">
+              <span>🟢 Easy</span>
+              <small>4-6 letters</small>
+            </button>
+            <button class="difficulty-btn" data-difficulty="medium">
+              <span>🟡 Medium</span>
+              <small>7-9 letters</small>
+            </button>
+            <button class="difficulty-btn" data-difficulty="hard">
+              <span>🔴 Hard</span>
+              <small>10+ letters</small>
+            </button>
+          </div>
+        </div>
+        
+        <button class="start-game-btn" onclick="startGame()" disabled>Start Game</button>
+        <button class="back-btn" onclick="showScreen('modeScreen')">← Back</button>
+      </div>
+    </div>
+
+    <!-- two player word input -->
+    <div class="screen" id="wordInputScreen">
+      <div class="input-card">
+        <h2>Player 1: Enter Your Word</h2>
+        <p>Player 2, look away! 👀</p>
+        
+        <div class="word-input-container">
+          <input type="password" id="customWordInput" placeholder="Enter a word..." maxlength="20">
+          <div class="input-requirements">
+            <small>• Only letters allowed (3-20 characters)</small>
+            <small>• No spaces or special characters</small>
+          </div>
+        </div>
+        
+        <button class="start-game-btn" onclick="startCustomGame()">Start Game</button>
+        <button class="back-btn" onclick="showScreen('modeScreen')">← Back</button>
+      </div>
+    </div>
+
+    <!-- main game screen -->
+    <div class="screen" id="gameScreen">
+      <div class="game-board">
+        <!-- game header -->
+        <div class="game-header">
+          <div class="game-info">
+            <div class="current-mode" id="currentMode">VS Computer - Easy</div>
+            <div class="current-category" id="currentCategory">Animals</div>
+          </div>
+          <div class="game-stats">
+            <div class="hints-left">Hints: <span id="hintsLeft">3</span></div>
+            <div class="wrong-guesses">Wrong: <span id="wrongCount">0</span>/6</div>
+          </div>
+        </div>
+
+        <!-- hangman drawing -->
+        <div class="hangman-container">
+          <svg class="hangman-svg" viewBox="0 0 200 250">
+            <!-- gallows -->
+            <line x1="20" y1="230" x2="100" y2="230" stroke="#8B4513" stroke-width="4"/>
+            <line x1="30" y1="230" x2="30" y2="20" stroke="#8B4513" stroke-width="4"/>
+            <line x1="30" y1="20" x2="120" y2="20" stroke="#8B4513" stroke-width="4"/>
+            <line x1="120" y1="20" x2="120" y2="50" stroke="#8B4513" stroke-width="4"/>
+            
+            <!-- hangman parts (initially hidden) -->
+            <circle id="head" cx="120" cy="60" r="10" stroke="#333" stroke-width="3" fill="none" style="display: none"/>
+            <line id="body" x1="120" y1="70" x2="120" y2="150" stroke="#333" stroke-width="3" style="display: none"/>
+            <line id="leftArm" x1="120" y1="90" x2="100" y2="110" stroke="#333" stroke-width="3" style="display: none"/>
+            <line id="rightArm" x1="120" y1="90" x2="140" y2="110" stroke="#333" stroke-width="3" style="display: none"/>
+            <line id="leftLeg" x1="120" y1="150" x2="100" y2="180" stroke="#333" stroke-width="3" style="display: none"/>
+            <line id="rightLeg" x1="120" y1="150" x2="140" y2="180" stroke="#333" stroke-width="3" style="display: none"/>
+          </svg>
+        </div>
+
+        <!-- word display -->
+        <div class="word-display" id="wordDisplay"></div>
+
+        <!-- alphabet keyboard -->
+        <div class="alphabet-container">
+          <div class="alphabet-grid" id="alphabetGrid"></div>
+        </div>
+
+        <!-- game actions -->
+        <div class="game-actions">
+          <button class="action-btn hint-btn" onclick="useHint()" id="hintBtn">
+            💡 Use Hint
+          </button>
+          <button class="action-btn surrender-btn" onclick="surrenderGame()">
+            🏳️ Give Up
+          </button>
+          <button class="action-btn new-game-btn" onclick="showScreen('modeScreen')">
+            🎮 New Game
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- game over screen -->
+    <div class="screen" id="gameOverScreen">
+      <div class="game-over-card">
+        <div class="game-result" id="gameResult">
+          <div class="result-icon" id="resultIcon">🎉</div>
+          <div class="result-text" id="resultText">You Won!</div>
+        </div>
+        
+        <div class="word-reveal">
+          The word was: <span id="revealedWord">ELEPHANT</span>
+        </div>
+        
+        <div class="game-summary">
+          <div class="summary-item">
+            <span class="summary-label">Wrong Guesses:</span>
+            <span class="summary-value" id="finalWrongCount">3</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Hints Used:</span>
+            <span class="summary-value" id="finalHintsUsed">1</span>
+          </div>
+        </div>
+        
+        <div class="game-over-actions">
+          <button class="action-btn play-again-btn" onclick="playAgain()">
+            🔄 Play Again
+          </button>
+          <button class="action-btn menu-btn" onclick="showScreen('menuScreen')">
+            🏠 Main Menu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- statistics screen -->
+    <div class="screen" id="statsScreen">
+      <div class="stats-card">
+        <h2>📊 Your Statistics</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number" id="totalGames">0</div>
+            <div class="stat-label">Games Played</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="totalWins">0</div>
+            <div class="stat-label">Games Won</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="winPercentage">0%</div>
+            <div class="stat-label">Win Rate</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="currentStreak">0</div>
+            <div class="stat-label">Current Streak</div>
+          </div>
+        </div>
+        
+        <div class="stats-by-mode">
+          <h3>Stats by Game Mode</h3>
+          <div class="mode-stats">
+            <div class="mode-stat-row">
+              <span>Two Player:</span>
+              <span id="twoPlayerStats">0 wins / 0 games</span>
+            </div>
+            <div class="mode-stat-row">
+              <span>VS Computer:</span>
+              <span id="vsAIStats">0 wins / 0 games</span>
+            </div>
+            <div class="mode-stat-row">
+              <span>Alternating:</span>
+              <span id="alternatingStats">0 wins / 0 games</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stats-actions">
+          <button class="action-btn reset-stats-btn" onclick="resetStats()">
+            🗑️ Reset Stats
+          </button>
+          <button class="back-btn" onclick="showScreen('menuScreen')">← Back</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- rules screen -->
+    <div class="screen" id="rulesScreen">
+      <div class="rules-card">
+        <h2>📖 How to Play</h2>
+        
+        <div class="rules-content">
+          <div class="rule-section">
+            <h3>🎯 Objective</h3>
+            <p>Guess the hidden word letter by letter before the hangman drawing is completed!</p>
+          </div>
+          
+          <div class="rule-section">
+            <h3>🎮 Game Modes</h3>
+            <ul>
+              <li><strong>Two Player:</strong> One player enters a word, the other guesses</li>
+              <li><strong>VS Computer:</strong> Play against AI with different difficulty levels</li>
+              <li><strong>Alternating:</strong> Take turns setting words for each other</li>
+            </ul>
+          </div>
+          
+          <div class="rule-section">
+            <h3>⚡ Gameplay</h3>
+            <ul>
+              <li>Click letters to make guesses</li>
+              <li>Correct guesses reveal letters in the word</li>
+              <li>Wrong guesses add parts to the hangman drawing</li>
+              <li>You lose after 6 wrong guesses</li>
+              <li>Use up to 3 hints per game</li>
+            </ul>
+          </div>
+          
+          <div class="rule-section">
+            <h3>🏆 Difficulty Levels</h3>
+            <ul>
+              <li><strong>Easy:</strong> 4-6 letter words</li>
+              <li><strong>Medium:</strong> 7-9 letter words</li>
+              <li><strong>Hard:</strong> 10+ letter words</li>
+            </ul>
+          </div>
+        </div>
+        
+        <button class="back-btn" onclick="showScreen('menuScreen')">← Back</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
