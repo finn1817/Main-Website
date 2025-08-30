@@ -33,6 +33,10 @@ body {
 	background-attachment: fixed;
 	color: var(--text-light);
 	line-height: 1.6;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
 }
 
 body.dark {
@@ -212,7 +216,7 @@ body.dark .filter-tab {
 .container {
 	max-width: 1200px;
 	width: 100%;
-	margin: 180px auto 40px;
+	margin: 0 auto;
 	padding: 40px;
 	border-radius: 16px;
 	background: var(--card-bg-light);
@@ -221,6 +225,8 @@ body.dark .filter-tab {
 	position: relative;
 	z-index: 10;
 	border: 1px solid var(--border-light);
+	max-height: calc(100vh - 120px);
+	overflow: auto;
 }
 
 body.dark .container {
