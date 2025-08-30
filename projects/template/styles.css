@@ -1,0 +1,39 @@
+:root{
+	--primary:#007bff;
+	--card-bg-light: rgba(255,255,255,0.95);
+	--card-bg-dark: rgba(20,20,20,0.95);
+	--text-light:#333;
+	--text-dark:#f0f0f0;
+	--radius:12px;
+}
+*{box-sizing:border-box}
+body{
+	font-family: 'Poppins', sans-serif;
+	margin:0;
+	min-height:100vh;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	background: url("../../assets/images/background-light.jpg") center/cover no-repeat;
+	background-attachment: fixed;
+	color:var(--text-light);
+}
+body.dark{ background: url("../../assets/images/background-dark.jpg") center/cover no-repeat; color:var(--text-dark)}
+.particles-container{position:fixed;inset:0;pointer-events:none;z-index:1}
+.toggle-btn{position:fixed;right:20px;top:20px;background:rgba(255,255,255,0.08);border-radius:50%;width:48px;height:48px;border:0;color:white;z-index:110}
+.back-to-projects{position:fixed;left:20px;top:20px;padding:10px 16px;background:var(--primary);color:#fff;border-radius:10px;text-decoration:none;z-index:110}
+.container{max-width:1000px;width:100%;margin:48px;padding:36px;border-radius:16px;background:var(--card-bg-light);backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.12);position:relative;z-index:10}
+body.dark .container{background:var(--card-bg-dark)}
+.templates-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:22px}
+.template-card{background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(0,0,0,0.02));border-radius:12px;padding:16px;border:1px solid rgba(0,0,0,0.06);position:relative}
+.template-card h3{margin:0 0 8px 0}
+.template-card p{color:rgba(0,0,0,0.6);font-size:0.95em}
+.card-actions{display:flex;gap:8px;margin-top:12px}
+.btn{padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
+.btn.preview{background:#ffffff;color:#111}
+.btn.copy{background:var(--primary);color:#fff}
+.btn.download{background:#eee;color:#111}
+.preview-panel{margin-top:12px;border-radius:8px;padding:12px;background:rgba(0,0,0,0.02);max-height:200px;overflow:auto;font-family:monospace;font-size:0.9em}
+.notes{margin-top:20px;color:rgba(0,0,0,0.7)}
+@media (max-width:600px){.container{margin:16px;padding:20px}}
+

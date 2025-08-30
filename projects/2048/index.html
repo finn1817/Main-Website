@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dan's 2048 - Dan Finn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- floating particles background -->
+  <div class="particles-container" id="particlesContainer"></div>
+
+  <!-- theme toggle button -->
+  <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙</button>
+
+  <!-- back to projects link -->
+  <a href="../" class="back-to-projects">← Back to Projects</a>
+  
+  <!-- main game container -->
+  <div class="game-container">
+    <!-- main menu screen -->
+    <div class="screen active" id="menuScreen">
+      <div class="menu-card">
+        <h1>🎯 Dan's 2048</h1>
+        <p>Join the tiles, get to 2048!</p>
+        
+        <div class="menu-buttons">
+          <button class="menu-btn" onclick="showScreen('gameScreen'); startNewGame();">
+            <span>🎮 New Game</span>
+          </button>
+          <button class="menu-btn" onclick="showScreen('modeScreen')">
+            <span>⚙️ Game Modes</span>
+          </button>
+          <button class="menu-btn" onclick="showScreen('statsScreen')">
+            <span>📊 Statistics</span>
+          </button>
+          <button class="menu-btn" onclick="showScreen('rulesScreen')">
+            <span>📖 How to Play</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- game mode selection screen -->
+    <div class="screen" id="modeScreen">
+      <div class="mode-card">
+        <h2>Select Game Mode</h2>
+        
+        <div class="mode-buttons">
+          <button class="mode-btn" onclick="setGameMode('classic')">
+            <div class="mode-icon">🎯</div>
+            <div class="mode-title">Classic 2048</div>
+            <div class="mode-desc">Original 4x4 grid, reach 2048</div>
+          </button>
+          
+          <button class="mode-btn" onclick="setGameMode('big')">
+            <div class="mode-icon">🔥</div>
+            <div class="mode-title">Big Grid (5x5)</div>
+            <div class="mode-desc">Larger grid for longer games</div>
+          </button>
+          
+          <button class="mode-btn" onclick="setGameMode('huge')">
+            <div class="mode-icon">🚀</div>
+            <div class="mode-title">Huge Grid (6x6)</div>
+            <div class="mode-desc">Maximum challenge mode</div>
+          </button>
+          
+          <button class="mode-btn" onclick="setGameMode('speed')">
+            <div class="mode-icon">⚡</div>
+            <div class="mode-title">Speed Mode</div>
+            <div class="mode-desc">Race against time!</div>
+          </button>
+        </div>
+        
+        <button class="back-btn" onclick="showScreen('menuScreen')">← Back</button>
+      </div>
+    </div>
+
+    <!-- main game screen -->
+    <div class="screen" id="gameScreen">
+      <div class="game-board">
+        <!-- game header -->
+        <div class="game-header">
+          <div class="game-info">
+            <div class="current-mode" id="currentMode">Classic Mode</div>
+            <div class="game-target">Target: <span id="gameTarget">2048</span></div>
+          </div>
+          <div class="game-stats">
+            <div class="score-container">
+              <div class="score-label">Score</div>
+              <div class="score-value" id="currentScore">0</div>
+            </div>
+            <div class="best-container">
+              <div class="best-label">Best</div>
+              <div class="best-value" id="bestScore">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- timer for speed mode -->
+        <div class="timer-container" id="timerContainer" style="display: none;">
+          <div class="timer-label">Time Left:</div>
+          <div class="timer-value" id="gameTimer">03:00</div>
+        </div>
+
+        <!-- game grid -->
+        <div class="grid-container">
+          <div class="game-grid" id="gameGrid"></div>
+          <div class="grid-overlay" id="gridOverlay"></div>
+        </div>
+
+        <!-- game controls -->
+        <div class="game-controls">
+          <div class="control-buttons">
+            <button class="control-btn" onclick="undoMove()" id="undoBtn">
+              ↶ Undo
+            </button>
+            <button class="control-btn" onclick="restartGame()">
+              🔄 Restart
+            </button>
+            <button class="control-btn" onclick="showScreen('menuScreen')">
+              🏠 Menu
+            </button>
+          </div>
+          
+          <div class="move-counter">
+            Moves: <span id="moveCount">0</span>
+          </div>
+        </div>
+
+        <!-- mobile controls -->
+        <div class="mobile-controls">
+          <div class="swipe-instructions">
+            <p>Swipe or use arrow keys to move tiles</p>
+            <div class="direction-arrows">
+              <div class="arrow-row">
+                <button class="arrow-btn" onclick="handleMove('up')">↑</button>
+              </div>
+              <div class="arrow-row">
+                <button class="arrow-btn" onclick="handleMove('left')">←</button>
+                <button class="arrow-btn" onclick="handleMove('down')">↓</button>
+                <button class="arrow-btn" onclick="handleMove('right')">→</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- game over screen -->
+    <div class="screen" id="gameOverScreen">
+      <div class="game-over-card">
+        <div class="game-result">
+          <div class="result-icon" id="resultIcon">💀</div>
+          <div class="result-text" id="resultText">Game Over!</div>
+        </div>
+        
+        <div class="final-stats">
+          <div class="final-score">
+            Final Score: <span id="finalScore">0</span>
+          </div>
+          <div class="highest-tile">
+            Highest Tile: <span id="highestTile">0</span>
+          </div>
+          <div class="total-moves">
+            Total Moves: <span id="totalMoves">0</span>
+          </div>
+          <div class="game-time" id="gameTimeContainer">
+            Time Played: <span id="gameTime">00:00</span>
+          </div>
+        </div>
+        
+        <div class="achievement-container" id="achievementContainer">
+          <!-- achievements will be displayed here -->
+        </div>
+        
+        <div class="game-over-actions">
+          <button class="action-btn play-again-btn" onclick="startNewGame()">
+            🔄 Play Again
+          </button>
+          <button class="action-btn menu-btn" onclick="showScreen('menuScreen')">
+            🏠 Main Menu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- victory screen -->
+    <div class="screen" id="victoryScreen">
+      <div class="victory-card">
+        <div class="victory-result">
+          <div class="result-icon">🎉</div>
+          <div class="result-text">You Win!</div>
+          <div class="victory-message">You reached <span id="victoryTile">2048</span>!</div>
+        </div>
+        
+        <div class="victory-stats">
+          <div class="victory-score">
+            Score: <span id="victoryScore">0</span>
+          </div>
+          <div class="victory-moves">
+            Moves: <span id="victoryMoves">0</span>
+          </div>
+          <div class="victory-time">
+            Time: <span id="victoryTime">00:00</span>
+          </div>
+        </div>
+        
+        <div class="victory-actions">
+          <button class="action-btn continue-btn" onclick="continueGame()">
+            ▶️ Continue Playing
+          </button>
+          <button class="action-btn new-game-btn" onclick="startNewGame()">
+            🎮 New Game
+          </button>
+          <button class="action-btn menu-btn" onclick="showScreen('menuScreen')">
+            🏠 Main Menu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- statistics screen -->
+    <div class="screen" id="statsScreen">
+      <div class="stats-card">
+        <h2>📊 Your Statistics</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number" id="totalGames">0</div>
+            <div class="stat-label">Games Played</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="gamesWon">0</div>
+            <div class="stat-label">Games Won</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="winPercentage">0%</div>
+            <div class="stat-label">Win Rate</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="bestScoreDisplay">0</div>
+            <div class="stat-label">Best Score</div>
+          </div>
+        </div>
+        
+        <div class="detailed-stats">
+          <h3>Detailed Statistics</h3>
+          <div class="stat-details">
+            <div class="stat-row">
+              <span>Highest Tile Reached:</span>
+              <span id="highestTileEver">2</span>
+            </div>
+            <div class="stat-row">
+              <span>Total Score Earned:</span>
+              <span id="totalScore">0</span>
+            </div>
+            <div class="stat-row">
+              <span>Total Moves Made:</span>
+              <span id="totalMoves">0</span>
+            </div>
+            <div class="stat-row">
+              <span>Average Score:</span>
+              <span id="averageScore">0</span>
+            </div>
+            <div class="stat-row">
+              <span>Total Time Played:</span>
+              <span id="totalTimePlayed">00:00</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="achievements-section">
+          <h3>🏆 Achievements</h3>
+          <div class="achievements-grid" id="achievementsGrid">
+            <!-- achievements will be populated here -->
+          </div>
+        </div>
+        
+        <div class="stats-actions">
+          <button class="action-btn reset-stats-btn" onclick="resetStats()">
+            🗑️ Reset Stats
+          </button>
+          <button class="back-btn" onclick="showScreen('menuScreen')">← Back</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- rules screen -->
+    <div class="screen" id="rulesScreen">
+      <div class="rules-card">
+        <h2>📖 How to Play</h2>
+        
+        <div class="rules-content">
+          <div class="rule-section">
+            <h3>🎯 Objective</h3>
+            <p>Join the numbers and get to the <strong>2048 tile</strong> to win!</p>
+          </div>
+          
+          <div class="rule-section">
+            <h3>🎮 How to Play</h3>
+            <ul>
+              <li><strong>Desktop:</strong> Use arrow keys (↑↓←→) to move tiles</li>
+              <li><strong>Mobile:</strong> Swipe in any direction or use the on-screen arrows</li>
+              <li>When two tiles with the same number touch, they merge into one!</li>
+              <li>After every move, a new tile appears randomly</li>
+            </ul>
+          </div>
+          
+          <div class="rule-section">
+            <h3>⚡ Game Modes</h3>
+            <ul>
+              <li><strong>Classic:</strong> Traditional 4x4 grid, reach 2048</li>
+              <li><strong>Big Grid:</strong> 5x5 grid for longer gameplay</li>
+              <li><strong>Huge Grid:</strong> 6x6 grid for maximum challenge</li>
+              <li><strong>Speed Mode:</strong> Race against time with a 3-minute timer</li>
+            </ul>
+          </div>
+          
+          <div class="rule-section">
+            <h3>🏆 Scoring</h3>
+            <ul>
+              <li>Points are earned when tiles merge</li>
+              <li>Higher value merges give more points</li>
+              <li>Try to create chains of merges for bonus points</li>
+              <li>Undo moves cost 10% of your current score</li>
+            </ul>
+          </div>
+          
+          <div class="rule-section">
+            <h3>💡 Tips</h3>
+            <ul>
+              <li>Keep your highest tile in a corner</li>
+              <li>Build up tiles in one direction</li>
+              <li>Don't spread high-value tiles around</li>
+              <li>Plan several moves ahead</li>
+              <li>Use undo sparingly - it costs points!</li>
+            </ul>
+          </div>
+        </div>
+        
+        <button class="back-btn" onclick="showScreen('menuScreen')">← Back</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
