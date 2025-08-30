@@ -123,16 +123,17 @@ body.dark {
 /* Search and Filter */
 .search-container {
 	position: fixed;
-	top: 80px;
+	top: 20px;
 	left: 50%;
 	transform: translateX(-50%);
-	z-index: 100;
+	z-index: 120;
 	background: var(--card-bg-light);
 	backdrop-filter: blur(20px);
 	border-radius: var(--radius);
-	padding: 20px;
+	padding: 12px 16px;
 	box-shadow: var(--shadow);
 	border: 1px solid var(--border-light);
+	width: min(920px, calc(100% - 40px));
 }
 
 body.dark .search-container {
@@ -187,6 +188,21 @@ body.dark #searchInput {
 	display: flex;
 	gap: 8px;
 	flex-wrap: wrap;
+}
+
+@media (max-width: 820px) {
+	/* On small screens make the search area flow with content instead of fixed */
+	.search-container {
+		position: static;
+		transform: none;
+		width: 100%;
+		margin: 0 0 16px 0;
+		box-shadow: none;
+		background: transparent;
+		border: none;
+		padding: 0;
+	}
+	.filter-tabs { margin-top: 8px; }
 }
 
 .filter-tab {
