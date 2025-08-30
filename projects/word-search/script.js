@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // theme management
 function initializeTheme() {
-  const savedTheme = localStorage.getItem('wordsearch-theme');
+  const savedTheme = localStorage.getItem('site-theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
@@ -95,9 +95,23 @@ function initializeTheme() {
 
 function toggleTheme() {
   const isDark = document.body.classList.toggle('dark');
-  localStorage.setItem('wordsearch-theme', isDark ? 'dark' : 'light');
+  localStorage.setItem('site-theme', isDark ? 'dark' : 'light');
   document.getElementById('theme-toggle').textContent = isDark ? '☀️' : '🌙';
 }
+
+// Sync theme across tabs/windows
+window.addEventListener('storage', (e) => {
+  if (e.key === 'site-theme') {
+    const newVal = e.newValue;
+    if (newVal === 'dark') {
+      document.body.classList.add('dark');
+      document.getElementById('theme-toggle').textContent = '☀️';
+    } else {
+      document.body.classList.remove('dark');
+      document.getElementById('theme-toggle').textContent = '🌙';
+    }
+  }
+});
 
 // particle animation system
 function createParticles() {

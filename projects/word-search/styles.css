@@ -29,7 +29,7 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background: url("../assets/images/background-light.jpg") center/cover no-repeat;
+  background: url("../../assets/images/background-light.jpg") center/cover no-repeat;
   background-attachment: fixed;
   min-height: 100vh;
   display: flex;
@@ -42,7 +42,7 @@ body {
 }
 
 body.dark {
-  background: url("../assets/images/background-dark.jpg") center/cover no-repeat;
+  background: url("../../assets/images/background-dark.jpg") center/cover no-repeat;
   background-attachment: fixed;
   color: var(--text-dark);
 }
