@@ -576,12 +576,13 @@
         function getRepoStats(repos) {
             const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
             const totalForks = repos.reduce((sum, repo) => sum + repo.forks_count, 0);
-            const totalSize = repos.reduce((sum, repo) => sum + repo.size, 0);
+            const totalSizeKB = repos.reduce((sum, repo) => sum + repo.size, 0);
+            const totalSizeMB = Math.round(totalSizeKB / 1024 * 10) / 10; // Convert to MB with 1 decimal place
             
             return {
                 'Total Stars': totalStars,
                 'Total Forks': totalForks,
-                'Total Size (KB)': totalSize,
+                'Total Size (MB)': totalSizeMB,
                 'Public Repos': repos.length
             };
         }
@@ -701,17 +702,37 @@
                     datasets: [{
                         label: 'Stats',
                         data: data,
-                        backgroundColor: '#3182ce',
-                        borderColor: '#2c5aa0',
+                        backgroundColor: [
+                            '#3182ce',
+                            '#38a169',
+                            '#d69e2e',
+                            '#9966ff'
+                        ],
+                        borderColor: [
+                            '#2c5aa0',
+                            '#2f855a',
+                            '#b7791f',
+                            '#805ad5'
+                        ],
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value : value.toFixed(1);
+                                }
+                            }
                         }
                     }
                 }
