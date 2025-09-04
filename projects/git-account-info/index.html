@@ -530,7 +530,7 @@
                     <div class="card">
                         <h3 class="card-title">Repository Showcase</h3>
                         <div class="repo-list">
-                            ${repos.slice(0, 10).map(repo => `
+                            ${repos.sort((a, b) => b.size - a.size).slice(0, 10).map(repo => `
                                 <div class="repo-item">
                                     <div>
                                         <a href="${repo.html_url}" target="_blank" class="repo-name">${repo.name}</a>
