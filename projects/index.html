@@ -215,10 +215,6 @@
       background: linear-gradient(135deg, #fd7e14, #ffc107);
     }
 
-    .project-link.algorithms {
-      background: linear-gradient(135deg, #17a2b8, #20c997);
-    }
-
     .project-link.other {
       background: linear-gradient(135deg, #6f42c1, #e83e8c);
     }
@@ -240,10 +236,6 @@
 
     .project-link.games:hover {
       box-shadow: 0 8px 25px rgba(253, 126, 20, 0.4);
-    }
-
-    .project-link.algorithms:hover {
-      box-shadow: 0 8px 25px rgba(23, 162, 184, 0.4);
     }
 
     .project-link.other:hover {
@@ -435,6 +427,137 @@
       background: rgba(255, 255, 255, 0.05);
     }
 
+    /* Educational dropdown section */
+    .educational-section {
+      margin-top: 3rem;
+    }
+
+    .dropdown-container {
+      background: var(--card-bg-light);
+      backdrop-filter: blur(20px);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-light);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      overflow: hidden;
+      transition: all var(--transition-speed) ease;
+    }
+
+    body.dark .dropdown-container {
+      background: var(--card-bg-dark);
+      box-shadow: var(--shadow-dark);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .educational-toggle {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 20px 30px;
+      font-size: 1.1em;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all var(--transition-speed) ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body.dark .educational-toggle {
+      color: var(--text-dark);
+    }
+
+    .educational-toggle:hover {
+      background: rgba(0, 123, 255, 0.05);
+    }
+
+    .dropdown-arrow {
+      transition: transform var(--transition-speed) ease;
+      font-size: 0.9em;
+    }
+
+    .educational-toggle.active .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .educational-content {
+      padding: 0 30px 30px;
+      border-top: 1px solid rgba(0, 123, 255, 0.1);
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .educational-description {
+      color: var(--text-secondary-light);
+      font-size: 1em;
+      margin-bottom: 20px;
+      text-align: center;
+      font-style: italic;
+    }
+
+    body.dark .educational-description {
+      color: var(--text-secondary-dark);
+    }
+
+    .educational-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+    }
+
+    .educational-item {
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+      padding: 15px;
+      transition: all var(--transition-speed) ease;
+      border: 1px solid rgba(0, 123, 255, 0.1);
+    }
+
+    body.dark .educational-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .educational-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+      background: rgba(0, 123, 255, 0.05);
+    }
+
+    .educational-link {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .educational-name {
+      font-weight: 600;
+      color: var(--primary-color);
+      font-size: 1em;
+    }
+
+    .educational-concept {
+      font-size: 0.85em;
+      color: var(--text-secondary-light);
+      font-style: italic;
+    }
+
+    body.dark .educational-concept {
+      color: var(--text-secondary-dark);
+    }
+
     /* page transition with loading animation */
     .page-transition {
       position: fixed;
@@ -573,7 +696,6 @@
       <button class="filter-btn" data-category="school">🎓 School Projects</button>
       <button class="filter-btn" data-category="personal">💼 Personal Projects</button>
       <button class="filter-btn" data-category="games">🎮 Games & Fun</button>
-      <button class="filter-btn" data-category="algorithms">🧮 Data Structures</button>
       <button class="filter-btn" data-category="other">🚀 Other Projects</button>
     </div>
     
@@ -679,34 +801,6 @@
       <div class="section-divider"></div>
     </div>
 
-    <!-- Data Structures & Algorithms Section -->
-    <div class="project-section" data-category="algorithms">
-      <h2>🧮 Data Structures & Algorithms</h2>
-      <div class="projects-grid">
-        <a href="https://finn1817.github.io/TikTakToeGame/" target="_blank" class="project-link algorithms">
-          <span>Tic-Tac-Toe Game</span>
-          <div class="category-badge">Arrays/Grids</div>
-        </a>
-        <a href="https://finn1817.github.io/Main-Website/projects/2048/" target="_blank" class="project-link algorithms">
-          <span>2048</span>
-          <div class="category-badge">2D Arrays</div>
-        </a>
-        <a href="https://finn1817.github.io/Main-Website/projects/word-search/" target="_blank" class="project-link algorithms">
-          <span>Word Search</span>
-          <div class="category-badge">Grid/Search</div>
-        </a>
-        <a href="https://finn1817.github.io/Main-Website/projects/hangman/" target="_blank" class="project-link algorithms">
-          <span>Hangman</span>
-          <div class="category-badge">Arrays/Sets</div>
-        </a>
-        <a href="https://finn1817.github.io/Main-Website/projects/git-account-info/" target="_blank" class="project-link algorithms">
-          <span>GitHub Profile Analyzer</span>
-          <div class="category-badge">Data Processing</div>
-        </a>
-      </div>
-      <div class="section-divider"></div>
-    </div>
-
     <!-- Other Projects Section -->
     <div class="project-section" data-category="other">
       <h2>🚀 Other Projects</h2>
@@ -723,6 +817,54 @@
           <span>GitHub Profile Analyzer</span>
           <div class="category-badge">New</div>
         </a>
+      </div>
+    </div>
+
+    <!-- Educational/Data Structures Dropdown Section -->
+    <div class="educational-section">
+      <div class="section-divider"></div>
+      <div class="dropdown-container">
+        <button class="educational-toggle" onclick="toggleEducational()">
+          🧮 View Educational Examples: Data Structures & Algorithms
+          <span class="dropdown-arrow">▼</span>
+        </button>
+        <div class="educational-content" id="educationalContent" style="display: none;">
+          <p class="educational-description">
+            These projects demonstrate practical applications of computer science concepts:
+          </p>
+          <div class="educational-grid">
+            <div class="educational-item">
+              <a href="https://finn1817.github.io/TikTakToeGame/" target="_blank" class="educational-link">
+                <span class="educational-name">Tic-Tac-Toe Game</span>
+                <span class="educational-concept">2D Arrays & Game Logic</span>
+              </a>
+            </div>
+            <div class="educational-item">
+              <a href="https://finn1817.github.io/Main-Website/projects/2048/" target="_blank" class="educational-link">
+                <span class="educational-name">2048</span>
+                <span class="educational-concept">Matrix Operations & Sliding Algorithms</span>
+              </a>
+            </div>
+            <div class="educational-item">
+              <a href="https://finn1817.github.io/Main-Website/projects/word-search/" target="_blank" class="educational-link">
+                <span class="educational-name">Word Search</span>
+                <span class="educational-concept">Grid Generation & Search Algorithms</span>
+              </a>
+            </div>
+            <div class="educational-item">
+              <a href="https://finn1817.github.io/Main-Website/projects/hangman/" target="_blank" class="educational-link">
+                <span class="educational-name">Hangman</span>
+                <span class="educational-concept">Arrays, Sets & String Manipulation</span>
+              </a>
+            </div>
+            <div class="educational-item">
+              <a href="https://finn1817.github.io/Main-Website/projects/git-account-info/" target="_blank" class="educational-link">
+                <span class="educational-name">GitHub Profile Analyzer</span>
+                <span class="educational-concept">API Data Processing & Visualization</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1114,6 +1256,21 @@ updateLoginUI();
 
       // Initialize filter counts
       updateFilterCounts();
+
+      // Educational dropdown functionality
+      window.toggleEducational = function() {
+        const content = document.getElementById('educationalContent');
+        const toggle = document.querySelector('.educational-toggle');
+        const isVisible = content.style.display !== 'none';
+        
+        if (isVisible) {
+          content.style.display = 'none';
+          toggle.classList.remove('active');
+        } else {
+          content.style.display = 'block';
+          toggle.classList.add('active');
+        }
+      };
     });
   </script>
   <script src="../assets/js/universal-search.js"></script>
