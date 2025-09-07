@@ -81,6 +81,27 @@
             font-size: 1.1em;
         }
 
+        .admin-badge {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9em;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+
+        .admin-badge.show {
+            display: inline-block;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 107, 53, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+        }
+
         .logout-btn {
             background: #f44336;
             color: white;
@@ -464,6 +485,17 @@
                 gap: 15px;
             }
 
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .admin-badge {
+                font-size: 0.8em;
+                padding: 5px 10px;
+            }
+
             .main-content {
                 padding: 20px 15px;
             }
@@ -495,6 +527,7 @@
     <div class="header">
         <div class="logo">🎰💰 Family Betting Hub</div>
         <div class="user-info">
+            <div class="admin-badge" id="adminBadge">👑 ADMIN</div>
             <div class="balance" id="userBalance">$0</div>
             <span id="userName">Loading...</span>
             <button class="logout-btn" onclick="logout()">Logout</button>
@@ -672,6 +705,13 @@
             
             // Update UI with user info
             document.getElementById('userName').textContent = currentUser.username;
+            
+            // Show admin badge immediately if available in localStorage
+            const adminBadge = document.getElementById('adminBadge');
+            if (currentUser.isAdmin === 1) {
+                adminBadge.classList.add('show');
+            }
+            
             await updateUserStats();
             
             // Start real-time listeners
@@ -695,6 +735,14 @@
                     // Update UI
                     document.getElementById('userBalance').textContent = '$' + userData.balance.toLocaleString();
                     document.getElementById('totalBets').textContent = (userData.betsWon || 0) + (userData.betsLost || 0);
+                    
+                    // Show/hide admin badge
+                    const adminBadge = document.getElementById('adminBadge');
+                    if (userData.isAdmin === 1) {
+                        adminBadge.classList.add('show');
+                    } else {
+                        adminBadge.classList.remove('show');
+                    }
                     
                     const totalBets = (userData.betsWon || 0) + (userData.betsLost || 0);
                     const winRate = totalBets > 0 ? Math.round((userData.betsWon || 0) / totalBets * 100) : 0;

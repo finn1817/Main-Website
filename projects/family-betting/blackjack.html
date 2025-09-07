@@ -68,6 +68,27 @@
             font-size: 1.1em;
         }
 
+        .admin-badge {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9em;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+
+        .admin-badge.show {
+            display: inline-block;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 107, 53, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+        }
+
         .back-btn {
             background: #dc3545;
             color: white;
@@ -480,6 +501,17 @@
                 flex-direction: column;
                 gap: 10px;
             }
+
+            .user-info {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .admin-badge {
+                font-size: 0.8em;
+                padding: 5px 10px;
+            }
         }
 
         /* Notification */
@@ -536,6 +568,7 @@
     <div class="header">
         <div class="logo">🃏 Family Blackjack Casino</div>
         <div class="user-info">
+            <div class="admin-badge" id="adminBadge">👑 ADMIN</div>
             <div class="balance" id="userBalance">$0</div>
             <span id="userName">Loading...</span>
             <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
@@ -739,6 +772,13 @@
             // Update UI with user info
             document.getElementById('userName').textContent = currentUser.username;
             document.getElementById('playerName').textContent = currentUser.username;
+            
+            // Show admin badge immediately if available in localStorage
+            const adminBadge = document.getElementById('adminBadge');
+            if (currentUser.isAdmin === 1) {
+                adminBadge.classList.add('show');
+            }
+            
             await updateUserStats();
             
             showNotification('Welcome to the casino, ' + currentUser.username + '!', 'success');
@@ -756,6 +796,14 @@
                     
                     // Update UI
                     document.getElementById('userBalance').textContent = '$' + userData.balance.toLocaleString();
+                    
+                    // Show/hide admin badge
+                    const adminBadge = document.getElementById('adminBadge');
+                    if (userData.isAdmin === 1) {
+                        adminBadge.classList.add('show');
+                    } else {
+                        adminBadge.classList.remove('show');
+                    }
                     
                     // Update lifetime stats
                     userStats.totalHands = userData.blackjackHands || 0;
@@ -921,12 +969,17 @@
             }
             
             // Initialize new hand
-            gameState.deck = createDeck();
+            gameState.deck = shuffleDeck(createDeck());
             gameState.playerHand = [];
             gameState.dealerHand = [];
             gameState.currentBet = betAmount;
             gameState.gameActive = true;
             gameState.dealerHidden = true;
+            
+            // Clear previous message
+            const messageElement = document.getElementById('gameMessage');
+            messageElement.textContent = 'Good luck!';
+            messageElement.className = 'game-message';
             
             // Deal initial cards
             gameState.playerHand.push(gameState.deck.pop());
@@ -967,6 +1020,12 @@
         function hit() {
             if (!gameState.gameActive) return;
             
+            // Ensure deck has cards
+            if (gameState.deck.length === 0) {
+                gameState.deck = shuffleDeck(createDeck());
+                showNotification('Reshuffling deck...', 'warning');
+            }
+            
             gameState.playerHand.push(gameState.deck.pop());
             updateHandDisplay(gameState.playerHand, 'playerCards', 'playerValue');
             
@@ -986,31 +1045,48 @@
         function stand() {
             if (!gameState.gameActive) return;
             
+            // Disable all action buttons immediately
+            document.getElementById('hitBtn').disabled = true;
+            document.getElementById('standBtn').disabled = true;
+            document.getElementById('doubleBtn').disabled = true;
+            document.getElementById('surrenderBtn').disabled = true;
+            
             gameState.dealerHidden = false;
             updateHandDisplay(gameState.dealerHand, 'dealerCards', 'dealerValue', true, false);
             
-            // Dealer plays
-            while (calculateHandValue(gameState.dealerHand) < 17) {
+            // Dealer plays - use recursive function to avoid timing issues
+            dealerPlay();
+        }
+
+        function dealerPlay() {
+            const dealerValue = calculateHandValue(gameState.dealerHand);
+            
+            if (dealerValue < 17) {
                 setTimeout(() => {
+                    if (gameState.deck.length === 0) {
+                        gameState.deck = shuffleDeck(createDeck());
+                    }
                     gameState.dealerHand.push(gameState.deck.pop());
                     updateHandDisplay(gameState.dealerHand, 'dealerCards', 'dealerValue', true, false);
+                    dealerPlay(); // Recursive call
+                }, 500);
+            } else {
+                // Dealer is done, determine winner
+                setTimeout(() => {
+                    const playerValue = calculateHandValue(gameState.playerHand);
+                    const finalDealerValue = calculateHandValue(gameState.dealerHand);
+                    
+                    if (finalDealerValue > 21) {
+                        endHand('win', 'Dealer busts! You win!');
+                    } else if (finalDealerValue > playerValue) {
+                        endHand('lose', 'Dealer wins!');
+                    } else if (playerValue > finalDealerValue) {
+                        endHand('win', 'You win!');
+                    } else {
+                        endHand('push', 'Push! Tie game!');
+                    }
                 }, 500);
             }
-            
-            setTimeout(() => {
-                const playerValue = calculateHandValue(gameState.playerHand);
-                const dealerValue = calculateHandValue(gameState.dealerHand);
-                
-                if (dealerValue > 21) {
-                    endHand('win', 'Dealer busts! You win!');
-                } else if (dealerValue > playerValue) {
-                    endHand('lose', 'Dealer wins!');
-                } else if (playerValue > dealerValue) {
-                    endHand('win', 'You win!');
-                } else {
-                    endHand('push', 'Push! Tie game!');
-                }
-            }, 1000);
         }
 
         function doubleDown() {
@@ -1019,13 +1095,26 @@
                 return;
             }
             
+            // Ensure deck has cards
+            if (gameState.deck.length === 0) {
+                gameState.deck = shuffleDeck(createDeck());
+                showNotification('Reshuffling deck...', 'warning');
+            }
+            
             // Double the bet
             updateBalance(-gameState.currentBet);
             gameState.currentBet *= 2;
             
-            // Hit once and stand
-            hit();
-            if (gameState.gameActive) {
+            // Hit once
+            gameState.playerHand.push(gameState.deck.pop());
+            updateHandDisplay(gameState.playerHand, 'playerCards', 'playerValue');
+            
+            const playerValue = calculateHandValue(gameState.playerHand);
+            
+            if (playerValue > 21) {
+                endHand('lose', 'Bust! You lose!');
+            } else {
+                // Auto-stand after double down
                 setTimeout(stand, 500);
             }
         }
@@ -1092,12 +1181,29 @@
             updateSessionDisplay();
             saveGameStats(result, winAmount);
             
-            // Re-enable deal button
+            // Reset game state for next hand
+            resetGameState();
+            
+            // Re-enable deal button and disable action buttons
             document.getElementById('dealBtn').disabled = false;
             document.getElementById('hitBtn').disabled = true;
             document.getElementById('standBtn').disabled = true;
             document.getElementById('doubleBtn').disabled = true;
             document.getElementById('surrenderBtn').disabled = true;
+        }
+
+        function resetGameState() {
+            gameState.gameActive = false;
+            gameState.dealerHidden = true;
+            gameState.playerHand = [];
+            gameState.dealerHand = [];
+            gameState.currentBet = 0;
+            
+            // Clear the cards display
+            document.getElementById('playerCards').innerHTML = '';
+            document.getElementById('dealerCards').innerHTML = '';
+            document.getElementById('playerValue').textContent = '';
+            document.getElementById('dealerValue').textContent = '';
         }
 
         async function updateBalance(amount) {
