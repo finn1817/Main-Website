@@ -257,37 +257,6 @@
         // Make db available globally
         window.db = db;
         window.firestoreUtils = { collection, addDoc, getDocs, query, where, doc, setDoc };
-
-        // Create default test user on page load
-        createDefaultUser();
-
-        async function createDefaultUser() {
-            try {
-                // Check if test user already exists
-                const usersRef = collection(db, 'users');
-                const q = query(usersRef, where("username", "==", "testuser"));
-                const querySnapshot = await getDocs(q);
-                
-                if (querySnapshot.empty) {
-                    // Create test user with userID 0
-                    await setDoc(doc(db, 'users', '0'), {
-                        username: 'testuser',
-                        password: 'testpass', // In production, this should be hashed
-                        balance: 10000,
-                        isAdmin: 0,
-                        createdAt: new Date().toISOString(),
-                        lastBegTime: null,
-                        totalWinnings: 0,
-                        totalLosses: 0,
-                        betsWon: 0,
-                        betsLost: 0
-                    });
-                    console.log('Default test user created: testuser/testpass');
-                }
-            } catch (error) {
-                console.error('Error creating default user:', error);
-            }
-        }
     </script>
 
     <script>

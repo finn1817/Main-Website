@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Betting Hub - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            position: relative;
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        .notification.warning {
+            background: #ff9800;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .balance {
+            background: linear-gradient(45deg, #4caf50, #45a049);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Quick Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Betting Sections */
+        .betting-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-btn {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .section-icon {
+            font-size: 2em;
+        }
+
+        /* Recent Activity */
+        .activity-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-text {
+            flex: 1;
+        }
+
+        .activity-time {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        /* Chat Section */
+        .chat-container {
+            grid-column: 1 / -1;
+        }
+
+        .chat-messages {
+            height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .chat-user {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .chat-time {
+            font-size: 0.8em;
+            color: #666;
+            margin-left: 10px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .chat-send {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .chat-send:hover {
+            background: #5a67d8;
+        }
+
+        /* Money Request Section */
+        .money-requests {
+            grid-column: 1 / -1;
+        }
+
+        .request-item {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-approve {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #45a049;
+        }
+
+        .btn-deny {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-deny:hover {
+            background: #d32f2f;
+        }
+
+        .btn-request {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-request:hover {
+            background: #f57c00;
+        }
+
+        /* Blackjack Section */
+        .blackjack-section {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        .game-btn {
+            background: linear-gradient(45deg, #4caf50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .betting-sections {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification System -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">🎰💰 Family Betting Hub</div>
+        <div class="user-info">
+            <div class="balance" id="userBalance">$0</div>
+            <span id="userName">Loading...</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Overview -->
+        <div class="dashboard-grid">
+            <!-- Quick Stats -->
+            <div class="card">
+                <div class="card-title">📊 Your Stats</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalBets">0</div>
+                        <div class="stat-label">Total Bets</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="winRate">0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalWinnings">$0</div>
+                        <div class="stat-label">Total Winnings</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="netProfit">$0</div>
+                        <div class="stat-label">Net Profit</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-title">🔄 Recent Activity</div>
+                <div class="activity-list" id="activityList">
+                    <div class="activity-item">
+                        <div class="activity-text">Welcome to Family Betting Hub!</div>
+                        <div class="activity-time">Just now</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Betting Sections -->
+        <div class="betting-sections">
+            <button class="section-btn" onclick="openSportsModal()">
+                <div class="section-icon">🏈</div>
+                <div>Sports Betting</div>
+                <div style="font-size: 0.8em; opacity: 0.8;">NFL, NBA, NHL, NLL</div>
+            </button>
+
+            <button class="section-btn" onclick="openYesNoModal()">
+                <div class="section-icon">❓</div>
+                <div>Yes/No Bets</div>
+                <div style="font-size: 0.8em; opacity: 0.8;">Simple predictions</div>
+            </button>
+
+            <button class="section-btn" onclick="openCustomModal()">
+                <div class="section-icon">🎯</div>
+                <div>Custom Bets</div>
+                <div style="font-size: 0.8em; opacity: 0.8;">Anything goes!</div>
+            </button>
+
+            <button class="section-btn" onclick="openSquaresModal()">
+                <div class="section-icon">⬜</div>
+                <div>Game Squares</div>
+                <div style="font-size: 0.8em; opacity: 0.8;">Super Bowl style</div>
+            </button>
+        </div>
+
+        <!-- Chat and Additional Features -->
+        <div class="dashboard-grid">
+            <!-- Public Chat -->
+            <div class="card chat-container">
+                <div class="card-title">💬 Family Trash Talk</div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message">
+                        <span class="chat-user">System:</span>
+                        Welcome to the family chat! Let the trash talk begin! 🔥
+                        <span class="chat-time">Just now</span>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." maxlength="200">
+                    <button class="chat-send" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+
+            <!-- Money Requests -->
+            <div class="card money-requests">
+                <div class="card-title">💸 Money Requests</div>
+                <div id="moneyRequestsList">
+                    <p style="text-align: center; color: #666; padding: 20px;">No pending requests</p>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="btn btn-request" onclick="openRequestModal()">Request Money</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blackjack Section -->
+        <div class="card blackjack-section">
+            <div class="card-title">🃏 Blackjack Casino</div>
+            <p style="margin-bottom: 20px; color: #666;">
+                Feeling lucky? Test your skills against the house! 
+                <br><strong>Warning:</strong> You can lose all your money here! 💀
+            </p>
+            <button class="game-btn" onclick="openBlackjack()">Play Blackjack</button>
+        </div>
+    </div>
+
+    <!-- Modals will be added here via JavaScript -->
+
+    <!-- Firebase Setup -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs, 
+            query, 
+            where, 
+            doc, 
+            setDoc, 
+            updateDoc, 
+            getDoc, 
+            onSnapshot,
+            orderBy,
+            serverTimestamp,
+            deleteDoc
+        } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBs0mLN4_HzWx9nGdOjCsewT3X6F69Ysik",
+            authDomain: "family-bets-1967f.firebaseapp.com",
+            projectId: "family-bets-1967f",
+            storageBucket: "family-bets-1967f.firebasestorage.app",
+            messagingSenderId: "13304744240",
+            appId: "1:13304744240:web:1e9a2c0ddb1703474b60f5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Firebase available globally
+        window.db = db;
+        window.firestoreUtils = { 
+            collection, addDoc, getDocs, query, where, doc, setDoc, 
+            updateDoc, getDoc, onSnapshot, orderBy, serverTimestamp, deleteDoc 
+        };
+
+        // Initialize dashboard
+        initializeDashboard();
+    </script>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let chatListener = null;
+        let requestsListener = null;
+
+        // Initialize Dashboard
+        async function initializeDashboard() {
+            // Check if user is logged in
+            const savedUser = localStorage.getItem('familyBettingUser');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = JSON.parse(savedUser);
+            
+            // Update UI with user info
+            document.getElementById('userName').textContent = currentUser.username;
+            await updateUserStats();
+            
+            // Start real-time listeners
+            startChatListener();
+            startRequestsListener();
+            
+            showNotification('Welcome back, ' + currentUser.username + '!', 'success');
+        }
+
+        // Update user stats from database
+        async function updateUserStats() {
+            try {
+                const { doc, getDoc } = window.firestoreUtils;
+                const userDoc = await getDoc(doc(window.db, 'users', currentUser.id));
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    currentUser = { ...currentUser, ...userData };
+                    localStorage.setItem('familyBettingUser', JSON.stringify(currentUser));
+                    
+                    // Update UI
+                    document.getElementById('userBalance').textContent = '$' + userData.balance.toLocaleString();
+                    document.getElementById('totalBets').textContent = (userData.betsWon || 0) + (userData.betsLost || 0);
+                    
+                    const totalBets = (userData.betsWon || 0) + (userData.betsLost || 0);
+                    const winRate = totalBets > 0 ? Math.round((userData.betsWon || 0) / totalBets * 100) : 0;
+                    document.getElementById('winRate').textContent = winRate + '%';
+                    
+                    document.getElementById('totalWinnings').textContent = '$' + (userData.totalWinnings || 0).toLocaleString();
+                    
+                    const netProfit = (userData.totalWinnings || 0) - (userData.totalLosses || 0);
+                    document.getElementById('netProfit').textContent = '$' + netProfit.toLocaleString();
+                    document.getElementById('netProfit').style.color = netProfit >= 0 ? '#4caf50' : '#f44336';
+                }
+            } catch (error) {
+                console.error('Error updating user stats:', error);
+                showNotification('Error loading user data', 'error');
+            }
+        }
+
+        // Chat functionality
+        function startChatListener() {
+            const { collection, query, orderBy, onSnapshot } = window.firestoreUtils;
+            const chatRef = collection(window.db, 'chatMessages');
+            const chatQuery = query(chatRef, orderBy('timestamp', 'asc'));
+            
+            chatListener = onSnapshot(chatQuery, (snapshot) => {
+                const messagesContainer = document.getElementById('chatMessages');
+                messagesContainer.innerHTML = '';
+                
+                snapshot.forEach((doc) => {
+                    const message = doc.data();
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'chat-message';
+                    
+                    const time = message.timestamp ? new Date(message.timestamp.toDate()).toLocaleTimeString() : 'Now';
+                    
+                    messageDiv.innerHTML = `
+                        <span class="chat-user">${message.username}:</span>
+                        ${message.message}
+                        <span class="chat-time">${time}</span>
+                    `;
+                    
+                    messagesContainer.appendChild(messageDiv);
+                });
+                
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            try {
+                const { collection, addDoc, serverTimestamp } = window.firestoreUtils;
+                
+                await addDoc(collection(window.db, 'chatMessages'), {
+                    username: currentUser.username,
+                    userID: currentUser.id,
+                    message: message,
+                    timestamp: serverTimestamp(),
+                    type: 'public'
+                });
+                
+                input.value = '';
+            } catch (error) {
+                console.error('Error sending message:', error);
+                showNotification('Failed to send message', 'error');
+            }
+        }
+
+        // Money requests functionality
+        function startRequestsListener() {
+            const { collection, query, where, onSnapshot } = window.firestoreUtils;
+            const requestsRef = collection(window.db, 'moneyRequests');
+            const requestsQuery = query(requestsRef, where('toUser', '==', currentUser.id), where('status', '==', 'pending'));
+            
+            requestsListener = onSnapshot(requestsQuery, (snapshot) => {
+                const requestsList = document.getElementById('moneyRequestsList');
+                
+                if (snapshot.empty) {
+                    requestsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No pending requests</p>';
+                    return;
+                }
+                
+                requestsList.innerHTML = '';
+                snapshot.forEach((docSnap) => {
+                    const request = docSnap.data();
+                    const requestDiv = document.createElement('div');
+                    requestDiv.className = 'request-item';
+                    
+                    requestDiv.innerHTML = `
+                        <div>
+                            <strong>${request.fromUsername}</strong> wants $${request.amount}
+                            <br><small>"${request.message}"</small>
+                        </div>
+                        <div class="request-actions">
+                            <button class="btn btn-approve" onclick="respondToRequest('${docSnap.id}', 'approved')">
+                                Approve
+                            </button>
+                            <button class="btn btn-deny" onclick="respondToRequest('${docSnap.id}', 'denied')">
+                                Deny
+                            </button>
+                        </div>
+                    `;
+                    
+                    requestsList.appendChild(requestDiv);
+                });
+            });
+        }
+
+        async function respondToRequest(requestId, status) {
+            try {
+                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                // Get request details
+                const requestDoc = await getDoc(doc(window.db, 'moneyRequests', requestId));
+                if (!requestDoc.exists()) return;
+                
+                const requestData = requestDoc.data();
+                
+                // Update request status
+                await updateDoc(doc(window.db, 'moneyRequests', requestId), {
+                    status: status,
+                    respondedAt: new Date().toISOString(),
+                    responseMessage: status === 'approved' ? 'Approved!' : 'Denied'
+                });
+                
+                if (status === 'approved') {
+                    // Transfer money
+                    const fromUserRef = doc(window.db, 'users', requestData.fromUser);
+                    const toUserRef = doc(window.db, 'users', currentUser.id);
+                    
+                    // Update balances
+                    await updateDoc(fromUserRef, {
+                        balance: requestData.fromUserBalance + requestData.amount
+                    });
+                    
+                    await updateDoc(toUserRef, {
+                        balance: currentUser.balance - requestData.amount
+                    });
+                    
+                    showNotification(`Sent $${requestData.amount} to ${requestData.fromUsername}`, 'success');
+                    await updateUserStats();
+                } else {
+                    showNotification(`Denied money request from ${requestData.fromUsername}`, 'warning');
+                }
+                
+            } catch (error) {
+                console.error('Error responding to request:', error);
+                showNotification('Error processing request', 'error');
+            }
+        }
+
+        // Modal functions (will be implemented for each betting type)
+        function openSportsModal() {
+            showNotification('Sports betting coming soon! 🏈', 'warning');
+        }
+
+        function openYesNoModal() {
+            showNotification('Yes/No betting coming soon! ❓', 'warning');
+        }
+
+        function openCustomModal() {
+            showNotification('Custom betting coming soon! 🎯', 'warning');
+        }
+
+        function openSquaresModal() {
+            showNotification('Game squares coming soon! ⬜', 'warning');
+        }
+
+        function openBlackjack() {
+            showNotification('Blackjack coming soon! 🃏', 'warning');
+        }
+
+        function openRequestModal() {
+            // Create and show money request modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <button class="close-modal" onclick="closeModal(this)">&times;</button>
+                    <div class="modal-title">💸 Request Money</div>
+                    <form onsubmit="submitMoneyRequest(event)">
+                        <div class="form-group">
+                            <label>Select Family Member:</label>
+                            <select id="requestToUser" required>
+                                <option value="">Choose someone...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount ($):</label>
+                            <input type="number" id="requestAmount" min="1" max="10000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Reason/Message:</label>
+                            <textarea id="requestMessage" placeholder="Why do you need this money?" maxlength="200" required></textarea>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn btn-request">Send Request</button>
+                            <button type="button" class="btn btn-deny" onclick="closeModal(this)">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            loadUsersForRequest();
+        }
+
+        async function loadUsersForRequest() {
+            try {
+                const { collection, getDocs } = window.firestoreUtils;
+                const usersSnapshot = await getDocs(collection(window.db, 'users'));
+                const select = document.getElementById('requestToUser');
+                
+                usersSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (doc.id !== currentUser.id) {
+                        const option = document.createElement('option');
+                        option.value = doc.id;
+                        option.textContent = userData.username;
+                        select.appendChild(option);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        async function submitMoneyRequest(event) {
+            event.preventDefault();
+            
+            const toUserId = document.getElementById('requestToUser').value;
+            const amount = parseInt(document.getElementById('requestAmount').value);
+            const message = document.getElementById('requestMessage').value.trim();
+            
+            // Check if user can beg (15 min cooldown)
+            if (currentUser.lastBegTime) {
+                const lastBegTime = new Date(currentUser.lastBegTime);
+                const now = new Date();
+                const timeDiff = (now - lastBegTime) / (1000 * 60); // minutes
+                
+                if (timeDiff < 15) {
+                    const remainingTime = Math.ceil(15 - timeDiff);
+                    showNotification(`You can only beg once every 15 minutes! Wait ${remainingTime} more minutes.`, 'error');
+                    return;
+                }
+            }
+            
+            try {
+                const { collection, addDoc, doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                // Get target user's data
+                const toUserDoc = await getDoc(doc(window.db, 'users', toUserId));
+                const toUserData = toUserDoc.data();
+                
+                // Create money request
+                await addDoc(collection(window.db, 'moneyRequests'), {
+                    fromUser: currentUser.id,
+                    fromUsername: currentUser.username,
+                    fromUserBalance: currentUser.balance,
+                    toUser: toUserId,
+                    toUsername: toUserData.username,
+                    amount: amount,
+                    message: message,
+                    status: 'pending',
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Update user's last beg time
+                await updateDoc(doc(window.db, 'users', currentUser.id), {
+                    lastBegTime: new Date().toISOString()
+                });
+                
+                closeModal(event.target);
+                showNotification(`Money request sent to ${toUserData.username}!`, 'success');
+                
+            } catch (error) {
+                console.error('Error submitting money request:', error);
+                showNotification('Failed to send request', 'error');
+            }
+        }
+
+        // Utility functions
+        function closeModal(element) {
+            const modal = element.closest('.modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function logout() {
+            // Stop listeners
+            if (chatListener) chatListener();
+            if (requestsListener) requestsListener();
+            
+            localStorage.removeItem('familyBettingUser');
+            window.location.href = 'index.html';
+        }
+
+        // Chat input enter key support
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter' && event.target.id === 'chatInput') {
+                sendMessage();
+            }
+        });
+
+        // Auto-refresh user stats every 30 seconds
+        setInterval(updateUserStats, 30000);
+    </script>
+</body>
+</html>
