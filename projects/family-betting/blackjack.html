@@ -1026,13 +1026,23 @@
                 showNotification('Reshuffling deck...', 'warning');
             }
             
-            gameState.playerHand.push(gameState.deck.pop());
+            const newCard = gameState.deck.pop();
+            gameState.playerHand.push(newCard);
             updateHandDisplay(gameState.playerHand, 'playerCards', 'playerValue');
             
             const playerValue = calculateHandValue(gameState.playerHand);
             
             if (playerValue > 21) {
-                endHand('lose', 'Bust! You lose!');
+                // Show the bust card that caused the loss
+                const cardName = newCard.rank === 'A' ? 'Ace' : 
+                               newCard.rank === 'K' ? 'King' :
+                               newCard.rank === 'Q' ? 'Queen' : 
+                               newCard.rank === 'J' ? 'Jack' : newCard.rank;
+                const suitSymbol = newCard.suit === 'hearts' ? '♥️' :
+                                 newCard.suit === 'diamonds' ? '♦️' :
+                                 newCard.suit === 'clubs' ? '♣️' : '♠️';
+                                 
+                endHand('lose', `Bust! Drew ${cardName} of ${suitSymbol} - You lose!`);
             } else if (playerValue === 21) {
                 stand();
             } else {
@@ -1106,13 +1116,23 @@
             gameState.currentBet *= 2;
             
             // Hit once
-            gameState.playerHand.push(gameState.deck.pop());
+            const newCard = gameState.deck.pop();
+            gameState.playerHand.push(newCard);
             updateHandDisplay(gameState.playerHand, 'playerCards', 'playerValue');
             
             const playerValue = calculateHandValue(gameState.playerHand);
             
             if (playerValue > 21) {
-                endHand('lose', 'Bust! You lose!');
+                // Show the bust card that caused the loss
+                const cardName = newCard.rank === 'A' ? 'Ace' : 
+                               newCard.rank === 'K' ? 'King' :
+                               newCard.rank === 'Q' ? 'Queen' : 
+                               newCard.rank === 'J' ? 'Jack' : newCard.rank;
+                const suitSymbol = newCard.suit === 'hearts' ? '♥️' :
+                                 newCard.suit === 'diamonds' ? '♦️' :
+                                 newCard.suit === 'clubs' ? '♣️' : '♠️';
+                                 
+                endHand('lose', `Double Down Bust! Drew ${cardName} of ${suitSymbol} - You lose!`);
             } else {
                 // Auto-stand after double down
                 setTimeout(stand, 500);
