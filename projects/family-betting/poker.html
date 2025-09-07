@@ -615,6 +615,279 @@
                 width: 100%;
                 margin: 5px 0;
             }
+
+            .chat-spectator-panel {
+                flex-direction: column;
+            }
+        }
+
+        /* Spectator System */
+        .spectator-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 2px solid #00d4aa;
+        }
+
+        .spectator-title {
+            color: #00d4aa;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .spectator-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .spectator-item {
+            background: rgba(0, 212, 170, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #00d4aa;
+            color: #00d4aa;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .spectator-count {
+            background: #00d4aa;
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+
+        /* Hand History */
+        .hand-history-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 2px solid #00d4aa;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-title {
+            color: #00d4aa;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .history-item {
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid #00d4aa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(0, 212, 170, 0.2);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .history-players {
+            font-weight: bold;
+            color: #00d4aa;
+        }
+
+        .history-result {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .result-win {
+            background: #28a745;
+            color: white;
+        }
+
+        .result-loss {
+            background: #dc3545;
+            color: white;
+        }
+
+        .history-details {
+            color: #ccc;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .history-date {
+            color: #888;
+            font-size: 0.8em;
+            margin-top: 8px;
+        }
+
+        /* Chat System */
+        .chat-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 2px solid #00d4aa;
+            flex: 1;
+        }
+
+        .chat-title {
+            color: #00d4aa;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chat-messages {
+            height: 250px;
+            overflow-y: auto;
+            background: rgba(0, 212, 170, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(0, 212, 170, 0.3);
+        }
+
+        .chat-message {
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(0, 212, 170, 0.1);
+            border-left: 3px solid #00d4aa;
+        }
+
+        .chat-message.system-message {
+            background: rgba(0, 212, 170, 0.2);
+            border-left: 3px solid #00d4aa;
+            font-style: italic;
+        }
+
+        .chat-user {
+            font-weight: bold;
+            color: #00d4aa;
+            margin-bottom: 2px;
+        }
+
+        .chat-username {
+            font-weight: bold;
+            color: #00d4aa;
+        }
+
+        .chat-text {
+            color: #fff;
+            line-height: 1.3;
+            margin-left: 5px;
+        }
+
+        .chat-text.system-text {
+            color: #00d4aa;
+            margin-left: 0;
+        }
+
+        .chat-time {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 4px;
+            float: right;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #00d4aa;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-input::placeholder {
+            color: #888;
+        }
+
+        .chat-send {
+            background: #00d4aa;
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .chat-send:hover {
+            background: #00b894;
+            transform: translateY(-2px);
+        }
+
+        .chat-spectator-panel {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        /* Feature Toggle Buttons */
+        .feature-toggles {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            background: rgba(0, 212, 170, 0.2);
+            color: #00d4aa;
+            border: 2px solid #00d4aa;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover, .toggle-btn.active {
+            background: #00d4aa;
+            color: #000;
+        }
+
+        .feature-panel {
+            display: none;
+        }
+
+        .feature-panel.active {
+            display: block;
         }
     </style>
 </head>
@@ -750,6 +1023,53 @@
                 <button class="game-btn btn-all-in" onclick="allIn()">All In</button>
             </div>
         </div>
+
+        <!-- Feature Toggle Buttons -->
+        <div class="feature-toggles">
+            <button class="toggle-btn" onclick="toggleFeature('spectators')">👥 Spectators</button>
+            <button class="toggle-btn active" onclick="toggleFeature('chat')">💬 Chat</button>
+            <button class="toggle-btn" onclick="toggleFeature('history')">📖 Hand History</button>
+        </div>
+
+        <!-- Chat & Spectator Panel -->
+        <div class="chat-spectator-panel">
+            <!-- Chat System -->
+            <div class="chat-panel feature-panel active" id="chatPanel">
+                <div class="chat-title">💬 Game Chat & Trash Talk</div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message">
+                        <div class="chat-user">System</div>
+                        <div class="chat-text">Welcome to the poker arena! Let the trash talk begin! 🎲</div>
+                        <div class="chat-time">Just now</div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="Type your message... 💬" maxlength="200">
+                    <button class="chat-send" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+
+            <!-- Spectator System -->
+            <div class="spectator-panel feature-panel" id="spectatorPanel">
+                <div class="spectator-title">👥 Live Spectators <span class="spectator-count" id="spectatorCount">0</span></div>
+                <div class="spectator-list" id="spectatorList">
+                    <div class="spectator-item">No spectators yet</div>
+                </div>
+                <div style="text-align: center; margin-top: 15px; color: #888; font-size: 0.9em;">
+                    Family members can watch this epic battle live! 🍿
+                </div>
+            </div>
+        </div>
+
+        <!-- Hand History -->
+        <div class="hand-history-panel feature-panel" id="historyPanel">
+            <div class="history-title">📖 Hand History</div>
+            <div id="handHistoryList">
+                <div style="text-align: center; color: #888; padding: 40px;">
+                    No hands played yet. Start your first game to see history! 🎲
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Loading Indicator -->
@@ -801,6 +1121,8 @@
         let currentUser = null;
         let currentGame = null;
         let gameListener = null;
+        let chatListener = null;
+        let spectatorListener = null;
         let selectedBuyIn = 500;
         
         let pokerStats = {
@@ -808,6 +1130,11 @@
             losses: 0,
             winnings: 0
         };
+
+        // Feature tracking
+        let activeFeature = 'chat';
+        let spectators = [];
+        let handHistory = [];
 
         // Poker game state
         let gameState = {
@@ -825,6 +1152,229 @@
             smallBlind: 25,
             bigBlind: 50
         };
+
+        // Feature toggle functions
+        function toggleFeature(feature) {
+            activeFeature = feature;
+            
+            // Hide all panels
+            document.getElementById('chatPanel').style.display = 'none';
+            document.getElementById('spectatorPanel').style.display = 'none';
+            document.getElementById('handHistoryPanel').style.display = 'none';
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected panel and mark button as active
+            if (feature === 'chat') {
+                document.getElementById('chatPanel').style.display = 'block';
+                document.querySelector('[onclick="toggleFeature(\'chat\')"]').classList.add('active');
+            } else if (feature === 'spectator') {
+                document.getElementById('spectatorPanel').style.display = 'block';
+                document.querySelector('[onclick="toggleFeature(\'spectator\')"]').classList.add('active');
+            } else if (feature === 'history') {
+                document.getElementById('handHistoryPanel').style.display = 'block';
+                document.querySelector('[onclick="toggleFeature(\'history\')"]').classList.add('active');
+            }
+        }
+
+        // Chat functions
+        function sendChatMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            
+            if (message === '' || !currentGame) return;
+            
+            // Add chat message to Firebase
+            db.collection('pokerChats').add({
+                gameId: currentGame,
+                username: currentUser.username,
+                message: message,
+                timestamp: new Date(),
+                type: 'game'
+            }).then(() => {
+                chatInput.value = '';
+            }).catch(error => {
+                console.error('Error sending chat message:', error);
+            });
+        }
+
+        function loadChatMessages() {
+            if (!currentGame) return;
+            
+            if (chatListener) {
+                chatListener();
+            }
+            
+            chatListener = db.collection('pokerChats')
+                .where('gameId', '==', currentGame)
+                .orderBy('timestamp', 'asc')
+                .onSnapshot(snapshot => {
+                    const chatMessages = document.getElementById('chatMessages');
+                    
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            const message = change.doc.data();
+                            addChatMessage(message.username, message.message, message.timestamp);
+                        }
+                    });
+                });
+        }
+
+        function addChatMessage(username, message, timestamp) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = username === 'System' ? 'chat-message system-message' : 'chat-message';
+            
+            const time = timestamp.toDate ? timestamp.toDate().toLocaleTimeString() : new Date(timestamp).toLocaleTimeString();
+            
+            if (username === 'System') {
+                messageDiv.innerHTML = `
+                    <span class="chat-text system-text">${message}</span>
+                    <span class="chat-time">${time}</span>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <span class="chat-username">${username}:</span>
+                    <span class="chat-text">${message}</span>
+                    <span class="chat-time">${time}</span>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Spectator functions
+        function addSpectator(username) {
+            if (!spectators.includes(username) && username !== currentUser.username) {
+                spectators.push(username);
+                updateSpectatorList();
+            }
+        }
+
+        function removeSpectator(username) {
+            spectators = spectators.filter(spec => spec !== username);
+            updateSpectatorList();
+        }
+
+        function updateSpectatorList() {
+            const spectatorList = document.getElementById('spectatorList');
+            const spectatorCount = document.getElementById('spectatorCount');
+            
+            spectatorCount.textContent = spectators.length;
+            spectatorList.innerHTML = '';
+            
+            spectators.forEach(spectator => {
+                const spectatorDiv = document.createElement('div');
+                spectatorDiv.className = 'spectator-item';
+                spectatorDiv.textContent = spectator;
+                spectatorList.appendChild(spectatorDiv);
+            });
+        }
+
+        function loadSpectators() {
+            if (!currentGame) return;
+            
+            if (spectatorListener) {
+                spectatorListener();
+            }
+            
+            spectatorListener = db.collection('pokerSpectators')
+                .where('gameId', '==', currentGame)
+                .onSnapshot(snapshot => {
+                    spectators = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if (data.username !== currentUser.username) {
+                            spectators.push(data.username);
+                        }
+                    });
+                    updateSpectatorList();
+                });
+        }
+
+        function joinAsSpectator() {
+            if (!currentGame) return;
+            
+            db.collection('pokerSpectators').add({
+                gameId: currentGame,
+                username: currentUser.username,
+                joinedAt: new Date()
+            });
+        }
+
+        // Hand history functions
+        function saveHandToHistory(gameData, winner, winnings) {
+            const hand = {
+                gameId: currentGame,
+                players: [gameData.player1, gameData.player2],
+                winner: winner,
+                winnings: winnings,
+                timestamp: new Date(),
+                pot: gameData.pot,
+                cards: {
+                    community: gameData.communityCards,
+                    player1: gameData.player1Cards,
+                    player2: gameData.player2Cards
+                }
+            };
+            
+            handHistory.unshift(hand);
+            if (handHistory.length > 20) {
+                handHistory = handHistory.slice(0, 20);
+            }
+            
+            // Save to Firebase
+            db.collection('pokerHistory').add(hand);
+            
+            updateHandHistoryDisplay();
+        }
+
+        function loadHandHistory() {
+            if (!currentUser) return;
+            
+            db.collection('pokerHistory')
+                .where('players', 'array-contains', currentUser.username)
+                .orderBy('timestamp', 'desc')
+                .limit(20)
+                .get()
+                .then(snapshot => {
+                    handHistory = [];
+                    snapshot.forEach(doc => {
+                        handHistory.push(doc.data());
+                    });
+                    updateHandHistoryDisplay();
+                });
+        }
+
+        function updateHandHistoryDisplay() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            handHistory.forEach(hand => {
+                const handDiv = document.createElement('div');
+                handDiv.className = 'history-item';
+                
+                const isWin = hand.winner === currentUser.username;
+                const time = hand.timestamp.toDate ? hand.timestamp.toDate().toLocaleString() : new Date(hand.timestamp).toLocaleString();
+                
+                handDiv.innerHTML = `
+                    <div class="history-result ${isWin ? 'win' : 'loss'}">
+                        ${isWin ? 'WIN' : 'LOSS'}
+                    </div>
+                    <div class="history-details">
+                        <div>vs ${hand.players.find(p => p !== currentUser.username)}</div>
+                        <div>Pot: $${hand.pot}</div>
+                        <div>${time}</div>
+                    </div>
+                `;
+                
+                historyList.appendChild(handDiv);
+            });
+        }
 
         // Initialize Poker
         async function initializePoker() {
@@ -845,6 +1395,17 @@
             
             // Set up buy-in selection
             setupBuyInSelection();
+            
+            // Initialize features
+            toggleFeature('chat'); // Start with chat panel open
+            loadHandHistory(); // Load user's poker history
+            
+            // Set up chat input enter key
+            document.getElementById('chatInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
             
             showNotification('Welcome to the Poker Arena! 🎲', 'success');
         }
@@ -931,6 +1492,12 @@
 
                 const gameDoc = await addDoc(collection(window.db, 'pokerGames'), gameData);
                 gameState.gameId = gameDoc.id;
+                currentGame = gameDoc.id;
+
+                // Initialize chat and spectator features
+                loadChatMessages();
+                loadSpectators();
+                joinAsSpectator(); // Creator becomes spectator until game starts
 
                 // Hide lobby and show waiting message
                 document.getElementById('gameLobby').style.display = 'none';
@@ -987,6 +1554,12 @@
                 });
 
                 gameState.gameId = gameDoc.id;
+                currentGame = gameDoc.id;
+
+                // Initialize chat and spectator features
+                loadChatMessages();
+                loadSpectators();
+                joinAsSpectator(); // Player becomes spectator for this game
 
                 // Hide lobby and start game
                 document.getElementById('gameLobby').style.display = 'none';
@@ -1036,6 +1609,18 @@
                 // Update opponent info
                 const opponentName = gameData.creator === currentUser.id ? gameData.opponentName : gameData.creatorName;
                 document.getElementById('opponentName').textContent = opponentName;
+                
+                // Send welcome chat message if this is the first time game becomes active
+                if (gameData.phase === 'waiting') {
+                    // Send automatic welcome message
+                    db.collection('pokerChats').add({
+                        gameId: currentGame.gameId || gameState.gameId,
+                        username: 'System',
+                        message: `${currentUser.username} and ${opponentName} joined the game! Good luck! 🎲`,
+                        timestamp: new Date(),
+                        type: 'system'
+                    });
+                }
                 
                 // Update game phase
                 if (gameData.phase === 'waiting') {
@@ -1251,6 +1836,18 @@
                 // Update poker stats
                 await updatePokerStats(won, selectedBuyIn);
 
+                // Save hand to history
+                const winner = won ? currentUser.username : 'Opponent';
+                const gameData = {
+                    player1: currentUser.username,
+                    player2: 'Opponent',
+                    pot: gameState.pot,
+                    communityCards: gameState.communityCards,
+                    player1Cards: gameState.playerCards,
+                    player2Cards: gameState.opponentCards || []
+                };
+                saveHandToHistory(gameData, winner, winAmount);
+
                 // Clean up game
                 setTimeout(() => {
                     returnToLobby();
@@ -1316,11 +1913,22 @@
 
         // Return to lobby
         function returnToLobby() {
-            // Stop game listener
+            // Stop all listeners
             if (gameListener) {
                 gameListener();
                 gameListener = null;
             }
+            if (chatListener) {
+                chatListener();
+                chatListener = null;
+            }
+            if (spectatorListener) {
+                spectatorListener();
+                spectatorListener = null;
+            }
+
+            // Clear current game reference
+            currentGame = null;
 
             // Reset UI
             document.getElementById('gameLobby').style.display = 'block';
