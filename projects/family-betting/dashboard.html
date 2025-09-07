@@ -883,7 +883,7 @@
                     // Update UI
                     document.getElementById('userBalance').textContent = '$' + userData.balance.toLocaleString();
                     
-                    // Calculate combined betting stats (custom bets + blackjack + sports bets)
+                    // Calculate combined betting stats (custom bets + blackjack + sports bets + poker)
                     const customBetsWon = userData.betsWon || 0;
                     const customBetsLost = userData.betsLost || 0;
                     const blackjackWins = userData.blackjackWins || 0;
@@ -891,9 +891,12 @@
                     const blackjackLosses = blackjackHands - blackjackWins;
                     const sportsBetsWon = userData.sportsBetsWon || 0;
                     const sportsBetsLost = userData.sportsBetsLost || 0;
+                    const pokerWins = userData.pokerWins || 0;
+                    const pokerLosses = userData.pokerLosses || 0;
                     
-                    const totalBets = customBetsWon + customBetsLost + blackjackHands + sportsBetsWon + sportsBetsLost;
-                    const totalWins = customBetsWon + blackjackWins + sportsBetsWon;
+                    const totalBets = customBetsWon + customBetsLost + blackjackHands + sportsBetsWon + sportsBetsLost + pokerWins + pokerLosses;
+                    const totalWins = customBetsWon + blackjackWins + sportsBetsWon + pokerWins;
+                    const totalLosses = customBetsLost + blackjackLosses + sportsBetsLost + pokerLosses;
                     
                     document.getElementById('totalBets').textContent = totalBets;
                     
@@ -915,22 +918,22 @@
                     else if (winRate >= 40) winRateElement.classList.add('neutral');
                     else if (totalBets > 0) winRateElement.classList.add('negative');
                     
-                    // Combine all winnings
+                    // Combine all winnings (actual winnings, not including initial balance)
                     const customWinnings = userData.totalWinnings || 0;
                     const blackjackWinnings = userData.blackjackWinnings || 0;
                     const sportsWinnings = userData.sportsWinnings || 0;
-                    const combinedWinnings = customWinnings + blackjackWinnings + sportsWinnings;
+                    const pokerWinnings = userData.pokerWinnings || 0;
+                    const combinedWinnings = customWinnings + blackjackWinnings + sportsWinnings + pokerWinnings;
                     
                     const totalWinningsElement = document.getElementById('totalWinnings');
                     totalWinningsElement.textContent = '$' + combinedWinnings.toLocaleString();
                     totalWinningsElement.className = 'stat-value';
                     if (combinedWinnings > 0) totalWinningsElement.classList.add('positive');
                     
-                    // Calculate net profit (winnings - losses)
-                    const totalLosses = userData.totalLosses || 0;
-                    const sportsLosses = userData.sportsLosses || 0;
-                    const allLosses = totalLosses + sportsLosses;
-                    const netProfit = combinedWinnings - allLosses;
+                    // Calculate net profit (current balance - starting balance of 10,000)
+                    const startingBalance = 10000;
+                    const currentBalance = userData.balance || 0;
+                    const netProfit = currentBalance - startingBalance;
                     const netProfitElement = document.getElementById('netProfit');
                     netProfitElement.textContent = '$' + netProfit.toLocaleString();
                     netProfitElement.className = 'stat-value';

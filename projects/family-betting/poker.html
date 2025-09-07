@@ -1470,13 +1470,27 @@
 
         // Create new game
         async function createGame() {
+            console.log('createGame called');
+            console.log('selectedBuyIn:', selectedBuyIn);
+            console.log('currentUser.balance:', currentUser ? currentUser.balance : 'currentUser is null');
+            
+            if (!currentUser) {
+                showNotification('User not logged in!', 'error');
+                return;
+            }
+            
             if (selectedBuyIn > currentUser.balance) {
                 showNotification('Insufficient funds for this buy-in!', 'error');
                 return;
             }
 
             try {
+                console.log('Attempting to create game...');
                 const { collection, addDoc } = window.firestoreUtils;
+                
+                if (!collection || !addDoc) {
+                    throw new Error('Firebase utils not available');
+                }
                 
                 const gameData = {
                     creator: currentUser.id,
@@ -1490,7 +1504,10 @@
                     bigBlind: Math.floor(selectedBuyIn * 0.1)     // 10% of buy-in
                 };
 
+                console.log('Game data:', gameData);
                 const gameDoc = await addDoc(collection(window.db, 'pokerGames'), gameData);
+                console.log('Game created with ID:', gameDoc.id);
+                
                 gameState.gameId = gameDoc.id;
                 currentGame = gameDoc.id;
 
@@ -1511,7 +1528,7 @@
 
             } catch (error) {
                 console.error('Error creating game:', error);
-                showNotification('Failed to create game', 'error');
+                showNotification('Failed to create game: ' + error.message, 'error');
             }
         }
 
