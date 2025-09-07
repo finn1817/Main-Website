@@ -1069,6 +1069,7 @@
             <span id="userBalance" class="balance">$0</span>
             <span id="adminBadge" class="admin-badge">👑 ADMIN</span>
             <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+            <div class="back-btn" id="leaveGameBtn" onclick="returnToLobby()" style="display: none; margin-left: 15px; background: #f44336;">Leave Game</div>
         </div>
     </div>
 
@@ -1280,7 +1281,9 @@
             updateDoc, 
             getDoc,
             deleteDoc,
-            onSnapshot
+            onSnapshot,
+            arrayUnion,
+            arrayRemove
         } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -1298,7 +1301,7 @@
         // Make Firebase available globally
         window.db = db;
         window.firestoreUtils = { 
-            collection, addDoc, getDocs, query, where, orderBy, or, doc, setDoc, updateDoc, getDoc, deleteDoc, onSnapshot
+            collection, addDoc, getDocs, query, where, orderBy, or, doc, setDoc, updateDoc, getDoc, deleteDoc, onSnapshot, arrayUnion, arrayRemove
         };
 
         // Initialize poker
@@ -1377,16 +1380,18 @@
             if (message === '' || !currentGame) return;
             
             try {
-                const { collection, addDoc } = window.firestoreUtils;
+                const { doc, updateDoc, arrayUnion } = window.firestoreUtils;
                 
-                // Add chat message to Firebase
-                const chatsRef = collection(window.db, 'pokerChats');
-                addDoc(chatsRef, {
-                    gameId: currentGame,
-                    username: currentUser.username,
-                    message: message,
-                    timestamp: new Date(),
-                    type: 'game'
+                // Add chat message to game document
+                const gameDoc = doc(window.db, 'games', currentGame);
+                updateDoc(gameDoc, {
+                    chat: arrayUnion({
+                        username: currentUser.username,
+                        message: message,
+                        timestamp: new Date().toISOString(),
+                        type: 'game'
+                    }),
+                    lastActivity: new Date().toISOString()
                 }).then(() => {
                     chatInput.value = '';
                 }).catch(error => {
@@ -1400,27 +1405,9 @@
         function loadChatMessages() {
             if (!currentGame) return;
             
-            if (chatListener) {
-                chatListener();
-            }
-            
-            try {
-                const { collection, query, where, orderBy, onSnapshot } = window.firestoreUtils;
-                
-                const chatsRef = collection(window.db, 'pokerChats');
-                const q = query(chatsRef, where('gameId', '==', currentGame), orderBy('timestamp', 'asc'));
-                
-                chatListener = onSnapshot(q, (snapshot) => {
-                    snapshot.docChanges().forEach((change) => {
-                        if (change.type === 'added') {
-                            const message = change.doc.data();
-                            addChatMessage(message.username, message.message, message.timestamp);
-                        }
-                    });
-                });
-            } catch (error) {
-                console.error('Error loading chat messages:', error);
-            }
+            // Chat messages are now loaded through the main game listener
+            // Clear existing messages and wait for game state update
+            document.getElementById('chatMessages').innerHTML = '';
         }
 
         function addChatMessage(username, message, timestamp) {
@@ -1428,7 +1415,10 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = username === 'System' ? 'chat-message system-message' : 'chat-message';
             
-            const time = timestamp.toDate ? timestamp.toDate().toLocaleTimeString() : new Date(timestamp).toLocaleTimeString();
+            // Handle both ISO string timestamps and Date objects
+            const time = typeof timestamp === 'string' ? 
+                new Date(timestamp).toLocaleTimeString() : 
+                (timestamp.toDate ? timestamp.toDate().toLocaleTimeString() : new Date(timestamp).toLocaleTimeString());
             
             if (username === 'System') {
                 messageDiv.innerHTML = `
@@ -1476,44 +1466,20 @@
         }
 
         function loadSpectators() {
-            if (!currentGame) return;
-            
-            if (spectatorListener) {
-                spectatorListener();
-            }
-            
-            try {
-                const { collection, query, where, onSnapshot } = window.firestoreUtils;
-                
-                const spectatorsRef = collection(window.db, 'pokerSpectators');
-                const q = query(spectatorsRef, where('gameId', '==', currentGame));
-                
-                spectatorListener = onSnapshot(q, (snapshot) => {
-                    spectators = [];
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        if (data.username !== currentUser.username) {
-                            spectators.push(data.username);
-                        }
-                    });
-                    updateSpectatorList();
-                });
-            } catch (error) {
-                console.error('Error loading spectators:', error);
-            }
+            // Spectators are now loaded through the main game listener
+            // No separate listener needed
         }
 
         function joinAsSpectator() {
             if (!currentGame) return;
             
             try {
-                const { collection, addDoc } = window.firestoreUtils;
+                const { doc, updateDoc, arrayUnion } = window.firestoreUtils;
                 
-                const spectatorsRef = collection(window.db, 'pokerSpectators');
-                addDoc(spectatorsRef, {
-                    gameId: currentGame,
-                    username: currentUser.username,
-                    joinedAt: new Date()
+                const gameDoc = doc(window.db, 'games', currentGame);
+                updateDoc(gameDoc, {
+                    spectators: arrayUnion(currentUser.username),
+                    lastActivity: new Date().toISOString()
                 });
             } catch (error) {
                 console.error('Error joining as spectator:', error);
@@ -1523,45 +1489,48 @@
         // Hand history functions
         function saveHandToHistory(gameData, winner, winnings) {
             const hand = {
-                gameId: currentGame,
-                players: [gameData.player1, gameData.player2],
+                players: [gameData.creatorName, gameData.opponentName],
                 winner: winner,
                 winnings: winnings,
-                timestamp: new Date(),
-                pot: gameData.pot,
-                cards: {
-                    community: gameData.communityCards,
-                    player1: gameData.player1Cards,
-                    player2: gameData.player2Cards
-                }
+                timestamp: new Date().toISOString(),
+                pot: gameData.pot
             };
             
-            handHistory.unshift(hand);
-            if (handHistory.length > 20) {
-                handHistory = handHistory.slice(0, 20);
+            try {
+                const { doc, updateDoc, arrayUnion } = window.firestoreUtils;
+                updateDoc(doc(window.db, 'games', currentGame), {
+                    handHistory: arrayUnion(hand)
+                });
+            } catch (error) {
+                console.error('Error saving hand to history:', error);
             }
-            
-            // Save to Firebase
-            db.collection('pokerHistory').add(hand);
-            
-            updateHandHistoryDisplay();
         }
 
         function loadHandHistory() {
+            // Hand history is now loaded from user's game history collection
+            // This will load the user's overall poker history, not just current game
             if (!currentUser) return;
             
-            db.collection('pokerHistory')
-                .where('players', 'array-contains', currentUser.username)
-                .orderBy('timestamp', 'desc')
-                .limit(20)
-                .get()
-                .then(snapshot => {
+            try {
+                const { collection, query, where, orderBy, limit, getDocs } = window.firestoreUtils;
+                
+                const historyRef = collection(window.db, 'pokerHistory');
+                const q = query(historyRef, 
+                    where('players', 'array-contains', currentUser.username),
+                    orderBy('timestamp', 'desc'),
+                    limit(20)
+                );
+                
+                getDocs(q).then(snapshot => {
                     handHistory = [];
                     snapshot.forEach(doc => {
                         handHistory.push(doc.data());
                     });
                     updateHandHistoryDisplay();
                 });
+            } catch (error) {
+                console.error('Error loading hand history:', error);
+            }
         }
 
         function updateHandHistoryDisplay() {
@@ -1705,19 +1674,33 @@
                 }
                 
                 const gameData = {
+                    // Game info
+                    gameType: 'poker',
                     creator: currentUser.id,
                     creatorName: currentUser.username,
                     buyIn: selectedBuyIn,
                     status: 'waiting_for_opponent',
                     createdAt: new Date().toISOString(),
+                    lastActivity: new Date().toISOString(),
+                    
+                    // Poker specific
                     pot: 0,
                     phase: 'waiting',
                     smallBlind: Math.floor(selectedBuyIn * 0.05),
-                    bigBlind: Math.floor(selectedBuyIn * 0.1)
+                    bigBlind: Math.floor(selectedBuyIn * 0.1),
+                    
+                    // Players
+                    players: [currentUser.id],
+                    playerNames: [currentUser.username],
+                    
+                    // Embedded features
+                    chat: [],
+                    spectators: [],
+                    handHistory: []
                 };
                 
-                const pokerGamesRef = collection(window.db, 'pokerGames');
-                const gameDoc = await addDoc(pokerGamesRef, gameData);
+                const gamesRef = collection(window.db, 'games');
+                const gameDoc = await addDoc(gamesRef, gameData);
                 
                 gameState.gameId = gameDoc.id;
                 currentGame = gameDoc.id;
@@ -1729,7 +1712,7 @@
                 document.getElementById('gameIdDisplay').style.display = 'block';
                 document.getElementById('gameIdCode').textContent = shortGameId;
 
-                // Initialize chat and spectator features
+                // Initialize features
                 loadChatMessages();
                 loadSpectators();
                 joinAsSpectator();
@@ -1813,8 +1796,11 @@
             try {
                 const { collection, getDocs, query, where } = window.firestoreUtils;
                 
-                const gamesRef = collection(window.db, 'pokerGames');
-                const q = query(gamesRef, where("status", "==", "waiting_for_opponent"));
+                const gamesRef = collection(window.db, 'games');
+                const q = query(gamesRef, 
+                    where("gameType", "==", "poker"),
+                    where("status", "==", "waiting_for_opponent")
+                );
                 const querySnapshot = await getDocs(q);
 
                 const gamesList = document.getElementById('availableGamesList');
@@ -1857,9 +1843,9 @@
         // Join a specific game by full ID
         async function joinSpecificGame(gameId) {
             try {
-                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                const { doc, getDoc, updateDoc, arrayUnion } = window.firestoreUtils;
                 
-                const gameDoc = await getDoc(doc(window.db, 'pokerGames', gameId));
+                const gameDoc = await getDoc(doc(window.db, 'games', gameId));
                 if (!gameDoc.exists()) {
                     showNotification('Game not found!', 'error');
                     return;
@@ -1887,18 +1873,20 @@
                 selectedBuyIn = gameData.buyIn;
                 updateBuyInSelection(selectedBuyIn);
 
-                // Update game with opponent
-                await updateDoc(doc(window.db, 'pokerGames', gameId), {
+                // Update game with opponent and add to players array
+                await updateDoc(doc(window.db, 'games', gameId), {
                     opponent: currentUser.id,
                     opponentName: currentUser.username,
                     status: 'active',
-                    updatedAt: new Date().toISOString()
+                    lastActivity: new Date().toISOString(),
+                    players: arrayUnion(currentUser.id),
+                    playerNames: arrayUnion(currentUser.username)
                 });
 
                 gameState.gameId = gameId;
                 currentGame = gameId;
 
-                // Initialize chat and spectator features
+                // Initialize features
                 loadChatMessages();
                 loadSpectators();
                 joinAsSpectator();
@@ -1939,8 +1927,9 @@
                 const { collection, getDocs, query, where } = window.firestoreUtils;
                 
                 // Find game with matching ID start
-                const gamesRef = collection(window.db, 'pokerGames');
-                const querySnapshot = await getDocs(gamesRef);
+                const gamesRef = collection(window.db, 'games');
+                const q = query(gamesRef, where("gameType", "==", "poker"));
+                const querySnapshot = await getDocs(q);
 
                 let foundGame = null;
                 querySnapshot.forEach(doc => {
@@ -2008,18 +1997,63 @@
             selectedBuyIn = amount;
         }
 
+        // Auto-cleanup empty games
+        async function cleanupEmptyGame(gameId) {
+            try {
+                const { doc, deleteDoc } = window.firestoreUtils;
+                await deleteDoc(doc(window.db, 'games', gameId));
+                console.log('Empty game cleaned up:', gameId);
+            } catch (error) {
+                console.error('Error cleaning up empty game:', error);
+            }
+        }
+
+        // Leave game function (removes player from game)
+        async function leaveGame() {
+            if (!currentGame || !gameState.gameId) return;
+            
+            try {
+                const { doc, updateDoc, arrayRemove, getDoc } = window.firestoreUtils;
+                const gameDoc = doc(window.db, 'games', gameState.gameId);
+                
+                // Remove player from game
+                await updateDoc(gameDoc, {
+                    players: arrayRemove(currentUser.id),
+                    playerNames: arrayRemove(currentUser.username),
+                    spectators: arrayRemove(currentUser.username),
+                    lastActivity: new Date().toISOString()
+                });
+                
+                // Check if game is now empty
+                const gameSnapshot = await getDoc(gameDoc);
+                if (gameSnapshot.exists()) {
+                    const gameData = gameSnapshot.data();
+                    if (gameData.players && gameData.players.length === 0) {
+                        // Delete empty game
+                        await cleanupEmptyGame(gameState.gameId);
+                    }
+                }
+                
+                returnToLobby();
+                
+            } catch (error) {
+                console.error('Error leaving game:', error);
+            }
+        }
+
         // Start game listener
         function startGameListener() {
             if (gameListener) gameListener();
 
             const { doc, onSnapshot } = window.firestoreUtils;
-            const gameDoc = doc(window.db, 'pokerGames', gameState.gameId);
+            const gameDoc = doc(window.db, 'games', gameState.gameId);
 
             gameListener = onSnapshot(gameDoc, (snapshot) => {
                 if (snapshot.exists()) {
                     const gameData = snapshot.data();
                     updateGameState(gameData);
                 } else {
+                    // Game was deleted, return to lobby
                     showNotification('Game ended or was removed', 'warning');
                     returnToLobby();
                 }
@@ -2030,11 +2064,38 @@
         function updateGameState(gameData) {
             currentGame = gameData;
             
+            // Update chat messages from embedded chat array
+            if (gameData.chat && gameData.chat.length > 0) {
+                const chatMessages = document.getElementById('chatMessages');
+                const currentMessageCount = chatMessages.children.length;
+                
+                // Only add new messages (compare lengths)
+                if (gameData.chat.length > currentMessageCount) {
+                    for (let i = currentMessageCount; i < gameData.chat.length; i++) {
+                        const msg = gameData.chat[i];
+                        addChatMessage(msg.username, msg.message, msg.timestamp);
+                    }
+                }
+            }
+            
+            // Update spectators from embedded spectators array
+            if (gameData.spectators) {
+                spectators = gameData.spectators;
+                updateSpectatorList();
+            }
+            
+            // Auto-clean game if everyone left (no active players)
+            if (gameData.players && gameData.players.length === 0) {
+                cleanupEmptyGame(gameState.gameId);
+                return;
+            }
+            
             // Update UI based on game status
             if (gameData.status === 'active' && gameData.opponent) {
-                // Show poker table
+                // Show poker table and leave button
                 document.getElementById('pokerTable').style.display = 'flex';
                 document.getElementById('gameMessage').style.display = 'block';
+                document.getElementById('leaveGameBtn').style.display = 'inline-block';
                 
                 // Update opponent info
                 const opponentName = gameData.creator === currentUser.id ? gameData.opponentName : gameData.creatorName;
@@ -2042,16 +2103,16 @@
                 
                 // Send welcome chat message if this is the first time game becomes active
                 if (gameData.phase === 'waiting') {
-                    // Send automatic welcome message
+                    // Add welcome message to chat array
                     try {
-                        const { collection, addDoc } = window.firestoreUtils;
-                        const chatsRef = collection(window.db, 'pokerChats');
-                        addDoc(chatsRef, {
-                            gameId: currentGame.gameId || gameState.gameId,
-                            username: 'System',
-                            message: `${currentUser.username} and ${opponentName} joined the game! Good luck! 🎲`,
-                            timestamp: new Date(),
-                            type: 'system'
+                        const { doc, updateDoc, arrayUnion } = window.firestoreUtils;
+                        updateDoc(doc(window.db, 'games', gameState.gameId), {
+                            chat: arrayUnion({
+                                username: 'System',
+                                message: `${currentUser.username} and ${opponentName} joined the game! Good luck! 🎲`,
+                                timestamp: new Date().toISOString(),
+                                type: 'system'
+                            })
                         });
                     } catch (error) {
                         console.error('Error sending system message:', error);
@@ -2090,7 +2151,7 @@
 
                 // Update Firebase
                 const { doc, updateDoc } = window.firestoreUtils;
-                await updateDoc(doc(window.db, 'pokerGames', gameState.gameId), {
+                await updateDoc(doc(window.db, 'games', gameState.gameId), {
                     phase: 'preflop',
                     pot: gameState.pot,
                     playerCards: playerCards,
@@ -2098,7 +2159,7 @@
                     communityCards: [],
                     currentBet: gameState.currentBet,
                     turn: gameState.turn,
-                    updatedAt: new Date().toISOString()
+                    lastActivity: new Date().toISOString()
                 });
 
                 // Update UI
@@ -2349,18 +2410,15 @@
 
         // Return to lobby
         function returnToLobby() {
+            // Leave current game if in one
+            if (currentGame && gameState.gameId) {
+                leaveGame();
+            }
+            
             // Stop all listeners
             if (gameListener) {
                 gameListener();
                 gameListener = null;
-            }
-            if (chatListener) {
-                chatListener();
-                chatListener = null;
-            }
-            if (spectatorListener) {
-                spectatorListener();
-                spectatorListener = null;
             }
 
             // Clear current game reference
@@ -2371,6 +2429,8 @@
             document.getElementById('pokerTable').style.display = 'none';
             document.getElementById('gameMessage').style.display = 'none';
             document.getElementById('gameControls').style.display = 'none';
+            document.getElementById('gameIdDisplay').style.display = 'none';
+            document.getElementById('leaveGameBtn').style.display = 'none';
 
             // Reset game state
             gameState = {
