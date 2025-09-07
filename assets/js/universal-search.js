@@ -3,13 +3,16 @@
 
 class UniversalSearch {
   constructor() {
+    // Determine base path dynamically
+    this.basePath = this.getBasePath();
+    
     // Auto-generated siteContent: includes every project folder found under /projects and top-level pages
     this.siteContent = [
       // Projects (scanned from the projects/ directory)
       {
         title: "2048",
         path: "Home › Projects › 2048",
-        url: "/Main-Website/projects/2048/",
+        url: `${this.basePath}projects/2048/`,
         type: "projects",
         description: "Classic 2048 sliding tile puzzle game.",
         keywords: ["2048", "game", "puzzle", "tiles", "javascript"]
@@ -17,7 +20,7 @@ class UniversalSearch {
       {
         title: "Calculator",
         path: "Home › Projects › Calculator",
-        url: "/Main-Website/projects/calculator/",
+        url: `${this.basePath}projects/calculator/`,
         type: "projects",
         description: "A fully functional calculator built with JavaScript.",
         keywords: ["calculator", "math", "javascript", "compute"]
@@ -25,7 +28,7 @@ class UniversalSearch {
       {
         title: "File Transfer",
         path: "Home › Projects › File Transfer",
-        url: "/Main-Website/projects/File-Transfer/",
+        url: `${this.basePath}projects/File-Transfer/`,
         type: "projects",
         description: "Secure file transfer and sharing tool.",
         keywords: ["file", "transfer", "share", "upload", "download"]
@@ -33,15 +36,23 @@ class UniversalSearch {
       {
         title: "Finance Check",
         path: "Home › Projects › Finance Check",
-        url: "/Main-Website/projects/finance-check/",
+        url: `${this.basePath}projects/finance-check/`,
         type: "projects",
         description: "Personal finance tracking and budgeting tool.",
         keywords: ["finance", "budget", "money", "expense", "tracking"]
       },
       {
+        title: "Git Account Info",
+        path: "Home › Projects › Git Account Info",
+        url: `${this.basePath}projects/git-account-info/`,
+        type: "projects",
+        description: "GitHub profile analyzer and repository information tool.",
+        keywords: ["git", "github", "profile", "analyzer", "repository", "account", "new"]
+      },
+      {
         title: "Hangman",
         path: "Home › Projects › Hangman",
-        url: "/Main-Website/projects/hangman/",
+        url: `${this.basePath}projects/hangman/`,
         type: "projects",
         description: "Classic hangman word-guessing game implemented in JavaScript.",
         keywords: ["hangman", "game", "word", "javascript"]
@@ -49,7 +60,7 @@ class UniversalSearch {
       {
         title: "Password Manager",
         path: "Home › Projects › Password Manager",
-        url: "/Main-Website/projects/password-manager/",
+        url: `${this.basePath}projects/password-manager/`,
         type: "projects",
         description: "Secure password manager for storing and generating passwords.",
         keywords: ["password", "manager", "security", "generator"]
@@ -57,7 +68,7 @@ class UniversalSearch {
       {
         title: "Resume Builder",
         path: "Home › Projects › Resume Builder",
-        url: "/Main-Website/projects/resume-builder/",
+        url: `${this.basePath}projects/resume-builder/`,
         type: "projects",
         description: "Create professional resumes with customizable templates.",
         keywords: ["resume", "builder", "template", "cv"]
@@ -65,7 +76,7 @@ class UniversalSearch {
       {
         title: "Shared Calendar",
         path: "Home › Projects › Shared Calendar",
-        url: "/Main-Website/projects/shared-calendar/",
+        url: `${this.basePath}projects/shared-calendar/`,
         type: "projects",
         description: "Shared calendar project with event management features.",
         keywords: ["calendar", "shared", "events", "scheduling"]
@@ -73,7 +84,7 @@ class UniversalSearch {
       {
         title: "Template",
         path: "Home › Projects › Template",
-        url: "/Main-Website/projects/template/",
+        url: `${this.basePath}projects/template/`,
         type: "projects",
         description: "Project template with starter code and styles.",
         keywords: ["template", "starter", "project", "boilerplate"]
@@ -81,7 +92,7 @@ class UniversalSearch {
       {
         title: "Text Editor",
         path: "Home › Projects › Text Editor",
-        url: "/Main-Website/projects/text-editor/",
+        url: `${this.basePath}projects/text-editor/`,
         type: "projects",
         description: "A powerful online text editor with syntax highlighting.",
         keywords: ["text", "editor", "syntax", "code"]
@@ -89,7 +100,7 @@ class UniversalSearch {
       {
         title: "Unit Converter",
         path: "Home › Projects › Unit Converter",
-        url: "/Main-Website/projects/unit-converter/",
+        url: `${this.basePath}projects/unit-converter/`,
         type: "projects",
         description: "Convert between different units of measurement.",
         keywords: ["unit", "converter", "measurement", "convert"]
@@ -97,7 +108,7 @@ class UniversalSearch {
       {
         title: "Word Counter",
         path: "Home › Projects › Word Counter",
-        url: "/Main-Website/projects/word-counter/",
+        url: `${this.basePath}projects/word-counter/`,
         type: "projects",
         description: "Count words, characters, and analyze text statistics.",
         keywords: ["word", "counter", "text", "statistics"]
@@ -105,7 +116,7 @@ class UniversalSearch {
       {
         title: "Word Search",
         path: "Home › Projects › Word Search",
-        url: "/Main-Website/projects/word-search/",
+        url: `${this.basePath}projects/word-search/`,
         type: "projects",
         description: "Word search puzzle generator and solver.",
         keywords: ["word", "search", "puzzle", "game"]
@@ -115,7 +126,7 @@ class UniversalSearch {
       {
         title: "All Projects",
         path: "Home › Projects",
-        url: "/Main-Website/projects/",
+        url: `${this.basePath}projects/`,
         type: "pages",
         description: "Browse all projects and web applications.",
         keywords: ["projects", "portfolio", "apps"]
@@ -123,7 +134,7 @@ class UniversalSearch {
       {
         title: "About Me",
         path: "Home › About",
-        url: "/Main-Website/about/",
+        url: `${this.basePath}about/`,
         type: "pages",
         description: "Learn more about Dan Finn and his background.",
         keywords: ["about", "dan", "finn", "bio"]
@@ -131,7 +142,7 @@ class UniversalSearch {
       {
         title: "Contact",
         path: "Home › Contact",
-        url: "/Main-Website/contact/",
+        url: `${this.basePath}contact/`,
         type: "pages",
         description: "Get in touch with Dan Finn.",
         keywords: ["contact", "email", "get in touch"]
@@ -139,7 +150,7 @@ class UniversalSearch {
       {
         title: "Education",
         path: "Home › Education",
-        url: "/Main-Website/education/",
+        url: `${this.basePath}education/`,
         type: "pages",
         description: "Information about educational background and courses.",
         keywords: ["education", "school", "college"]
@@ -147,7 +158,7 @@ class UniversalSearch {
       {
         title: "Interests",
         path: "Home › Interests",
-        url: "/Main-Website/interests/",
+        url: `${this.basePath}interests/`,
         type: "pages",
         description: "Personal hobbies and interests.",
         keywords: ["interests", "hobbies", "personal"]
@@ -155,7 +166,7 @@ class UniversalSearch {
       {
         title: "Resume",
         path: "Home › Resume",
-        url: "/Main-Website/resume/",
+        url: `${this.basePath}resume/`,
         type: "pages",
         description: "Download or view Dan Finn's professional resume.",
         keywords: ["resume", "cv", "career"]
@@ -163,7 +174,7 @@ class UniversalSearch {
       {
         title: "Home",
         path: "Home",
-        url: "/Main-Website/",
+        url: `${this.basePath}`,
         type: "pages",
         description: "Main website homepage.",
         keywords: ["home", "main", "website"]
@@ -172,6 +183,16 @@ class UniversalSearch {
 
     this.currentFilter = 'all';
     this.init();
+  }
+
+  getBasePath() {
+    // Detect if we're on GitHub Pages or local/custom domain
+    const path = window.location.pathname;
+    if (path.includes('/Main-Website/')) {
+      return '/Main-Website/';
+    }
+    // For custom domains or local development
+    return '/';
   }
 
   init() {

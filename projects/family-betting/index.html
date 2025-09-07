@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Betting Hub - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .toggle-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e1e1;
+        }
+
+        .toggle-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+            
+            .logo {
+                font-size: 2em;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-container {
+            display: block;
+        }
+
+        .form-container.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🎰💰</div>
+        <h1>Family Betting Hub</h1>
+        <p class="subtitle">Where family trash talk meets fake money!</p>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+        <div class="loading" id="loading"></div>
+
+        <!-- Login Form -->
+        <div class="form-container" id="loginForm">
+            <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+            </div>
+            <button class="btn btn-primary" onclick="handleLogin()">Login</button>
+            
+            <div class="toggle-form">
+                <p>Don't have an account? <span class="toggle-link" onclick="showCreateAccount()">Create Account</span></p>
+            </div>
+        </div>
+
+        <!-- Create Account Form -->
+        <div class="form-container hidden" id="createForm">
+            <div class="form-group">
+                <label for="createUsername">Username</label>
+                <input type="text" id="createUsername" placeholder="Choose a username" required>
+            </div>
+            <div class="form-group">
+                <label for="createPassword">Password</label>
+                <input type="password" id="createPassword" placeholder="Choose a password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+            </div>
+            <button class="btn btn-primary" onclick="handleCreateAccount()">Create Account</button>
+            
+            <div class="toggle-form">
+                <p>Already have an account? <span class="toggle-link" onclick="showLogin()">Login</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Setup -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBs0mLN4_HzWx9nGdOjCsewT3X6F69Ysik",
+            authDomain: "family-bets-1967f.firebaseapp.com",
+            projectId: "family-bets-1967f",
+            storageBucket: "family-bets-1967f.firebasestorage.app",
+            messagingSenderId: "13304744240",
+            appId: "1:13304744240:web:1e9a2c0ddb1703474b60f5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make db available globally
+        window.db = db;
+        window.firestoreUtils = { collection, addDoc, getDocs, query, where, doc, setDoc };
+
+        // Create default test user on page load
+        createDefaultUser();
+
+        async function createDefaultUser() {
+            try {
+                // Check if test user already exists
+                const usersRef = collection(db, 'users');
+                const q = query(usersRef, where("username", "==", "testuser"));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    // Create test user with userID 0
+                    await setDoc(doc(db, 'users', '0'), {
+                        username: 'testuser',
+                        password: 'testpass', // In production, this should be hashed
+                        balance: 10000,
+                        isAdmin: 0,
+                        createdAt: new Date().toISOString(),
+                        lastBegTime: null,
+                        totalWinnings: 0,
+                        totalLosses: 0,
+                        betsWon: 0,
+                        betsLost: 0
+                    });
+                    console.log('Default test user created: testuser/testpass');
+                }
+            } catch (error) {
+                console.error('Error creating default user:', error);
+            }
+        }
+    </script>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+
+        // Form switching functions
+        function showCreateAccount() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('createForm').classList.remove('hidden');
+            clearMessages();
+        }
+
+        function showLogin() {
+            document.getElementById('createForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            clearMessages();
+        }
+
+        // Message handling
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function clearMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        // Login function
+        async function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                showError('Please enter both username and password');
+                return;
+            }
+
+            showLoading(true);
+            clearMessages();
+
+            try {
+                const { collection, getDocs, query, where } = window.firestoreUtils;
+                const usersRef = collection(window.db, 'users');
+                const q = query(usersRef, where("username", "==", username));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    showError('Username not found');
+                    showLoading(false);
+                    return;
+                }
+
+                let userFound = false;
+                querySnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.password === password) {
+                        currentUser = {
+                            id: doc.id,
+                            ...userData
+                        };
+                        userFound = true;
+                    }
+                });
+
+                if (userFound) {
+                    localStorage.setItem('familyBettingUser', JSON.stringify(currentUser));
+                    showSuccess('Login successful! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    showError('Incorrect password');
+                }
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Login failed. Please try again.');
+            }
+
+            showLoading(false);
+        }
+
+        // Create account function
+        async function handleCreateAccount() {
+            const username = document.getElementById('createUsername').value.trim();
+            const password = document.getElementById('createPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!username || !password || !confirmPassword) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            if (username.length < 3) {
+                showError('Username must be at least 3 characters long');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters long');
+                return;
+            }
+
+            showLoading(true);
+            clearMessages();
+
+            try {
+                const { collection, getDocs, query, where, addDoc } = window.firestoreUtils;
+                
+                // Check if username already exists
+                const usersRef = collection(window.db, 'users');
+                const q = query(usersRef, where("username", "==", username));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    showError('Username already exists');
+                    showLoading(false);
+                    return;
+                }
+
+                // Get next userID by counting existing users
+                const allUsersSnapshot = await getDocs(usersRef);
+                const nextUserID = allUsersSnapshot.size;
+
+                // Create new user
+                const newUserData = {
+                    username: username,
+                    password: password, // In production, this should be hashed
+                    balance: 10000,
+                    isAdmin: 0,
+                    createdAt: new Date().toISOString(),
+                    lastBegTime: null,
+                    totalWinnings: 0,
+                    totalLosses: 0,
+                    betsWon: 0,
+                    betsLost: 0
+                };
+
+                await window.firestoreUtils.setDoc(window.firestoreUtils.doc(window.db, 'users', nextUserID.toString()), newUserData);
+
+                showSuccess('Account created successfully! You can now login.');
+                
+                // Clear form and switch to login
+                setTimeout(() => {
+                    document.getElementById('createUsername').value = '';
+                    document.getElementById('createPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    showLogin();
+                }, 2000);
+
+            } catch (error) {
+                console.error('Account creation error:', error);
+                showError('Failed to create account. Please try again.');
+            }
+
+            showLoading(false);
+        }
+
+        // Enter key support
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                if (!document.getElementById('loginForm').classList.contains('hidden')) {
+                    handleLogin();
+                } else if (!document.getElementById('createForm').classList.contains('hidden')) {
+                    handleCreateAccount();
+                }
+            }
+        });
+
+        // Check if user is already logged in
+        window.addEventListener('load', function() {
+            const savedUser = localStorage.getItem('familyBettingUser');
+            if (savedUser) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>
