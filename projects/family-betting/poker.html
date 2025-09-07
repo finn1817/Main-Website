@@ -515,6 +515,173 @@
             color: #000;
         }
 
+        /* New Lobby Sections */
+        .game-creation-section, .available-games-section, .join-by-id-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 212, 170, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            color: #00d4aa;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .game-id-display {
+            background: rgba(0, 212, 170, 0.1);
+            border: 2px solid #00d4aa;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .game-id-title {
+            color: #00d4aa;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .game-id-code {
+            font-size: 2em;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            letter-spacing: 2px;
+        }
+
+        .game-id-subtitle {
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .game-waiting-message {
+            color: #ffaa00;
+            font-style: italic;
+        }
+
+        .available-games-list {
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .available-game-item {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-info {
+            flex: 1;
+        }
+
+        .game-creator {
+            color: #00d4aa;
+            font-weight: bold;
+        }
+
+        .game-buyin {
+            color: #ffaa00;
+            margin-left: 10px;
+        }
+
+        .game-time {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .join-game-btn {
+            background: #00d4aa;
+            color: #000;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .join-game-btn:hover {
+            background: #00ffcc;
+            transform: scale(1.05);
+        }
+
+        .no-games-message {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .refresh-games-btn {
+            background: rgba(0, 212, 170, 0.2);
+            color: #00d4aa;
+            border: 2px solid #00d4aa;
+            border-radius: 10px;
+            padding: 10px 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-games-btn:hover {
+            background: rgba(0, 212, 170, 0.3);
+        }
+
+        .join-id-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #gameIdInput {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: #fff;
+            font-size: 1.1em;
+            text-transform: uppercase;
+        }
+
+        #gameIdInput:focus {
+            border-color: #00d4aa;
+            outline: none;
+        }
+
+        .join-id-btn {
+            background: #00d4aa;
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .join-id-btn:hover {
+            background: #00ffcc;
+            transform: scale(1.05);
+        }
+
         /* Game Messages */
         .game-message {
             background: rgba(0, 0, 0, 0.9);
@@ -946,18 +1113,39 @@
                 </div>
             </div>
 
-            <div class="lobby-options">
+            <!-- Game Creation Section -->
+            <div class="game-creation-section">
                 <div class="lobby-option" onclick="createGame()">
                     <div class="option-title">🚀 Create New Game</div>
                     <div class="option-description">
-                        Start a new poker game and invite a family member to join your table.
+                        Start a new poker game and get a Game ID to share with family.
                     </div>
                 </div>
-                <div class="lobby-option" onclick="joinGame()">
-                    <div class="option-title">🎯 Join Existing Game</div>
-                    <div class="option-description">
-                        Join an existing game created by another family member.
-                    </div>
+                
+                <!-- Game ID Display (shown after creating) -->
+                <div class="game-id-display" id="gameIdDisplay" style="display: none;">
+                    <div class="game-id-title">🎯 Your Game ID:</div>
+                    <div class="game-id-code" id="gameIdCode">ABCD1234</div>
+                    <div class="game-id-subtitle">Share this ID with family to join your game!</div>
+                    <div class="game-waiting-message">Waiting for opponent to join...</div>
+                </div>
+            </div>
+
+            <!-- Available Games Section -->
+            <div class="available-games-section">
+                <div class="section-title">🎮 Available Games</div>
+                <div class="available-games-list" id="availableGamesList">
+                    <div class="no-games-message">No games available. Create one or refresh!</div>
+                </div>
+                <div class="refresh-games-btn" onclick="loadAvailableGames()">🔄 Refresh Games</div>
+            </div>
+
+            <!-- Join by Game ID Section -->
+            <div class="join-by-id-section">
+                <div class="section-title">🔗 Join by Game ID</div>
+                <div class="join-id-input-group">
+                    <input type="text" id="gameIdInput" placeholder="Enter Game ID (e.g., ABCD1234)" maxlength="8">
+                    <div class="join-id-btn" onclick="joinGameById()">Join Game</div>
                 </div>
             </div>
         </div>
@@ -1425,6 +1613,7 @@
             // Initialize features
             toggleFeature('chat'); // Start with chat panel open
             loadHandHistory(); // Load user's poker history
+            loadAvailableGames(); // Load available games to join
             
             // Set up chat input enter key
             document.getElementById('chatInput').addEventListener('keypress', function(e) {
@@ -1497,8 +1686,6 @@
         // Create new game
         async function createGame() {
             console.log('createGame called');
-            console.log('selectedBuyIn:', selectedBuyIn);
-            console.log('currentUser.balance:', currentUser ? currentUser.balance : 'currentUser is null');
             
             if (!currentUser) {
                 showNotification('User not logged in!', 'error');
@@ -1511,7 +1698,6 @@
             }
 
             try {
-                console.log('Attempting to create game...');
                 const { collection, addDoc } = window.firestoreUtils;
                 
                 if (!collection || !addDoc) {
@@ -1526,34 +1712,32 @@
                     createdAt: new Date().toISOString(),
                     pot: 0,
                     phase: 'waiting',
-                    smallBlind: Math.floor(selectedBuyIn * 0.05), // 5% of buy-in
-                    bigBlind: Math.floor(selectedBuyIn * 0.1)     // 10% of buy-in
+                    smallBlind: Math.floor(selectedBuyIn * 0.05),
+                    bigBlind: Math.floor(selectedBuyIn * 0.1)
                 };
-
-                console.log('Game data:', gameData);
                 
-                // Use the correct Firestore syntax
                 const pokerGamesRef = collection(window.db, 'pokerGames');
                 const gameDoc = await addDoc(pokerGamesRef, gameData);
-                console.log('Game created with ID:', gameDoc.id);
                 
                 gameState.gameId = gameDoc.id;
                 currentGame = gameDoc.id;
 
+                // Generate a short, shareable Game ID (first 8 characters)
+                const shortGameId = gameDoc.id.substring(0, 8).toUpperCase();
+
+                // Show the Game ID display section
+                document.getElementById('gameIdDisplay').style.display = 'block';
+                document.getElementById('gameIdCode').textContent = shortGameId;
+
                 // Initialize chat and spectator features
                 loadChatMessages();
                 loadSpectators();
-                joinAsSpectator(); // Creator becomes spectator until game starts
-
-                // Hide lobby and show waiting message
-                document.getElementById('gameLobby').style.display = 'none';
-                document.getElementById('gameMessage').style.display = 'block';
-                document.getElementById('gameMessage').textContent = 'Game created! Waiting for opponent to join... 🎲';
+                joinAsSpectator();
 
                 // Start listening for game updates
                 startGameListener();
 
-                showNotification('Game created! Share your game ID: ' + gameDoc.id.substring(0, 8), 'success');
+                showNotification(`Game created! Game ID: ${shortGameId}`, 'success');
 
             } catch (error) {
                 console.error('Error creating game:', error);
@@ -1622,6 +1806,206 @@
                 console.error('Error joining game:', error);
                 showNotification('Failed to join game', 'error');
             }
+        }
+
+        // Load available games to join
+        async function loadAvailableGames() {
+            try {
+                const { collection, getDocs, query, where } = window.firestoreUtils;
+                
+                const gamesRef = collection(window.db, 'pokerGames');
+                const q = query(gamesRef, where("status", "==", "waiting_for_opponent"));
+                const querySnapshot = await getDocs(q);
+
+                const gamesList = document.getElementById('availableGamesList');
+                gamesList.innerHTML = '';
+
+                if (querySnapshot.empty) {
+                    gamesList.innerHTML = '<div class="no-games-message">No games available. Create one or refresh!</div>';
+                    return;
+                }
+
+                querySnapshot.forEach(doc => {
+                    const gameData = doc.data();
+                    const gameId = doc.id.substring(0, 8).toUpperCase();
+                    const timeAgo = getTimeAgo(new Date(gameData.createdAt));
+                    
+                    // Don't show games created by current user
+                    if (gameData.creator === currentUser.id) return;
+
+                    const gameItem = document.createElement('div');
+                    gameItem.className = 'available-game-item';
+                    gameItem.innerHTML = `
+                        <div class="game-info">
+                            <div class="game-creator">${gameData.creatorName}</div>
+                            <span class="game-buyin">$${gameData.buyIn}</span>
+                            <div class="game-time">${timeAgo}</div>
+                        </div>
+                        <button class="join-game-btn" onclick="joinSpecificGame('${doc.id}')">
+                            Join Game
+                        </button>
+                    `;
+                    gamesList.appendChild(gameItem);
+                });
+
+            } catch (error) {
+                console.error('Error loading available games:', error);
+                showNotification('Failed to load available games', 'error');
+            }
+        }
+
+        // Join a specific game by full ID
+        async function joinSpecificGame(gameId) {
+            try {
+                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                const gameDoc = await getDoc(doc(window.db, 'pokerGames', gameId));
+                if (!gameDoc.exists()) {
+                    showNotification('Game not found!', 'error');
+                    return;
+                }
+
+                const gameData = gameDoc.data();
+
+                if (gameData.status !== 'waiting_for_opponent') {
+                    showNotification('This game is no longer available!', 'warning');
+                    loadAvailableGames(); // Refresh the list
+                    return;
+                }
+
+                if (gameData.creator === currentUser.id) {
+                    showNotification('You cannot join your own game!', 'warning');
+                    return;
+                }
+
+                if (gameData.buyIn > currentUser.balance) {
+                    showNotification('Insufficient funds for this buy-in!', 'error');
+                    return;
+                }
+
+                // Update buy-in to match the game
+                selectedBuyIn = gameData.buyIn;
+                updateBuyInSelection(selectedBuyIn);
+
+                // Update game with opponent
+                await updateDoc(doc(window.db, 'pokerGames', gameId), {
+                    opponent: currentUser.id,
+                    opponentName: currentUser.username,
+                    status: 'active',
+                    updatedAt: new Date().toISOString()
+                });
+
+                gameState.gameId = gameId;
+                currentGame = gameId;
+
+                // Initialize chat and spectator features
+                loadChatMessages();
+                loadSpectators();
+                joinAsSpectator();
+
+                // Hide lobby and start game
+                document.getElementById('gameLobby').style.display = 'none';
+                document.getElementById('pokerTable').style.display = 'flex';
+                document.getElementById('gameMessage').style.display = 'block';
+                document.getElementById('gameMessage').textContent = 'Game joined! Dealing cards... 🃏';
+
+                // Start listening for game updates
+                startGameListener();
+
+                showNotification(`Joined ${gameData.creatorName}'s game!`, 'success');
+
+            } catch (error) {
+                console.error('Error joining specific game:', error);
+                showNotification('Failed to join game', 'error');
+            }
+        }
+
+        // Join game by Game ID
+        async function joinGameById() {
+            const gameIdInput = document.getElementById('gameIdInput');
+            const shortGameId = gameIdInput.value.trim().toUpperCase();
+
+            if (!shortGameId) {
+                showNotification('Please enter a Game ID!', 'warning');
+                return;
+            }
+
+            if (shortGameId.length !== 8) {
+                showNotification('Game ID should be 8 characters!', 'warning');
+                return;
+            }
+
+            try {
+                const { collection, getDocs, query, where } = window.firestoreUtils;
+                
+                // Find game with matching ID start
+                const gamesRef = collection(window.db, 'pokerGames');
+                const querySnapshot = await getDocs(gamesRef);
+
+                let foundGame = null;
+                querySnapshot.forEach(doc => {
+                    if (doc.id.substring(0, 8).toUpperCase() === shortGameId) {
+                        foundGame = { id: doc.id, data: doc.data() };
+                    }
+                });
+
+                if (!foundGame) {
+                    showNotification('Game ID not found!', 'error');
+                    return;
+                }
+
+                if (foundGame.data.status !== 'waiting_for_opponent') {
+                    showNotification('This game is no longer available!', 'warning');
+                    return;
+                }
+
+                if (foundGame.data.creator === currentUser.id) {
+                    showNotification('You cannot join your own game!', 'warning');
+                    return;
+                }
+
+                // Join the found game
+                await joinSpecificGame(foundGame.id);
+                
+                // Clear the input
+                gameIdInput.value = '';
+
+            } catch (error) {
+                console.error('Error joining game by ID:', error);
+                showNotification('Failed to join game', 'error');
+            }
+        }
+
+        // Helper function to get time ago
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours < 24) return `${diffHours}h ago`;
+            
+            const diffDays = Math.floor(diffHours / 24);
+            return `${diffDays}d ago`;
+        }
+
+        // Update buy-in selection to match a specific amount
+        function updateBuyInSelection(amount) {
+            // Remove selected class from all buttons
+            document.querySelectorAll('.buy-in-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selected class to matching button
+            const matchingBtn = document.querySelector(`.buy-in-btn[data-amount="${amount}"]`);
+            if (matchingBtn) {
+                matchingBtn.classList.add('selected');
+            }
+            
+            selectedBuyIn = amount;
         }
 
         // Start game listener
@@ -2021,6 +2405,13 @@
 
         // Auto-refresh user stats every 30 seconds
         setInterval(updateUserStats, 30000);
+        
+        // Auto-refresh available games every 15 seconds
+        setInterval(() => {
+            if (document.getElementById('gameLobby').style.display !== 'none') {
+                loadAvailableGames();
+            }
+        }, 15000);
     </script>
 </body>
 </html>
