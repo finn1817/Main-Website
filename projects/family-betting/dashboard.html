@@ -686,7 +686,7 @@
             <button class="section-btn" onclick="openSportsModal()">
                 <div class="section-icon">🏈</div>
                 <div>Sports Betting</div>
-                <div style="font-size: 0.8em; opacity: 0.8;">NFL, NBA, NHL, NLL</div>
+                <div style="font-size: 0.8em; opacity: 0.8;">NFL, NHL, College Football</div>
             </button>
 
             <button class="section-btn" onclick="openYesNoModal()">
@@ -705,6 +705,12 @@
                 <div class="section-icon">⬜</div>
                 <div>Game Squares</div>
                 <div style="font-size: 0.8em; opacity: 0.8;">Super Bowl style</div>
+            </button>
+
+            <button class="section-btn" onclick="openMarchMadnessModal()">
+                <div class="section-icon">🏀</div>
+                <div>March Madness</div>
+                <div style="font-size: 0.8em; opacity: 0.8;">Bracket Challenge</div>
             </button>
         </div>
 
@@ -742,6 +748,14 @@
                 <div class="card-title">🎯 Active Custom Bets</div>
                 <div id="customBetsList">
                     <p style="text-align: center; color: #666; padding: 20px;">No active bets</p>
+                </div>
+            </div>
+
+            <!-- Sports Bets -->
+            <div class="card sports-bets">
+                <div class="card-title">🏈 Active Sports Bets</div>
+                <div id="sportsBetsList">
+                    <p style="text-align: center; color: #666; padding: 20px;">No active sports bets</p>
                 </div>
             </div>
         </div>
@@ -809,6 +823,7 @@
         let chatListener = null;
         let requestsListener = null;
         let customBetsListener = null;
+        let sportsBetsListener = null;
 
         // Initialize Dashboard
         async function initializeDashboard() {
@@ -836,6 +851,7 @@
             startChatListener();
             startRequestsListener();
             startCustomBetsListener();
+            startSportsBetsListener();
             
             // Add welcome activity
             addActivityItem(`👋 Welcome back, ${currentUser.username}!`);
@@ -857,15 +873,17 @@
                     // Update UI
                     document.getElementById('userBalance').textContent = '$' + userData.balance.toLocaleString();
                     
-                    // Calculate combined betting stats (custom bets + blackjack)
+                    // Calculate combined betting stats (custom bets + blackjack + sports bets)
                     const customBetsWon = userData.betsWon || 0;
                     const customBetsLost = userData.betsLost || 0;
                     const blackjackWins = userData.blackjackWins || 0;
                     const blackjackHands = userData.blackjackHands || 0;
                     const blackjackLosses = blackjackHands - blackjackWins;
+                    const sportsBetsWon = userData.sportsBetsWon || 0;
+                    const sportsBetsLost = userData.sportsBetsLost || 0;
                     
-                    const totalBets = customBetsWon + customBetsLost + blackjackHands;
-                    const totalWins = customBetsWon + blackjackWins;
+                    const totalBets = customBetsWon + customBetsLost + blackjackHands + sportsBetsWon + sportsBetsLost;
+                    const totalWins = customBetsWon + blackjackWins + sportsBetsWon;
                     
                     document.getElementById('totalBets').textContent = totalBets;
                     
@@ -890,7 +908,8 @@
                     // Combine all winnings
                     const customWinnings = userData.totalWinnings || 0;
                     const blackjackWinnings = userData.blackjackWinnings || 0;
-                    const combinedWinnings = customWinnings + blackjackWinnings;
+                    const sportsWinnings = userData.sportsWinnings || 0;
+                    const combinedWinnings = customWinnings + blackjackWinnings + sportsWinnings;
                     
                     const totalWinningsElement = document.getElementById('totalWinnings');
                     totalWinningsElement.textContent = '$' + combinedWinnings.toLocaleString();
@@ -899,7 +918,9 @@
                     
                     // Calculate net profit (winnings - losses)
                     const totalLosses = userData.totalLosses || 0;
-                    const netProfit = combinedWinnings - totalLosses;
+                    const sportsLosses = userData.sportsLosses || 0;
+                    const allLosses = totalLosses + sportsLosses;
+                    const netProfit = combinedWinnings - allLosses;
                     const netProfitElement = document.getElementById('netProfit');
                     netProfitElement.textContent = '$' + netProfit.toLocaleString();
                     netProfitElement.className = 'stat-value';
@@ -1084,6 +1105,102 @@
                     betsList.appendChild(betDiv);
                 });
             });
+        }
+
+        // Sports Bets functionality  
+        function startSportsBetsListener() {
+            const { collection, query, where, onSnapshot, or } = window.firestoreUtils;
+            const betsRef = collection(window.db, 'sportsBets');
+            
+            // Listen for bets where user is creator or opponent
+            const q = query(betsRef, or(
+                where("creatorId", "==", currentUser.id),
+                where("opponentId", "==", currentUser.id)
+            ));
+            
+            sportsBetsListener = onSnapshot(q, (snapshot) => {
+                const betsList = document.getElementById('sportsBetsList');
+                betsList.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    betsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No active sports bets</p>';
+                    return;
+                }
+                
+                snapshot.forEach((doc) => {
+                    const betData = doc.data();
+                    const betDiv = createSportsBetElement(doc.id, betData);
+                    betsList.appendChild(betDiv);
+                });
+            });
+        }
+
+        function createSportsBetElement(betId, betData) {
+            const div = document.createElement('div');
+            const isCreator = betData.creatorId === currentUser.id;
+            const now = new Date();
+            const gameDate = new Date(betData.gameTime);
+            const isExpired = now > gameDate;
+            
+            let statusClass = 'pending';
+            if (isExpired && betData.status === 'pending') {
+                statusClass = 'expired';
+            } else if (betData.status === 'accepted') {
+                statusClass = 'accepted';
+            }
+            
+            div.className = `bet-item ${statusClass}`;
+            
+            let actionsHtml = '';
+            if (betData.status === 'pending' && !isExpired) {
+                if (isCreator) {
+                    actionsHtml = `
+                        <div class="bet-actions">
+                            <button class="btn btn-deny" onclick="cancelSportsBet('${betId}')">Cancel Bet</button>
+                        </div>
+                    `;
+                } else {
+                    actionsHtml = `
+                        <div class="bet-actions">
+                            <button class="btn btn-approve" onclick="acceptSportsBet('${betId}')">Accept Bet</button>
+                            <button class="btn btn-deny" onclick="declineSportsBet('${betId}')">Decline</button>
+                        </div>
+                    `;
+                }
+            } else if (betData.status === 'accepted') {
+                actionsHtml = `
+                    <div class="bet-actions">
+                        <button class="btn btn-approve" onclick="settleSportsBet('${betId}', '${isCreator ? 'creator_won' : 'opponent_won'}')">I Won!</button>
+                        <button class="btn btn-deny" onclick="settleSportsBet('${betId}', '${isCreator ? 'opponent_won' : 'creator_won'}')">They Won</button>
+                    </div>
+                `;
+            }
+            
+            // Add admin remove button for completed bets
+            const isCompleted = betData.status.includes('_won') || betData.status === 'cancelled' || 
+                               betData.status === 'declined' || (betData.status === 'pending' && isExpired);
+            
+            if (isCompleted && currentUser && currentUser.isAdmin === 1) {
+                actionsHtml += `
+                    <div class="bet-actions" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                        <button class="btn btn-admin-remove" onclick="adminRemoveSportsBet('${betId}')">🗑️ Admin Remove</button>
+                    </div>
+                `;
+            }
+            
+            div.innerHTML = `
+                <div class="bet-title">🏈 ${betData.league}: ${betData.matchup}</div>
+                <div class="bet-details">
+                    <p><strong>Challenger's Pick:</strong> ${betData.creatorPick}</p>
+                    <p><strong>Challenger:</strong> ${betData.creatorUsername}</p>
+                    <p><strong>Amount:</strong> <span class="bet-amount">$${betData.amount}</span></p>
+                    <p><strong>Game Time:</strong> ${new Date(betData.gameTime).toLocaleString()}</p>
+                    <span class="bet-status ${statusClass}">${isExpired && betData.status === 'pending' ? 'expired' : betData.status}</span>
+                </div>
+                ${actionsHtml}
+            `;
+            
+            return div;
         }
 
         function createBetElement(betId, betData) {
@@ -1300,6 +1417,177 @@
             }
         }
 
+        // Sports Bet Action Functions
+        async function acceptSportsBet(betId) {
+            try {
+                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                const betDoc = await getDoc(doc(window.db, 'sportsBets', betId));
+                if (!betDoc.exists()) return;
+                
+                const betData = betDoc.data();
+                
+                if (betData.amount > currentUser.balance) {
+                    showNotification('Insufficient funds to accept this sports bet!', 'error');
+                    return;
+                }
+                
+                // Update bet status
+                await updateDoc(doc(window.db, 'sportsBets', betId), {
+                    status: 'accepted',
+                    acceptedAt: new Date().toISOString()
+                });
+                
+                // Deduct money from opponent's balance
+                await updateUserBalance(-betData.amount);
+                
+                showNotification('Sports bet accepted! Game on! 🏈', 'success');
+                addActivityItem(`🏈 Accepted sports bet: ${betData.matchup} ($${betData.amount})`);
+                
+            } catch (error) {
+                console.error('Error accepting sports bet:', error);
+                showNotification('Failed to accept sports bet', 'error');
+            }
+        }
+
+        async function declineSportsBet(betId) {
+            try {
+                const { doc, updateDoc } = window.firestoreUtils;
+                
+                await updateDoc(doc(window.db, 'sportsBets', betId), {
+                    status: 'declined',
+                    declinedAt: new Date().toISOString()
+                });
+                
+                showNotification('Sports bet declined', 'success');
+                
+            } catch (error) {
+                console.error('Error declining sports bet:', error);
+                showNotification('Failed to decline sports bet', 'error');
+            }
+        }
+
+        async function cancelSportsBet(betId) {
+            try {
+                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                const betDoc = await getDoc(doc(window.db, 'sportsBets', betId));
+                if (!betDoc.exists()) return;
+                
+                const betData = betDoc.data();
+                
+                await updateDoc(doc(window.db, 'sportsBets', betId), {
+                    status: 'cancelled',
+                    cancelledAt: new Date().toISOString()
+                });
+                
+                // Refund money to creator
+                await updateUserBalance(betData.amount);
+                
+                showNotification('Sports bet cancelled and refunded', 'success');
+                
+            } catch (error) {
+                console.error('Error cancelling sports bet:', error);
+                showNotification('Failed to cancel sports bet', 'error');
+            }
+        }
+
+        async function settleSportsBet(betId, result) {
+            try {
+                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                const betDoc = await getDoc(doc(window.db, 'sportsBets', betId));
+                if (!betDoc.exists()) return;
+                
+                const betData = betDoc.data();
+                
+                await updateDoc(doc(window.db, 'sportsBets', betId), {
+                    status: result,
+                    winner: result.includes('creator') ? betData.creatorId : betData.opponentId,
+                    settledAt: new Date().toISOString()
+                });
+                
+                const winnerAmount = betData.amount * 2;
+                
+                if (result === 'creator_won') {
+                    if (betData.creatorId === currentUser.id) {
+                        await updateUserBalance(winnerAmount);
+                        showNotification(`You won the sports bet! +$${winnerAmount} 🏆`, 'success');
+                        addActivityItem(`🏆 Won sports bet: ${betData.matchup} (+$${winnerAmount})`);
+                    }
+                    await updateSportsBetStats(betData.creatorId, true, betData.amount);
+                    await updateSportsBetStats(betData.opponentId, false, betData.amount);
+                } else {
+                    if (betData.opponentId === currentUser.id) {
+                        await updateUserBalance(winnerAmount);
+                        showNotification(`You won the sports bet! +$${winnerAmount} 🏆`, 'success');
+                        addActivityItem(`🏆 Won sports bet: ${betData.matchup} (+$${winnerAmount})`);
+                    }
+                    await updateSportsBetStats(betData.opponentId, true, betData.amount);
+                    await updateSportsBetStats(betData.creatorId, false, betData.amount);
+                }
+                
+            } catch (error) {
+                console.error('Error settling sports bet:', error);
+                showNotification('Failed to settle sports bet', 'error');
+            }
+        }
+
+        async function adminRemoveSportsBet(betId) {
+            // Double-check admin status
+            if (!currentUser || currentUser.isAdmin !== 1) {
+                showNotification('Access denied: Admin privileges required', 'error');
+                return;
+            }
+
+            // Confirm deletion
+            if (!confirm('Are you sure you want to permanently remove this sports bet? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const { doc, deleteDoc } = window.firestoreUtils;
+                
+                await deleteDoc(doc(window.db, 'sportsBets', betId));
+                showNotification('Sports bet successfully removed by admin', 'success');
+                
+            } catch (error) {
+                console.error('Error removing sports bet:', error);
+                showNotification('Failed to remove sports bet', 'error');
+            }
+        }
+
+        async function updateSportsBetStats(userId, won, amount) {
+            try {
+                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                const userDoc = await getDoc(doc(window.db, 'users', userId));
+                if (!userDoc.exists()) return;
+                
+                const userData = userDoc.data();
+                
+                const currentSportsBetsWon = userData.sportsBetsWon || 0;
+                const currentSportsBetsLost = userData.sportsBetsLost || 0;
+                const currentSportsWinnings = userData.sportsWinnings || 0;
+                const currentSportsLosses = userData.sportsLosses || 0;
+                
+                if (won) {
+                    await updateDoc(doc(window.db, 'users', userId), {
+                        sportsBetsWon: currentSportsBetsWon + 1,
+                        sportsWinnings: currentSportsWinnings + amount
+                    });
+                } else {
+                    await updateDoc(doc(window.db, 'users', userId), {
+                        sportsBetsLost: currentSportsBetsLost + 1,
+                        sportsLosses: currentSportsLosses + amount
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Error updating sports bet stats:', error);
+            }
+        }
+
         async function updateCustomBetStats(userId, won, amount) {
             try {
                 const { doc, getDoc, updateDoc } = window.firestoreUtils;
@@ -1338,7 +1626,81 @@
 
         // Modal functions (will be implemented for each betting type)
         function openSportsModal() {
-            showNotification('Sports betting coming soon! 🏈', 'warning');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h2 class="modal-title">🏈 Sports Betting</h2>
+                    <form id="sportsBetForm">
+                        <div class="form-group">
+                            <label for="sportsLeague">League</label>
+                            <select id="sportsLeague" required onchange="loadTeamsForLeague()">
+                                <option value="">Select a league...</option>
+                                <option value="nfl">🏈 NFL</option>
+                                <option value="nhl">🏒 NHL</option>
+                                <option value="ncaaf">🏈 College Football</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="teamSelectionGroup" style="display: none;">
+                            <label for="team1">Team 1</label>
+                            <select id="team1" required onchange="updateTeam2Options()">
+                                <option value="">Select Team 1...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="team2Group" style="display: none;">
+                            <label for="team2">Team 2 (vs)</label>
+                            <select id="team2" required>
+                                <option value="">Select Team 2...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="betSelectionGroup" style="display: none;">
+                            <label for="betType">Your Bet</label>
+                            <select id="betType" required>
+                                <option value="">Choose your pick...</option>
+                                <option id="team1WinOption" value="">Team 1 Wins</option>
+                                <option id="team2WinOption" value="">Team 2 Wins</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="opponentGroup" style="display: none;">
+                            <label for="sportsOpponent">Challenge User</label>
+                            <select id="sportsOpponent" required>
+                                <option value="">Select opponent...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="amountGroup" style="display: none;">
+                            <label for="sportsAmount">Bet Amount ($)</label>
+                            <input type="number" id="sportsAmount" min="1" max="${currentUser?.balance || 0}" required>
+                        </div>
+
+                        <div class="form-group" id="gameTimeGroup" style="display: none;">
+                            <label for="gameTime">Game Date/Time</label>
+                            <input type="datetime-local" id="gameTime" required>
+                        </div>
+
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-deny" onclick="closeModal(this)">Cancel</button>
+                            <button type="submit" class="btn btn-approve">Place Sports Bet</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            loadUsersForSportsBet();
+            
+            // Add form submission handler
+            document.getElementById('sportsBetForm').addEventListener('submit', submitSportsBet);
+        }
+
+        function openMarchMadnessModal() {
+            showNotification('March Madness Bracket Challenge coming soon! 🏀�', 'warning');
         }
 
         function openYesNoModal() {
@@ -1592,6 +1954,70 @@
             }
         }
 
+        async function submitSportsBet(event) {
+            event.preventDefault();
+            
+            const league = document.getElementById('sportsLeague').value;
+            const team1 = document.getElementById('team1').value;
+            const team2 = document.getElementById('team2').value;
+            const betType = document.getElementById('betType').value;
+            const opponentId = document.getElementById('sportsOpponent').value;
+            const amount = parseInt(document.getElementById('sportsAmount').value);
+            const gameTime = document.getElementById('gameTime').value;
+            
+            if (!league || !team1 || !team2 || !betType || !opponentId || !amount || !gameTime) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (amount > currentUser.balance) {
+                showNotification('Insufficient funds!', 'error');
+                return;
+            }
+            
+            try {
+                const { collection, addDoc } = window.firestoreUtils;
+                
+                const gameDate = new Date(gameTime);
+                if (gameDate <= new Date()) {
+                    showNotification('Game time must be in the future!', 'error');
+                    return;
+                }
+                
+                const sportsBetData = {
+                    type: 'sports',
+                    league: league,
+                    team1: team1,
+                    team2: team2,
+                    matchup: `${team1} vs ${team2}`,
+                    creatorPick: betType,
+                    amount: amount,
+                    creatorId: currentUser.id,
+                    creatorUsername: currentUser.username,
+                    opponentId: opponentId,
+                    gameTime: gameTime,
+                    status: 'pending', // pending, accepted, creator_won, opponent_won, cancelled, expired
+                    createdAt: new Date().toISOString(),
+                    expiresAt: gameDate.toISOString(), // Expires when game starts
+                    winner: null,
+                    settledAt: null
+                };
+                
+                await addDoc(collection(window.db, 'sportsBets'), sportsBetData);
+                
+                // Deduct money from creator's balance
+                await updateUserBalance(-amount);
+                
+                showNotification('Sports bet created successfully! 🏈', 'success');
+                addActivityItem(`🏈 Created sports bet: ${team1} vs ${team2} ($${amount})`);
+                closeModal(document.querySelector('.modal'));
+                
+            } catch (error) {
+                console.error('Error creating sports bet:', error);
+                showNotification('Failed to create sports bet', 'error');
+            }
+        }
+
         async function updateUserBalance(amount) {
             currentUser.balance += amount;
             localStorage.setItem('familyBettingUser', JSON.stringify(currentUser));
@@ -1605,6 +2031,134 @@
                 document.getElementById('userBalance').textContent = '$' + currentUser.balance.toLocaleString();
             } catch (error) {
                 console.error('Error updating balance:', error);
+            }
+        }
+
+        // Sports Betting Functions
+        const sportsTeams = {
+            nfl: [
+                'Arizona Cardinals', 'Atlanta Falcons', 'Baltimore Ravens', 'Buffalo Bills',
+                'Carolina Panthers', 'Chicago Bears', 'Cincinnati Bengals', 'Cleveland Browns',
+                'Dallas Cowboys', 'Denver Broncos', 'Detroit Lions', 'Green Bay Packers',
+                'Houston Texans', 'Indianapolis Colts', 'Jacksonville Jaguars', 'Kansas City Chiefs',
+                'Las Vegas Raiders', 'Los Angeles Chargers', 'Los Angeles Rams', 'Miami Dolphins',
+                'Minnesota Vikings', 'New England Patriots', 'New Orleans Saints', 'New York Giants',
+                'New York Jets', 'Philadelphia Eagles', 'Pittsburgh Steelers', 'San Francisco 49ers',
+                'Seattle Seahawks', 'Tampa Bay Buccaneers', 'Tennessee Titans', 'Washington Commanders'
+            ],
+            nhl: [
+                'Anaheim Ducks', 'Arizona Coyotes', 'Boston Bruins', 'Buffalo Sabres',
+                'Calgary Flames', 'Carolina Hurricanes', 'Chicago Blackhawks', 'Colorado Avalanche',
+                'Columbus Blue Jackets', 'Dallas Stars', 'Detroit Red Wings', 'Edmonton Oilers',
+                'Florida Panthers', 'Los Angeles Kings', 'Minnesota Wild', 'Montreal Canadiens',
+                'Nashville Predators', 'New Jersey Devils', 'New York Islanders', 'New York Rangers',
+                'Ottawa Senators', 'Philadelphia Flyers', 'Pittsburgh Penguins', 'San Jose Sharks',
+                'Seattle Kraken', 'St. Louis Blues', 'Tampa Bay Lightning', 'Toronto Maple Leafs',
+                'Vancouver Canucks', 'Vegas Golden Knights', 'Washington Capitals', 'Winnipeg Jets'
+            ],
+            ncaaf: [
+                'Alabama Crimson Tide', 'Georgia Bulldogs', 'Michigan Wolverines', 'Texas Longhorns',
+                'Ohio State Buckeyes', 'Penn State Nittany Lions', 'Oregon Ducks', 'USC Trojans',
+                'Clemson Tigers', 'Florida State Seminoles', 'Miami Hurricanes', 'Notre Dame Fighting Irish',
+                'Oklahoma Sooners', 'LSU Tigers', 'Auburn Tigers', 'Florida Gators',
+                'Tennessee Volunteers', 'Kentucky Wildcats', 'Wisconsin Badgers', 'Iowa Hawkeyes',
+                'Michigan State Spartans', 'Nebraska Cornhuskers', 'UCLA Bruins', 'Washington Huskies',
+                'Stanford Cardinal', 'Utah Utes', 'Arizona State Sun Devils', 'Colorado Buffaloes',
+                'Texas A&M Aggies', 'Arkansas Razorbacks', 'Mississippi State Bulldogs', 'Ole Miss Rebels'
+            ]
+        };
+
+        function loadTeamsForLeague() {
+            const league = document.getElementById('sportsLeague').value;
+            const team1Select = document.getElementById('team1');
+            const teamSelectionGroup = document.getElementById('teamSelectionGroup');
+            
+            if (!league) {
+                teamSelectionGroup.style.display = 'none';
+                return;
+            }
+
+            // Clear and populate team 1 options
+            team1Select.innerHTML = '<option value="">Select Team 1...</option>';
+            sportsTeams[league].forEach(team => {
+                const option = document.createElement('option');
+                option.value = team;
+                option.textContent = team;
+                team1Select.appendChild(option);
+            });
+
+            teamSelectionGroup.style.display = 'block';
+            document.getElementById('team2Group').style.display = 'none';
+            document.getElementById('betSelectionGroup').style.display = 'none';
+            document.getElementById('opponentGroup').style.display = 'none';
+            document.getElementById('amountGroup').style.display = 'none';
+            document.getElementById('gameTimeGroup').style.display = 'none';
+        }
+
+        function updateTeam2Options() {
+            const league = document.getElementById('sportsLeague').value;
+            const team1 = document.getElementById('team1').value;
+            const team2Select = document.getElementById('team2');
+            const team2Group = document.getElementById('team2Group');
+            
+            if (!team1) {
+                team2Group.style.display = 'none';
+                return;
+            }
+
+            // Clear and populate team 2 options (exclude team 1)
+            team2Select.innerHTML = '<option value="">Select Team 2...</option>';
+            sportsTeams[league].forEach(team => {
+                if (team !== team1) {
+                    const option = document.createElement('option');
+                    option.value = team;
+                    option.textContent = team;
+                    team2Select.appendChild(option);
+                }
+            });
+
+            team2Group.style.display = 'block';
+            
+            // Add onchange to team2 to trigger bet options
+            team2Select.onchange = updateBetOptions;
+        }
+
+        function updateBetOptions() {
+            const team1 = document.getElementById('team1').value;
+            const team2 = document.getElementById('team2').value;
+            
+            if (team1 && team2) {
+                document.getElementById('team1WinOption').value = team1;
+                document.getElementById('team1WinOption').textContent = `${team1} Wins`;
+                document.getElementById('team2WinOption').value = team2;
+                document.getElementById('team2WinOption').textContent = `${team2} Wins`;
+                
+                document.getElementById('betSelectionGroup').style.display = 'block';
+                document.getElementById('opponentGroup').style.display = 'block';
+                document.getElementById('amountGroup').style.display = 'block';
+                document.getElementById('gameTimeGroup').style.display = 'block';
+            }
+        }
+
+        async function loadUsersForSportsBet() {
+            try {
+                const { collection, getDocs } = window.firestoreUtils;
+                const usersSnapshot = await getDocs(collection(window.db, 'users'));
+                const sportsOpponentSelect = document.getElementById('sportsOpponent');
+                
+                sportsOpponentSelect.innerHTML = '<option value="">Select opponent...</option>';
+                
+                usersSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (doc.id !== currentUser.id) {
+                        const option = document.createElement('option');
+                        option.value = doc.id;
+                        option.textContent = userData.username;
+                        sportsOpponentSelect.appendChild(option);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
             }
         }
 
@@ -1651,6 +2205,7 @@
             if (chatListener) chatListener();
             if (requestsListener) requestsListener();
             if (customBetsListener) customBetsListener();
+            if (sportsBetsListener) sportsBetsListener();
             
             localStorage.removeItem('familyBettingUser');
             window.location.href = 'index.html';
