@@ -769,6 +769,16 @@
             </p>
             <button class="game-btn" onclick="openBlackjack()">Play Blackjack</button>
         </div>
+
+        <!-- Poker Section -->
+        <div class="card poker-section">
+            <div class="card-title">🎲 Heads-Up Poker</div>
+            <p style="margin-bottom: 20px; color: #666;">
+                Challenge family members to intense 1v1 poker battles! 
+                <br><strong>Texas Hold'em:</strong> Skill meets luck in ultimate showdowns! 🔥
+            </p>
+            <button class="game-btn" onclick="openPoker()">Play Poker</button>
+        </div>
     </div>
 
     <!-- Modals will be added here via JavaScript -->
@@ -1763,6 +1773,10 @@
 
         function openBlackjack() {
             window.location.href = 'blackjack.html';
+        }
+
+        function openPoker() {
+            window.location.href = 'poker.html';
         }
 
         function openRequestModal() {
