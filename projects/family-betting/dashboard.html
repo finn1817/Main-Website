@@ -314,6 +314,83 @@
             grid-column: 1 / -1;
         }
 
+        /* Custom Bets Section */
+        .custom-bets {
+            grid-column: 1 / -1;
+        }
+
+        .bet-item {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .bet-item.pending {
+            background: #fff3e0;
+            border-color: #ff9800;
+        }
+
+        .bet-item.accepted {
+            background: #e8f5e8;
+            border-color: #4caf50;
+        }
+
+        .bet-item.expired {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        .bet-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .bet-details {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .bet-amount {
+            font-weight: bold;
+            color: #4caf50;
+            font-size: 1.1em;
+        }
+
+        .bet-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .bet-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .bet-status.pending {
+            background: #ff9800;
+            color: white;
+        }
+
+        .bet-status.accepted {
+            background: #4caf50;
+            color: white;
+        }
+
+        .bet-status.expired {
+            background: #f44336;
+            color: white;
+        }
+
         .request-item {
             background: #fff3cd;
             border: 1px solid #ffeaa7;
@@ -628,6 +705,14 @@
                     <button class="btn btn-request" onclick="openRequestModal()">Request Money</button>
                 </div>
             </div>
+
+            <!-- Custom Bets -->
+            <div class="card custom-bets">
+                <div class="card-title">🎯 Active Custom Bets</div>
+                <div id="customBetsList">
+                    <p style="text-align: center; color: #666; padding: 20px;">No active bets</p>
+                </div>
+            </div>
         </div>
 
         <!-- Blackjack Section -->
@@ -653,6 +738,7 @@
             getDocs, 
             query, 
             where, 
+            or,
             doc, 
             setDoc, 
             updateDoc, 
@@ -678,7 +764,7 @@
         // Make Firebase available globally
         window.db = db;
         window.firestoreUtils = { 
-            collection, addDoc, getDocs, query, where, doc, setDoc, 
+            collection, addDoc, getDocs, query, where, or, doc, setDoc, 
             updateDoc, getDoc, onSnapshot, orderBy, serverTimestamp, deleteDoc 
         };
 
@@ -691,6 +777,7 @@
         let currentUser = null;
         let chatListener = null;
         let requestsListener = null;
+        let customBetsListener = null;
 
         // Initialize Dashboard
         async function initializeDashboard() {
@@ -717,6 +804,7 @@
             // Start real-time listeners
             startChatListener();
             startRequestsListener();
+            startCustomBetsListener();
             
             showNotification('Welcome back, ' + currentUser.username + '!', 'success');
         }
@@ -898,6 +986,195 @@
             }
         }
 
+        // Custom Bets functionality
+        function startCustomBetsListener() {
+            const { collection, query, where, onSnapshot, or } = window.firestoreUtils;
+            const betsRef = collection(window.db, 'customBets');
+            
+            // Listen for bets where user is creator or opponent
+            const q = query(betsRef, or(
+                where("creatorId", "==", currentUser.id),
+                where("opponentId", "==", currentUser.id)
+            ));
+            
+            customBetsListener = onSnapshot(q, (snapshot) => {
+                const betsList = document.getElementById('customBetsList');
+                betsList.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    betsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No active bets</p>';
+                    return;
+                }
+                
+                snapshot.forEach((doc) => {
+                    const betData = doc.data();
+                    const betDiv = createBetElement(doc.id, betData);
+                    betsList.appendChild(betDiv);
+                });
+            });
+        }
+
+        function createBetElement(betId, betData) {
+            const div = document.createElement('div');
+            const isCreator = betData.creatorId === currentUser.id;
+            const now = new Date();
+            const expiryDate = new Date(betData.expiresAt);
+            const isExpired = now > expiryDate;
+            
+            let statusClass = 'pending';
+            if (isExpired && betData.status === 'pending') {
+                statusClass = 'expired';
+            } else if (betData.status === 'accepted') {
+                statusClass = 'accepted';
+            }
+            
+            div.className = `bet-item ${statusClass}`;
+            
+            let actionsHtml = '';
+            if (betData.status === 'pending' && !isExpired) {
+                if (isCreator) {
+                    actionsHtml = `
+                        <div class="bet-actions">
+                            <button class="btn btn-deny" onclick="cancelCustomBet('${betId}')">Cancel Bet</button>
+                        </div>
+                    `;
+                } else {
+                    actionsHtml = `
+                        <div class="bet-actions">
+                            <button class="btn btn-approve" onclick="acceptCustomBet('${betId}')">Accept Bet</button>
+                            <button class="btn btn-deny" onclick="declineCustomBet('${betId}')">Decline</button>
+                        </div>
+                    `;
+                }
+            } else if (betData.status === 'accepted') {
+                actionsHtml = `
+                    <div class="bet-actions">
+                        <button class="btn btn-approve" onclick="settleBet('${betId}', '${isCreator ? 'creator_won' : 'opponent_won'}')">I Won!</button>
+                        <button class="btn btn-deny" onclick="settleBet('${betId}', '${isCreator ? 'opponent_won' : 'creator_won'}')">They Won</button>
+                    </div>
+                `;
+            }
+            
+            div.innerHTML = `
+                <div class="bet-title">${betData.title}</div>
+                <div class="bet-details">
+                    ${betData.description ? `<p>${betData.description}</p>` : ''}
+                    <p><strong>Challenger:</strong> ${betData.creatorUsername}</p>
+                    <p><strong>Amount:</strong> <span class="bet-amount">$${betData.amount}</span></p>
+                    <p><strong>Expires:</strong> ${new Date(betData.expiresAt).toLocaleString()}</p>
+                    <span class="bet-status ${statusClass}">${isExpired && betData.status === 'pending' ? 'expired' : betData.status}</span>
+                </div>
+                ${actionsHtml}
+            `;
+            
+            return div;
+        }
+
+        async function acceptCustomBet(betId) {
+            try {
+                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                const betDoc = await getDoc(doc(window.db, 'customBets', betId));
+                if (!betDoc.exists()) return;
+                
+                const betData = betDoc.data();
+                
+                if (betData.amount > currentUser.balance) {
+                    showNotification('Insufficient funds to accept this bet!', 'error');
+                    return;
+                }
+                
+                // Update bet status
+                await updateDoc(doc(window.db, 'customBets', betId), {
+                    status: 'accepted',
+                    acceptedAt: new Date().toISOString()
+                });
+                
+                // Deduct money from opponent's balance
+                await updateUserBalance(-betData.amount);
+                
+                showNotification('Bet accepted! May the best person win! 🎯', 'success');
+                
+            } catch (error) {
+                console.error('Error accepting bet:', error);
+                showNotification('Failed to accept bet', 'error');
+            }
+        }
+
+        async function declineCustomBet(betId) {
+            try {
+                const { doc, updateDoc } = window.firestoreUtils;
+                
+                await updateDoc(doc(window.db, 'customBets', betId), {
+                    status: 'declined',
+                    declinedAt: new Date().toISOString()
+                });
+                
+                showNotification('Bet declined', 'success');
+                
+            } catch (error) {
+                console.error('Error declining bet:', error);
+                showNotification('Failed to decline bet', 'error');
+            }
+        }
+
+        async function cancelCustomBet(betId) {
+            try {
+                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                const betDoc = await getDoc(doc(window.db, 'customBets', betId));
+                if (!betDoc.exists()) return;
+                
+                const betData = betDoc.data();
+                
+                await updateDoc(doc(window.db, 'customBets', betId), {
+                    status: 'cancelled',
+                    cancelledAt: new Date().toISOString()
+                });
+                
+                // Refund money to creator
+                await updateUserBalance(betData.amount);
+                
+                showNotification('Bet cancelled and money refunded', 'success');
+                
+            } catch (error) {
+                console.error('Error cancelling bet:', error);
+                showNotification('Failed to cancel bet', 'error');
+            }
+        }
+
+        async function settleBet(betId, result) {
+            try {
+                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                const betDoc = await getDoc(doc(window.db, 'customBets', betId));
+                if (!betDoc.exists()) return;
+                
+                const betData = betDoc.data();
+                
+                await updateDoc(doc(window.db, 'customBets', betId), {
+                    status: result,
+                    winner: result.includes('creator') ? betData.creatorId : betData.opponentId,
+                    settledAt: new Date().toISOString()
+                });
+                
+                // Pay out winnings (2x the bet amount to the winner)
+                const isWinner = (result.includes('creator') && betData.creatorId === currentUser.id) ||
+                                (result.includes('opponent') && betData.opponentId === currentUser.id);
+                
+                if (isWinner) {
+                    await updateUserBalance(betData.amount * 2);
+                    showNotification('Congratulations! You won the bet! 🏆', 'success');
+                } else {
+                    showNotification('Better luck next time! 😔', 'warning');
+                }
+                
+            } catch (error) {
+                console.error('Error settling bet:', error);
+                showNotification('Failed to settle bet', 'error');
+            }
+        }
+
         // Modal functions (will be implemented for each betting type)
         function openSportsModal() {
             showNotification('Sports betting coming soon! 🏈', 'warning');
@@ -908,7 +1185,53 @@
         }
 
         function openCustomModal() {
-            showNotification('Custom betting coming soon! 🎯', 'warning');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h2 class="modal-title">🎯 Create Custom Bet</h2>
+                    <form id="customBetForm">
+                        <div class="form-group">
+                            <label for="betTitle">Bet Title</label>
+                            <input type="text" id="betTitle" placeholder="e.g., Who will win the next game?" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="betDescription">Description (Optional)</label>
+                            <textarea id="betDescription" rows="3" placeholder="Add more details about the bet..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="betAmount">Bet Amount ($)</label>
+                            <input type="number" id="betAmount" min="1" max="${currentUser.balance}" placeholder="Enter amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="betOpponent">Challenge User</label>
+                            <select id="betOpponent" required>
+                                <option value="">Select a user to challenge</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="betExpiry">Bet Expires</label>
+                            <select id="betExpiry" required>
+                                <option value="1">1 Hour</option>
+                                <option value="6">6 Hours</option>
+                                <option value="24" selected>24 Hours</option>
+                                <option value="168">1 Week</option>
+                                <option value="720">1 Month</option>
+                            </select>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" onclick="closeModal(this)" class="btn btn-deny">Cancel</button>
+                            <button type="submit" class="btn btn-approve">Create Bet</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            loadUsersForCustomBet();
+            
+            document.getElementById('customBetForm').addEventListener('submit', submitCustomBet);
         }
 
         function openSquaresModal() {
@@ -1030,6 +1353,100 @@
             }
         }
 
+        // Custom Betting Functions
+        async function loadUsersForCustomBet() {
+            try {
+                const { collection, getDocs } = window.firestoreUtils;
+                const usersRef = collection(window.db, 'users');
+                const snapshot = await getDocs(usersRef);
+                
+                const select = document.getElementById('betOpponent');
+                select.innerHTML = '<option value="">Select a user to challenge</option>';
+                
+                snapshot.forEach(doc => {
+                    const userData = doc.data();
+                    if (userData.username !== currentUser.username) {
+                        const option = document.createElement('option');
+                        option.value = doc.id;
+                        option.textContent = userData.username;
+                        select.appendChild(option);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showNotification('Failed to load users', 'error');
+            }
+        }
+
+        async function submitCustomBet(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('betTitle').value.trim();
+            const description = document.getElementById('betDescription').value.trim();
+            const amount = parseInt(document.getElementById('betAmount').value);
+            const opponentId = document.getElementById('betOpponent').value;
+            const expiryHours = parseInt(document.getElementById('betExpiry').value);
+            
+            if (!title || !amount || !opponentId) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (amount > currentUser.balance) {
+                showNotification('Insufficient funds!', 'error');
+                return;
+            }
+            
+            try {
+                const { collection, addDoc } = window.firestoreUtils;
+                
+                const expiryDate = new Date();
+                expiryDate.setHours(expiryDate.getHours() + expiryHours);
+                
+                const betData = {
+                    title: title,
+                    description: description || '',
+                    amount: amount,
+                    creatorId: currentUser.id,
+                    creatorUsername: currentUser.username,
+                    opponentId: opponentId,
+                    status: 'pending', // pending, accepted, creator_won, opponent_won, cancelled, expired
+                    createdAt: new Date().toISOString(),
+                    expiresAt: expiryDate.toISOString(),
+                    winner: null,
+                    settledAt: null
+                };
+                
+                await addDoc(collection(window.db, 'customBets'), betData);
+                
+                // Deduct money from creator's balance
+                await updateUserBalance(-amount);
+                
+                showNotification('Custom bet created successfully!', 'success');
+                closeModal(document.querySelector('.modal'));
+                
+            } catch (error) {
+                console.error('Error creating custom bet:', error);
+                showNotification('Failed to create bet', 'error');
+            }
+        }
+
+        async function updateUserBalance(amount) {
+            currentUser.balance += amount;
+            localStorage.setItem('familyBettingUser', JSON.stringify(currentUser));
+            
+            try {
+                const { doc, updateDoc } = window.firestoreUtils;
+                await updateDoc(doc(window.db, 'users', currentUser.id), {
+                    balance: currentUser.balance
+                });
+                
+                document.getElementById('userBalance').textContent = '$' + currentUser.balance.toLocaleString();
+            } catch (error) {
+                console.error('Error updating balance:', error);
+            }
+        }
+
         // Utility functions
         function closeModal(element) {
             const modal = element.closest('.modal');
@@ -1052,6 +1469,7 @@
             // Stop listeners
             if (chatListener) chatListener();
             if (requestsListener) requestsListener();
+            if (customBetsListener) customBetsListener();
             
             localStorage.removeItem('familyBettingUser');
             window.location.href = 'index.html';
