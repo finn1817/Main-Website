@@ -1228,20 +1228,32 @@
 
         async function saveGameStats(result, winAmount) {
             try {
-                const { doc, updateDoc } = window.firestoreUtils;
+                const { doc, updateDoc, getDoc } = window.firestoreUtils;
                 
                 const isWin = result === 'win' || result === 'blackjack';
+                const profit = winAmount - gameState.currentBet; // Net profit/loss
+                
+                // Get current user data for proper stat calculation
+                const userDoc = await getDoc(doc(window.db, 'users', currentUser.id));
+                const userData = userDoc.exists() ? userDoc.data() : {};
                 
                 await updateDoc(doc(window.db, 'users', currentUser.id), {
+                    // Blackjack-specific stats
                     blackjackHands: (userStats.totalHands + 1),
                     blackjackWins: isWin ? (userStats.handsWon + 1) : userStats.handsWon,
-                    blackjackWinnings: userStats.totalWinnings + (winAmount - gameState.currentBet)
+                    blackjackWinnings: userStats.totalWinnings + profit,
+                    
+                    // Overall betting stats integration
+                    betsWon: isWin ? (userData.betsWon || 0) + 1 : (userData.betsWon || 0),
+                    betsLost: !isWin ? (userData.betsLost || 0) + 1 : (userData.betsLost || 0),
+                    totalWinnings: isWin ? (userData.totalWinnings || 0) + profit : (userData.totalWinnings || 0),
+                    totalLosses: !isWin ? (userData.totalLosses || 0) + gameState.currentBet : (userData.totalLosses || 0)
                 });
                 
                 // Update local stats
                 userStats.totalHands++;
                 if (isWin) userStats.handsWon++;
-                userStats.totalWinnings += (winAmount - gameState.currentBet);
+                userStats.totalWinnings += profit;
                 
                 // Update lifetime display
                 document.getElementById('totalHands').textContent = userStats.totalHands;

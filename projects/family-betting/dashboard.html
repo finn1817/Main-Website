@@ -175,6 +175,19 @@
             font-size: 2em;
             font-weight: bold;
             color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .stat-value.positive {
+            color: #4caf50;
+        }
+
+        .stat-value.negative {
+            color: #f44336;
+        }
+
+        .stat-value.neutral {
+            color: #ff9800;
         }
 
         .stat-label {
@@ -824,6 +837,9 @@
             startRequestsListener();
             startCustomBetsListener();
             
+            // Add welcome activity
+            addActivityItem(`👋 Welcome back, ${currentUser.username}!`);
+            
             showNotification('Welcome back, ' + currentUser.username + '!', 'success');
         }
 
@@ -840,7 +856,18 @@
                     
                     // Update UI
                     document.getElementById('userBalance').textContent = '$' + userData.balance.toLocaleString();
-                    document.getElementById('totalBets').textContent = (userData.betsWon || 0) + (userData.betsLost || 0);
+                    
+                    // Calculate combined betting stats (custom bets + blackjack)
+                    const customBetsWon = userData.betsWon || 0;
+                    const customBetsLost = userData.betsLost || 0;
+                    const blackjackWins = userData.blackjackWins || 0;
+                    const blackjackHands = userData.blackjackHands || 0;
+                    const blackjackLosses = blackjackHands - blackjackWins;
+                    
+                    const totalBets = customBetsWon + customBetsLost + blackjackHands;
+                    const totalWins = customBetsWon + blackjackWins;
+                    
+                    document.getElementById('totalBets').textContent = totalBets;
                     
                     // Show/hide admin badge
                     const adminBadge = document.getElementById('adminBadge');
@@ -850,15 +877,40 @@
                         adminBadge.classList.remove('show');
                     }
                     
-                    const totalBets = (userData.betsWon || 0) + (userData.betsLost || 0);
-                    const winRate = totalBets > 0 ? Math.round((userData.betsWon || 0) / totalBets * 100) : 0;
-                    document.getElementById('winRate').textContent = winRate + '%';
+                    const winRate = totalBets > 0 ? Math.round((totalWins / totalBets) * 100) : 0;
+                    const winRateElement = document.getElementById('winRate');
+                    winRateElement.textContent = winRate + '%';
                     
-                    document.getElementById('totalWinnings').textContent = '$' + (userData.totalWinnings || 0).toLocaleString();
+                    // Add color coding for win rate
+                    winRateElement.className = 'stat-value';
+                    if (winRate >= 60) winRateElement.classList.add('positive');
+                    else if (winRate >= 40) winRateElement.classList.add('neutral');
+                    else if (totalBets > 0) winRateElement.classList.add('negative');
                     
-                    const netProfit = (userData.totalWinnings || 0) - (userData.totalLosses || 0);
-                    document.getElementById('netProfit').textContent = '$' + netProfit.toLocaleString();
-                    document.getElementById('netProfit').style.color = netProfit >= 0 ? '#4caf50' : '#f44336';
+                    // Combine all winnings
+                    const customWinnings = userData.totalWinnings || 0;
+                    const blackjackWinnings = userData.blackjackWinnings || 0;
+                    const combinedWinnings = customWinnings + blackjackWinnings;
+                    
+                    const totalWinningsElement = document.getElementById('totalWinnings');
+                    totalWinningsElement.textContent = '$' + combinedWinnings.toLocaleString();
+                    totalWinningsElement.className = 'stat-value';
+                    if (combinedWinnings > 0) totalWinningsElement.classList.add('positive');
+                    
+                    // Calculate net profit (winnings - losses)
+                    const totalLosses = userData.totalLosses || 0;
+                    const netProfit = combinedWinnings - totalLosses;
+                    const netProfitElement = document.getElementById('netProfit');
+                    netProfitElement.textContent = '$' + netProfit.toLocaleString();
+                    netProfitElement.className = 'stat-value';
+                    
+                    if (netProfit > 0) {
+                        netProfitElement.classList.add('positive');
+                    } else if (netProfit < 0) {
+                        netProfitElement.classList.add('negative');
+                    } else {
+                        netProfitElement.classList.add('neutral');
+                    }
                 }
             } catch (error) {
                 console.error('Error updating user stats:', error);
@@ -993,9 +1045,11 @@
                     });
                     
                     showNotification(`Sent $${requestData.amount} to ${requestData.fromUsername}`, 'success');
+                    addActivityItem(`💸 Sent $${requestData.amount} to ${requestData.fromUsername}`);
                     await updateUserStats();
                 } else {
                     showNotification(`Denied money request from ${requestData.fromUsername}`, 'warning');
+                    addActivityItem(`❌ Denied money request from ${requestData.fromUsername} ($${requestData.amount})`);
                 }
                 
             } catch (error) {
@@ -1195,9 +1249,26 @@
                 if (isWinner) {
                     await updateUserBalance(betData.amount * 2);
                     showNotification('Congratulations! You won the bet! 🏆', 'success');
+                    
+                    // Update winner stats
+                    await updateCustomBetStats(currentUser.id, true, betData.amount);
+                    
+                    // Log activity
+                    addActivityItem(`🏆 Won custom bet: "${betData.title}" (+$${betData.amount})`);
                 } else {
                     showNotification('Better luck next time! 😔', 'warning');
+                    
+                    // Update loser stats  
+                    await updateCustomBetStats(currentUser.id, false, betData.amount);
+                    
+                    // Log activity
+                    addActivityItem(`😔 Lost custom bet: "${betData.title}" (-$${betData.amount})`);
                 }
+                
+                // Also update the other player's stats
+                const otherPlayerId = betData.creatorId === currentUser.id ? betData.opponentId : betData.creatorId;
+                const otherPlayerWon = !isWinner;
+                await updateCustomBetStats(otherPlayerId, otherPlayerWon, betData.amount);
                 
             } catch (error) {
                 console.error('Error settling bet:', error);
@@ -1226,6 +1297,42 @@
             } catch (error) {
                 console.error('Error removing bet:', error);
                 showNotification('Failed to remove bet', 'error');
+            }
+        }
+
+        async function updateCustomBetStats(userId, won, amount) {
+            try {
+                const { doc, getDoc, updateDoc } = window.firestoreUtils;
+                
+                const userDoc = await getDoc(doc(window.db, 'users', userId));
+                if (!userDoc.exists()) return;
+                
+                const userData = userDoc.data();
+                
+                const currentBetsWon = userData.betsWon || 0;
+                const currentBetsLost = userData.betsLost || 0;
+                const currentTotalWinnings = userData.totalWinnings || 0;
+                const currentTotalLosses = userData.totalLosses || 0;
+                
+                if (won) {
+                    await updateDoc(doc(window.db, 'users', userId), {
+                        betsWon: currentBetsWon + 1,
+                        totalWinnings: currentTotalWinnings + amount  // Amount won (not including original bet)
+                    });
+                } else {
+                    await updateDoc(doc(window.db, 'users', userId), {
+                        betsLost: currentBetsLost + 1,
+                        totalLosses: currentTotalLosses + amount  // Amount lost
+                    });
+                }
+                
+                // Refresh current user's stats if this update was for them
+                if (userId === currentUser.id) {
+                    await updateUserStats();
+                }
+                
+            } catch (error) {
+                console.error('Error updating custom bet stats:', error);
             }
         }
 
@@ -1517,6 +1624,26 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
+        }
+
+        function addActivityItem(message) {
+            const activityList = document.getElementById('activityList');
+            const now = new Date().toLocaleTimeString();
+            
+            const activityItem = document.createElement('div');
+            activityItem.className = 'activity-item';
+            activityItem.innerHTML = `
+                <div class="activity-text">${message}</div>
+                <div class="activity-time">${now}</div>
+            `;
+            
+            // Add to top of list
+            activityList.insertBefore(activityItem, activityList.firstChild);
+            
+            // Keep only last 10 activities
+            while (activityList.children.length > 10) {
+                activityList.removeChild(activityList.lastChild);
+            }
         }
 
         function logout() {
