@@ -443,6 +443,24 @@
             background: #f57c00;
         }
 
+        .btn-admin-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .btn-admin-remove:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
         /* Blackjack Section */
         .blackjack-section {
             grid-column: 1 / -1;
@@ -1055,6 +1073,18 @@
                 `;
             }
             
+            // Add admin remove button for completed bets (settled, cancelled, expired)
+            const isCompleted = betData.status.includes('_won') || betData.status === 'cancelled' || 
+                               betData.status === 'declined' || (betData.status === 'pending' && isExpired);
+            
+            if (isCompleted && currentUser && currentUser.isAdmin === 1) {
+                actionsHtml += `
+                    <div class="bet-actions" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                        <button class="btn btn-admin-remove" onclick="adminRemoveBet('${betId}')">🗑️ Admin Remove</button>
+                    </div>
+                `;
+            }
+            
             div.innerHTML = `
                 <div class="bet-title">${betData.title}</div>
                 <div class="bet-details">
@@ -1172,6 +1202,30 @@
             } catch (error) {
                 console.error('Error settling bet:', error);
                 showNotification('Failed to settle bet', 'error');
+            }
+        }
+
+        async function adminRemoveBet(betId) {
+            // Double-check admin status
+            if (!currentUser || currentUser.isAdmin !== 1) {
+                showNotification('Access denied: Admin privileges required', 'error');
+                return;
+            }
+
+            // Confirm deletion
+            if (!confirm('Are you sure you want to permanently remove this bet? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const { doc, deleteDoc } = window.firestoreUtils;
+                
+                await deleteDoc(doc(window.db, 'customBets', betId));
+                showNotification('Bet successfully removed by admin', 'success');
+                
+            } catch (error) {
+                console.error('Error removing bet:', error);
+                showNotification('Failed to remove bet', 'error');
             }
         }
 
