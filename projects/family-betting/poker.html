@@ -1085,6 +1085,7 @@
             getDocs, 
             query, 
             where, 
+            orderBy,
             or,
             doc, 
             setDoc, 
@@ -1109,7 +1110,7 @@
         // Make Firebase available globally
         window.db = db;
         window.firestoreUtils = { 
-            collection, addDoc, getDocs, query, where, or, doc, setDoc, updateDoc, getDoc, deleteDoc, onSnapshot
+            collection, addDoc, getDocs, query, where, orderBy, or, doc, setDoc, updateDoc, getDoc, deleteDoc, onSnapshot
         };
 
         // Initialize poker
@@ -1187,18 +1188,25 @@
             
             if (message === '' || !currentGame) return;
             
-            // Add chat message to Firebase
-            db.collection('pokerChats').add({
-                gameId: currentGame,
-                username: currentUser.username,
-                message: message,
-                timestamp: new Date(),
-                type: 'game'
-            }).then(() => {
-                chatInput.value = '';
-            }).catch(error => {
-                console.error('Error sending chat message:', error);
-            });
+            try {
+                const { collection, addDoc } = window.firestoreUtils;
+                
+                // Add chat message to Firebase
+                const chatsRef = collection(window.db, 'pokerChats');
+                addDoc(chatsRef, {
+                    gameId: currentGame,
+                    username: currentUser.username,
+                    message: message,
+                    timestamp: new Date(),
+                    type: 'game'
+                }).then(() => {
+                    chatInput.value = '';
+                }).catch(error => {
+                    console.error('Error sending chat message:', error);
+                });
+            } catch (error) {
+                console.error('Error in sendChatMessage:', error);
+            }
         }
 
         function loadChatMessages() {
@@ -1208,19 +1216,23 @@
                 chatListener();
             }
             
-            chatListener = db.collection('pokerChats')
-                .where('gameId', '==', currentGame)
-                .orderBy('timestamp', 'asc')
-                .onSnapshot(snapshot => {
-                    const chatMessages = document.getElementById('chatMessages');
-                    
-                    snapshot.docChanges().forEach(change => {
+            try {
+                const { collection, query, where, orderBy, onSnapshot } = window.firestoreUtils;
+                
+                const chatsRef = collection(window.db, 'pokerChats');
+                const q = query(chatsRef, where('gameId', '==', currentGame), orderBy('timestamp', 'asc'));
+                
+                chatListener = onSnapshot(q, (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
                         if (change.type === 'added') {
                             const message = change.doc.data();
                             addChatMessage(message.username, message.message, message.timestamp);
                         }
                     });
                 });
+            } catch (error) {
+                console.error('Error loading chat messages:', error);
+            }
         }
 
         function addChatMessage(username, message, timestamp) {
@@ -1282,11 +1294,15 @@
                 spectatorListener();
             }
             
-            spectatorListener = db.collection('pokerSpectators')
-                .where('gameId', '==', currentGame)
-                .onSnapshot(snapshot => {
+            try {
+                const { collection, query, where, onSnapshot } = window.firestoreUtils;
+                
+                const spectatorsRef = collection(window.db, 'pokerSpectators');
+                const q = query(spectatorsRef, where('gameId', '==', currentGame));
+                
+                spectatorListener = onSnapshot(q, (snapshot) => {
                     spectators = [];
-                    snapshot.forEach(doc => {
+                    snapshot.forEach((doc) => {
                         const data = doc.data();
                         if (data.username !== currentUser.username) {
                             spectators.push(data.username);
@@ -1294,16 +1310,26 @@
                     });
                     updateSpectatorList();
                 });
+            } catch (error) {
+                console.error('Error loading spectators:', error);
+            }
         }
 
         function joinAsSpectator() {
             if (!currentGame) return;
             
-            db.collection('pokerSpectators').add({
-                gameId: currentGame,
-                username: currentUser.username,
-                joinedAt: new Date()
-            });
+            try {
+                const { collection, addDoc } = window.firestoreUtils;
+                
+                const spectatorsRef = collection(window.db, 'pokerSpectators');
+                addDoc(spectatorsRef, {
+                    gameId: currentGame,
+                    username: currentUser.username,
+                    joinedAt: new Date()
+                });
+            } catch (error) {
+                console.error('Error joining as spectator:', error);
+            }
         }
 
         // Hand history functions
@@ -1505,7 +1531,10 @@
                 };
 
                 console.log('Game data:', gameData);
-                const gameDoc = await addDoc(collection(window.db, 'pokerGames'), gameData);
+                
+                // Use the correct Firestore syntax
+                const pokerGamesRef = collection(window.db, 'pokerGames');
+                const gameDoc = await addDoc(pokerGamesRef, gameData);
                 console.log('Game created with ID:', gameDoc.id);
                 
                 gameState.gameId = gameDoc.id;
@@ -1630,13 +1659,19 @@
                 // Send welcome chat message if this is the first time game becomes active
                 if (gameData.phase === 'waiting') {
                     // Send automatic welcome message
-                    db.collection('pokerChats').add({
-                        gameId: currentGame.gameId || gameState.gameId,
-                        username: 'System',
-                        message: `${currentUser.username} and ${opponentName} joined the game! Good luck! 🎲`,
-                        timestamp: new Date(),
-                        type: 'system'
-                    });
+                    try {
+                        const { collection, addDoc } = window.firestoreUtils;
+                        const chatsRef = collection(window.db, 'pokerChats');
+                        addDoc(chatsRef, {
+                            gameId: currentGame.gameId || gameState.gameId,
+                            username: 'System',
+                            message: `${currentUser.username} and ${opponentName} joined the game! Good luck! 🎲`,
+                            timestamp: new Date(),
+                            type: 'system'
+                        });
+                    } catch (error) {
+                        console.error('Error sending system message:', error);
+                    }
                 }
                 
                 // Update game phase
