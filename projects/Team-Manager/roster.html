@@ -211,6 +211,15 @@
             margin: 10px 0;
         }
         
+        .warning-message {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border: 1px solid #ffeaa7;
+        }
+        
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -234,6 +243,11 @@
         </div>
         
         <div class="content">
+            <!-- League Info Display -->
+            <div class="warning-message" id="leagueInfo">
+                <strong>Current League:</strong> <span id="currentLeagueName">Loading...</span>
+            </div>
+            
             <!-- Team Selection -->
             <div class="team-selector">
                 <h2>📋 Select Team</h2>
@@ -245,7 +259,7 @@
                         </select>
                     </div>
                     <div style="display: flex; align-items: end;">
-                        <button onclick="loadTeams()" class="btn-success">🔄 Refresh Teams</button>
+                        <button onclick="refreshTeams()" class="btn-success">🔄 Refresh Teams</button>
                     </div>
                 </div>
             </div>
@@ -253,6 +267,9 @@
             <!-- Add New Player Section -->
             <div class="section" id="addPlayerSection">
                 <h2>➕ Add New Player</h2>
+                <div id="noTeamWarning" class="warning-message hidden">
+                    ⚠️ Please select a team first before adding players.
+                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="playerName">Player Name:</label>
@@ -350,27 +367,50 @@
         let currentPlayer = null;
         let players = [];
 
-        // Load saved data
+        // Load saved data on page load
         window.addEventListener('load', function() {
+            console.log('Page loaded, checking for saved data...');
+            
             const savedLeague = localStorage.getItem('currentLeague');
             const savedTeam = localStorage.getItem('selectedTeam');
             
+            console.log('Saved league:', savedLeague);
+            console.log('Saved team:', savedTeam);
+            
             if (savedLeague) {
                 currentLeague = JSON.parse(savedLeague);
+                document.getElementById('currentLeagueName').textContent = currentLeague.name;
+                console.log('League loaded:', currentLeague);
+            } else {
+                document.getElementById('currentLeagueName').textContent = 'No league selected';
+                document.getElementById('leagueInfo').innerHTML = `
+                    <strong>⚠️ No League Selected:</strong> 
+                    <a href="index.html" style="color: #007bff;">Go back to select a league</a>
+                `;
+                return;
             }
             
             if (savedTeam) {
                 currentTeam = JSON.parse(savedTeam);
                 document.getElementById('teamTitle').textContent = `Managing: ${currentTeam.name}`;
+                console.log('Team loaded:', currentTeam);
             }
             
-            loadTeams();
+            // Load teams and then load players if team is selected
+            loadTeams().then(() => {
+                if (currentTeam) {
+                    // Pre-select the team in dropdown
+                    document.getElementById('teamSelect').value = currentTeam.id;
+                    loadPlayers();
+                }
+            });
         });
 
         async function loadTeams() {
+            console.log('Loading teams for league:', currentLeague);
+            
             if (!currentLeague) {
-                alert('Please select a league first');
-                window.location.href = 'index.html';
+                console.error('No current league found');
                 return;
             }
 
@@ -381,6 +421,7 @@
                 const select = document.getElementById('teamSelect');
                 select.innerHTML = '<option value="">Select a team...</option>';
 
+                let teamCount = 0;
                 querySnapshot.forEach((doc) => {
                     const team = doc.data();
                     const option = document.createElement('option');
@@ -388,21 +429,34 @@
                     option.textContent = `${team.teamName} (Coach: ${team.coachName})`;
                     option.dataset.teamName = team.teamName;
                     select.appendChild(option);
+                    teamCount++;
                 });
 
-                // Pre-select current team if exists
-                if (currentTeam) {
-                    select.value = currentTeam.id;
-                    loadPlayers();
+                console.log(`Loaded ${teamCount} teams`);
+                
+                if (teamCount === 0) {
+                    const option = document.createElement('option');
+                    option.value = "";
+                    option.textContent = "No teams found - Create teams in League Dashboard";
+                    select.appendChild(option);
                 }
+
             } catch (error) {
                 console.error('Error loading teams:', error);
+                alert('Error loading teams: ' + error.message);
             }
+        }
+
+        window.refreshTeams = async function() {
+            console.log('Refreshing teams...');
+            await loadTeams();
         }
 
         window.selectTeam = function() {
             const select = document.getElementById('teamSelect');
             const selectedOption = select.options[select.selectedIndex];
+            
+            console.log('Team selected:', select.value);
             
             if (select.value) {
                 currentTeam = {
@@ -411,11 +465,20 @@
                 };
                 localStorage.setItem('selectedTeam', JSON.stringify(currentTeam));
                 document.getElementById('teamTitle').textContent = `Managing: ${currentTeam.name}`;
+                document.getElementById('noTeamWarning').classList.add('hidden');
                 loadPlayers();
+            } else {
+                currentTeam = null;
+                localStorage.removeItem('selectedTeam');
+                document.getElementById('teamTitle').textContent = 'Manage your team\'s players and statistics';
+                document.getElementById('noTeamWarning').classList.remove('hidden');
+                document.getElementById('playersContainer').innerHTML = '<p>Select a team to view players...</p>';
             }
         }
 
         async function loadPlayers() {
+            console.log('Loading players for team:', currentTeam);
+            
             if (!currentTeam) return;
 
             try {
@@ -427,9 +490,11 @@
                     players.push({ id: doc.id, ...doc.data() });
                 });
 
+                console.log(`Loaded ${players.length} players`);
                 displayPlayers();
             } catch (error) {
                 console.error('Error loading players:', error);
+                alert('Error loading players: ' + error.message);
             }
         }
 
@@ -475,6 +540,7 @@
         window.addPlayer = async function() {
             if (!currentTeam) {
                 alert('Please select a team first');
+                document.getElementById('noTeamWarning').classList.remove('hidden');
                 return;
             }
 
@@ -493,6 +559,8 @@
             }
 
             try {
+                console.log('Adding player to team:', currentTeam);
+                
                 // Upload documents if any
                 const documentUrls = [];
                 for (let file of files) {
@@ -538,6 +606,7 @@
                 alert('Player added successfully!');
                 loadPlayers();
             } catch (error) {
+                console.error('Error adding player:', error);
                 alert('Error adding player: ' + error.message);
             }
         }
@@ -648,8 +717,6 @@
                 alert('Error deleting player: ' + error.message);
             }
         }
-
-        window.loadTeams = loadTeams;
     </script>
 </body>
 </html>
