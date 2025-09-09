@@ -358,7 +358,21 @@
         let players = [];
 
         // Load saved data on page load
-        window.addEventListener('load', function() {
+        window.addEventListener('load', async function() {
+            console.log('=== PAGE LOAD START ===');
+            
+            try {
+                await initializePage();
+            } catch (error) {
+                console.error('Critical error during page initialization:', error);
+                alert('Failed to initialize page. Redirecting to main page.');
+                localStorage.removeItem('currentLeague');
+                localStorage.removeItem('selectedTeam');
+                window.location.href = 'index.html';
+            }
+        });
+
+        async function initializePage() {
             const savedLeague = localStorage.getItem('currentLeague');
             const savedTeam = localStorage.getItem('selectedTeam');
             
@@ -366,85 +380,154 @@
             console.log('Page loaded - Saved team:', savedTeam);
             
             if (!savedLeague) {
+                console.error('No saved league found');
                 alert('Please select a league first');
                 window.location.href = 'index.html';
                 return;
             }
             
-            try {
-                currentLeague = JSON.parse(savedLeague);
-                console.log('Parsed current league:', currentLeague);
-                document.getElementById('leagueInfo').textContent = `League: ${currentLeague.name}`;
-                
-                if (savedTeam) {
-                    currentTeam = JSON.parse(savedTeam);
-                    console.log('Parsed current team:', currentTeam);
-                    document.getElementById('teamTitle').textContent = `Managing: ${currentTeam.name}`;
-                }
-                
-                loadTeams().then(() => {
-                    if (currentTeam && currentTeam.id) {
-                        document.getElementById('teamSelect').value = currentTeam.id;
-                        document.getElementById('noTeamWarning').classList.add('hidden');
-                        loadPlayers();
-                    } else {
-                        console.log('No valid team selected, showing warning');
-                        document.getElementById('noTeamWarning').classList.remove('hidden');
-                    }
-                }).catch(error => {
-                    console.error('Error in loadTeams:', error);
-                    alert('Error loading teams: ' + error.message);
-                });
-                
-            } catch (error) {
-                console.error('Error parsing saved data:', error);
-                alert('Error loading saved data. Please start over.');
+            // Parse and validate league data
+            currentLeague = JSON.parse(savedLeague);
+            console.log('Parsed current league:', currentLeague);
+            
+            if (!currentLeague || !currentLeague.id || !currentLeague.name) {
+                console.error('Invalid league data:', currentLeague);
+                alert('Invalid league data. Please select a league again.');
                 localStorage.removeItem('currentLeague');
-                localStorage.removeItem('selectedTeam');
                 window.location.href = 'index.html';
-            }
-        });
-
-        async function loadTeams() {
-            if (!currentLeague) {
-                console.log('No current league found');
                 return;
             }
+            
+            // Update UI with league info
+            document.getElementById('leagueInfo').textContent = `League: ${currentLeague.name}`;
+            console.log('Set league info in UI');
+            
+            // Parse team data if available
+            if (savedTeam) {
+                try {
+                    currentTeam = JSON.parse(savedTeam);
+                    console.log('Parsed current team:', currentTeam);
+                    
+                    if (currentTeam && currentTeam.name) {
+                        document.getElementById('teamTitle').textContent = `Managing: ${currentTeam.name}`;
+                    }
+                } catch (error) {
+                    console.error('Error parsing saved team:', error);
+                    localStorage.removeItem('selectedTeam');
+                    currentTeam = null;
+                }
+            }
+            
+            // Load teams and set up the page
+            console.log('About to load teams...');
+            const loadedTeams = await loadTeams();
+            
+            // Set selected team if available
+            if (currentTeam && currentTeam.id) {
+                console.log('Setting team select to:', currentTeam.id);
+                const select = document.getElementById('teamSelect');
+                select.value = currentTeam.id;
+                
+                if (select.value === currentTeam.id) {
+                    console.log('Team selection successful');
+                    document.getElementById('noTeamWarning').classList.add('hidden');
+                    await loadPlayers();
+                } else {
+                    console.warn('Team not found in options, clearing selection');
+                    console.warn('Available teams:', loadedTeams.map(t => t.id));
+                    currentTeam = null;
+                    localStorage.removeItem('selectedTeam');
+                    document.getElementById('noTeamWarning').classList.remove('hidden');
+                    document.getElementById('teamTitle').textContent = 'Select a team to manage players';
+                }
+            } else {
+                console.log('No valid team selected, showing warning');
+                document.getElementById('noTeamWarning').classList.remove('hidden');
+            }
+            
+            // Final status check
+            console.log('=== INITIALIZATION COMPLETE ===');
+            console.log('Final state - League:', currentLeague?.name, 'Team:', currentTeam?.name);
+            
+            // Show a helpful message if no teams are available
+            if (loadedTeams && loadedTeams.length === 0) {
+                document.getElementById('playersContainer').innerHTML = `
+                    <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border: 1px solid #ffeaa7;">
+                        <h3 style="color: #856404; margin-bottom: 10px;">⚠️ No Teams Available</h3>
+                        <p>No teams found in this league. Please:</p>
+                        <ol style="margin: 10px 0; padding-left: 20px;">
+                            <li>Go back to the <a href="index.html" style="color: #007bff;">League Dashboard</a></li>
+                            <li>Add a team using the "Add New Team" section</li>
+                            <li>Return here to manage players</li>
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            console.log('=== PAGE LOAD COMPLETE ===');
+        }
+
+        async function loadTeams() {
+            if (!currentLeague || !currentLeague.id) {
+                console.error('Cannot load teams - no current league or league ID');
+                throw new Error('No current league available');
+            }
 
             try {
-                console.log('Loading teams for league:', currentLeague.id);
+                console.log('Loading teams for league ID:', currentLeague.id);
                 const q = query(collection(db, "teams"), where("leagueId", "==", currentLeague.id));
                 const querySnapshot = await getDocs(q);
                 
                 const select = document.getElementById('teamSelect');
+                if (!select) {
+                    throw new Error('Team select element not found');
+                }
+                
                 select.innerHTML = '<option value="">Select a team...</option>';
 
                 let teamCount = 0;
+                const teams = [];
+                
                 querySnapshot.forEach((doc) => {
                     const team = doc.data();
+                    teams.push({ id: doc.id, ...team });
                     console.log('Found team:', doc.id, team);
                     
                     const option = document.createElement('option');
                     option.value = doc.id;
                     option.textContent = `${team.teamName || team.name} (Coach: ${team.coachName})`;
                     option.dataset.teamName = team.teamName || team.name;
+                    option.dataset.coachName = team.coachName;
                     select.appendChild(option);
                     teamCount++;
                 });
 
-                console.log(`Loaded ${teamCount} teams`);
+                console.log(`Successfully loaded ${teamCount} teams for league: ${currentLeague.name}`);
                 
                 if (teamCount === 0) {
+                    console.warn('No teams found for league');
                     const noTeamsOption = document.createElement('option');
                     noTeamsOption.value = "";
                     noTeamsOption.textContent = "No teams found - create one first";
                     noTeamsOption.disabled = true;
                     select.appendChild(noTeamsOption);
+                    
+                    // Show message to user
+                    const container = document.getElementById('playersContainer');
+                    if (container) {
+                        container.innerHTML = '<p style="color: #e67e22; font-weight: bold;">No teams found in this league. Please go back to the main page and create a team first.</p>';
+                    }
                 }
+
+                return teams;
 
             } catch (error) {
                 console.error('Error loading teams:', error);
-                alert('Error loading teams: ' + error.message);
+                const select = document.getElementById('teamSelect');
+                if (select) {
+                    select.innerHTML = '<option value="">Error loading teams</option>';
+                }
+                throw new Error(`Failed to load teams: ${error.message}`);
             }
         }
 
@@ -453,7 +536,7 @@
         }
 
         window.debugTeamInfo = function() {
-            console.log('=== DEBUG INFO ===');
+            console.log('=== COMPREHENSIVE DEBUG INFO ===');
             console.log('Current League:', currentLeague);
             console.log('Current Team:', currentTeam);
             console.log('LocalStorage - currentLeague:', localStorage.getItem('currentLeague'));
@@ -461,47 +544,98 @@
             
             const select = document.getElementById('teamSelect');
             console.log('Team select value:', select.value);
-            console.log('Team select options:', Array.from(select.options).map(opt => ({value: opt.value, text: opt.textContent, dataset: opt.dataset})));
+            console.log('Team select options:', Array.from(select.options).map(opt => ({
+                value: opt.value, 
+                text: opt.textContent, 
+                teamName: opt.dataset.teamName,
+                coachName: opt.dataset.coachName
+            })));
             
-            alert(`Debug Info (check console for details):
+            // Check form elements
+            const formElements = {
+                playerName: document.getElementById('playerName')?.value,
+                jerseyNumber: document.getElementById('jerseyNumber')?.value,
+                position: document.getElementById('position')?.value,
+            };
+            console.log('Form elements:', formElements);
             
-League: ${currentLeague ? currentLeague.name : 'NULL'}
-Team: ${currentTeam ? currentTeam.name + ' (ID: ' + currentTeam.id + ')' : 'NULL'}
-Select Value: ${select.value}
-            `);
+            const debugInfo = `=== TEAM MANAGER DEBUG INFO ===
+
+🏆 LEAGUE STATUS:
+${currentLeague ? '✅ League: ' + currentLeague.name + ' (ID: ' + currentLeague.id + ')' : '❌ No League Selected'}
+
+👥 TEAM STATUS:
+${currentTeam ? '✅ Team: ' + currentTeam.name + ' (ID: ' + currentTeam.id + ')' : '❌ No Team Selected'}
+
+📋 SELECT DROPDOWN:
+Value: "${select.value}"
+Options Count: ${select.options.length}
+
+💾 LOCALSTORAGE:
+League: ${localStorage.getItem('currentLeague') ? 'EXISTS' : 'MISSING'}
+Team: ${localStorage.getItem('selectedTeam') ? 'EXISTS' : 'MISSING'}
+
+📝 FORM STATUS:
+Player Name Field: ${formElements.playerName !== undefined ? 'EXISTS' : 'MISSING'}
+
+Check browser console for detailed logs.`;
+            
+            alert(debugInfo);
         }
 
-        window.selectTeam = function() {
-            const select = document.getElementById('teamSelect');
-            const selectedOption = select.options[select.selectedIndex];
-            
-            console.log('Team selection changed:', select.value);
-            console.log('Selected option:', selectedOption);
-            
-            if (select.value) {
-                currentTeam = {
-                    id: select.value,
-                    name: selectedOption.dataset.teamName || selectedOption.textContent
-                };
+        window.selectTeam = async function() {
+            try {
+                const select = document.getElementById('teamSelect');
+                const selectedOption = select.options[select.selectedIndex];
                 
-                console.log('Setting currentTeam to:', currentTeam);
-                localStorage.setItem('selectedTeam', JSON.stringify(currentTeam));
-                document.getElementById('teamTitle').textContent = `Managing: ${currentTeam.name}`;
-                document.getElementById('noTeamWarning').classList.add('hidden');
-                loadPlayers();
-            } else {
-                currentTeam = null;
-                localStorage.removeItem('selectedTeam');
-                document.getElementById('teamTitle').textContent = 'Select a team to manage players';
-                document.getElementById('noTeamWarning').classList.remove('hidden');
-                document.getElementById('playersContainer').innerHTML = '<p>Select a team to view players...</p>';
+                console.log('Team selection changed:', select.value);
+                console.log('Selected option:', selectedOption);
+                
+                if (select.value) {
+                    currentTeam = {
+                        id: select.value,
+                        name: selectedOption.dataset.teamName || selectedOption.textContent,
+                        coachName: selectedOption.dataset.coachName
+                    };
+                    
+                    console.log('Setting currentTeam to:', currentTeam);
+                    
+                    // Validate team data
+                    if (!currentTeam.id || !currentTeam.name) {
+                        console.error('Invalid team data:', currentTeam);
+                        alert('Invalid team selection. Please try again.');
+                        return;
+                    }
+                    
+                    localStorage.setItem('selectedTeam', JSON.stringify(currentTeam));
+                    document.getElementById('teamTitle').textContent = `Managing: ${currentTeam.name}`;
+                    document.getElementById('noTeamWarning').classList.add('hidden');
+                    
+                    console.log('Loading players for selected team...');
+                    await loadPlayers();
+                    
+                } else {
+                    console.log('No team selected, clearing current team');
+                    currentTeam = null;
+                    localStorage.removeItem('selectedTeam');
+                    document.getElementById('teamTitle').textContent = 'Select a team to manage players';
+                    document.getElementById('noTeamWarning').classList.remove('hidden');
+                    document.getElementById('playersContainer').innerHTML = '<p>Select a team to view players...</p>';
+                }
+            } catch (error) {
+                console.error('Error in selectTeam:', error);
+                alert('Error selecting team: ' + error.message);
             }
         }
 
         async function loadPlayers() {
-            if (!currentTeam) return;
+            if (!currentTeam || !currentTeam.id) {
+                console.log('Cannot load players - no current team or team ID');
+                return;
+            }
 
             try {
+                console.log('Loading players for team:', currentTeam.id, currentTeam.name);
                 const q = query(collection(db, "players"), where("teamId", "==", currentTeam.id));
                 const querySnapshot = await getDocs(q);
                 
@@ -510,9 +644,14 @@ Select Value: ${select.value}
                     players.push({ id: doc.id, ...doc.data() });
                 });
 
+                console.log(`Loaded ${players.length} players for team: ${currentTeam.name}`);
                 displayPlayers();
             } catch (error) {
                 console.error('Error loading players:', error);
+                const container = document.getElementById('playersContainer');
+                if (container) {
+                    container.innerHTML = `<p style="color: red;">Error loading players: ${error.message}</p>`;
+                }
             }
         }
 
@@ -556,19 +695,41 @@ Select Value: ${select.value}
         }
 
         window.addPlayer = async function() {
-            // Debug current team state
+            console.log('=== ADD PLAYER START ===');
             console.log('Current Team:', currentTeam);
             console.log('Current League:', currentLeague);
             
-            if (!currentTeam || !currentTeam.id) {
-                alert('Please select a team first. Current team: ' + (currentTeam ? JSON.stringify(currentTeam) : 'null'));
+            // Comprehensive validation
+            if (!currentLeague) {
+                console.error('No current league found');
+                alert('No league selected. Please refresh the page and select a league first.');
+                window.location.href = 'index.html';
                 return;
             }
-
-            if (!currentLeague || !currentLeague.id) {
-                alert('No league selected. Please go back and select a league.');
+            
+            if (!currentLeague.id || !currentLeague.name) {
+                console.error('Invalid league data:', currentLeague);
+                alert('Invalid league data. Please refresh and select a league again.');
+                localStorage.removeItem('currentLeague');
+                window.location.href = 'index.html';
                 return;
             }
+            
+            if (!currentTeam) {
+                console.error('No current team found');
+                alert('Please select a team first using the dropdown above.');
+                return;
+            }
+            
+            if (!currentTeam.id || !currentTeam.name) {
+                console.error('Invalid team data:', currentTeam);
+                alert('Invalid team selection. Please select a team again from the dropdown.');
+                currentTeam = null;
+                localStorage.removeItem('selectedTeam');
+                return;
+            }
+            
+            console.log('Validation passed - League:', currentLeague.name, 'Team:', currentTeam.name);
 
             const name = document.getElementById('playerName').value.trim();
             const jerseyNumber = document.getElementById('jerseyNumber').value;

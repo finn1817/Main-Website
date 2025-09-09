@@ -527,7 +527,7 @@
                             Coach: ${team.coachName}<br>
                             Contact: ${team.contactInfo || 'N/A'}
                         </div>
-                        <button onclick="selectTeam('${doc.id}', '${team.teamName}')">Manage Roster</button>
+                        <button onclick="selectTeam('${doc.id}', '${team.teamName}', '${team.coachName}')">Manage Roster</button>
                     `;
                     container.appendChild(teamDiv);
                 });
@@ -536,8 +536,15 @@
             }
         }
 
-        window.selectTeam = function(teamId, teamName) {
-            localStorage.setItem('selectedTeam', JSON.stringify({id: teamId, name: teamName}));
+        window.selectTeam = function(teamId, teamName, coachName) {
+            console.log('Navigating to roster with team:', teamId, teamName, coachName);
+            const teamData = {
+                id: teamId, 
+                name: teamName,
+                coachName: coachName || 'Unknown'
+            };
+            localStorage.setItem('selectedTeam', JSON.stringify(teamData));
+            console.log('Saved team data to localStorage:', teamData);
             window.location.href = 'roster.html';
         }
 
