@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Team Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .teams-list {
+            margin-top: 20px;
+        }
+        
+        .team-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .nav-button {
+            margin: 0 10px;
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Sports Team Manager</h1>
+            <p>Manage your leagues, teams, and players with ease</p>
+        </div>
+        
+        <div class="content">
+            <!-- League Login Section -->
+            <div class="section" id="loginSection">
+                <h2>🔐 Access Your League</h2>
+                <div class="form-group">
+                    <label for="leagueId">League ID:</label>
+                    <input type="text" id="leagueId" placeholder="Enter your League ID">
+                </div>
+                <div class="form-group">
+                    <label for="leaguePassword">League Password:</label>
+                    <input type="password" id="leaguePassword" placeholder="Enter your League Password">
+                </div>
+                <button onclick="loginToLeague()">Access League</button>
+            </div>
+            
+            <!-- Create New League Section -->
+            <div class="section">
+                <h2>🆕 Create New League</h2>
+                <div class="form-group">
+                    <label for="newLeagueName">League Name:</label>
+                    <input type="text" id="newLeagueName" placeholder="e.g., City Basketball League">
+                </div>
+                <div class="form-group">
+                    <label for="creatorName">Your Name (League Creator):</label>
+                    <input type="text" id="creatorName" placeholder="Your full name">
+                </div>
+                <div class="form-group">
+                    <label for="sportType">Sport:</label>
+                    <select id="sportType">
+                        <option value="Basketball">Basketball</option>
+                        <option value="Soccer">Soccer</option>
+                        <option value="Baseball">Baseball</option>
+                        <option value="Football">Football</option>
+                        <option value="Volleyball">Volleyball</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newLeaguePassword">Set League Password:</label>
+                    <input type="password" id="newLeaguePassword" placeholder="Create a secure password">
+                </div>
+                <div class="form-group">
+                    <label for="leagueDescription">Description (Optional):</label>
+                    <textarea id="leagueDescription" rows="3" placeholder="Brief description of your league"></textarea>
+                </div>
+                <button onclick="createLeague()">Create League</button>
+                <div id="leagueCreatedMessage" class="hidden"></div>
+            </div>
+            
+            <!-- League Dashboard (shown after login) -->
+            <div class="section hidden" id="leagueDashboard">
+                <h2 id="leagueDashboardTitle">League Dashboard</h2>
+                
+                <div class="form-group">
+                    <h3>➕ Add New Team</h3>
+                    <label for="teamName">Team Name:</label>
+                    <input type="text" id="teamName" placeholder="e.g., Lightning Bolts">
+                </div>
+                <div class="form-group">
+                    <label for="coachName">Coach Name:</label>
+                    <input type="text" id="coachName" placeholder="Coach's full name">
+                </div>
+                <div class="form-group">
+                    <label for="teamContact">Contact Info:</label>
+                    <input type="text" id="teamContact" placeholder="Phone or email">
+                </div>
+                <button onclick="addTeam()">Add Team</button>
+                
+                <div class="teams-list" id="teamsList">
+                    <h3>📋 Teams in League</h3>
+                    <div id="teamsContainer"></div>
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="nav-button" onclick="window.location.href='roster.html'">👥 Manage Rosters</button>
+                <button class="nav-button" onclick="window.location.href='tournament.html'">🏆 Tournaments</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBCeZVcMrPv1-RNmRvJwJR2SdPrNYZ2YLs",
+            authDomain: "team-manager-51b49.firebaseapp.com",
+            projectId: "team-manager-51b49",
+            storageBucket: "team-manager-51b49.firebasestorage.app",
+            messagingSenderId: "811968699332",
+            appId: "1:811968699332:web:2e2af08d88e6b8a70c2291"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        let currentLeague = null;
+
+        window.createLeague = async function() {
+            const name = document.getElementById('newLeagueName').value.trim();
+            const creator = document.getElementById('creatorName').value.trim();
+            const sport = document.getElementById('sportType').value;
+            const password = document.getElementById('newLeaguePassword').value.trim();
+            const description = document.getElementById('leagueDescription').value.trim();
+
+            if (!name || !creator || !password) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                const docRef = await addDoc(collection(db, "leagues"), {
+                    name: name,
+                    password: password,
+                    createdAt: new Date(),
+                    creatorName: creator,
+                    sport: sport,
+                    description: description
+                });
+
+                const messageDiv = document.getElementById('leagueCreatedMessage');
+                messageDiv.className = 'success-message';
+                messageDiv.innerHTML = `
+                    <h3>✅ League Created Successfully!</h3>
+                    <p><strong>League ID:</strong> ${docRef.id}</p>
+                    <p><strong>Password:</strong> ${password}</p>
+                    <p><strong>⚠️ IMPORTANT:</strong> Save these credentials! You'll need them to access your league.</p>
+                `;
+                
+                // Clear form
+                document.getElementById('newLeagueName').value = '';
+                document.getElementById('creatorName').value = '';
+                document.getElementById('newLeaguePassword').value = '';
+                document.getElementById('leagueDescription').value = '';
+            } catch (error) {
+                alert('Error creating league: ' + error.message);
+            }
+        }
+
+        window.loginToLeague = async function() {
+            const leagueId = document.getElementById('leagueId').value.trim();
+            const password = document.getElementById('leaguePassword').value.trim();
+
+            if (!leagueId || !password) {
+                alert('Please enter both League ID and Password');
+                return;
+            }
+
+            try {
+                const docRef = doc(db, "leagues", leagueId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const leagueData = docSnap.data();
+                    if (leagueData.password === password) {
+                        currentLeague = { id: leagueId, ...leagueData };
+                        localStorage.setItem('currentLeague', JSON.stringify(currentLeague));
+                        
+                        document.getElementById('loginSection').classList.add('hidden');
+                        document.getElementById('leagueDashboard').classList.remove('hidden');
+                        document.getElementById('leagueDashboardTitle').textContent = `📊 ${leagueData.name} Dashboard`;
+                        
+                        loadTeams();
+                    } else {
+                        alert('Incorrect password');
+                    }
+                } else {
+                    alert('League not found');
+                }
+            } catch (error) {
+                alert('Error accessing league: ' + error.message);
+            }
+        }
+
+        window.addTeam = async function() {
+            if (!currentLeague) {
+                alert('Please login to a league first');
+                return;
+            }
+
+            const teamName = document.getElementById('teamName').value.trim();
+            const coachName = document.getElementById('coachName').value.trim();
+            const contact = document.getElementById('teamContact').value.trim();
+
+            if (!teamName || !coachName) {
+                alert('Please enter team name and coach name');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "teams"), {
+                    teamName: teamName,
+                    coachName: coachName,
+                    leagueId: currentLeague.id,
+                    contactInfo: contact,
+                    createdAt: new Date()
+                });
+
+                // Clear form
+                document.getElementById('teamName').value = '';
+                document.getElementById('coachName').value = '';
+                document.getElementById('teamContact').value = '';
+
+                alert('Team added successfully!');
+                loadTeams();
+            } catch (error) {
+                alert('Error adding team: ' + error.message);
+            }
+        }
+
+        async function loadTeams() {
+            if (!currentLeague) return;
+
+            try {
+                const q = query(collection(db, "teams"), where("leagueId", "==", currentLeague.id));
+                const querySnapshot = await getDocs(q);
+                
+                const container = document.getElementById('teamsContainer');
+                container.innerHTML = '';
+
+                querySnapshot.forEach((doc) => {
+                    const team = doc.data();
+                    const teamDiv = document.createElement('div');
+                    teamDiv.className = 'team-item';
+                    teamDiv.innerHTML = `
+                        <div>
+                            <strong>${team.teamName}</strong><br>
+                            Coach: ${team.coachName}<br>
+                            Contact: ${team.contactInfo || 'N/A'}
+                        </div>
+                        <button onclick="selectTeam('${doc.id}', '${team.teamName}')">Manage</button>
+                    `;
+                    container.appendChild(teamDiv);
+                });
+            } catch (error) {
+                console.error('Error loading teams:', error);
+            }
+        }
+
+        window.selectTeam = function(teamId, teamName) {
+            localStorage.setItem('selectedTeam', JSON.stringify({id: teamId, name: teamName}));
+            window.location.href = 'roster.html';
+        }
+
+        // Check if user is already logged in
+        window.addEventListener('load', function() {
+            const savedLeague = localStorage.getItem('currentLeague');
+            if (savedLeague) {
+                currentLeague = JSON.parse(savedLeague);
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('leagueDashboard').classList.remove('hidden');
+                document.getElementById('leagueDashboardTitle').textContent = `📊 ${currentLeague.name} Dashboard`;
+                loadTeams();
+            }
+        });
+    </script>
+</body>
+</html>
