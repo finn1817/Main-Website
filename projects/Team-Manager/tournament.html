@@ -32,11 +32,22 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
         
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
+        }
+        
+        .league-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
         }
         
         .content {
@@ -151,6 +162,11 @@
             margin: 10px 0;
             padding: 15px;
             position: relative;
+            cursor: pointer;
+        }
+        
+        .bracket-match:hover {
+            border-color: #3498db;
         }
         
         .bracket-team {
@@ -245,6 +261,7 @@
 <body>
     <div class="container">
         <div class="header">
+            <div class="league-info" id="leagueInfo">Loading...</div>
             <h1>🏆 Tournament Manager</h1>
             <p id="leagueTitle">Create and manage tournaments for your league</p>
         </div>
@@ -340,15 +357,18 @@
         window.addEventListener('load', function() {
             const savedLeague = localStorage.getItem('currentLeague');
             
-            if (savedLeague) {
-                currentLeague = JSON.parse(savedLeague);
-                document.getElementById('leagueTitle').textContent = `Tournament Manager - ${currentLeague.name}`;
-                loadTeams();
-                loadTournaments();
-            } else {
+            if (!savedLeague) {
                 alert('Please select a league first');
                 window.location.href = 'index.html';
+                return;
             }
+            
+            currentLeague = JSON.parse(savedLeague);
+            document.getElementById('leagueInfo').textContent = `League: ${currentLeague.name}`;
+            document.getElementById('leagueTitle').textContent = `Tournament Manager - ${currentLeague.name}`;
+            
+            loadTeams();
+            loadTournaments();
         });
 
         async function loadTeams() {
@@ -373,7 +393,7 @@
             const container = document.getElementById('teamsSelection');
             
             if (teams.length < 2) {
-                container.innerHTML = '<p style="color: red;">⚠️ Need at least 2 teams to create a tournament</p>';
+                container.innerHTML = '<p style="color: red;">⚠️ Need at least 2 teams to create a tournament. <a href="index.html">Add teams in League Dashboard</a></p>';
                 return;
             }
 
@@ -456,7 +476,6 @@
                 return generateRoundRobinBracket(shuffledTeams);
             }
             
-            // Default to single elimination
             return generateSingleEliminationBracket(shuffledTeams);
         }
 
@@ -464,7 +483,6 @@
             const rounds = [];
             let currentRound = [];
             
-            // First round - pair up teams
             for (let i = 0; i < teams.length; i += 2) {
                 if (i + 1 < teams.length) {
                     currentRound.push({
@@ -477,7 +495,6 @@
                         round: 0
                     });
                 } else {
-                    // Bye for odd number of teams
                     currentRound.push({
                         id: `bye-${i}`,
                         team1: teams[i],
@@ -492,7 +509,6 @@
             
             rounds.push(currentRound);
             
-            // Generate subsequent rounds
             let roundNumber = 1;
             while (currentRound.length > 1) {
                 const nextRound = [];
@@ -570,12 +586,17 @@
             tournaments.forEach(tournament => {
                 const tournamentDiv = document.createElement('div');
                 tournamentDiv.className = 'tournament-card';
+                
+                const createdDate = tournament.createdAt && tournament.createdAt.seconds ? 
+                    new Date(tournament.createdAt.seconds * 1000).toLocaleDateString() : 
+                    'Unknown';
+                
                 tournamentDiv.innerHTML = `
                     <h3>${tournament.name}</h3>
                     <p><strong>Type:</strong> ${tournament.type.replace('-', ' ').toUpperCase()}</p>
                     <p><strong>Teams:</strong> ${tournament.teams.length}</p>
                     <p><strong>Status:</strong> ${tournament.status}</p>
-                    <p><strong>Created:</strong> ${new Date(tournament.createdAt.seconds * 1000).toLocaleDateString()}</p>
+                    <p><strong>Created:</strong> ${createdDate}</p>
                     <div style="margin-top: 15px;">
                         <button onclick="viewBracket('${tournament.id}')" class="btn-success">👁️ View Bracket</button>
                         <button onclick="deleteTournament('${tournament.id}')" class="btn-danger">🗑️ Delete</button>
@@ -718,7 +739,6 @@
                 match.score2 = score2;
                 match.winner = score1 > score2 ? match.team1 : match.team2;
 
-                // Update tournament in database
                 await updateDoc(doc(db, "tournaments", currentMatch.tournamentId), {
                     bracket: tournament.bracket
                 });

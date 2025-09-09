@@ -32,11 +32,29 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
         
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
         }
         
         .content {
@@ -92,6 +110,7 @@
             font-size: 16px;
             font-weight: bold;
             transition: transform 0.2s;
+            margin-right: 10px;
         }
         
         button:hover {
@@ -119,107 +138,165 @@
             border-radius: 5px;
             border: 1px solid #ddd;
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
         }
         
         .navigation {
             text-align: center;
             margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
         
         .nav-button {
             margin: 0 10px;
             background: linear-gradient(45deg, #27ae60, #2ecc71);
+            font-size: 18px;
+            padding: 15px 30px;
         }
         
         .hidden {
             display: none;
+        }
+        
+        .league-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #eee;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <button class="logout-btn hidden" id="logoutBtn" onclick="logout()">🚪 Logout</button>
             <h1>🏆 Sports Team Manager</h1>
-            <p>Manage your leagues, teams, and players with ease</p>
+            <p id="headerSubtitle">Manage your leagues, teams, and players with ease</p>
         </div>
         
         <div class="content">
-            <!-- League Login Section -->
-            <div class="section" id="loginSection">
-                <h2>🔐 Access Your League</h2>
-                <div class="form-group">
-                    <label for="leagueId">League ID:</label>
-                    <input type="text" id="leagueId" placeholder="Enter your League ID">
+            <!-- Login/Create Section (shown when not logged in) -->
+            <div id="authSection">
+                <!-- League Login Section -->
+                <div class="section">
+                    <h2>🔐 Access Your League</h2>
+                    <div class="form-group">
+                        <label for="leagueId">League ID:</label>
+                        <input type="text" id="leagueId" placeholder="Enter your League ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="leaguePassword">League Password:</label>
+                        <input type="password" id="leaguePassword" placeholder="Enter your League Password">
+                    </div>
+                    <button onclick="loginToLeague()">Access League</button>
                 </div>
-                <div class="form-group">
-                    <label for="leaguePassword">League Password:</label>
-                    <input type="password" id="leaguePassword" placeholder="Enter your League Password">
+                
+                <!-- Create New League Section -->
+                <div class="section">
+                    <h2>🆕 Create New League</h2>
+                    <div class="form-group">
+                        <label for="newLeagueName">League Name:</label>
+                        <input type="text" id="newLeagueName" placeholder="e.g., City Basketball League">
+                    </div>
+                    <div class="form-group">
+                        <label for="creatorName">Your Name (League Creator):</label>
+                        <input type="text" id="creatorName" placeholder="Your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="sportType">Sport:</label>
+                        <select id="sportType">
+                            <option value="Basketball">Basketball</option>
+                            <option value="Soccer">Soccer</option>
+                            <option value="Baseball">Baseball</option>
+                            <option value="Football">Football</option>
+                            <option value="Volleyball">Volleyball</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newLeaguePassword">Set League Password:</label>
+                        <input type="password" id="newLeaguePassword" placeholder="Create a secure password">
+                    </div>
+                    <div class="form-group">
+                        <label for="leagueDescription">Description (Optional):</label>
+                        <textarea id="leagueDescription" rows="3" placeholder="Brief description of your league"></textarea>
+                    </div>
+                    <button onclick="createLeague()">Create League</button>
+                    <div id="leagueCreatedMessage" class="hidden"></div>
                 </div>
-                <button onclick="loginToLeague()">Access League</button>
-            </div>
-            
-            <!-- Create New League Section -->
-            <div class="section">
-                <h2>🆕 Create New League</h2>
-                <div class="form-group">
-                    <label for="newLeagueName">League Name:</label>
-                    <input type="text" id="newLeagueName" placeholder="e.g., City Basketball League">
-                </div>
-                <div class="form-group">
-                    <label for="creatorName">Your Name (League Creator):</label>
-                    <input type="text" id="creatorName" placeholder="Your full name">
-                </div>
-                <div class="form-group">
-                    <label for="sportType">Sport:</label>
-                    <select id="sportType">
-                        <option value="Basketball">Basketball</option>
-                        <option value="Soccer">Soccer</option>
-                        <option value="Baseball">Baseball</option>
-                        <option value="Football">Football</option>
-                        <option value="Volleyball">Volleyball</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="newLeaguePassword">Set League Password:</label>
-                    <input type="password" id="newLeaguePassword" placeholder="Create a secure password">
-                </div>
-                <div class="form-group">
-                    <label for="leagueDescription">Description (Optional):</label>
-                    <textarea id="leagueDescription" rows="3" placeholder="Brief description of your league"></textarea>
-                </div>
-                <button onclick="createLeague()">Create League</button>
-                <div id="leagueCreatedMessage" class="hidden"></div>
             </div>
             
             <!-- League Dashboard (shown after login) -->
             <div class="section hidden" id="leagueDashboard">
-                <h2 id="leagueDashboardTitle">League Dashboard</h2>
+                <h2 id="leagueDashboardTitle">📊 League Dashboard</h2>
                 
-                <div class="form-group">
+                <!-- League Stats -->
+                <div class="league-stats" id="leagueStats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="teamCount">0</div>
+                        <div class="stat-label">Teams</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="playerCount">0</div>
+                        <div class="stat-label">Players</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="tournamentCount">0</div>
+                        <div class="stat-label">Tournaments</div>
+                    </div>
+                </div>
+                
+                <!-- Add New Team -->
+                <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 20px 0;">
                     <h3>➕ Add New Team</h3>
-                    <label for="teamName">Team Name:</label>
-                    <input type="text" id="teamName" placeholder="e.g., Lightning Bolts">
+                    <div class="form-group">
+                        <label for="teamName">Team Name:</label>
+                        <input type="text" id="teamName" placeholder="e.g., Lightning Bolts">
+                    </div>
+                    <div class="form-group">
+                        <label for="coachName">Coach Name:</label>
+                        <input type="text" id="coachName" placeholder="Coach's full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="teamContact">Contact Info:</label>
+                        <input type="text" id="teamContact" placeholder="Phone or email">
+                    </div>
+                    <button onclick="addTeam()">Add Team</button>
                 </div>
-                <div class="form-group">
-                    <label for="coachName">Coach Name:</label>
-                    <input type="text" id="coachName" placeholder="Coach's full name">
-                </div>
-                <div class="form-group">
-                    <label for="teamContact">Contact Info:</label>
-                    <input type="text" id="teamContact" placeholder="Phone or email">
-                </div>
-                <button onclick="addTeam()">Add Team</button>
                 
-                <div class="teams-list" id="teamsList">
+                <!-- Teams List -->
+                <div class="teams-list">
                     <h3>📋 Teams in League</h3>
-                    <div id="teamsContainer"></div>
+                    <div id="teamsContainer">
+                        <p>No teams yet. Add your first team above!</p>
+                    </div>
                 </div>
             </div>
             
-            <div class="navigation">
+            <!-- Navigation (shown when logged in) -->
+            <div class="navigation hidden" id="navigationSection">
                 <button class="nav-button" onclick="window.location.href='roster.html'">👥 Manage Rosters</button>
                 <button class="nav-button" onclick="window.location.href='tournament.html'">🏆 Tournaments</button>
             </div>
@@ -243,6 +320,61 @@
         const db = getFirestore(app);
         
         let currentLeague = null;
+
+        // Check if user is already logged in
+        window.addEventListener('load', function() {
+            const savedLeague = localStorage.getItem('currentLeague');
+            if (savedLeague) {
+                currentLeague = JSON.parse(savedLeague);
+                showLeagueDashboard();
+            }
+        });
+
+        function showLeagueDashboard() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('leagueDashboard').classList.remove('hidden');
+            document.getElementById('navigationSection').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            
+            document.getElementById('headerSubtitle').textContent = `Managing: ${currentLeague.name}`;
+            document.getElementById('leagueDashboardTitle').textContent = `📊 ${currentLeague.name} Dashboard`;
+            
+            loadLeagueStats();
+            loadTeams();
+        }
+
+        function showAuthSection() {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('leagueDashboard').classList.add('hidden');
+            document.getElementById('navigationSection').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            
+            document.getElementById('headerSubtitle').textContent = 'Manage your leagues, teams, and players with ease';
+        }
+
+        async function loadLeagueStats() {
+            if (!currentLeague) return;
+
+            try {
+                // Count teams
+                const teamsQuery = query(collection(db, "teams"), where("leagueId", "==", currentLeague.id));
+                const teamsSnapshot = await getDocs(teamsQuery);
+                document.getElementById('teamCount').textContent = teamsSnapshot.size;
+
+                // Count players
+                const playersQuery = query(collection(db, "players"), where("leagueId", "==", currentLeague.id));
+                const playersSnapshot = await getDocs(playersQuery);
+                document.getElementById('playerCount').textContent = playersSnapshot.size;
+
+                // Count tournaments
+                const tournamentsQuery = query(collection(db, "tournaments"), where("leagueId", "==", currentLeague.id));
+                const tournamentsSnapshot = await getDocs(tournamentsQuery);
+                document.getElementById('tournamentCount').textContent = tournamentsSnapshot.size;
+
+            } catch (error) {
+                console.error('Error loading league stats:', error);
+            }
+        }
 
         window.createLeague = async function() {
             const name = document.getElementById('newLeagueName').value.trim();
@@ -273,6 +405,7 @@
                     <p><strong>League ID:</strong> ${docRef.id}</p>
                     <p><strong>Password:</strong> ${password}</p>
                     <p><strong>⚠️ IMPORTANT:</strong> Save these credentials! You'll need them to access your league.</p>
+                    <button onclick="autoLogin('${docRef.id}', '${password}', '${name}', '${creator}', '${sport}', '${description}')" style="margin-top: 10px;">Enter League Now</button>
                 `;
                 
                 // Clear form
@@ -283,6 +416,19 @@
             } catch (error) {
                 alert('Error creating league: ' + error.message);
             }
+        }
+
+        window.autoLogin = function(id, password, name, creator, sport, description) {
+            currentLeague = {
+                id: id,
+                name: name,
+                password: password,
+                creatorName: creator,
+                sport: sport,
+                description: description
+            };
+            localStorage.setItem('currentLeague', JSON.stringify(currentLeague));
+            showLeagueDashboard();
         }
 
         window.loginToLeague = async function() {
@@ -303,12 +449,11 @@
                     if (leagueData.password === password) {
                         currentLeague = { id: leagueId, ...leagueData };
                         localStorage.setItem('currentLeague', JSON.stringify(currentLeague));
+                        showLeagueDashboard();
                         
-                        document.getElementById('loginSection').classList.add('hidden');
-                        document.getElementById('leagueDashboard').classList.remove('hidden');
-                        document.getElementById('leagueDashboardTitle').textContent = `📊 ${leagueData.name} Dashboard`;
-                        
-                        loadTeams();
+                        // Clear login form
+                        document.getElementById('leagueId').value = '';
+                        document.getElementById('leaguePassword').value = '';
                     } else {
                         alert('Incorrect password');
                     }
@@ -351,6 +496,7 @@
 
                 alert('Team added successfully!');
                 loadTeams();
+                loadLeagueStats();
             } catch (error) {
                 alert('Error adding team: ' + error.message);
             }
@@ -366,6 +512,11 @@
                 const container = document.getElementById('teamsContainer');
                 container.innerHTML = '';
 
+                if (querySnapshot.size === 0) {
+                    container.innerHTML = '<p>No teams yet. Add your first team above!</p>';
+                    return;
+                }
+
                 querySnapshot.forEach((doc) => {
                     const team = doc.data();
                     const teamDiv = document.createElement('div');
@@ -376,7 +527,7 @@
                             Coach: ${team.coachName}<br>
                             Contact: ${team.contactInfo || 'N/A'}
                         </div>
-                        <button onclick="selectTeam('${doc.id}', '${team.teamName}')">Manage</button>
+                        <button onclick="selectTeam('${doc.id}', '${team.teamName}')">Manage Roster</button>
                     `;
                     container.appendChild(teamDiv);
                 });
@@ -390,17 +541,14 @@
             window.location.href = 'roster.html';
         }
 
-        // Check if user is already logged in
-        window.addEventListener('load', function() {
-            const savedLeague = localStorage.getItem('currentLeague');
-            if (savedLeague) {
-                currentLeague = JSON.parse(savedLeague);
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('leagueDashboard').classList.remove('hidden');
-                document.getElementById('leagueDashboardTitle').textContent = `📊 ${currentLeague.name} Dashboard`;
-                loadTeams();
+        window.logout = function() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentLeague');
+                localStorage.removeItem('selectedTeam');
+                currentLeague = null;
+                showAuthSection();
             }
-        });
+        }
     </script>
 </body>
 </html>

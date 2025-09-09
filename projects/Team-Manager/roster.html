@@ -32,11 +32,22 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
         
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
+        }
+        
+        .league-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
         }
         
         .content {
@@ -156,20 +167,6 @@
             margin-bottom: 15px;
         }
         
-        .stats-section {
-            background: #ecf0f1;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-        
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
         .navigation {
             text-align: center;
             margin-top: 30px;
@@ -228,26 +225,18 @@
             .player-details {
                 grid-template-columns: 1fr;
             }
-            
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <div class="league-info" id="leagueInfo">Loading...</div>
             <h1>👥 Roster Management</h1>
-            <p id="teamTitle">Manage your team's players and statistics</p>
+            <p id="teamTitle">Select a team to manage players</p>
         </div>
         
         <div class="content">
-            <!-- League Info Display -->
-            <div class="warning-message" id="leagueInfo">
-                <strong>Current League:</strong> <span id="currentLeagueName">Loading...</span>
-            </div>
-            
             <!-- Team Selection -->
             <div class="team-selector">
                 <h2>📋 Select Team</h2>
@@ -267,7 +256,7 @@
             <!-- Add New Player Section -->
             <div class="section" id="addPlayerSection">
                 <h2>➕ Add New Player</h2>
-                <div id="noTeamWarning" class="warning-message hidden">
+                <div id="noTeamWarning" class="warning-message">
                     ⚠️ Please select a team first before adding players.
                 </div>
                 <div class="form-row">
@@ -369,50 +358,34 @@
 
         // Load saved data on page load
         window.addEventListener('load', function() {
-            console.log('Page loaded, checking for saved data...');
-            
             const savedLeague = localStorage.getItem('currentLeague');
             const savedTeam = localStorage.getItem('selectedTeam');
             
-            console.log('Saved league:', savedLeague);
-            console.log('Saved team:', savedTeam);
-            
-            if (savedLeague) {
-                currentLeague = JSON.parse(savedLeague);
-                document.getElementById('currentLeagueName').textContent = currentLeague.name;
-                console.log('League loaded:', currentLeague);
-            } else {
-                document.getElementById('currentLeagueName').textContent = 'No league selected';
-                document.getElementById('leagueInfo').innerHTML = `
-                    <strong>⚠️ No League Selected:</strong> 
-                    <a href="index.html" style="color: #007bff;">Go back to select a league</a>
-                `;
+            if (!savedLeague) {
+                alert('Please select a league first');
+                window.location.href = 'index.html';
                 return;
             }
+            
+            currentLeague = JSON.parse(savedLeague);
+            document.getElementById('leagueInfo').textContent = `League: ${currentLeague.name}`;
             
             if (savedTeam) {
                 currentTeam = JSON.parse(savedTeam);
                 document.getElementById('teamTitle').textContent = `Managing: ${currentTeam.name}`;
-                console.log('Team loaded:', currentTeam);
             }
             
-            // Load teams and then load players if team is selected
             loadTeams().then(() => {
                 if (currentTeam) {
-                    // Pre-select the team in dropdown
                     document.getElementById('teamSelect').value = currentTeam.id;
+                    document.getElementById('noTeamWarning').classList.add('hidden');
                     loadPlayers();
                 }
             });
         });
 
         async function loadTeams() {
-            console.log('Loading teams for league:', currentLeague);
-            
-            if (!currentLeague) {
-                console.error('No current league found');
-                return;
-            }
+            if (!currentLeague) return;
 
             try {
                 const q = query(collection(db, "teams"), where("leagueId", "==", currentLeague.id));
@@ -421,7 +394,6 @@
                 const select = document.getElementById('teamSelect');
                 select.innerHTML = '<option value="">Select a team...</option>';
 
-                let teamCount = 0;
                 querySnapshot.forEach((doc) => {
                     const team = doc.data();
                     const option = document.createElement('option');
@@ -429,34 +401,20 @@
                     option.textContent = `${team.teamName} (Coach: ${team.coachName})`;
                     option.dataset.teamName = team.teamName;
                     select.appendChild(option);
-                    teamCount++;
                 });
-
-                console.log(`Loaded ${teamCount} teams`);
-                
-                if (teamCount === 0) {
-                    const option = document.createElement('option');
-                    option.value = "";
-                    option.textContent = "No teams found - Create teams in League Dashboard";
-                    select.appendChild(option);
-                }
 
             } catch (error) {
                 console.error('Error loading teams:', error);
-                alert('Error loading teams: ' + error.message);
             }
         }
 
         window.refreshTeams = async function() {
-            console.log('Refreshing teams...');
             await loadTeams();
         }
 
         window.selectTeam = function() {
             const select = document.getElementById('teamSelect');
             const selectedOption = select.options[select.selectedIndex];
-            
-            console.log('Team selected:', select.value);
             
             if (select.value) {
                 currentTeam = {
@@ -470,15 +428,13 @@
             } else {
                 currentTeam = null;
                 localStorage.removeItem('selectedTeam');
-                document.getElementById('teamTitle').textContent = 'Manage your team\'s players and statistics';
+                document.getElementById('teamTitle').textContent = 'Select a team to manage players';
                 document.getElementById('noTeamWarning').classList.remove('hidden');
                 document.getElementById('playersContainer').innerHTML = '<p>Select a team to view players...</p>';
             }
         }
 
         async function loadPlayers() {
-            console.log('Loading players for team:', currentTeam);
-            
             if (!currentTeam) return;
 
             try {
@@ -490,11 +446,9 @@
                     players.push({ id: doc.id, ...doc.data() });
                 });
 
-                console.log(`Loaded ${players.length} players`);
                 displayPlayers();
             } catch (error) {
                 console.error('Error loading players:', error);
-                alert('Error loading players: ' + error.message);
             }
         }
 
@@ -540,7 +494,6 @@
         window.addPlayer = async function() {
             if (!currentTeam) {
                 alert('Please select a team first');
-                document.getElementById('noTeamWarning').classList.remove('hidden');
                 return;
             }
 
@@ -559,8 +512,6 @@
             }
 
             try {
-                console.log('Adding player to team:', currentTeam);
-                
                 // Upload documents if any
                 const documentUrls = [];
                 for (let file of files) {
@@ -606,7 +557,6 @@
                 alert('Player added successfully!');
                 loadPlayers();
             } catch (error) {
-                console.error('Error adding player:', error);
                 alert('Error adding player: ' + error.message);
             }
         }
@@ -620,9 +570,9 @@
             
             const stats = player.stats || {};
             document.getElementById('statsContent').innerHTML = `
-                <div class="stats-section">
+                <div style="background: #ecf0f1; padding: 15px; border-radius: 5px; margin: 10px 0;">
                     <h3>Game Statistics</h3>
-                    <div class="stats-row">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 10px;">
                         <div>
                             <label>Games Played:</label>
                             <input type="number" id="gamesPlayed" value="${stats.gamesPlayed || 0}">
@@ -636,7 +586,7 @@
                             <input type="number" id="assists" value="${stats.assists || 0}">
                         </div>
                     </div>
-                    <div class="stats-row">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
                         <div>
                             <label>Rebounds:</label>
                             <input type="number" id="rebounds" value="${stats.rebounds || 0}">
