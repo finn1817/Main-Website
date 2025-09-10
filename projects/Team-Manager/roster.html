@@ -326,6 +326,49 @@
                 </div>
             </div>
             
+            <!-- Edit Player Modal -->
+            <div id="editPlayerModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    <h2 id="editPlayerName">Edit Player Information</h2>
+                    <div id="editPlayerContent">
+                        <div class="form-row">
+                            <div>
+                                <label for="editPlayerNameInput">Player Name:</label>
+                                <input type="text" id="editPlayerNameInput" placeholder="Full name">
+                            </div>
+                            <div>
+                                <label for="editJerseyNumber">Jersey Number:</label>
+                                <input type="number" id="editJerseyNumber" placeholder="##">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div>
+                                <label for="editPosition">Position:</label>
+                                <input type="text" id="editPosition" placeholder="e.g., Point Guard, Forward">
+                            </div>
+                            <div>
+                                <label for="editPlayerPhone">Phone:</label>
+                                <input type="tel" id="editPlayerPhone" placeholder="Phone number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPlayerEmail">Email:</label>
+                            <input type="email" id="editPlayerEmail" placeholder="Email address">
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmergencyContact">Emergency Contact:</label>
+                            <input type="text" id="editEmergencyContact" placeholder="Name and phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="editMedicalInfo">Medical Information:</label>
+                            <textarea id="editMedicalInfo" rows="3" placeholder="Allergies, conditions, medications, etc."></textarea>
+                        </div>
+                    </div>
+                    <button onclick="closeEditPlayerModal()" class="btn-danger">Cancel</button>
+                    <button onclick="savePlayerEdit()" class="btn-success">Save Changes</button>
+                </div>
+            </div>
+            
             <div class="navigation">
                 <button class="nav-button" onclick="window.location.href='index.html'">🏠 Back to League</button>
                 <button class="nav-button" onclick="window.location.href='tournament.html'">🏆 Tournaments</button>
@@ -757,6 +800,7 @@
                     </div>
                     ${player.medicalInfo ? `<div><strong>Medical Info:</strong> ${player.medicalInfo}</div>` : ''}
                     <div style="margin-top: 15px;">
+                        <button onclick="editPlayer('${player.id}')" class="btn-success">✏️ Edit Player</button>
                         <button onclick="editPlayerStats('${player.id}')" class="btn-success">📊 Edit Stats</button>
                         <button onclick="addInjury('${player.id}')" class="btn-warning">🩹 Add Injury</button>
                         <button onclick="deletePlayer('${player.id}')" class="btn-danger">🗑️ Delete</button>
@@ -945,6 +989,64 @@
 
         window.closeStatsModal = function() {
             document.getElementById('statsModal').classList.add('hidden');
+            currentPlayer = null;
+        }
+
+        window.editPlayer = function(playerId) {
+            const player = players.find(p => p.id === playerId);
+            if (!player) return;
+
+            currentPlayer = player;
+            
+            // Populate the edit form with current player data
+            document.getElementById('editPlayerName').textContent = `Edit: ${player.name}`;
+            document.getElementById('editPlayerNameInput').value = player.name || '';
+            document.getElementById('editJerseyNumber').value = player.jerseyNumber || '';
+            document.getElementById('editPosition').value = player.position || '';
+            document.getElementById('editPlayerPhone').value = player.phone || '';
+            document.getElementById('editPlayerEmail').value = player.email || '';
+            document.getElementById('editEmergencyContact').value = player.emergencyContact || '';
+            document.getElementById('editMedicalInfo').value = player.medicalInfo || '';
+            
+            document.getElementById('editPlayerModal').classList.remove('hidden');
+        }
+
+        window.savePlayerEdit = async function() {
+            if (!currentPlayer) return;
+
+            // Get updated values from the form
+            const updatedData = {
+                name: document.getElementById('editPlayerNameInput').value.trim(),
+                jerseyNumber: parseInt(document.getElementById('editJerseyNumber').value) || null,
+                position: document.getElementById('editPosition').value.trim(),
+                phone: document.getElementById('editPlayerPhone').value.trim(),
+                email: document.getElementById('editPlayerEmail').value.trim(),
+                emergencyContact: document.getElementById('editEmergencyContact').value.trim(),
+                medicalInfo: document.getElementById('editMedicalInfo').value.trim()
+            };
+
+            // Validation
+            if (!updatedData.name) {
+                alert('Player name is required');
+                return;
+            }
+
+            try {
+                // Update the player in the database
+                await updateDoc(doc(db, "players", currentPlayer.id), updatedData);
+                
+                alert('Player updated successfully!');
+                closeEditPlayerModal();
+                loadPlayers(); // Refresh the player list
+                
+            } catch (error) {
+                console.error('Error updating player:', error);
+                alert('Error updating player: ' + error.message);
+            }
+        }
+
+        window.closeEditPlayerModal = function() {
+            document.getElementById('editPlayerModal').classList.add('hidden');
             currentPlayer = null;
         }
 
