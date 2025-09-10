@@ -247,12 +247,8 @@
                             <option value="">Select a team...</option>
                         </select>
                     </div>
-                    <div style="display: flex; align-items: end; gap: 5px; flex-wrap: wrap;">
-                        <button onclick="refreshTeams()" class="btn-success">🔄 Refresh</button>
-                        <button onclick="debugTeamInfo()" class="btn-warning">🔍 Debug</button>
-                        <button onclick="checkVariables()" style="background: linear-gradient(45deg, #9b59b6, #8e44ad); color: white; border: none; padding: 12px 15px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold;">📊 Vars</button>
-                        <button onclick="syncInit()" style="background: linear-gradient(45deg, #16a085, #1abc9c); color: white; border: none; padding: 12px 15px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold;">🎯 DB Sync</button>
-                        <button onclick="reinitializePage()" class="btn-danger">🔧 Fix</button>
+                    <div style="display: flex; align-items: end;">
+                        <button onclick="emergencySync()" class="btn-success">� Refresh</button>
                     </div>
                 </div>
             </div>
@@ -333,12 +329,7 @@
             <div class="navigation">
                 <button class="nav-button" onclick="window.location.href='index.html'">🏠 Back to League</button>
                 <button class="nav-button" onclick="window.location.href='tournament.html'">🏆 Tournaments</button>
-                <button onclick="debugTeamInfo()">🔍 Debug Info</button>
-                <button onclick="checkVariables()">📊 Check Variables</button>
-                <button onclick="reinitializePage()">🔄 Reinitialize</button>
-                <button onclick="refreshTeams()">🔄 Refresh Teams</button>
-                <button onclick="syncInit()">🔄 Sync Init</button>
-                <button onclick="emergencySync()" class="btn-danger">🚨 Emergency Sync</button>
+                <button onclick="emergencySync()" class="btn-success">🔄 Refresh</button>
             </div>
         </div>
     </div>
@@ -597,101 +588,14 @@
             }
         }
 
+        // Refresh teams - now points to emergency sync for a clean user experience
         window.refreshTeams = async function() {
-            await loadTeams();
+            await emergencySync();
         }
 
-        window.debugTeamInfo = function() {
-            console.log('=== COMPREHENSIVE DEBUG INFO ===');
-            console.log('Current League:', currentLeague);
-            console.log('Current Team:', currentTeam);
-            
-            const rawLeague = localStorage.getItem('currentLeague');
-            const rawTeam = localStorage.getItem('selectedTeam');
-            console.log('LocalStorage - currentLeague (raw):', rawLeague);
-            console.log('LocalStorage - selectedTeam (raw):', rawTeam);
-            
-            // Try to parse localStorage data to see if it's valid
-            try {
-                const parsedLeague = JSON.parse(rawLeague);
-                console.log('LocalStorage league parses to:', parsedLeague);
-            } catch (e) {
-                console.error('League localStorage parse error:', e);
-            }
-            
-            try {
-                const parsedTeam = JSON.parse(rawTeam);
-                console.log('LocalStorage team parses to:', parsedTeam);
-            } catch (e) {
-                console.error('Team localStorage parse error:', e);
-            }
-            
-            const select = document.getElementById('teamSelect');
-            console.log('Team select element:', select);
-            console.log('Team select value:', select?.value);
-            if (select) {
-                console.log('Team select options:', Array.from(select.options).map(opt => ({
-                    value: opt.value, 
-                    text: opt.textContent, 
-                    teamName: opt.dataset.teamName,
-                    coachName: opt.dataset.coachName
-                })));
-            }
-            
-            // Check form elements
-            const formElements = {
-                playerName: document.getElementById('playerName')?.value,
-                jerseyNumber: document.getElementById('jerseyNumber')?.value,
-                position: document.getElementById('position')?.value,
-            };
-            console.log('Form elements:', formElements);
-            
-            const debugInfo = `=== TEAM MANAGER DEBUG INFO ===
-
-🏆 LEAGUE STATUS:
-${currentLeague ? '✅ League: ' + currentLeague.name + ' (ID: ' + currentLeague.id + ')' : '❌ No League Selected'}
-
-👥 TEAM STATUS:
-${currentTeam ? '✅ Team: ' + currentTeam.name + ' (ID: ' + currentTeam.id + ')' : '❌ No Team Selected'}
-
-📋 SELECT DROPDOWN:
-Value: "${select.value}"
-Options Count: ${select.options.length}
-
-💾 LOCALSTORAGE:
-League: ${localStorage.getItem('currentLeague') ? 'EXISTS' : 'MISSING'}
-Team: ${localStorage.getItem('selectedTeam') ? 'EXISTS' : 'MISSING'}
-
-📝 FORM STATUS:
-Player Name Field: ${formElements.playerName !== undefined ? 'EXISTS' : 'MISSING'}
-
-Check browser console for detailed logs.`;
-            
-            alert(debugInfo);
-        }
-
-        // Manual re-initialization function
-        window.reinitializePage = async function() {
-            console.log('=== MANUAL RE-INITIALIZATION ===');
-            
-            try {
-                // Clear current state
-                currentLeague = null;
-                currentTeam = null;
-                
-                // Re-run initialization
-                await initializePage();
-                
-                alert('Page re-initialized successfully!\n\nLeague: ' + (currentLeague?.name || 'FAILED') + '\nTeam: ' + (currentTeam?.name || 'None'));
-            } catch (error) {
-                console.error('Re-initialization failed:', error);
-                alert('Re-initialization failed: ' + error.message);
-            }
-        }
-
-        // Emergency localStorage to variable sync
+        // Refresh data from localStorage - reliable data sync
         window.emergencySync = async function() {
-            console.log('🚨 EMERGENCY SYNC FROM LOCALSTORAGE');
+            console.log('� Refreshing data from localStorage');
             
             try {
                 // Get from localStorage and set variables directly
@@ -743,46 +647,15 @@ Check browser console for detailed logs.`;
                     }
                 }
                 
-                alert(`Emergency sync complete!\nLeague: ${currentLeague?.name || 'FAILED'}\nTeam: ${currentTeam?.name || 'FAILED'}`);
+                console.log(`✅ Refresh complete - League: ${currentLeague?.name}, Team: ${currentTeam?.name}`);
                 
             } catch (error) {
-                console.error('Emergency sync failed:', error);
-                alert('Emergency sync failed: ' + error.message);
+                console.error('❌ Refresh failed:', error);
+                alert('Failed to refresh data: ' + error.message);
             }
         }
 
-        // Quick state check function
-        window.checkVariables = function() {
-            console.log('=== VARIABLE STATE CHECK ===');
-            console.log('currentLeague:', currentLeague);
-            console.log('currentTeam:', currentTeam);
-            console.log('localStorage league:', localStorage.getItem('currentLeague'));
-            console.log('localStorage team:', localStorage.getItem('selectedTeam'));
-            
-            const status = `Variables Status:
-            
-League Variable: ${currentLeague ? currentLeague.name + ' (ID: ' + currentLeague.id + ')' : 'NULL'}
-Team Variable: ${currentTeam ? currentTeam.name + ' (ID: ' + currentTeam.id + ')' : 'NULL'}
 
-LocalStorage League: ${localStorage.getItem('currentLeague') ? 'EXISTS' : 'MISSING'}
-LocalStorage Team: ${localStorage.getItem('selectedTeam') ? 'EXISTS' : 'MISSING'}`;
-            
-            alert(status);
-            return { currentLeague, currentTeam };
-        }
-
-        // Database re-sync function
-        window.syncInit = async function() {
-            console.log('=== DATABASE SYNC INITIALIZATION ===');
-            
-            try {
-                await initializeFromDatabase();
-                alert('Database sync complete!\nLeague: ' + (currentLeague?.name || 'None') + '\nTeam: ' + (currentTeam?.name || 'None'));
-            } catch (error) {
-                console.error('Database sync failed:', error);
-                alert('Database sync failed: ' + error.message);
-            }
-        }
 
         window.selectTeam = async function() {
             try {
