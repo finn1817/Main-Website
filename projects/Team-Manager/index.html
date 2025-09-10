@@ -427,7 +427,12 @@
                 sport: sport,
                 description: description
             };
+            
+            // Store in both localStorage and sessionStorage for reliability
             localStorage.setItem('currentLeague', JSON.stringify(currentLeague));
+            sessionStorage.setItem('currentLeagueId', id);
+            sessionStorage.setItem('currentLeague', JSON.stringify(currentLeague));
+            
             showLeagueDashboard();
         }
 
@@ -537,15 +542,22 @@
         }
 
         window.selectTeam = function(teamId, teamName, coachName) {
-            console.log('Navigating to roster with team:', teamId, teamName, coachName);
-            const teamData = {
+            console.log('🎯 Navigating to roster with database IDs');
+            console.log('Team ID:', teamId, 'League ID:', currentLeague.id);
+            
+            // Store session data for reliability
+            sessionStorage.setItem('currentLeagueId', currentLeague.id);
+            sessionStorage.setItem('currentTeamId', teamId);
+            
+            // Keep localStorage as fallback
+            localStorage.setItem('selectedTeam', JSON.stringify({
                 id: teamId, 
                 name: teamName,
                 coachName: coachName || 'Unknown'
-            };
-            localStorage.setItem('selectedTeam', JSON.stringify(teamData));
-            console.log('Saved team data to localStorage:', teamData);
-            window.location.href = 'roster.html';
+            }));
+            
+            // Navigate with URL parameters for maximum reliability
+            window.location.href = `roster.html?league=${currentLeague.id}&team=${teamId}`;
         }
 
         window.logout = function() {
