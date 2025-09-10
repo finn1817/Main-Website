@@ -333,6 +333,12 @@
             <div class="navigation">
                 <button class="nav-button" onclick="window.location.href='index.html'">🏠 Back to League</button>
                 <button class="nav-button" onclick="window.location.href='tournament.html'">🏆 Tournaments</button>
+                <button onclick="debugTeamInfo()">🔍 Debug Info</button>
+                <button onclick="checkVariables()">📊 Check Variables</button>
+                <button onclick="reinitializePage()">🔄 Reinitialize</button>
+                <button onclick="refreshTeams()">🔄 Refresh Teams</button>
+                <button onclick="syncInit()">🔄 Sync Init</button>
+                <button onclick="emergencySync()" class="btn-danger">🚨 Emergency Sync</button>
             </div>
         </div>
     </div>
@@ -680,6 +686,68 @@ Check browser console for detailed logs.`;
             } catch (error) {
                 console.error('Re-initialization failed:', error);
                 alert('Re-initialization failed: ' + error.message);
+            }
+        }
+
+        // Emergency localStorage to variable sync
+        window.emergencySync = async function() {
+            console.log('🚨 EMERGENCY SYNC FROM LOCALSTORAGE');
+            
+            try {
+                // Get from localStorage and set variables directly
+                const rawLeague = localStorage.getItem('currentLeague');
+                const rawTeam = localStorage.getItem('selectedTeam');
+                
+                if (rawLeague) {
+                    const parsed = JSON.parse(rawLeague);
+                    currentLeague = {
+                        id: parsed.id,
+                        name: parsed.name,
+                        creatorName: parsed.creatorName,
+                        sport: parsed.sport,
+                        password: parsed.password,
+                        description: parsed.description
+                    };
+                    console.log('✅ Emergency league sync:', currentLeague.name);
+                    
+                    // Update UI
+                    document.getElementById('leagueInfo').textContent = `League: ${currentLeague.name}`;
+                }
+                
+                if (rawTeam) {
+                    const parsed = JSON.parse(rawTeam);
+                    currentTeam = {
+                        id: parsed.id,
+                        name: parsed.name,
+                        coachName: parsed.coachName || 'Unknown'
+                    };
+                    console.log('✅ Emergency team sync:', currentTeam.name);
+                    
+                    // Update UI
+                    document.getElementById('teamTitle').textContent = `Managing: ${currentTeam.name}`;
+                    document.getElementById('noTeamWarning').classList.add('hidden');
+                }
+                
+                // Now load teams and players
+                if (currentLeague) {
+                    await loadTeams();
+                    
+                    if (currentTeam) {
+                        // Set team select
+                        const select = document.getElementById('teamSelect');
+                        if (select) {
+                            select.value = currentTeam.id;
+                        }
+                        
+                        await loadPlayers();
+                    }
+                }
+                
+                alert(`Emergency sync complete!\nLeague: ${currentLeague?.name || 'FAILED'}\nTeam: ${currentTeam?.name || 'FAILED'}`);
+                
+            } catch (error) {
+                console.error('Emergency sync failed:', error);
+                alert('Emergency sync failed: ' + error.message);
             }
         }
 
