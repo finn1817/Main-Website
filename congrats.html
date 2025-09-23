@@ -437,16 +437,24 @@
     }
 
     .modal-card {
-      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.95);
       border-radius: 14px;
       padding: 20px;
       max-width: 560px;
       width: 100%;
-      color: white;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-      border: 1px solid rgba(255,255,255,0.08);
+      color: #333;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      border: 1px solid rgba(0,0,0,0.1);
       max-height: 80vh;
       overflow: auto;
+      backdrop-filter: blur(10px);
+    }
+
+    body.dark .modal-card {
+      background: rgba(20,20,30,0.95);
+      color: #e3e9f3;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.7);
     }
 
     .modal-close {
@@ -455,9 +463,22 @@
       right: 20px;
       background: transparent;
       border: none;
-      color: white;
+      color: #666;
       font-size: 1.2em;
       cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .modal-close:hover {
+      color: #333;
+    }
+
+    body.dark .modal-close {
+      color: #bbb;
+    }
+
+    body.dark .modal-close:hover {
+      color: #fff;
     }
   </style>
 </head>
