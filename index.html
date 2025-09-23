@@ -697,6 +697,54 @@
       color: rgba(0, 0, 0, 0.6) !important;
     }
 
+    /* Easter Egg Button - Hidden in bottom right corner */
+    .easter-egg-btn {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      width: 20px;
+      height: 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      opacity: 0;
+      z-index: 10;
+    }
+
+    .easter-egg-btn:hover {
+      opacity: 0.1;
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.2);
+    }
+
+    .easter-egg-btn.clicked {
+      animation: easter-egg-pulse 0.3s ease;
+    }
+
+    @keyframes easter-egg-pulse {
+      0% { transform: scale(1); opacity: 0.2; }
+      50% { transform: scale(1.5); opacity: 0.4; background: rgba(255, 215, 0, 0.3); }
+      100% { transform: scale(1); opacity: 0; }
+    }
+
+    /* Easter Egg Click Counter Visual Feedback */
+    .click-counter {
+      position: absolute;
+      bottom: -30px;
+      right: 10px;
+      font-size: 0.7em;
+      color: rgba(255, 255, 255, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .click-counter.visible {
+      opacity: 1;
+    }
+
     /* responsive design enhancements */
     @media (max-width: 768px) {
       .homepage-card {
@@ -847,6 +895,10 @@
 
       <p style="animation-delay: 0.7s;">Download or view my professional resume:</p>
       <a class="resume-button" href="resume/"><span>My Resume</span></a>
+      
+      <!-- Hidden Easter Egg Button -->
+      <button class="easter-egg-btn" id="easterEggBtn" title="🤔"></button>
+      <div class="click-counter" id="clickCounter">🥚 0/3</div>
     </div>
   </div>
 
@@ -1495,6 +1547,57 @@ updateLoginUI();
       // Make performSearch and navigateToResult global for onclick handlers
       window.performSearch = performSearch;
       window.navigateToResult = navigateToResult;
+
+      // Easter Egg Functionality
+      let easterEggClicks = 0;
+      const maxClicks = 3;
+      const easterEggBtn = document.getElementById('easterEggBtn');
+      const clickCounter = document.getElementById('clickCounter');
+      let easterEggTimeout;
+
+      easterEggBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        easterEggClicks++;
+        
+        // Add visual feedback
+        easterEggBtn.classList.add('clicked');
+        setTimeout(() => easterEggBtn.classList.remove('clicked'), 300);
+        
+        // Update counter display
+        clickCounter.textContent = `🥚 ${easterEggClicks}/${maxClicks}`;
+        clickCounter.classList.add('visible');
+        
+        // Clear any existing timeout
+        clearTimeout(easterEggTimeout);
+        
+        if (easterEggClicks >= maxClicks) {
+          // Success! Redirect to congratulations page
+          clickCounter.textContent = '🎉 Found it!';
+          setTimeout(() => {
+            window.location.href = 'congrats.html';
+          }, 500);
+        } else {
+          // Hide counter after 2 seconds if not completed
+          easterEggTimeout = setTimeout(() => {
+            clickCounter.classList.remove('visible');
+          }, 2000);
+        }
+      });
+
+      // Reset Easter egg after 10 seconds of inactivity
+      let resetTimeout;
+      function resetEasterEgg() {
+        clearTimeout(resetTimeout);
+        resetTimeout = setTimeout(() => {
+          if (easterEggClicks > 0 && easterEggClicks < maxClicks) {
+            easterEggClicks = 0;
+            clickCounter.classList.remove('visible');
+          }
+        }, 10000);
+      }
+
+      // Call reset function on each click
+      easterEggBtn.addEventListener('click', resetEasterEgg);
 
     });
   </script>
