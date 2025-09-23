@@ -29,7 +29,9 @@
       justify-content: center;
       align-items: center;
       color: white;
-      overflow: hidden;
+      /* allow vertical scrolling so the celebration content is fully visible on smaller screens */
+      overflow-x: hidden;
+      overflow-y: auto;
       position: relative;
     }
 
@@ -80,15 +82,18 @@
       /* reduced backdrop blur to avoid softening text on some browsers */
       backdrop-filter: blur(4px);
       border-radius: 30px;
-      padding: 60px 40px;
+      padding: 48px 28px;
       border: 2px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       transform: scale(0);
       animation: celebration-appear 1s ease-out 0.5s forwards;
       max-width: 600px;
       width: 90%;
+      /* keep container visible on smaller viewports */
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
       position: relative;
-      overflow: hidden;
+      overflow-x: hidden;
       /* promote to its own compositing layer for crisper rendering */
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
@@ -296,6 +301,73 @@
         font-size: 1.2em;
       }
     }
+    /* Tab bar and modal styles */
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: rgba(255,255,255,0.06);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+
+    /* Modal base */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 20px;
+      max-width: 560px;
+      width: 100%;
+      color: white;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+      max-height: 80vh;
+      overflow: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -324,6 +396,12 @@
     </div>
     <a href="index.html" class="back-button">← Back to Homepage</a>
     <div class="discovery-counter">Easter Egg #1 Discovered! 🥚</div>
+    <!-- Tab bar for extra interactions -->
+    <div class="tab-bar" role="tablist" aria-label="Extra actions">
+      <button class="tab-btn" id="tab-stats">📊 Stats</button>
+      <button class="tab-btn" id="tab-secret">🔐 Secret</button>
+      <button class="tab-btn" id="tab-share">🔗 Share</button>
+    </div>
   </div>
 
   <!-- Fireworks Effects -->
@@ -331,6 +409,41 @@
   <div class="firework" style="top: 30%; left: 80%; animation-delay: 1.5s;"></div>
   <div class="firework" style="top: 60%; left: 30%; animation-delay: 2s;"></div>
   <div class="firework" style="top: 70%; left: 70%; animation-delay: 2.5s;"></div>
+
+  <!-- Modals -->
+  <div class="modal-overlay" id="modalStats" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="statsTitle">
+      <button class="modal-close" data-close>&times;</button>
+      <h3 id="statsTitle">Visitor Stats</h3>
+      <p id="visitorCountText">Checking your achievement status...</p>
+      <p>Local discoveries: <strong id="localDiscoveries">0</strong></p>
+      <p>Tip: Try finding more hidden bits on the site!</p>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalSecret" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="secretTitle">
+      <button class="modal-close" data-close>&times;</button>
+      <h3 id="secretTitle">A Little Secret</h3>
+      <p>Because you found this, here's a short message:</p>
+      <blockquote style="margin:12px 0;padding:12px;background:rgba(0,0,0,0.15);border-radius:8px;">Curiosity fuels creativity. Keep exploring!</blockquote>
+      <p><small>This message is shown only to discoverers.</small></p>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalShare" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+      <button class="modal-close" data-close>&times;</button>
+      <h3 id="shareTitle">Share Your Find</h3>
+      <p>Copy a short message to share your discovery:</p>
+      <textarea id="shareText" style="width:100%;height:80px;border-radius:8px;padding:8px;background:rgba(0,0,0,0.12);color:white;border:1px solid rgba(255,255,255,0.06);">I found a hidden Easter egg on Dan Finn's site! Check it out: {url}</textarea>
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
+        <button class="tab-btn" id="copyShare">Copy Message</button>
+        <button class="tab-btn" id="openShare" style="background:var(--secondary-gradient);">Open Share Link</button>
+        <span id="shareResult" style="opacity:0;transition:opacity 0.2s;color:#bfffbf;margin-left:8px;">Copied!</span>
+      </div>
+    </div>
+  </div>
 
   <script>
     // Add more dynamic confetti
@@ -367,6 +480,98 @@
     // setTimeout(() => audio.play(), 1000);
 
     console.log("🎉 Congratulations! You found the Easter egg! 🎉");
+    
+    // --- Tabs & Modals Behavior ---
+    const tabStats = document.getElementById('tab-stats');
+    const tabSecret = document.getElementById('tab-secret');
+    const tabShare = document.getElementById('tab-share');
+
+    const modalStats = document.getElementById('modalStats');
+    const modalSecret = document.getElementById('modalSecret');
+    const modalShare = document.getElementById('modalShare');
+
+    function openModal(modal) {
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      // trap focus lightly: focus first button
+      const btn = modal.querySelector('.modal-close');
+      if (btn) btn.focus();
+    }
+
+    function closeModal(modal) {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    document.querySelectorAll('.modal-close').forEach(b => b.addEventListener('click', (e) => {
+      const overlay = e.target.closest('.modal-overlay');
+      if (overlay) closeModal(overlay);
+    }));
+
+    // close on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', (e) => {
+      if (e.target === o) closeModal(o);
+    }));
+
+    tabStats.addEventListener('click', () => openModal(modalStats));
+    tabSecret.addEventListener('click', () => openModal(modalSecret));
+    tabShare.addEventListener('click', () => openModal(modalShare));
+
+    // --- Visitor Counter (local) and stats ---
+    const localKey = 'congrats_discoveries_v1';
+    function bumpLocalDiscoveries() {
+      try {
+        const raw = localStorage.getItem(localKey);
+        let count = raw ? parseInt(raw, 10) : 0;
+        count = isNaN(count) ? 0 : count;
+        count += 1;
+        localStorage.setItem(localKey, String(count));
+        return count;
+      } catch (err) { return 0; }
+    }
+
+    // when this page is opened, increment local discovery count
+    const localCount = bumpLocalDiscoveries();
+    const localDiscoveriesNode = document.getElementById('localDiscoveries');
+    if (localDiscoveriesNode) localDiscoveriesNode.textContent = String(localCount);
+
+    const visitorCountText = document.getElementById('visitorCountText');
+    if (visitorCountText) visitorCountText.textContent = `You've opened this page ${localCount} time${localCount===1? '' : 's'} on this browser.`;
+
+    // --- Share actions ---
+    const copyShare = document.getElementById('copyShare');
+    const openShare = document.getElementById('openShare');
+    const shareText = document.getElementById('shareText');
+    const shareResult = document.getElementById('shareResult');
+
+    if (shareText) {
+      shareText.value = shareText.value.replace('{url}', window.location.href.replace('congrats.html','index.html'));
+    }
+
+    copyShare.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(shareText.value);
+        shareResult.style.opacity = '1';
+        setTimeout(() => shareResult.style.opacity = '0', 2000);
+      } catch (err) {
+        shareResult.style.opacity = '1';
+        shareResult.textContent = 'Failed to copy';
+        setTimeout(() => { shareResult.style.opacity = '0'; shareResult.textContent = 'Copied!'; }, 2000);
+      }
+    });
+
+    openShare.addEventListener('click', () => {
+      const u = encodeURIComponent(shareText.value);
+      const twitter = `https://twitter.com/intent/tweet?text=${u}`;
+      window.open(twitter, '_blank');
+    });
+
+    // Accessibility: allow Esc to close modals
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(m => closeModal(m));
+      }
+    });
   </script>
 </body>
 </html>
