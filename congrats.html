@@ -11,22 +11,89 @@
       --primary-gradient: linear-gradient(135deg, #0d6efd, #1a8cff);
       --secondary-gradient: linear-gradient(135deg, #1f914d, #24b474);
       --celebration-gradient: linear-gradient(135deg, #ff8a05, #ffb300, #ffd54f, #aeea00);
-      --card-glass-light: rgba(255,255,255,0.18);
-      --card-glass-dark: rgba(20,20,28,0.78);
-      --text-light: #ffffff;
-      --text-dark: #e3e9f3;
+      --card-glass: rgba(255,255,255,0.18);
+      --text-color: #ffffff;
+      --background-image: url('./assets/images/background-light.jpg');
     }
 
+    /* Light Theme */
     body.light {
       --primary-gradient: linear-gradient(135deg, #007bff, #4dabf7);
       --secondary-gradient: linear-gradient(135deg, #28a745, #20c997);
       --celebration-gradient: linear-gradient(135deg, #ff6b35, #f7931e, #ffd700, #7cb342);
+      --card-glass: rgba(255,255,255,0.18);
+      --text-color: #ffffff;
+      --background-image: url('./assets/images/background-light.jpg');
     }
 
+    /* Dark Theme */
     body.dark {
       --primary-gradient: linear-gradient(135deg, #004b9a, #006bce);
       --secondary-gradient: linear-gradient(135deg, #137a3d, #149f55);
       --celebration-gradient: linear-gradient(135deg, #ff9100, #ffca28, #ffee58, #b2ff59);
+      --card-glass: rgba(20,20,28,0.78);
+      --text-color: #e3e9f3;
+      --background-image: url('./assets/images/background-dark.jpg');
+    }
+
+    /* Neon Theme */
+    body.neon {
+      --primary-gradient: linear-gradient(135deg, #ff0080, #ff4099);
+      --secondary-gradient: linear-gradient(135deg, #00ff88, #33ff99);
+      --celebration-gradient: linear-gradient(135deg, #ff0080, #ff4099, #00ff88, #33ffaa);
+      --card-glass: rgba(10,0,20,0.85);
+      --text-color: #ffffff;
+      --background-image: linear-gradient(135deg, #0a0015 0%, #1a0030 50%, #0f0020 100%);
+    }
+
+    /* Sunset Theme */
+    body.sunset {
+      --primary-gradient: linear-gradient(135deg, #ff6b35, #ff8e53);
+      --secondary-gradient: linear-gradient(135deg, #ffd23f, #ffe066);
+      --celebration-gradient: linear-gradient(135deg, #ff6b35, #ff8e53, #ffd23f, #ffe066);
+      --card-glass: rgba(255,100,50,0.15);
+      --text-color: #2a1810;
+      --background-image: linear-gradient(135deg, #ff9a56 0%, #ffad85 50%, #ffc3a0 100%);
+    }
+
+    /* Ocean Theme */
+    body.ocean {
+      --primary-gradient: linear-gradient(135deg, #006994, #0099cc);
+      --secondary-gradient: linear-gradient(135deg, #20b2aa, #48cae4);
+      --celebration-gradient: linear-gradient(135deg, #006994, #0099cc, #20b2aa, #48cae4);
+      --card-glass: rgba(0,50,100,0.25);
+      --text-color: #ffffff;
+      --background-image: linear-gradient(135deg, #023047 0%, #126782 50%, #219ebc 100%);
+    }
+
+    /* Forest Theme */
+    body.forest {
+      --primary-gradient: linear-gradient(135deg, #2d5016, #3d6b1c);
+      --secondary-gradient: linear-gradient(135deg, #52b788, #74c69d);
+      --celebration-gradient: linear-gradient(135deg, #2d5016, #52b788, #74c69d, #95d5b2);
+      --card-glass: rgba(45,80,22,0.3);
+      --text-color: #ffffff;
+      --background-image: linear-gradient(135deg, #1b4332 0%, #2d5a3d 50%, #52796f 100%);
+    }
+
+    /* Purple Theme */
+    body.purple {
+      --primary-gradient: linear-gradient(135deg, #6a4c93, #8b5fbf);
+      --secondary-gradient: linear-gradient(135deg, #c77dff, #e0aaff);
+      --celebration-gradient: linear-gradient(135deg, #6a4c93, #8b5fbf, #c77dff, #e0aaff);
+      --card-glass: rgba(106,76,147,0.2);
+      --text-color: #ffffff;
+      --background-image: linear-gradient(135deg, #3c1361 0%, #5a189a 50%, #7209b7 100%);
+    }
+
+    /* Gold Theme */
+    body.gold {
+      --primary-gradient: linear-gradient(135deg, #b8860b, #daa520);
+      --secondary-gradient: linear-gradient(135deg, #ffd700, #ffed4a);
+      --celebration-gradient: linear-gradient(135deg, #b8860b, #daa520, #ffd700, #ffed4a);
+      --card-glass: rgba(218,165,32,0.2);
+      --text-color: #2a1f0a;
+      --background-image: linear-gradient(135deg, #8b4513 0%, #daa520 50%, #ffd700 100%);
     }
 
     * {
@@ -37,7 +104,7 @@
 
     body {
       font-family: 'Roboto', sans-serif;
-      background-image: url('./assets/images/background-light.jpg');
+      background: var(--background-image);
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
@@ -45,15 +112,15 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      color: var(--text-light);
+      color: var(--text-color);
       overflow-x: hidden;
       overflow-y: auto;
       position: relative;
       padding-top: 90px;
-      transition: background-image var(--transition-speed) ease, color var(--transition-speed) ease;
+      transition: all var(--transition-speed) ease;
     }
 
-    body.dark { background-image: url('./assets/images/background-dark.jpg'); color: var(--text-dark); }
+    body.dark { color: var(--text-color); }
 
     @keyframes gradient-shift {
       0% { background-position: 0% 50%; }
@@ -98,7 +165,7 @@
     /* Main Content */
     .celebration-container {
       text-align: center;
-      background: var(--card-glass-light);
+      background: var(--card-glass);
       backdrop-filter: blur(10px);
       border-radius: 30px;
       padding: 48px 28px;
@@ -120,7 +187,7 @@
       will-change: transform;
     }
 
-    body.dark .celebration-container { background: var(--card-glass-dark); border: 1px solid rgba(255,255,255,0.12); }
+    body.dark .celebration-container { border: 1px solid rgba(255,255,255,0.12); }
 
     @keyframes celebration-appear {
       0% {
@@ -480,10 +547,190 @@
     body.dark .modal-close:hover {
       color: #fff;
     }
+
+    /* Theme Dropdown Styles */
+    .theme-dropdown {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 3600;
+    }
+
+    .theme-toggle-btn {
+      background: rgba(255,255,255,0.06);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      font-size: 1.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(8px);
+    }
+
+    .theme-toggle-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .theme-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: rgba(20,20,30,0.95);
+      border-radius: 12px;
+      padding: 8px;
+      min-width: 160px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      margin-top: 8px;
+    }
+
+    .theme-dropdown.open .theme-dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .theme-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #e3e9f3;
+      font-size: 0.9em;
+    }
+
+    .theme-option:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateX(4px);
+    }
+
+    .theme-option.active {
+      background: var(--primary-gradient);
+      color: white;
+    }
+
+    .theme-icon {
+      font-size: 1.1em;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Neon Theme Special Effects */
+    body.neon .celebration-container {
+      box-shadow: 
+        0 0 20px rgba(255, 0, 128, 0.3),
+        0 0 40px rgba(255, 64, 153, 0.2),
+        0 20px 60px rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(255, 0, 128, 0.4);
+    }
+
+    body.neon .celebration-container::before {
+      box-shadow: 0 0 30px rgba(255, 0, 128, 0.6);
+    }
+
+    body.neon .tab-btn {
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+      border-color: rgba(0, 255, 136, 0.4);
+    }
+
+    body.neon .tab-btn:hover {
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+    }
+
+    /* Sunset Theme Special Effects */
+    body.sunset .celebration-container {
+      box-shadow: 
+        0 0 20px rgba(255, 107, 53, 0.3),
+        0 20px 60px rgba(255, 140, 83, 0.2);
+    }
+
+    /* Ocean Theme Special Effects */
+    body.ocean .celebration-container {
+      box-shadow: 
+        0 0 20px rgba(0, 105, 148, 0.4),
+        0 20px 60px rgba(32, 178, 170, 0.2);
+    }
+
+    /* Forest Theme Special Effects */
+    body.forest .celebration-container {
+      box-shadow: 
+        0 0 20px rgba(45, 80, 22, 0.4),
+        0 20px 60px rgba(82, 183, 136, 0.2);
+    }
+
+    /* Purple Theme Special Effects */
+    body.purple .celebration-container {
+      box-shadow: 
+        0 0 20px rgba(106, 76, 147, 0.4),
+        0 20px 60px rgba(199, 125, 255, 0.2);
+    }
+
+    /* Gold Theme Special Effects */
+    body.gold .celebration-container {
+      box-shadow: 
+        0 0 20px rgba(218, 165, 32, 0.4),
+        0 20px 60px rgba(255, 215, 0, 0.3);
+      border-color: rgba(255, 215, 0, 0.3);
+    }
   </style>
 </head>
 <body class="light">
-  <button id="theme-toggle" class="tab-btn" style="position:fixed;top:20px;right:20px;z-index:3600;font-size:1.05em;padding:10px 16px;">🌙</button>
+  <div class="theme-dropdown" id="themeDropdown">
+    <button class="theme-toggle-btn" id="themeToggleBtn">
+      <span id="currentThemeIcon">🌙</span>
+      <span>Theme</span>
+      <span style="font-size: 0.8em;">▼</span>
+    </button>
+    <div class="theme-dropdown-menu" id="themeDropdownMenu">
+      <div class="theme-option" data-theme="light">
+        <span class="theme-icon">☀️</span>
+        <span>Light</span>
+      </div>
+      <div class="theme-option" data-theme="dark">
+        <span class="theme-icon">🌙</span>
+        <span>Dark</span>
+      </div>
+      <div class="theme-option" data-theme="neon">
+        <span class="theme-icon">⚡</span>
+        <span>Neon</span>
+      </div>
+      <div class="theme-option" data-theme="sunset">
+        <span class="theme-icon">🌅</span>
+        <span>Sunset</span>
+      </div>
+      <div class="theme-option" data-theme="ocean">
+        <span class="theme-icon">🌊</span>
+        <span>Ocean</span>
+      </div>
+      <div class="theme-option" data-theme="forest">
+        <span class="theme-icon">🌲</span>
+        <span>Forest</span>
+      </div>
+      <div class="theme-option" data-theme="purple">
+        <span class="theme-icon">💜</span>
+        <span>Purple</span>
+      </div>
+      <div class="theme-option" data-theme="gold">
+        <span class="theme-icon">✨</span>
+        <span>Gold</span>
+      </div>
+    </div>
+  </div>
   <!-- Confetti Elements -->
   <div class="confetti" style="left: 10%; animation-delay: 0s;"></div>
   <div class="confetti" style="left: 20%; animation-delay: 0.2s;"></div>
@@ -566,21 +813,72 @@
   </div>
 
   <script>
-    // Theme sync (matches main site logic assumption)
-    const THEME_KEY = 'siteTheme';
+    // Theme system (local to this page only)
+    const CONGRATS_THEME_KEY = 'congrats_page_theme';
     const bodyEl = document.body;
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    function applyStoredTheme() {
-      const saved = localStorage.getItem(THEME_KEY) || 'light';
-      bodyEl.classList.remove('light','dark');
-      bodyEl.classList.add(saved);
-      themeToggleBtn.textContent = saved === 'light' ? '🌙' : '☀️';
+    const themeDropdown = document.getElementById('themeDropdown');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeDropdownMenu = document.getElementById('themeDropdownMenu');
+    const currentThemeIcon = document.getElementById('currentThemeIcon');
+    
+    const themes = {
+      light: { icon: '☀️', name: 'Light' },
+      dark: { icon: '🌙', name: 'Dark' },
+      neon: { icon: '⚡', name: 'Neon' },
+      sunset: { icon: '🌅', name: 'Sunset' },
+      ocean: { icon: '🌊', name: 'Ocean' },
+      forest: { icon: '🌲', name: 'Forest' },
+      purple: { icon: '💜', name: 'Purple' },
+      gold: { icon: '✨', name: 'Gold' }
+    };
+
+    function getCurrentTheme() {
+      return localStorage.getItem(CONGRATS_THEME_KEY) || 'light';
     }
-    applyStoredTheme();
-    themeToggleBtn.addEventListener('click', () => {
-      const next = bodyEl.classList.contains('light') ? 'dark' : 'light';
-      localStorage.setItem(THEME_KEY, next);
-      applyStoredTheme();
+
+    function applyTheme(themeName) {
+      // Remove all theme classes
+      Object.keys(themes).forEach(theme => {
+        bodyEl.classList.remove(theme);
+      });
+      
+      // Apply new theme
+      bodyEl.classList.add(themeName);
+      localStorage.setItem(CONGRATS_THEME_KEY, themeName);
+      
+      // Update UI
+      currentThemeIcon.textContent = themes[themeName].icon;
+      
+      // Update active state in dropdown
+      document.querySelectorAll('.theme-option').forEach(option => {
+        option.classList.toggle('active', option.dataset.theme === themeName);
+      });
+    }
+
+    // Initialize theme
+    applyTheme(getCurrentTheme());
+
+    // Theme dropdown toggle
+    themeToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      themeDropdown.classList.toggle('open');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!themeDropdown.contains(e.target)) {
+        themeDropdown.classList.remove('open');
+      }
+    });
+
+    // Handle theme selection
+    document.querySelectorAll('.theme-option').forEach(option => {
+      option.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const themeName = option.dataset.theme;
+        applyTheme(themeName);
+        themeDropdown.classList.remove('open');
+      });
     });
 
     // Add more dynamic confetti
