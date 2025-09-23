@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>The Portal Chamber</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #6f8dff;
+    --accent-glow: #9fb8ff;
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: radial-gradient(circle at 50% 50%, #0d1117 0%, #05070a 70%);
+    color:#ecf2ff;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .sphere-wrapper {
+    position:relative; width:340px; height:340px; display:flex;align-items:center;justify-content:center;
+    filter: drop-shadow(0 0 18px rgba(111,141,255,0.4));
+  }
+  .sphere {
+    position:relative; width:100%; height:100%; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, var(--accent) 0%, #2c3f87 40%, #0d1324 70%);
+    animation: pulse 6s ease-in-out infinite;
+    box-shadow:0 0 0 2px rgba(255,255,255,0.06),0 0 35px 10px rgba(111,141,255,0.25) inset;
+    overflow:hidden;
+  }
+  .ring { position:absolute; top:50%; left:50%; width:180%; height:180%; border:2px solid rgba(255,255,255,0.08); border-radius:50%; transform:translate(-50%,-50%) rotateX(65deg); animation: spin 18s linear infinite; }
+  .ring:nth-child(2){ width:150%; height:150%; animation-direction:reverse; animation-duration:28s; }
+  .ring:nth-child(3){ width:120%; height:120%; animation-duration:36s; }
+  @keyframes spin { to { transform:translate(-50%,-50%) rotateX(65deg) rotateZ(360deg); } }
+  @keyframes pulse { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.04);} }
+  h1 { text-align:center; font-size:2.1rem; letter-spacing:1px; margin-top:30px; background:linear-gradient(90deg,#fff,#9fb8ff,#fff); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation: shimmer 5s linear infinite; }
+  @keyframes shimmer { 0%{ background-position:0% 50%; } 100%{ background-position:200% 50%; } }
+  .panel { max-width:640px; padding:28px 34px 46px; background:rgba(255,255,255,0.05); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.1); border-radius:30px; box-shadow:0 25px 60px -10px rgba(0,0,0,0.6), 0 4px 18px rgba(0,0,0,0.4); text-align:center; }
+  p { margin:16px 0 10px; line-height:1.5; font-size:0.95rem; }
+  .badge { display:inline-block; background:linear-gradient(135deg,#6f8dff,#3d62ff); padding:6px 14px; border-radius:20px; font-size:0.75rem; letter-spacing:1px; font-weight:500; color:#fff; box-shadow:0 0 0 2px rgba(255,255,255,0.08),0 4px 14px rgba(111,141,255,0.38); }
+  .actions { margin-top:28px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .btn { position:relative; background:linear-gradient(135deg,#405dff,#2748e7); color:#fff; padding:12px 26px; border:none; border-radius:14px; cursor:pointer; font-size:0.9rem; font-weight:500; letter-spacing:0.5px; transition:transform .25s, box-shadow .25s; }
+  .btn:hover { transform:translateY(-4px); box-shadow:0 12px 30px -6px rgba(64,93,255,0.55); }
+  .btn.alt { background:linear-gradient(135deg,#1d8f52,#17b36d); }
+  .btn:active { transform:translateY(-1px) scale(.98); }
+  footer { margin-top:26px; font-size:0.7rem; opacity:.55; letter-spacing:.5px; }
+  .glyphs { margin-top:14px; font-size:1.2rem; letter-spacing:6px; opacity:.65; }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <div class="sphere-wrapper">
+      <div class="sphere">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+      </div>
+    </div>
+    <h1>Portal Unlocked</h1>
+    <span class="badge">EASTER EGG #2</span>
+    <p>You mastered the long-press + secret sequence challenge. This hidden chamber confirms your elite explorer status.</p>
+    <p>Remember the password: <strong>PORTAL</strong>. It may come in handy for future secrets.</p>
+    <div class="glyphs">⚡ ✨ 🜂 🜁 🜄</div>
+    <div class="actions">
+      <button class="btn" onclick="window.location.href='index.html'">Return Home</button>
+      <button class="btn alt" onclick="window.location.href='congrats.html'">Back to Egg #1</button>
+    </div>
+    <footer>Sequence: Long Press + PORTAL • Crafted for curiosity</footer>
+  </div>
+</body>
+</html>

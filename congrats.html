@@ -7,10 +7,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
+      --transition-speed: 0.4s;
+      --primary-gradient: linear-gradient(135deg, #0d6efd, #1a8cff);
+      --secondary-gradient: linear-gradient(135deg, #1f914d, #24b474);
+      --celebration-gradient: linear-gradient(135deg, #ff8a05, #ffb300, #ffd54f, #aeea00);
+      --card-glass-light: rgba(255,255,255,0.18);
+      --card-glass-dark: rgba(20,20,28,0.78);
+      --text-light: #ffffff;
+      --text-dark: #e3e9f3;
+    }
+
+    body.light {
       --primary-gradient: linear-gradient(135deg, #007bff, #4dabf7);
       --secondary-gradient: linear-gradient(135deg, #28a745, #20c997);
       --celebration-gradient: linear-gradient(135deg, #ff6b35, #f7931e, #ffd700, #7cb342);
-      --transition-speed: 0.4s;
+    }
+
+    body.dark {
+      --primary-gradient: linear-gradient(135deg, #004b9a, #006bce);
+      --secondary-gradient: linear-gradient(135deg, #137a3d, #149f55);
+      --celebration-gradient: linear-gradient(135deg, #ff9100, #ffca28, #ffee58, #b2ff59);
     }
 
     * {
@@ -21,19 +37,23 @@
 
     body {
       font-family: 'Roboto', sans-serif;
-      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-      background-size: 400% 400%;
-      animation: gradient-shift 15s ease infinite;
+      background-image: url('./assets/images/background-light.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
-      color: white;
-      /* allow vertical scrolling so the celebration content is fully visible on smaller screens */
+      align-items: flex-start;
+      color: var(--text-light);
       overflow-x: hidden;
       overflow-y: auto;
       position: relative;
+      padding-top: 90px;
+      transition: background-image var(--transition-speed) ease, color var(--transition-speed) ease;
     }
+
+    body.dark { background-image: url('./assets/images/background-dark.jpg'); color: var(--text-dark); }
 
     @keyframes gradient-shift {
       0% { background-position: 0% 50%; }
@@ -78,9 +98,8 @@
     /* Main Content */
     .celebration-container {
       text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      /* reduced backdrop blur to avoid softening text on some browsers */
-      backdrop-filter: blur(4px);
+      background: var(--card-glass-light);
+      backdrop-filter: blur(10px);
       border-radius: 30px;
       padding: 48px 28px;
       border: 2px solid rgba(255, 255, 255, 0.2);
@@ -94,11 +113,14 @@
       overflow-y: auto;
       position: relative;
       overflow-x: hidden;
+      padding-bottom: 110px; /* ensure tabs always visible */
       /* promote to its own compositing layer for crisper rendering */
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
       will-change: transform;
     }
+
+    body.dark .celebration-container { background: var(--card-glass-dark); border: 1px solid rgba(255,255,255,0.12); }
 
     @keyframes celebration-appear {
       0% {
@@ -195,9 +217,69 @@
 
     .celebration-emoji {
       font-size: 4em;
-      display: block;
-      margin: 20px 0;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 90px;
+      height: 90px;
+      margin: 10px 0 25px;
       animation: emoji-dance 2s ease-in-out infinite;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .hold-indicator {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(var(--primary-gradient) 0deg, rgba(255,255,255,0.08) 0deg 360deg);
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: -1;
+    }
+
+    .celebration-emoji.holding .hold-indicator { opacity: 1; transform: scale(1); }
+
+    .portal-toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 0.9em;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      z-index: 4000;
+    }
+    body.light .portal-toast { background: rgba(255,255,255,0.35); color:#111; }
+    .portal-toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
+
+    .portal-effect {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #fff 0%, #4dabf7 40%, transparent 70%);
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      z-index: 4500;
+    }
+    .portal-effect.active { animation: portal-burst 1.6s ease forwards; }
+    @keyframes portal-burst {
+      0% { transform: translate(-50%, -50%) scale(0); opacity:1; filter: blur(0px); }
+      50% { transform: translate(-50%, -50%) scale(40); opacity:0.9; filter: blur(6px); }
+      100% { transform: translate(-50%, -50%) scale(85); opacity:0; filter: blur(18px); }
     }
 
     @keyframes emoji-dance {
@@ -251,16 +333,22 @@
 
     /* Easter Egg Discovery Counter */
     .discovery-counter {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 10px 15px;
-      border-radius: 20px;
-      font-size: 0.9em;
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(255,255,255,0.35);
+      padding: 10px 16px;
+      border-radius: 24px;
+      font-size: 0.85em;
       opacity: 0;
-      animation: fade-slide-in 1s ease-out 3s forwards;
+      animation: fade-slide-in 1s ease-out 1.2s forwards;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+      z-index: 3500;
+      color:#111;
     }
+
+    body.dark .discovery-counter { background: rgba(0,0,0,0.55); color:#fafafa; }
 
     /* Fireworks Effect */
     .firework {
@@ -326,6 +414,9 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     }
 
+    body.dark .tab-btn { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+    body.dark .tab-btn:hover { box-shadow: 0 6px 22px rgba(0,0,0,0.55); }
+
     /* Modal base */
     .modal-overlay {
       position: fixed;
@@ -370,7 +461,8 @@
     }
   </style>
 </head>
-<body>
+<body class="light">
+  <button id="theme-toggle" class="tab-btn" style="position:fixed;top:20px;right:20px;z-index:3600;font-size:1.05em;padding:10px 16px;">🌙</button>
   <!-- Confetti Elements -->
   <div class="confetti" style="left: 10%; animation-delay: 0s;"></div>
   <div class="confetti" style="left: 20%; animation-delay: 0.2s;"></div>
@@ -384,7 +476,10 @@
 
   <!-- Main Celebration Content -->
   <div class="celebration-container">
-    <div class="celebration-emoji">🎉</div>
+    <div class="celebration-emoji" id="portalEmoji" title="" aria-label="Celebration Emoji">
+      <div class="hold-indicator" id="holdIndicator"></div>
+      🎉
+    </div>
     <h1 class="main-title">No Way, You Made It!</h1>
     <p class="subtitle">Congratulations! You discovered the hidden Easter egg!</p>
     <div class="achievement-text">
@@ -395,7 +490,7 @@
       <strong>🎯 Fun Fact:</strong> Only the most observant visitors discover this hidden gem. You're now part of an exclusive club of digital explorers!
     </div>
     <a href="index.html" class="back-button">← Back to Homepage</a>
-    <div class="discovery-counter">Easter Egg #1 Discovered! 🥚</div>
+  <!-- discovery counter moved outside container below -->
     <!-- Tab bar for extra interactions -->
     <div class="tab-bar" role="tablist" aria-label="Extra actions">
       <button class="tab-btn" id="tab-stats">📊 Stats</button>
@@ -403,6 +498,10 @@
       <button class="tab-btn" id="tab-share">🔗 Share</button>
     </div>
   </div>
+
+  <div class="discovery-counter">Easter Egg #1 Discovered! 🥚</div>
+  <div class="portal-toast" id="portalToast" role="status" aria-live="polite"></div>
+  <div class="portal-effect" id="portalEffect"></div>
 
   <!-- Fireworks Effects -->
   <div class="firework" style="top: 20%; left: 20%; animation-delay: 1s;"></div>
@@ -446,6 +545,23 @@
   </div>
 
   <script>
+    // Theme sync (matches main site logic assumption)
+    const THEME_KEY = 'siteTheme';
+    const bodyEl = document.body;
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    function applyStoredTheme() {
+      const saved = localStorage.getItem(THEME_KEY) || 'light';
+      bodyEl.classList.remove('light','dark');
+      bodyEl.classList.add(saved);
+      themeToggleBtn.textContent = saved === 'light' ? '🌙' : '☀️';
+    }
+    applyStoredTheme();
+    themeToggleBtn.addEventListener('click', () => {
+      const next = bodyEl.classList.contains('light') ? 'dark' : 'light';
+      localStorage.setItem(THEME_KEY, next);
+      applyStoredTheme();
+    });
+
     // Add more dynamic confetti
     function createConfetti() {
       for (let i = 0; i < 50; i++) {
@@ -480,6 +596,85 @@
     // setTimeout(() => audio.play(), 1000);
 
     console.log("🎉 Congratulations! You found the Easter egg! 🎉");
+    // -------- SECOND EASTER EGG (Portal Unlock) --------
+    // Mechanic: Long-press the 🎉 emoji for 1.8s (or right click & hold) then quickly type the sequence P O R T A L.
+    // Feedback given via a toast. On success: animated portal & redirect to portal.html.
+    const portalEmoji = document.getElementById('portalEmoji');
+    const portalToast = document.getElementById('portalToast');
+    const holdIndicator = document.getElementById('holdIndicator');
+    const portalEffect = document.getElementById('portalEffect');
+    let holdTimer = null;
+    let holdProgressInterval = null;
+    let holdStartTime = 0;
+    const HOLD_DURATION = 1800; // ms
+    let portalArmed = false;
+    let keySequence = '';
+    const TARGET_SEQUENCE = 'PORTAL';
+    let portalUnlocked = false;
+
+    function showToast(msg, persist=false){
+      portalToast.textContent = msg;
+      portalToast.classList.add('show');
+      if(!persist){
+        clearTimeout(portalToast._t);
+        portalToast._t = setTimeout(()=>portalToast.classList.remove('show'),2200);
+      }
+    }
+
+    function resetHoldVisual(){
+      holdIndicator.style.background = 'conic-gradient(var(--primary-gradient) 0deg, rgba(255,255,255,0.08) 0deg 360deg)';
+      portalEmoji.classList.remove('holding');
+    }
+
+    function startHold(){
+      if(portalUnlocked) return;
+      portalEmoji.classList.add('holding');
+      holdStartTime = performance.now();
+      holdTimer = setTimeout(()=>{
+        portalArmed = true;
+        showToast('Sequence armed! Type PORTAL', true);
+      }, HOLD_DURATION);
+      holdProgressInterval = setInterval(()=>{
+        const elapsed = performance.now() - holdStartTime;
+        const pct = Math.min(elapsed / HOLD_DURATION, 1);
+        const deg = Math.round(pct*360);
+        holdIndicator.style.background = `conic-gradient(var(--celebration-gradient) 0deg ${deg}deg, rgba(255,255,255,0.08) ${deg}deg 360deg)`;
+      }, 60);
+    }
+    function cancelHold(){
+      clearTimeout(holdTimer); holdTimer=null;
+      clearInterval(holdProgressInterval); holdProgressInterval=null;
+      if(!portalArmed) resetHoldVisual();
+    }
+
+    ['mousedown','touchstart','contextmenu'].forEach(evt=>{
+      portalEmoji.addEventListener(evt,(e)=>{ if(evt==='contextmenu'){ e.preventDefault(); } startHold(); });
+    });
+    ['mouseup','mouseleave','touchend','touchcancel','blur'].forEach(evt=>{
+      portalEmoji.addEventListener(evt,()=>{ cancelHold(); });
+    });
+
+    document.addEventListener('keydown',(e)=>{
+      if(!portalArmed || portalUnlocked) return;
+      if(e.key.length===1) {
+        keySequence += e.key.toUpperCase();
+        showToast(`Sequence: ${keySequence}`);
+        if(!TARGET_SEQUENCE.startsWith(keySequence)){
+          showToast('Sequence reset');
+          keySequence='';
+        } else if(keySequence === TARGET_SEQUENCE){
+          portalUnlocked = true;
+          showToast('Portal opening...');
+          portalToast._t && clearTimeout(portalToast._t);
+          // visual effect
+          portalEffect.classList.add('active');
+          setTimeout(()=>{ window.location.href='portal.html'; },1400);
+        }
+      } else if(e.key==='Escape') {
+        keySequence=''; portalArmed=false; resetHoldVisual(); showToast('Cancelled');
+      }
+    });
+
     
     // --- Tabs & Modals Behavior ---
     const tabStats = document.getElementById('tab-stats');
