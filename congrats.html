@@ -77,7 +77,8 @@
     .celebration-container {
       text-align: center;
       background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
+      /* reduced backdrop blur to avoid softening text on some browsers */
+      backdrop-filter: blur(4px);
       border-radius: 30px;
       padding: 60px 40px;
       border: 2px solid rgba(255, 255, 255, 0.2);
@@ -88,6 +89,10 @@
       width: 90%;
       position: relative;
       overflow: hidden;
+      /* promote to its own compositing layer for crisper rendering */
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      will-change: transform;
     }
 
     @keyframes celebration-appear {
@@ -130,7 +135,15 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       animation: title-bounce 2s ease-in-out infinite;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      /* sharper appearance: reduce heavy blurred shadow and enable font smoothing */
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.18);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      /* force GPU compositing for crisper text */
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
 
     @keyframes title-bounce {
