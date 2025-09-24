@@ -189,10 +189,16 @@
 
     body.dark .celebration-container { border: 1px solid rgba(255,255,255,0.12); }
 
-    /* Dark theme title visibility */
+    /* Dark theme title visibility: use solid, high-contrast text for sharp rendering */
     body.dark .main-title {
-      background: linear-gradient(135deg, #ffffff, #e0e0e0, #cccccc);
-      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+      background: none !important;
+      -webkit-background-clip: initial !important;
+      background-clip: initial !important;
+      -webkit-text-fill-color: #ffffff !important;
+      color: #ffffff !important;
+      /* Subtle shadow for depth without heavy blur */
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+      filter: none;
     }
 
     /* Sunset theme title styling */
@@ -236,20 +242,32 @@
     .main-title {
       font-size: 3.5em;
       margin-bottom: 20px;
-      background: linear-gradient(135deg, #ffffff, #f0f0f0, #e0e0e0);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      /* Use a solid color so text remains crisp and readable */
+      color: #ffffff;
+      -webkit-text-fill-color: #ffffff;
+      background: none !important;
+      -webkit-background-clip: initial !important;
+      background-clip: initial !important;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      line-height: 1;
       animation: title-bounce 2s ease-in-out infinite;
-      /* sharper appearance: reduce heavy blurred shadow and enable font smoothing */
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      /* subtle but clearer shadow for depth */
+      text-shadow: 0 4px 10px rgba(0,0,0,0.65);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      /* force GPU compositing for crisper text */
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
+      z-index: 10;
+    }
+
+    /* Light theme title: use dark text for contrast against light backgrounds */
+    body.light .main-title {
+      color: #111111;
+      -webkit-text-fill-color: #111111;
+      text-shadow: 0 3px 8px rgba(255,255,255,0.6);
     }
 
     @keyframes title-bounce {
