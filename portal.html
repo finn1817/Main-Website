@@ -112,20 +112,21 @@
 
   /* Cursor-chasing square */
   #chaseSquare {
-    position:absolute;
+    position:fixed;
     top:0; left:0;
-    width:22px; height:22px;
-    background:linear-gradient(145deg,#ffffff,#dfe6ff);
-    border-radius:6px;
-    box-shadow:0 4px 10px -2px rgba(0,0,0,0.55), 0 0 14px 2px rgba(255,255,255,0.65), 0 0 28px 6px rgba(150,170,255,0.35);
+    width:30px; height:30px;
+    background:#ffffff;
+    border:3px solid #ff0000;
+    border-radius:8px;
+    box-shadow:0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,0,0,0.6);
     pointer-events:none;
-    z-index:6; /* ensure above decorative layers */
-    transform:translate3d(18px,18px,0);
-    opacity:0.92;
+    z-index:9999;
+    opacity:1;
     mix-blend-mode:normal;
     transition:opacity .4s, filter .4s;
+    will-change:transform;
   }
-  #chaseSquare.paused { opacity:0.55; filter:grayscale(.25) brightness(.85); }
+  #chaseSquare.paused { opacity:0.7; filter:grayscale(.25) brightness(.85); }
   @media (prefers-reduced-motion: reduce) { #chaseSquare { display:none; } }
 </style>
 </head>
@@ -220,31 +221,36 @@
     // --- Chasing square effect ---
     const chase = document.getElementById('chaseSquare');
     const panel = document.querySelector('.panel');
-    let chaseX = 24, chaseY = 24, targetX = 24, targetY = 24;
-    const chaseSpeed = 0.12; // interpolation factor
+    let chaseX = 50, chaseY = 50, targetX = 50, targetY = 50;
+    const chaseSpeed = 0.08; // slower for more delay
     let panelRect = panel.getBoundingClientRect();
     window.addEventListener('resize', () => { panelRect = panel.getBoundingClientRect(); });
+
+    // Initialize position
+    chase.style.transform = `translate3d(${chaseX}px, ${chaseY}px, 0)`;
 
     function animateChase(){
       chaseX += (targetX - chaseX) * chaseSpeed;
       chaseY += (targetY - chaseY) * chaseSpeed;
-      chase.style.transform = `translate3d(${chaseX}px, ${chaseY}px, 0)`;
+      chase.style.transform = `translate3d(${chaseX.toFixed(2)}px, ${chaseY.toFixed(2)}px, 0)`;
       requestAnimationFrame(animateChase);
     }
-    if(!matchMedia('(prefers-reduced-motion: reduce)').matches) animateChase();
+    
+    // Always start the animation (even with reduced motion)
+    animateChase();
 
     document.addEventListener('pointermove', e => {
       if(!panelRect) return;
       const inside = e.clientX >= panelRect.left && e.clientX <= panelRect.right && e.clientY >= panelRect.top && e.clientY <= panelRect.bottom;
       if(inside){
         chase.classList.add('paused');
-        // nudge toward a corner subtly when paused
-        targetX += (panelRect.left * 0.15 - targetX) * 0.05;
-        targetY += (panelRect.top * 0.15 - targetY) * 0.05;
+        // drift slowly when paused
+        targetX += (panelRect.left * 0.1 - targetX) * 0.02;
+        targetY += (panelRect.top * 0.1 - targetY) * 0.02;
       } else {
         chase.classList.remove('paused');
-        targetX = e.clientX - 9; // center square
-        targetY = e.clientY - 9;
+        targetX = e.clientX - 15; // center the 30px square
+        targetY = e.clientY - 15;
       }
     });
   </script>
