@@ -94,8 +94,8 @@
   }
 
   #chaseSquare.invisible {
-    opacity: 0.2;
-    filter: blur(2px);
+    opacity: 0.1;
+    filter: blur(3px);
   }
 
   #chaseSquare.boosted {
@@ -109,11 +109,13 @@
     width: 20px;
     height: 20px;
     background: var(--square-color);
+    border: 1px solid var(--square-border);
     border-radius: 4px;
     pointer-events: none;
     z-index: 9998;
     opacity: 0.3;
-    transition: opacity 0.5s ease-out;
+    transition: opacity 0.8s ease-out, transform 0.1s ease-out;
+    will-change: opacity, transform;
   }
 
   /* particle effect */
@@ -448,7 +450,9 @@
     
     // trail system
     let trails = [];
-    const maxTrails = 8;
+    let maxTrails = 12; // starting trail length
+    let trailGrowthRate = 0.01; // how fast trail grows
+    let currentTrailLength = 12;
     
     // game start time for difficulty scaling
     const gameStartTime = Date.now();
@@ -459,7 +463,12 @@
 
     // create trail effect
     function createTrail(x, y) {
-      if (trails.length >= maxTrails) {
+      // grow trail length over time (caps at 30)
+      const timeElapsed = (Date.now() - gameStartTime) / 1000;
+      currentTrailLength = Math.min(30, maxTrails + (timeElapsed * trailGrowthRate));
+      
+      // remove excess trails
+      while (trails.length >= currentTrailLength) {
         const oldTrail = trails.shift();
         if (oldTrail && oldTrail.parentNode) {
           oldTrail.parentNode.removeChild(oldTrail);
@@ -470,19 +479,31 @@
       trail.className = 'trail';
       trail.style.left = x + 'px';
       trail.style.top = y + 'px';
+      
+      // calculate trail opacity based on position in array (newer = more opaque)
+      const trailIndex = trails.length;
+      const opacity = 0.6 * (trailIndex / currentTrailLength);
+      trail.style.opacity = opacity;
+      
+      // make trails slightly smaller based on age
+      const scale = 0.7 + (0.3 * (trailIndex / currentTrailLength));
+      trail.style.transform = `scale(${scale})`;
+      
       document.body.appendChild(trail);
       trails.push(trail);
       
-      // fade out trail
+      // fade out trail gradually
       setTimeout(() => {
-        trail.style.opacity = '0';
+        if (trail.style.opacity > 0) {
+          trail.style.opacity = '0';
+        }
         setTimeout(() => {
           if (trail.parentNode) {
             trail.parentNode.removeChild(trail);
           }
           trails = trails.filter(t => t !== trail);
-        }, 500);
-      }, 100);
+        }, 800);
+      }, 50);
     }
 
     // create particle effect
@@ -572,7 +593,7 @@
             chase.classList.remove('invisible');
             currentEffect = 'None';
             updateGameStats();
-          }, 2500);
+          }, 4000);
           break;
           
         case 'boost':
@@ -609,7 +630,7 @@
         
         // create trail every few frames
         const now = Date.now();
-        if (now - lastTrailTime > 100) {
+        if (now - lastTrailTime > 80) { // slightly more frequent trails for smoother effect
           createTrail(Math.round(chaseX), Math.round(chaseY));
           lastTrailTime = now;
         }
