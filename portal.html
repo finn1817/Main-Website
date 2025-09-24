@@ -109,10 +109,29 @@
   @media (prefers-reduced-motion: reduce) {
     .sphere, .ring, .sphere::after, h1 { animation: none !important; }
   }
+
+  /* Cursor-chasing square */
+  #chaseSquare {
+    position:absolute;
+    top:0; left:0;
+    width:18px; height:18px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-alt));
+    border-radius:4px;
+    box-shadow:0 4px 14px -4px rgba(0,0,0,0.6), 0 0 10px -2px rgba(111,141,255,0.6);
+    pointer-events:none;
+    z-index:3; /* below panel (default stacking puts panel later) */
+    transform:translate3d(18px,18px,0);
+    opacity:0.85;
+    mix-blend-mode:screen;
+    transition:opacity .4s;
+  }
+  #chaseSquare.paused { opacity:0.25; filter:grayscale(.4) brightness(.8); }
+  @media (prefers-reduced-motion: reduce) { #chaseSquare { display:none; } }
 </style>
 </head>
 <body>
   <canvas id="particles" aria-hidden="true"></canvas>
+  <div id="chaseSquare" aria-hidden="true"></div>
   <div class="panel">
     <div class="sphere-wrapper">
       <div class="sphere">
@@ -197,6 +216,37 @@
       requestAnimationFrame(tick);
     }
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches) tick();
+
+    // --- Chasing square effect ---
+    const chase = document.getElementById('chaseSquare');
+    const panel = document.querySelector('.panel');
+    let chaseX = 24, chaseY = 24, targetX = 24, targetY = 24;
+    const chaseSpeed = 0.12; // interpolation factor
+    let panelRect = panel.getBoundingClientRect();
+    window.addEventListener('resize', () => { panelRect = panel.getBoundingClientRect(); });
+
+    function animateChase(){
+      chaseX += (targetX - chaseX) * chaseSpeed;
+      chaseY += (targetY - chaseY) * chaseSpeed;
+      chase.style.transform = `translate3d(${chaseX}px, ${chaseY}px, 0)`;
+      requestAnimationFrame(animateChase);
+    }
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches) animateChase();
+
+    document.addEventListener('pointermove', e => {
+      if(!panelRect) return;
+      const inside = e.clientX >= panelRect.left && e.clientX <= panelRect.right && e.clientY >= panelRect.top && e.clientY <= panelRect.bottom;
+      if(inside){
+        chase.classList.add('paused');
+        // nudge toward a corner subtly when paused
+        targetX += (panelRect.left * 0.15 - targetX) * 0.05;
+        targetY += (panelRect.top * 0.15 - targetY) * 0.05;
+      } else {
+        chase.classList.remove('paused');
+        targetX = e.clientX - 9; // center square
+        targetY = e.clientY - 9;
+      }
+    });
   </script>
 </body>
 </html>
