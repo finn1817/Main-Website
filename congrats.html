@@ -48,12 +48,12 @@
 
     /* Sunset Theme */
     body.sunset {
-      --primary-gradient: linear-gradient(135deg, #666666, #999999);
-      --secondary-gradient: linear-gradient(135deg, #333333, #666666);
-      --celebration-gradient: linear-gradient(135deg, #000000, #333333, #666666, #999999);
-      --card-glass: rgba(100,100,100,0.15);
+      --primary-gradient: linear-gradient(135deg, #ff6b35, #ff8e53);
+      --secondary-gradient: linear-gradient(135deg, #ff9a56, #ffb885);
+      --celebration-gradient: linear-gradient(135deg, #ff6b35, #ff8e53, #ff9a56, #ffb885);
+      --card-glass: rgba(255,100,50,0.15);
       --text-color: #ffffff;
-      --background-image: linear-gradient(135deg, #666666 0%, #888888 50%, #aaaaaa 100%);
+      --background-image: linear-gradient(135deg, #ff9a56 0%, #ffad85 50%, #ffc3a0 100%);
     }
 
     /* Ocean Theme */
@@ -189,6 +189,18 @@
 
     body.dark .celebration-container { border: 1px solid rgba(255,255,255,0.12); }
 
+    /* Dark theme title visibility */
+    body.dark .main-title {
+      background: linear-gradient(135deg, #ffffff, #e0e0e0, #cccccc);
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+    }
+
+    /* Sunset theme title styling */
+    body.sunset .main-title {
+      background: linear-gradient(135deg, #ffffff, #fff5f0, #ffe0d0);
+      text-shadow: 2px 2px 8px rgba(255, 107, 53, 0.6);
+    }
+
     @keyframes celebration-appear {
       0% {
         transform: scale(0) rotate(-180deg);
@@ -224,13 +236,13 @@
     .main-title {
       font-size: 3.5em;
       margin-bottom: 20px;
-      background: var(--celebration-gradient);
+      background: linear-gradient(135deg, #ffffff, #f0f0f0, #e0e0e0);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       animation: title-bounce 2s ease-in-out infinite;
       /* sharper appearance: reduce heavy blurred shadow and enable font smoothing */
-      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.18);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       /* force GPU compositing for crisper text */
@@ -668,8 +680,8 @@
     /* Sunset Theme Special Effects */
     body.sunset .celebration-container {
       box-shadow: 
-        0 0 20px rgba(100, 100, 100, 0.3),
-        0 20px 60px rgba(150, 150, 150, 0.2);
+        0 0 20px rgba(255, 107, 53, 0.3),
+        0 20px 60px rgba(255, 140, 83, 0.2);
     }
 
     /* Ocean Theme Special Effects */
