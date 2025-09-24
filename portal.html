@@ -155,7 +155,7 @@
       <button class="btn alt" onclick="window.location.href='congrats.html'">Back to Egg #1</button>
       <button class="btn neu" id="futureBtn" disabled title="Coming soon">Future Chamber</button>
     </div>
-    <div class="teaser"><span class="lock">🔒</span> Future portal sequences will appear here – stay curious.</div>
+    <div class="teaser"><span class="lock">🔒</span> Future portal sequences will appear here -- stay curious.</div>
     <footer>Sequence: Long Press + PORTAL • Crafted for curiosity</footer>
   </div>
   <script>
@@ -218,38 +218,58 @@
     }
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches) tick();
 
-    // --- Chasing square effect ---
+    // --- Cursor chasing square effect ---
     const chase = document.getElementById('chaseSquare');
     const panel = document.querySelector('.panel');
-    let chaseX = 50, chaseY = 50, targetX = 50, targetY = 50;
-    const chaseSpeed = 0.08; // slower for more delay
+    
+    // start position in top-left corner
+    let chaseX = 0;
+    let chaseY = 0;
+    let targetX = 0;
+    let targetY = 0;
+    
+    // speed for approximately 1 second delay (60fps = 0.016 per frame for 1 second)
+    const chaseSpeed = 0.016;
+    
     let panelRect = panel.getBoundingClientRect();
-    window.addEventListener('resize', () => { panelRect = panel.getBoundingClientRect(); });
+    window.addEventListener('resize', () => { 
+      panelRect = panel.getBoundingClientRect(); 
+    });
 
-    // Initialize position
+    // set initial position
     chase.style.transform = `translate3d(${chaseX}px, ${chaseY}px, 0)`;
 
+    // animation loop for smooth chasing
     function animateChase(){
+      // smoothly interpolate towards target position
       chaseX += (targetX - chaseX) * chaseSpeed;
       chaseY += (targetY - chaseY) * chaseSpeed;
+      
+      // update position
       chase.style.transform = `translate3d(${chaseX.toFixed(2)}px, ${chaseY.toFixed(2)}px, 0)`;
+      
       requestAnimationFrame(animateChase);
     }
     
-    // Always start the animation (even with reduced motion)
+    // start the animation loop
     animateChase();
 
+    // track mouse movement
     document.addEventListener('pointermove', e => {
-      if(!panelRect) return;
-      const inside = e.clientX >= panelRect.left && e.clientX <= panelRect.right && e.clientY >= panelRect.top && e.clientY <= panelRect.bottom;
+      // check if mouse is over the panel
+      const inside = e.clientX >= panelRect.left && 
+                    e.clientX <= panelRect.right && 
+                    e.clientY >= panelRect.top && 
+                    e.clientY <= panelRect.bottom;
+      
       if(inside){
+        // pause and dim when over panel
         chase.classList.add('paused');
-        // drift slowly when paused
-        targetX += (panelRect.left * 0.1 - targetX) * 0.02;
-        targetY += (panelRect.top * 0.1 - targetY) * 0.02;
       } else {
+        // normal tracking when outside panel
         chase.classList.remove('paused');
-        targetX = e.clientX - 15; // center the 30px square
+        // center the 30px square on cursor (subtract 15px from each axis)
+        targetX = e.clientX - 15;
         targetY = e.clientY - 15;
       }
     });
