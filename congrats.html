@@ -9,8 +9,8 @@
     :root {
       --transition-speed: 0.4s;
       --primary-gradient: linear-gradient(135deg, #0d6efd, #1a8cff);
-      --secondary-gradient: linear-gradient(135deg, #1f914d, #24b474);
-      --celebration-gradient: linear-gradient(135deg, #ff8a05, #ffb300, #ffd54f, #aeea00);
+      --secondary-gradient: linear-gradient(135deg, #666666, #888888);
+      --celebration-gradient: linear-gradient(135deg, #000000, #333333, #666666, #999999);
       --card-glass: rgba(255,255,255,0.18);
       --text-color: #ffffff;
       --background-image: url('./assets/images/background-light.jpg');
@@ -19,8 +19,8 @@
     /* Light Theme */
     body.light {
       --primary-gradient: linear-gradient(135deg, #007bff, #4dabf7);
-      --secondary-gradient: linear-gradient(135deg, #28a745, #20c997);
-      --celebration-gradient: linear-gradient(135deg, #ff6b35, #f7931e, #ffd700, #7cb342);
+      --secondary-gradient: linear-gradient(135deg, #666666, #888888);
+      --celebration-gradient: linear-gradient(135deg, #000000, #333333, #666666, #999999);
       --card-glass: rgba(255,255,255,0.18);
       --text-color: #ffffff;
       --background-image: url('./assets/images/background-light.jpg');
@@ -29,8 +29,8 @@
     /* Dark Theme */
     body.dark {
       --primary-gradient: linear-gradient(135deg, #004b9a, #006bce);
-      --secondary-gradient: linear-gradient(135deg, #137a3d, #149f55);
-      --celebration-gradient: linear-gradient(135deg, #ff9100, #ffca28, #ffee58, #b2ff59);
+      --secondary-gradient: linear-gradient(135deg, #666666, #888888);
+      --celebration-gradient: linear-gradient(135deg, #000000, #333333, #666666, #999999);
       --card-glass: rgba(20,20,28,0.78);
       --text-color: #e3e9f3;
       --background-image: url('./assets/images/background-dark.jpg');
@@ -39,8 +39,8 @@
     /* Neon Theme */
     body.neon {
       --primary-gradient: linear-gradient(135deg, #ff0080, #ff4099);
-      --secondary-gradient: linear-gradient(135deg, #00ff88, #33ff99);
-      --celebration-gradient: linear-gradient(135deg, #ff0080, #ff4099, #00ff88, #33ffaa);
+      --secondary-gradient: linear-gradient(135deg, #0080ff, #4099ff);
+      --celebration-gradient: linear-gradient(135deg, #ff0080, #ff4099, #0080ff, #4099ff);
       --card-glass: rgba(10,0,20,0.85);
       --text-color: #ffffff;
       --background-image: linear-gradient(135deg, #0a0015 0%, #1a0030 50%, #0f0020 100%);
@@ -48,12 +48,12 @@
 
     /* Sunset Theme */
     body.sunset {
-      --primary-gradient: linear-gradient(135deg, #ff6b35, #ff8e53);
-      --secondary-gradient: linear-gradient(135deg, #ffd23f, #ffe066);
-      --celebration-gradient: linear-gradient(135deg, #ff6b35, #ff8e53, #ffd23f, #ffe066);
-      --card-glass: rgba(255,100,50,0.15);
-      --text-color: #2a1810;
-      --background-image: linear-gradient(135deg, #ff9a56 0%, #ffad85 50%, #ffc3a0 100%);
+      --primary-gradient: linear-gradient(135deg, #666666, #999999);
+      --secondary-gradient: linear-gradient(135deg, #333333, #666666);
+      --celebration-gradient: linear-gradient(135deg, #000000, #333333, #666666, #999999);
+      --card-glass: rgba(100,100,100,0.15);
+      --text-color: #ffffff;
+      --background-image: linear-gradient(135deg, #666666 0%, #888888 50%, #aaaaaa 100%);
     }
 
     /* Ocean Theme */
@@ -68,12 +68,12 @@
 
     /* Forest Theme */
     body.forest {
-      --primary-gradient: linear-gradient(135deg, #2d5016, #3d6b1c);
-      --secondary-gradient: linear-gradient(135deg, #52b788, #74c69d);
-      --celebration-gradient: linear-gradient(135deg, #2d5016, #52b788, #74c69d, #95d5b2);
-      --card-glass: rgba(45,80,22,0.3);
+      --primary-gradient: linear-gradient(135deg, #333333, #666666);
+      --secondary-gradient: linear-gradient(135deg, #666666, #999999);
+      --celebration-gradient: linear-gradient(135deg, #000000, #333333, #666666, #999999);
+      --card-glass: rgba(50,50,50,0.3);
       --text-color: #ffffff;
-      --background-image: linear-gradient(135deg, #1b4332 0%, #2d5a3d 50%, #52796f 100%);
+      --background-image: linear-gradient(135deg, #1a1a1a 0%, #333333 50%, #666666 100%);
     }
 
     /* Purple Theme */
@@ -88,12 +88,12 @@
 
     /* Gold Theme */
     body.gold {
-      --primary-gradient: linear-gradient(135deg, #b8860b, #daa520);
-      --secondary-gradient: linear-gradient(135deg, #ffd700, #ffed4a);
-      --celebration-gradient: linear-gradient(135deg, #b8860b, #daa520, #ffd700, #ffed4a);
-      --card-glass: rgba(218,165,32,0.2);
-      --text-color: #2a1f0a;
-      --background-image: linear-gradient(135deg, #8b4513 0%, #daa520 50%, #ffd700 100%);
+      --primary-gradient: linear-gradient(135deg, #666666, #999999);
+      --secondary-gradient: linear-gradient(135deg, #000000, #333333);
+      --celebration-gradient: linear-gradient(135deg, #000000, #333333, #666666, #999999);
+      --card-glass: rgba(100,100,100,0.2);
+      --text-color: #ffffff;
+      --background-image: linear-gradient(135deg, #333333 0%, #666666 50%, #999999 100%);
     }
 
     * {
@@ -133,19 +133,19 @@
       position: absolute;
       width: 10px;
       height: 10px;
-      background: #ffd700;
+      background: #cccccc;
       animation: confetti-fall 3s linear infinite;
     }
 
     .confetti:nth-child(odd) {
-      background: #ff6b35;
+      background: #666666;
       width: 8px;
       height: 8px;
       animation-duration: 2.5s;
     }
 
     .confetti:nth-child(3n) {
-      background: #23d5ab;
+      background: #999999;
       width: 6px;
       height: 6px;
       animation-duration: 3.5s;
@@ -279,7 +279,7 @@
       background: rgba(255, 255, 255, 0.1);
       padding: 15px;
       border-radius: 15px;
-      border-left: 4px solid #ffd700;
+      border-left: 4px solid #666666;
     }
 
     .celebration-emoji {
@@ -422,7 +422,7 @@
       position: absolute;
       width: 4px;
       height: 4px;
-      background: #ffd700;
+      background: #cccccc;
       border-radius: 50%;
       animation: firework-explode 2s ease-out infinite;
     }
@@ -657,19 +657,19 @@
     }
 
     body.neon .tab-btn {
-      box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
-      border-color: rgba(0, 255, 136, 0.4);
+      box-shadow: 0 0 15px rgba(0, 128, 255, 0.3);
+      border-color: rgba(0, 128, 255, 0.4);
     }
 
     body.neon .tab-btn:hover {
-      box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+      box-shadow: 0 0 25px rgba(0, 128, 255, 0.6);
     }
 
     /* Sunset Theme Special Effects */
     body.sunset .celebration-container {
       box-shadow: 
-        0 0 20px rgba(255, 107, 53, 0.3),
-        0 20px 60px rgba(255, 140, 83, 0.2);
+        0 0 20px rgba(100, 100, 100, 0.3),
+        0 20px 60px rgba(150, 150, 150, 0.2);
     }
 
     /* Ocean Theme Special Effects */
@@ -682,8 +682,8 @@
     /* Forest Theme Special Effects */
     body.forest .celebration-container {
       box-shadow: 
-        0 0 20px rgba(45, 80, 22, 0.4),
-        0 20px 60px rgba(82, 183, 136, 0.2);
+        0 0 20px rgba(50, 50, 50, 0.4),
+        0 20px 60px rgba(100, 100, 100, 0.2);
     }
 
     /* Purple Theme Special Effects */
@@ -696,9 +696,9 @@
     /* Gold Theme Special Effects */
     body.gold .celebration-container {
       box-shadow: 
-        0 0 20px rgba(218, 165, 32, 0.4),
-        0 20px 60px rgba(255, 215, 0, 0.3);
-      border-color: rgba(255, 215, 0, 0.3);
+        0 0 20px rgba(100, 100, 100, 0.4),
+        0 20px 60px rgba(150, 150, 150, 0.3);
+      border-color: rgba(200, 200, 200, 0.3);
     }
   </style>
 </head>
@@ -904,7 +904,7 @@
         confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
         
         // Random colors
-        const colors = ['#ffd700', '#ff6b35', '#23d5ab', '#e73c7e', '#23a6d5'];
+        const colors = ['#000000', '#333333', '#666666', '#999999', '#cccccc'];
         confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
         
         document.body.appendChild(confetti);
