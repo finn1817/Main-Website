@@ -224,12 +224,13 @@
     100% { transform: scale(1.05); }
   }
 
-  /* zone positioning */
+  /* zone positioning - will be dynamically updated */
   .zone-1 {
     top: 15%;
     left: 10%;
     width: 180px;
     height: 120px;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .zone-2 {
@@ -237,6 +238,7 @@
     right: 15%;
     width: 160px;
     height: 100px;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .zone-3 {
@@ -244,6 +246,7 @@
     left: 8%;
     width: 200px;
     height: 140px;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .zone-4 {
@@ -251,6 +254,7 @@
     right: 12%;
     width: 170px;
     height: 110px;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .zone-5 {
@@ -259,6 +263,14 @@
     transform: translate(-50%, -50%);
     width: 220px;
     height: 150px;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* zone shuffle animation */
+  .zone-shuffling {
+    transform: scale(0.9) !important;
+    filter: brightness(1.3);
+    z-index: 150;
   }
 
   /* instructions */
@@ -360,6 +372,7 @@
   <div class="game-stats">
     <div>Speed: <span id="speedDisplay">1x</span></div>
     <div>Effect: <span id="effectDisplay">None</span></div>
+    <div>Shuffle: <span id="shuffleTimer">8s</span></div>
   </div>
   
   <!-- instructions -->
@@ -433,6 +446,7 @@
     const zones = document.querySelectorAll('.pause-zone');
     const speedDisplay = document.getElementById('speedDisplay');
     const effectDisplay = document.getElementById('effectDisplay');
+    const shuffleTimer = document.getElementById('shuffleTimer');
     
     // game state
     let chaseX = 20;
@@ -453,6 +467,23 @@
     let maxTrails = 12; // starting trail length
     let trailGrowthRate = 0.01; // how fast trail grows
     let currentTrailLength = 12;
+    
+    // zone shuffling system
+    let shuffleInterval = null;
+    let shuffleCountdown = 8;
+    let isShuffling = false;
+    
+    // zone position definitions
+    const zonePositions = [
+      { top: '15%', left: '10%', right: 'auto', bottom: 'auto', transform: 'none', width: '180px', height: '120px' },
+      { top: '10%', left: 'auto', right: '15%', bottom: 'auto', transform: 'none', width: '160px', height: '100px' },
+      { top: 'auto', left: '8%', right: 'auto', bottom: '25%', transform: 'none', width: '200px', height: '140px' },
+      { top: 'auto', left: 'auto', right: '12%', bottom: '30%', transform: 'none', width: '170px', height: '110px' },
+      { top: '50%', left: '50%', right: 'auto', bottom: 'auto', transform: 'translate(-50%, -50%)', width: '220px', height: '150px' }
+    ];
+    
+    // current zone assignments (which zone is in which position)
+    let zoneAssignments = [0, 1, 2, 3, 4]; // zone-1 is in position 0, zone-2 in position 1, etc.
     
     // game start time for difficulty scaling
     const gameStartTime = Date.now();
@@ -546,6 +577,88 @@
       const totalSpeed = (difficultySpeed * currentSpeedMultiplier).toFixed(1);
       speedDisplay.textContent = totalSpeed + 'x';
       effectDisplay.textContent = currentEffect;
+      shuffleTimer.textContent = shuffleCountdown + 's';
+    }
+
+    // shuffle zones randomly
+    function shuffleZones() {
+      if (isShuffling) return; // prevent multiple shuffles at once
+      
+      isShuffling = true;
+      console.log('Shuffling zones...');
+      
+      // add shuffle animation class
+      zones.forEach(zone => zone.classList.add('zone-shuffling'));
+      
+      // create a copy of current assignments and shuffle it
+      let newAssignments = [...zoneAssignments];
+      
+      // Fisher-Yates shuffle algorithm
+      for (let i = newAssignments.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newAssignments[i], newAssignments[j]] = [newAssignments[j], newAssignments[i]];
+      }
+      
+      // make sure at least 2 zones change positions
+      let changesCount = 0;
+      for (let i = 0; i < zoneAssignments.length; i++) {
+        if (zoneAssignments[i] !== newAssignments[i]) changesCount++;
+      }
+      
+      // if not enough changes, force a couple of swaps
+      if (changesCount < 2) {
+        const idx1 = Math.floor(Math.random() * newAssignments.length);
+        let idx2 = Math.floor(Math.random() * newAssignments.length);
+        while (idx2 === idx1) {
+          idx2 = Math.floor(Math.random() * newAssignments.length);
+        }
+        [newAssignments[idx1], newAssignments[idx2]] = [newAssignments[idx2], newAssignments[idx1]];
+      }
+      
+      // apply new positions
+      zoneAssignments = newAssignments;
+      applyZonePositions();
+      
+      // screen shake for dramatic effect
+      screenShake();
+      
+      // remove shuffle animation after transition
+      setTimeout(() => {
+        zones.forEach(zone => zone.classList.remove('zone-shuffling'));
+        isShuffling = false;
+      }, 1500);
+    }
+
+    // apply current zone assignments to actual positions
+    function applyZonePositions() {
+      zones.forEach((zone, index) => {
+        const positionIndex = zoneAssignments[index];
+        const position = zonePositions[positionIndex];
+        
+        zone.style.top = position.top;
+        zone.style.left = position.left;
+        zone.style.right = position.right;
+        zone.style.bottom = position.bottom;
+        zone.style.width = position.width;
+        zone.style.height = position.height;
+        
+        // handle center zone special transform
+        if (position.transform !== 'none') {
+          zone.style.transform = position.transform;
+        } else {
+          zone.style.transform = 'none';
+        }
+      });
+    }
+
+    // shuffle timer countdown
+    function updateShuffleTimer() {
+      shuffleCountdown--;
+      if (shuffleCountdown <= 0) {
+        shuffleZones();
+        shuffleCountdown = 8; // reset timer
+      }
+      updateGameStats();
     }
 
     // dynamic difficulty - square gets faster over time
@@ -704,12 +817,16 @@
       chase.style.visibility = 'visible';
       chase.style.opacity = '1';
       updateGameStats();
+      
+      // start shuffle timer (1 second intervals)
+      shuffleInterval = setInterval(updateShuffleTimer, 1000);
     }, 50);
 
     // log initial state
     console.log('Enhanced cursor chase game initialized');
     console.log('Found zones:', zones.length);
-    console.log('Game features: Dynamic difficulty, trails, particles, screen shake, zone effects');
+    console.log('Game features: Dynamic difficulty, trails, particles, screen shake, zone effects, zone shuffling');
+    console.log('Zone shuffling: Every 8 seconds zones will randomly swap positions');
   </script>
 </body>
 </html>
