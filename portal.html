@@ -108,26 +108,33 @@
   /* Respect reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .sphere, .ring, .sphere::after, h1 { animation: none !important; }
+    #chaseSquare { animation: none !important; }
   }
 
-  /* Cursor-chasing square */
+  /* Cursor-chasing square - FIXED VERSION */
   #chaseSquare {
-    position:fixed;
-    top:0; left:0;
-    width:30px; height:30px;
-    background:#ffffff;
-    border:3px solid #ff0000;
-    border-radius:8px;
-    box-shadow:0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,0,0,0.6);
-    pointer-events:none;
-    z-index:9999;
-    opacity:1;
-    mix-blend-mode:normal;
-    transition:opacity .4s, filter .4s;
-    will-change:transform;
+    position: fixed !important;
+    top: 20px;
+    left: 20px;
+    width: 30px;
+    height: 30px;
+    background: #ffffff !important;
+    border: 3px solid #ff0000 !important;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,0,0,0.6) !important;
+    pointer-events: none;
+    z-index: 99999 !important;
+    opacity: 1 !important;
+    display: block !important;
+    visibility: visible !important;
+    mix-blend-mode: normal;
+    transition: opacity .4s, filter .4s;
+    will-change: transform;
   }
-  #chaseSquare.paused { opacity:0.7; filter:grayscale(.25) brightness(.85); }
-  @media (prefers-reduced-motion: reduce) { #chaseSquare { display:none; } }
+  #chaseSquare.paused { 
+    opacity: 0.7; 
+    filter: grayscale(.25) brightness(.85); 
+  }
 </style>
 </head>
 <body>
@@ -218,44 +225,54 @@
     }
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches) tick();
 
-    // --- Cursor chasing square effect ---
+    // --- CURSOR CHASING SQUARE - COMPLETELY REWRITTEN ---
     const chase = document.getElementById('chaseSquare');
     const panel = document.querySelector('.panel');
     
-    // start position in top-left corner
-    let chaseX = 0;
-    let chaseY = 0;
-    let targetX = 0;
-    let targetY = 0;
+    // ensure the element exists and is visible
+    console.log('Chase element found:', chase);
     
-    // speed for approximately 1 second delay (60fps = 0.016 per frame for 1 second)
-    const chaseSpeed = 0.016;
+    // start position (top-left corner with some margin)
+    let chaseX = 20;
+    let chaseY = 20;
+    let targetX = 20;
+    let targetY = 20;
     
-    let panelRect = panel.getBoundingClientRect();
-    window.addEventListener('resize', () => { 
-      panelRect = panel.getBoundingClientRect(); 
-    });
+    // speed for approximately 1 second delay
+    const chaseSpeed = 0.02;
+    
+    let panelRect;
+    function updatePanelRect() {
+      panelRect = panel.getBoundingClientRect();
+    }
+    updatePanelRect();
+    window.addEventListener('resize', updatePanelRect);
 
-    // set initial position
-    chase.style.transform = `translate3d(${chaseX}px, ${chaseY}px, 0)`;
+    // force initial position
+    chase.style.left = chaseX + 'px';
+    chase.style.top = chaseY + 'px';
+    chase.style.transform = 'none';
 
-    // animation loop for smooth chasing
+    // animation loop
     function animateChase(){
-      // smoothly interpolate towards target position
+      // smoothly move towards target
       chaseX += (targetX - chaseX) * chaseSpeed;
       chaseY += (targetY - chaseY) * chaseSpeed;
       
-      // update position
-      chase.style.transform = `translate3d(${chaseX.toFixed(2)}px, ${chaseY.toFixed(2)}px, 0)`;
+      // update position using left/top instead of transform
+      chase.style.left = Math.round(chaseX) + 'px';
+      chase.style.top = Math.round(chaseY) + 'px';
       
       requestAnimationFrame(animateChase);
     }
     
-    // start the animation loop
+    // start animation immediately
     animateChase();
 
     // track mouse movement
-    document.addEventListener('pointermove', e => {
+    document.addEventListener('mousemove', e => {
+      if (!panelRect) return;
+      
       // check if mouse is over the panel
       const inside = e.clientX >= panelRect.left && 
                     e.clientX <= panelRect.right && 
@@ -268,11 +285,19 @@
       } else {
         // normal tracking when outside panel
         chase.classList.remove('paused');
-        // center the 30px square on cursor (subtract 15px from each axis)
+        // center the 30px square on cursor
         targetX = e.clientX - 15;
         targetY = e.clientY - 15;
       }
     });
+
+    // fallback to ensure square is visible
+    setTimeout(() => {
+      chase.style.display = 'block';
+      chase.style.visibility = 'visible';
+      chase.style.opacity = '1';
+      console.log('Square visibility forced');
+    }, 100);
   </script>
 </body>
 </html>
