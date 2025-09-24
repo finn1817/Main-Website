@@ -114,18 +114,18 @@
   #chaseSquare {
     position:absolute;
     top:0; left:0;
-    width:18px; height:18px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-alt));
-    border-radius:4px;
-    box-shadow:0 4px 14px -4px rgba(0,0,0,0.6), 0 0 10px -2px rgba(111,141,255,0.6);
+    width:22px; height:22px;
+    background:linear-gradient(145deg,#ffffff,#dfe6ff);
+    border-radius:6px;
+    box-shadow:0 4px 10px -2px rgba(0,0,0,0.55), 0 0 14px 2px rgba(255,255,255,0.65), 0 0 28px 6px rgba(150,170,255,0.35);
     pointer-events:none;
-    z-index:3; /* below panel (default stacking puts panel later) */
+    z-index:6; /* ensure above decorative layers */
     transform:translate3d(18px,18px,0);
-    opacity:0.85;
-    mix-blend-mode:screen;
-    transition:opacity .4s;
+    opacity:0.92;
+    mix-blend-mode:normal;
+    transition:opacity .4s, filter .4s;
   }
-  #chaseSquare.paused { opacity:0.25; filter:grayscale(.4) brightness(.8); }
+  #chaseSquare.paused { opacity:0.55; filter:grayscale(.25) brightness(.85); }
   @media (prefers-reduced-motion: reduce) { #chaseSquare { display:none; } }
 </style>
 </head>
