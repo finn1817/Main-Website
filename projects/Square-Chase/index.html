@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Cursor Chase Zones</title>
+<style>
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* light mode (default) */
+  :root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --zone-bg: rgba(0, 0, 0, 0.1);
+    --zone-border: rgba(0, 0, 0, 0.2);
+    --zone-hover: rgba(0, 0, 0, 0.15);
+  }
+
+  /* dark mode */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-color: #000000;
+      --text-color: #ffffff;
+      --zone-bg: rgba(255, 255, 255, 0.1);
+      --zone-border: rgba(255, 255, 255, 0.2);
+      --zone-hover: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  /* cursor chasing square */
+  #chaseSquare {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 25px;
+    height: 25px;
+    background: var(--text-color);
+    border: 2px solid var(--text-color);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.3s, filter 0.3s, background-color 0.3s, border-color 0.3s;
+    will-change: transform;
+  }
+
+  #chaseSquare.paused {
+    opacity: 0.4;
+    filter: blur(1px);
+  }
+
+  /* pause zones */
+  .pause-zone {
+    position: absolute;
+    background: var(--zone-bg);
+    border: 2px solid var(--zone-border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .pause-zone:hover {
+    background: var(--zone-hover);
+    transform: scale(1.05);
+  }
+
+  .pause-zone.active {
+    background: var(--zone-hover);
+    box-shadow: 0 0 20px rgba(128, 128, 128, 0.3);
+  }
+
+  /* zone positioning */
+  .zone-1 {
+    top: 15%;
+    left: 10%;
+    width: 180px;
+    height: 120px;
+  }
+
+  .zone-2 {
+    top: 10%;
+    right: 15%;
+    width: 160px;
+    height: 100px;
+  }
+
+  .zone-3 {
+    bottom: 25%;
+    left: 8%;
+    width: 200px;
+    height: 140px;
+  }
+
+  .zone-4 {
+    bottom: 30%;
+    right: 12%;
+    width: 170px;
+    height: 110px;
+  }
+
+  .zone-5 {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 220px;
+    height: 150px;
+  }
+
+  /* instructions */
+  .instructions {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 1.1rem;
+    opacity: 0.7;
+    z-index: 100;
+  }
+
+  /* responsive adjustments */
+  @media (max-width: 768px) {
+    .zone-1, .zone-2, .zone-3, .zone-4, .zone-5 {
+      width: 140px;
+      height: 90px;
+      font-size: 0.8rem;
+    }
+    
+    .zone-1 { top: 12%; left: 5%; }
+    .zone-2 { top: 8%; right: 5%; }
+    .zone-3 { bottom: 20%; left: 5%; }
+    .zone-4 { bottom: 20%; right: 5%; }
+    .zone-5 { 
+      width: 160px; 
+      height: 100px; 
+    }
+    
+    .instructions {
+      font-size: 1rem;
+      padding: 0 20px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .zone-1, .zone-2, .zone-3, .zone-4, .zone-5 {
+      width: 120px;
+      height: 80px;
+      font-size: 0.75rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <!-- cursor chasing square -->
+  <div id="chaseSquare"></div>
+  
+  <!-- instructions -->
+  <div class="instructions">
+    Move your cursor around - the square will chase you with a delay!<br>
+    <small>Hover over the zones to pause the chaser</small>
+  </div>
+
+  <!-- pause zones -->
+  <div class="pause-zone zone-1" data-zone="1">
+    Zone 1<br>
+    <small>Pause Area</small>
+  </div>
+
+  <div class="pause-zone zone-2" data-zone="2">
+    Zone 2<br>
+    <small>Safe Space</small>
+  </div>
+
+  <div class="pause-zone zone-3" data-zone="3">
+    Zone 3<br>
+    <small>Rest Stop</small>
+  </div>
+
+  <div class="pause-zone zone-4" data-zone="4">
+    Zone 4<br>
+    <small>Chill Zone</small>
+  </div>
+
+  <div class="pause-zone zone-5" data-zone="5">
+    Zone 5<br>
+    <small>Center Sanctuary</small>
+  </div>
+
+  <script>
+    // cursor chasing square logic
+    const chase = document.getElementById('chaseSquare');
+    const zones = document.querySelectorAll('.pause-zone');
+    
+    // starting position (top-left corner)
+    let chaseX = 20;
+    let chaseY = 20;
+    let targetX = 20;
+    let targetY = 20;
+    
+    // speed for approximately 1 second delay
+    const chaseSpeed = 0.02;
+    
+    // track which zones are currently being hovered
+    let isPaused = false;
+    
+    // set initial position
+    chase.style.left = chaseX + 'px';
+    chase.style.top = chaseY + 'px';
+
+    // animation loop for smooth chasing
+    function animateChase() {
+      // only move if not paused
+      if (!isPaused) {
+        chaseX += (targetX - chaseX) * chaseSpeed;
+        chaseY += (targetY - chaseY) * chaseSpeed;
+      }
+      
+      // update position
+      chase.style.left = Math.round(chaseX) + 'px';
+      chase.style.top = Math.round(chaseY) + 'px';
+      
+      requestAnimationFrame(animateChase);
+    }
+    
+    // start the animation
+    animateChase();
+
+    // track mouse movement
+    document.addEventListener('mousemove', e => {
+      // center the square on cursor (subtract half width/height)
+      targetX = e.clientX - 12.5;
+      targetY = e.clientY - 12.5;
+    });
+
+    // handle zone hover events
+    zones.forEach(zone => {
+      zone.addEventListener('mouseenter', () => {
+        isPaused = true;
+        chase.classList.add('paused');
+        zone.classList.add('active');
+        console.log(`Entered ${zone.dataset.zone}`);
+      });
+      
+      zone.addEventListener('mouseleave', () => {
+        isPaused = false;
+        chase.classList.remove('paused');
+        zone.classList.remove('active');
+        console.log(`Left ${zone.dataset.zone}`);
+      });
+    });
+
+    // ensure square is visible on load
+    setTimeout(() => {
+      chase.style.display = 'block';
+      chase.style.visibility = 'visible';
+      chase.style.opacity = '1';
+    }, 50);
+
+    // log initial state
+    console.log('Cursor chase zones initialized');
+    console.log('Found zones:', zones.length);
+  </script>
+</body>
+</html>
