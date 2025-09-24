@@ -504,12 +504,12 @@
     }
 
     .modal-card {
-      background: rgba(255,255,255,0.95);
+      background: rgba(255,255,255,0.98);
       border-radius: 14px;
       padding: 20px;
       max-width: 560px;
       width: 100%;
-      color: #333;
+      color: #000;
       box-shadow: 0 10px 40px rgba(0,0,0,0.3);
       border: 1px solid rgba(0,0,0,0.1);
       max-height: 80vh;
@@ -518,8 +518,8 @@
     }
 
     body.dark .modal-card {
-      background: rgba(20,20,30,0.95);
-      color: #e3e9f3;
+      background: rgba(0,0,0,0.98);
+      color: #ffffff;
       border: 1px solid rgba(255,255,255,0.15);
       box-shadow: 0 10px 40px rgba(0,0,0,0.7);
     }
@@ -537,15 +537,28 @@
     }
 
     .modal-close:hover {
-      color: #333;
+      color: #000;
     }
 
     body.dark .modal-close {
-      color: #bbb;
+      color: #ccc;
     }
 
     body.dark .modal-close:hover {
       color: #fff;
+    }
+
+    /* Modal textarea styling */
+    .modal-card textarea {
+      background: rgba(0,0,0,0.08) !important;
+      color: #000 !important;
+      border: 1px solid rgba(0,0,0,0.2) !important;
+    }
+
+    body.dark .modal-card textarea {
+      background: rgba(255,255,255,0.08) !important;
+      color: #fff !important;
+      border: 1px solid rgba(255,255,255,0.2) !important;
     }
 
     /* Theme Dropdown Styles */
@@ -803,7 +816,7 @@
       <button class="modal-close" data-close>&times;</button>
       <h3 id="shareTitle">Share Your Find</h3>
       <p>Copy a short message to share your discovery:</p>
-      <textarea id="shareText" style="width:100%;height:80px;border-radius:8px;padding:8px;background:rgba(0,0,0,0.12);color:white;border:1px solid rgba(255,255,255,0.06);">I found a hidden Easter egg on Dan Finn's site! Check it out: {url}</textarea>
+      <textarea id="shareText" style="width:100%;height:80px;border-radius:8px;padding:8px;background:rgba(0,0,0,0.08);color:#000;border:1px solid rgba(0,0,0,0.2);">I found a hidden Easter egg on Dan Finn's site! Check it out: {url}</textarea>
       <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
         <button class="tab-btn" id="copyShare">Copy Message</button>
         <button class="tab-btn" id="openShare" style="background:var(--secondary-gradient);">Open Share Link</button>
