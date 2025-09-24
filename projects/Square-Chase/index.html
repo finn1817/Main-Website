@@ -25,20 +25,24 @@
   :root {
     --bg-color: #ffffff;
     --text-color: #000000;
-    --zone-bg: rgba(0, 0, 0, 0.1);
-    --zone-border: rgba(0, 0, 0, 0.2);
-    --zone-hover: rgba(0, 0, 0, 0.15);
+    --square-color: #000000;
+    --square-border: #4169E1;
+    --zone-bg: rgba(0, 0, 0, 0.05);
+    --zone-border: #4169E1;
+    --zone-hover: rgba(0, 0, 0, 0.1);
+    --zone-text: #000000;
   }
 
   /* dark mode */
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg-color: #000000;
-      --text-color: #ffffff;
-      --zone-bg: rgba(255, 255, 255, 0.1);
-      --zone-border: rgba(255, 255, 255, 0.2);
-      --zone-hover: rgba(255, 255, 255, 0.15);
-    }
+  [data-theme="dark"] {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --square-color: #ff0000;
+    --square-border: #ffffff;
+    --zone-bg: rgba(255, 255, 255, 0.05);
+    --zone-border: #ffffff;
+    --zone-hover: rgba(255, 255, 255, 0.1);
+    --zone-text: #ffffff;
   }
 
   /* cursor chasing square */
@@ -48,8 +52,8 @@
     left: 20px;
     width: 25px;
     height: 25px;
-    background: var(--text-color);
-    border: 2px solid var(--text-color);
+    background: var(--square-color);
+    border: 2px solid var(--square-border);
     border-radius: 4px;
     pointer-events: none;
     z-index: 9999;
@@ -78,6 +82,7 @@
     transition: all 0.3s ease;
     cursor: pointer;
     user-select: none;
+    color: var(--zone-text);
   }
 
   .pause-zone:hover {
@@ -139,6 +144,29 @@
     z-index: 100;
   }
 
+  /* theme toggle button */
+  .theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--zone-bg);
+    border: 2px solid var(--zone-border);
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--zone-text);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    z-index: 100;
+  }
+
+  .theme-toggle:hover {
+    background: var(--zone-hover);
+    transform: scale(1.05);
+  }
+
   /* responsive adjustments */
   @media (max-width: 768px) {
     .zone-1, .zone-2, .zone-3, .zone-4, .zone-5 {
@@ -175,6 +203,11 @@
   <!-- cursor chasing square -->
   <div id="chaseSquare"></div>
   
+  <!-- theme toggle -->
+  <button class="theme-toggle" id="themeToggle">
+    🌙 Dark Mode
+  </button>
+  
   <!-- instructions -->
   <div class="instructions">
     Move your cursor around - the square will chase you with a delay!<br>
@@ -208,6 +241,39 @@
   </div>
 
   <script>
+    // theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    
+    // check for saved theme preference or default to light mode
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    
+    // apply saved theme on load
+    if (currentTheme === 'dark') {
+      body.setAttribute('data-theme', 'dark');
+      themeToggle.innerHTML = '☀️ Light Mode';
+    } else {
+      body.removeAttribute('data-theme');
+      themeToggle.innerHTML = '🌙 Dark Mode';
+    }
+    
+    // theme toggle event listener
+    themeToggle.addEventListener('click', () => {
+      const isDark = body.getAttribute('data-theme') === 'dark';
+      
+      if (isDark) {
+        // switch to light mode
+        body.removeAttribute('data-theme');
+        themeToggle.innerHTML = '🌙 Dark Mode';
+        localStorage.setItem('theme', 'light');
+      } else {
+        // switch to dark mode
+        body.setAttribute('data-theme', 'dark');
+        themeToggle.innerHTML = '☀️ Light Mode';
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
     // cursor chasing square logic
     const chase = document.getElementById('chaseSquare');
     const zones = document.querySelectorAll('.pause-zone');
