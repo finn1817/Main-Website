@@ -21,6 +21,24 @@
     position: relative;
   }
 
+  /* screen shake effect */
+  body.shake {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translate(0); }
+    10% { transform: translate(-2px, -1px) rotate(-0.5deg); }
+    20% { transform: translate(2px, 1px) rotate(0.5deg); }
+    30% { transform: translate(-1px, -2px) rotate(-0.5deg); }
+    40% { transform: translate(1px, 2px) rotate(0.5deg); }
+    50% { transform: translate(-2px, 1px) rotate(-0.5deg); }
+    60% { transform: translate(2px, -1px) rotate(0.5deg); }
+    70% { transform: translate(-1px, 2px) rotate(-0.5deg); }
+    80% { transform: translate(1px, -2px) rotate(0.5deg); }
+    90% { transform: translate(-2px, -1px) rotate(-0.5deg); }
+  }
+
   /* light mode (default) */
   :root {
     --bg-color: #ffffff;
@@ -31,6 +49,10 @@
     --zone-border: #4169E1;
     --zone-hover: rgba(0, 0, 0, 0.1);
     --zone-text: #000000;
+    --speed-zone: #00ff00;
+    --slow-zone: #ff6600;
+    --invisible-zone: #9400d3;
+    --boost-zone: #ffff00;
   }
 
   /* dark mode */
@@ -43,6 +65,10 @@
     --zone-border: #ffffff;
     --zone-hover: rgba(255, 255, 255, 0.1);
     --zone-text: #ffffff;
+    --speed-zone: #00ff88;
+    --slow-zone: #ff8844;
+    --invisible-zone: #bb44ff;
+    --boost-zone: #ffff44;
   }
 
   /* cursor chasing square */
@@ -67,6 +93,52 @@
     filter: blur(1px);
   }
 
+  #chaseSquare.invisible {
+    opacity: 0.2;
+    filter: blur(2px);
+  }
+
+  #chaseSquare.boosted {
+    box-shadow: 0 0 15px var(--square-color);
+    transform: scale(1.2);
+  }
+
+  /* trail effect */
+  .trail {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background: var(--square-color);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.3;
+    transition: opacity 0.5s ease-out;
+  }
+
+  /* particle effect */
+  .particle {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: var(--zone-border);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9997;
+    animation: particle-fade 1s ease-out forwards;
+  }
+
+  @keyframes particle-fade {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.5) translate(var(--particle-x, 0), var(--particle-y, 0));
+    }
+  }
+
   /* pause zones */
   .pause-zone {
     position: absolute;
@@ -83,6 +155,7 @@
     cursor: pointer;
     user-select: none;
     color: var(--zone-text);
+    animation: pulse 3s ease-in-out infinite;
   }
 
   .pause-zone:hover {
@@ -93,6 +166,60 @@
   .pause-zone.active {
     background: var(--zone-hover);
     box-shadow: 0 0 20px rgba(128, 128, 128, 0.3);
+    animation: activeZone 0.5s ease-in-out;
+  }
+
+  /* zone type specific styling */
+  .zone-speed {
+    border-color: var(--speed-zone);
+    animation: pulse-speed 2s ease-in-out infinite;
+  }
+
+  .zone-slow {
+    border-color: var(--slow-zone);
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+
+  .zone-invisible {
+    border-color: var(--invisible-zone);
+    animation: pulse-invisible 2.5s ease-in-out infinite;
+  }
+
+  .zone-boost {
+    border-color: var(--boost-zone);
+    animation: pulse-boost 1.5s ease-in-out infinite;
+  }
+
+  /* zone animations */
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.02); opacity: 0.8; }
+  }
+
+  @keyframes pulse-speed {
+    0%, 100% { transform: scale(1) rotate(0deg); border-width: 2px; }
+    50% { transform: scale(1.05) rotate(2deg); border-width: 3px; }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(0.98); filter: brightness(1.2); }
+  }
+
+  @keyframes pulse-invisible {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.03); }
+  }
+
+  @keyframes pulse-boost {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 255, 0, 0.5); }
+    50% { transform: scale(1.08); box-shadow: 0 0 15px rgba(255, 255, 0, 0.8); }
+  }
+
+  @keyframes activeZone {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1.05); }
   }
 
   /* zone positioning */
@@ -167,6 +294,25 @@
     transform: scale(1.05);
   }
 
+  /* game stats */
+  .game-stats {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    background: var(--zone-bg);
+    border: 2px solid var(--zone-border);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.8rem;
+    color: var(--zone-text);
+    z-index: 100;
+    min-width: 120px;
+  }
+
+  .game-stats div {
+    margin: 2px 0;
+  }
+
   /* responsive adjustments */
   @media (max-width: 768px) {
     .zone-1, .zone-2, .zone-3, .zone-4, .zone-5 {
@@ -208,36 +354,42 @@
     🌙 Dark Mode
   </button>
   
+  <!-- game stats -->
+  <div class="game-stats">
+    <div>Speed: <span id="speedDisplay">1x</span></div>
+    <div>Effect: <span id="effectDisplay">None</span></div>
+  </div>
+  
   <!-- instructions -->
   <div class="instructions">
     Move your cursor around - the square will chase you with a delay!<br>
-    <small>Hover over the zones to pause the chaser</small>
+    <small>Different zones have special effects!</small>
   </div>
 
   <!-- pause zones -->
-  <div class="pause-zone zone-1" data-zone="1">
-    Zone 1<br>
-    <small>Pause Area</small>
+  <div class="pause-zone zone-1 zone-speed" data-zone="1" data-type="speed">
+    ⚡ Speed Zone<br>
+    <small>Square goes faster!</small>
   </div>
 
-  <div class="pause-zone zone-2" data-zone="2">
-    Zone 2<br>
-    <small>Safe Space</small>
+  <div class="pause-zone zone-2 zone-slow" data-zone="2" data-type="slow">
+    🐌 Slow Zone<br>
+    <small>Square slows down</small>
   </div>
 
-  <div class="pause-zone zone-3" data-zone="3">
-    Zone 3<br>
-    <small>Rest Stop</small>
+  <div class="pause-zone zone-3 zone-invisible" data-zone="3" data-type="invisible">
+    👻 Ghost Zone<br>
+    <small>Square becomes invisible</small>
   </div>
 
-  <div class="pause-zone zone-4" data-zone="4">
-    Zone 4<br>
-    <small>Chill Zone</small>
+  <div class="pause-zone zone-4 zone-boost" data-zone="4" data-type="boost">
+    🚀 Boost Zone<br>
+    <small>Temporary super speed!</small>
   </div>
 
-  <div class="pause-zone zone-5" data-zone="5">
-    Zone 5<br>
-    <small>Center Sanctuary</small>
+  <div class="pause-zone zone-5" data-zone="5" data-type="pause">
+    ⏸️ Safe Zone<br>
+    <small>Square pauses here</small>
   </div>
 
   <script>
@@ -274,32 +426,193 @@
       }
     });
 
-    // cursor chasing square logic
+    // game elements and state
     const chase = document.getElementById('chaseSquare');
     const zones = document.querySelectorAll('.pause-zone');
+    const speedDisplay = document.getElementById('speedDisplay');
+    const effectDisplay = document.getElementById('effectDisplay');
     
-    // starting position (top-left corner)
+    // game state
     let chaseX = 20;
     let chaseY = 20;
     let targetX = 20;
     let targetY = 20;
     
-    // speed for approximately 1 second delay
-    const chaseSpeed = 0.02;
-    
-    // track which zones are currently being hovered
+    // dynamic game variables
+    let baseChaseSpeed = 0.02;
+    let currentSpeedMultiplier = 1;
+    let difficultySpeed = 1;
     let isPaused = false;
+    let currentEffect = 'None';
+    let effectTimeout = null;
+    
+    // trail system
+    let trails = [];
+    const maxTrails = 8;
+    
+    // game start time for difficulty scaling
+    const gameStartTime = Date.now();
     
     // set initial position
     chase.style.left = chaseX + 'px';
     chase.style.top = chaseY + 'px';
 
+    // create trail effect
+    function createTrail(x, y) {
+      if (trails.length >= maxTrails) {
+        const oldTrail = trails.shift();
+        if (oldTrail && oldTrail.parentNode) {
+          oldTrail.parentNode.removeChild(oldTrail);
+        }
+      }
+      
+      const trail = document.createElement('div');
+      trail.className = 'trail';
+      trail.style.left = x + 'px';
+      trail.style.top = y + 'px';
+      document.body.appendChild(trail);
+      trails.push(trail);
+      
+      // fade out trail
+      setTimeout(() => {
+        trail.style.opacity = '0';
+        setTimeout(() => {
+          if (trail.parentNode) {
+            trail.parentNode.removeChild(trail);
+          }
+          trails = trails.filter(t => t !== trail);
+        }, 500);
+      }, 100);
+    }
+
+    // create particle effect
+    function createParticles(x, y, count = 8) {
+      for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        const angle = (Math.PI * 2 / count) * i;
+        const distance = 30 + Math.random() * 20;
+        const particleX = Math.cos(angle) * distance;
+        const particleY = Math.sin(angle) * distance;
+        
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.setProperty('--particle-x', particleX + 'px');
+        particle.style.setProperty('--particle-y', particleY + 'px');
+        
+        document.body.appendChild(particle);
+        
+        // remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+    }
+
+    // screen shake effect
+    function screenShake() {
+      body.classList.add('shake');
+      setTimeout(() => {
+        body.classList.remove('shake');
+      }, 500);
+    }
+
+    // update game stats display
+    function updateGameStats() {
+      const totalSpeed = (difficultySpeed * currentSpeedMultiplier).toFixed(1);
+      speedDisplay.textContent = totalSpeed + 'x';
+      effectDisplay.textContent = currentEffect;
+    }
+
+    // dynamic difficulty - square gets faster over time
+    function updateDifficulty() {
+      const timeElapsed = (Date.now() - gameStartTime) / 1000; // seconds
+      difficultySpeed = 1 + (timeElapsed / 30); // increase by 1x every 30 seconds
+      updateGameStats();
+    }
+
+    // apply zone effect
+    function applyZoneEffect(zoneType) {
+      // clear any existing effect timeout
+      if (effectTimeout) {
+        clearTimeout(effectTimeout);
+      }
+      
+      // remove existing effect classes
+      chase.classList.remove('invisible', 'boosted');
+      
+      switch (zoneType) {
+        case 'speed':
+          currentSpeedMultiplier = 2;
+          currentEffect = 'Speed Up';
+          effectTimeout = setTimeout(() => {
+            currentSpeedMultiplier = 1;
+            currentEffect = 'None';
+            updateGameStats();
+          }, 3000);
+          break;
+          
+        case 'slow':
+          currentSpeedMultiplier = 0.3;
+          currentEffect = 'Slowed';
+          effectTimeout = setTimeout(() => {
+            currentSpeedMultiplier = 1;
+            currentEffect = 'None';
+            updateGameStats();
+          }, 4000);
+          break;
+          
+        case 'invisible':
+          chase.classList.add('invisible');
+          currentEffect = 'Invisible';
+          effectTimeout = setTimeout(() => {
+            chase.classList.remove('invisible');
+            currentEffect = 'None';
+            updateGameStats();
+          }, 2500);
+          break;
+          
+        case 'boost':
+          currentSpeedMultiplier = 3;
+          chase.classList.add('boosted');
+          currentEffect = 'BOOST!';
+          effectTimeout = setTimeout(() => {
+            currentSpeedMultiplier = 1;
+            chase.classList.remove('boosted');
+            currentEffect = 'None';
+            updateGameStats();
+          }, 1500);
+          break;
+          
+        case 'pause':
+          // traditional pause behavior
+          break;
+      }
+      
+      updateGameStats();
+    }
+
     // animation loop for smooth chasing
+    let lastTrailTime = 0;
     function animateChase() {
-      // only move if not paused
+      // update difficulty every frame
+      updateDifficulty();
+      
+      // only move if not paused (only pause zones pause the movement)
       if (!isPaused) {
-        chaseX += (targetX - chaseX) * chaseSpeed;
-        chaseY += (targetY - chaseY) * chaseSpeed;
+        const effectiveSpeed = baseChaseSpeed * difficultySpeed * currentSpeedMultiplier;
+        chaseX += (targetX - chaseX) * effectiveSpeed;
+        chaseY += (targetY - chaseY) * effectiveSpeed;
+        
+        // create trail every few frames
+        const now = Date.now();
+        if (now - lastTrailTime > 100) {
+          createTrail(Math.round(chaseX), Math.round(chaseY));
+          lastTrailTime = now;
+        }
       }
       
       // update position
@@ -322,17 +635,45 @@
     // handle zone hover events
     zones.forEach(zone => {
       zone.addEventListener('mouseenter', () => {
-        isPaused = true;
-        chase.classList.add('paused');
+        const zoneType = zone.dataset.type;
+        
+        // visual feedback
         zone.classList.add('active');
-        console.log(`Entered ${zone.dataset.zone}`);
+        screenShake();
+        createParticles(
+          zone.offsetLeft + zone.offsetWidth / 2,
+          zone.offsetTop + zone.offsetHeight / 2,
+          12
+        );
+        
+        // apply zone effect
+        if (zoneType === 'pause') {
+          isPaused = true;
+          chase.classList.add('paused');
+          currentEffect = 'Paused';
+        } else {
+          applyZoneEffect(zoneType);
+        }
+        
+        updateGameStats();
+        console.log(`Entered ${zoneType} zone`);
       });
       
       zone.addEventListener('mouseleave', () => {
-        isPaused = false;
-        chase.classList.remove('paused');
+        const zoneType = zone.dataset.type;
         zone.classList.remove('active');
-        console.log(`Left ${zone.dataset.zone}`);
+        
+        // only unpause for pause zones
+        if (zoneType === 'pause') {
+          isPaused = false;
+          chase.classList.remove('paused');
+          if (currentEffect === 'Paused') {
+            currentEffect = 'None';
+            updateGameStats();
+          }
+        }
+        
+        console.log(`Left ${zoneType} zone`);
       });
     });
 
@@ -341,11 +682,13 @@
       chase.style.display = 'block';
       chase.style.visibility = 'visible';
       chase.style.opacity = '1';
+      updateGameStats();
     }, 50);
 
     // log initial state
-    console.log('Cursor chase zones initialized');
+    console.log('Enhanced cursor chase game initialized');
     console.log('Found zones:', zones.length);
+    console.log('Game features: Dynamic difficulty, trails, particles, screen shake, zone effects');
   </script>
 </body>
 </html>
