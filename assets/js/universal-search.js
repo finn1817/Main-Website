@@ -212,10 +212,19 @@ class UniversalSearch {
   getBasePath() {
     // Detect if we're on GitHub Pages or local/custom domain
     const path = window.location.pathname;
+    
+    // Always use /Main-Website/ as base if it exists in path, regardless of domain
     if (path.includes('/Main-Website/')) {
       return '/Main-Website/';
     }
-    // For custom domains or local development
+    
+    // If we're in a subfolder like /resume/, adjust the base path  
+    if (path.includes('/resume/')) {
+      // For custom domains when in resume folder, go up one level
+      return '../';
+    }
+    
+    // For custom domains or local development at root level
     return '/';
   }
 
