@@ -8,11 +8,7 @@
   <link href="../assets/css/universal-search.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    * { 
-      box-sizing: border-box; 
-      scroll-behavior: smooth;
-    }
-
+    * { box-sizing: border-box; }
     :root {
       --bg-color: #f4f4f4;
       --text-color: #333;
@@ -31,10 +27,7 @@
       --popup-bg: #333;
       --popup-text: white;
       --input-border: #aaa;
-      --availability-bg: #4caf50;
-      --availability-text: white;
     }
-
     [data-theme="dark"] {
       --bg-color: #1a1a1a;
       --text-color: #eee;
@@ -53,10 +46,7 @@
       --popup-bg: #444;
       --popup-text: #f0f0f0;
       --input-border: #555;
-      --availability-bg: #45a049;
-      --availability-text: #f0f0f0;
     }
-
     body {
       margin: 0;
       font-family: 'Roboto', sans-serif;
@@ -67,30 +57,13 @@
       min-height: 100vh;
       transition: background-color 0.3s, color 0.3s;
     }
-
     header {
       background-color: var(--header-bg);
       color: var(--header-text);
       padding: 30px 20px;
       text-align: center;
       transition: background-color 0.3s;
-      position: relative;
-      z-index: 10;
     }
-
-    /* availability status styling */
-    .availability-status {
-      background-color: var(--availability-bg);
-      color: var(--availability-text);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 500;
-      margin-top: 10px;
-      display: inline-block;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
     nav {
       display: flex;
       justify-content: center;
@@ -98,10 +71,7 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       transition: background-color 0.3s;
       position: relative;
-      z-index: 10;
-      flex-wrap: wrap;
     }
-
     nav button {
       background: none;
       border: none;
@@ -110,32 +80,17 @@
       font-size: 16px;
       cursor: pointer;
       transition: background 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
-
     nav button:hover,
     nav button.active {
       background-color: var(--nav-hover);
     }
-
-    /* keyboard shortcut indicator */
-    .shortcut-key {
-      background-color: rgba(255, 255, 255, 0.2);
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 12px;
-      margin-left: 5px;
-    }
-
     .content {
       max-width: 900px;
       margin: 0 auto;
       padding: 30px 20px 80px;
       flex: 1;
     }
-
     .tab-content {
       display: none;
       background-color: var(--content-bg);
@@ -145,11 +100,9 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       transition: background-color 0.3s;
     }
-
     .tab-content.active {
       display: block;
     }
-
     h2 {
       font-size: 24px;
       font-weight: 700;
@@ -158,24 +111,20 @@
       margin-bottom: 20px;
       transition: border-color 0.3s;
     }
-
     h3 {
       font-size: 18px;
       margin: 10px 0 5px;
       color: var(--subheading-color);
       transition: color 0.3s;
     }
-
     ul {
       padding-left: 20px;
     }
-
     li {
       margin: 6px 0;
       font-size: 15px;
       line-height: 1.5;
     }
-
     input, textarea, button[type="submit"] {
       display: block;
       width: 100%;
@@ -187,11 +136,9 @@
       color: var(--text-color);
       transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
-
     label {
       font-weight: bold;
     }
-
     .collapsible {
       background-color: var(--collapsible-bg);
       border: 1px solid var(--collapsible-border);
@@ -201,29 +148,24 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
-
     .collapsible:hover {
       background-color: var(--collapsible-hover);
     }
-
     .collapsible h3 {
       margin: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
     .collapsible-content {
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.3s ease;
     }
-
     .collapsible.open .collapsible-content {
       max-height: 600px;
       margin-top: 10px;
     }
-
     .popup {
       position: fixed;
       bottom: 70px;
@@ -237,7 +179,6 @@
       display: none;
       transition: background-color 0.3s, color 0.3s;
     }
-
     footer {
       position: fixed;
       bottom: 0;
@@ -251,7 +192,6 @@
       box-shadow: 0 -1px 4px rgba(0,0,0,0.1);
       transition: background-color 0.3s, color 0.3s;
     }
-
     .back-to-home {
       position: fixed;
       top: 10px;
@@ -262,20 +202,17 @@
       text-decoration: none;
       border-radius: 5px;
       font-weight: bold;
-      z-index: 1001;
+      z-index: 999;
     }
-
     .back-to-home:hover {
       background-color: #45a049;
     }
-
     #about p {
       text-align: justify;
       font-size: 15.5px;
       line-height: 1.6;
     }
-
-    /* theme toggle button */
+    /* Theme toggle button */
     .theme-toggle {
       position: fixed;
       top: 10px;
@@ -284,7 +221,7 @@
       border: none;
       font-size: 24px;
       cursor: pointer;
-      z-index: 1001;
+      z-index: 1000;
       background-color: rgba(0, 0, 0, 0.1);
       border-radius: 50%;
       width: 40px;
@@ -294,16 +231,16 @@
       justify-content: center;
       transition: background-color 0.3s;
     }
-
     .theme-toggle:hover {
       background-color: rgba(0, 0, 0, 0.2);
     }
-
-    /* download resume button */
+    /* Download Resume Button */
     .download-resume {
       position: fixed;
+      top: 60px;
+      right: 10px;
       top: 10px;
-      right: 230px;
+      right: 65px;
       padding: 10px 15px;
       background-color: #ff6b35;
       color: white;
@@ -311,53 +248,26 @@
       border-radius: 5px;
       font-weight: bold;
       cursor: pointer;
-      z-index: 1001;
+      z-index: 1000;
       font-size: 14px;
       transition: background-color 0.3s;
     }
-
     .download-resume:hover {
       background-color: #e55a2b;
     }
-
     .download-resume:active {
       transform: scale(0.98);
     }
-
-    /* Universal search button positioning override */
-    .universal-search-btn {
-      position: fixed !important;
-      top: 10px !important;
-      right: 140px !important;
-      background: #2196f3 !important;
-      border: 2px solid #2196f3 !important;
-      color: white !important;
-      font-size: 1.2em;
-      padding: 8px 14px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: all 0.4s ease;
-      z-index: 1000;
-    }
-
-    .universal-search-btn:hover {
-      background-color: #1976d2 !important;
-      border-color: #1976d2 !important;
-      transform: scale(1.1);
-    }
-
-    /* education section styling */
+    /* Education Section Styling */
     .education-section {
       margin-bottom: 25px;
     }
-
     .education-divider {
       border: none;
       height: 2px;
       background: linear-gradient(to right, var(--heading-border), transparent);
       margin: 20px 0;
     }
-
     .courses-button {
       background-color: var(--subheading-color);
       color: white;
@@ -369,22 +279,19 @@
       margin-top: 10px;
       transition: background-color 0.3s;
     }
-
     .courses-button:hover {
       background-color: var(--nav-hover);
     }
-
     .courses-modal {
       display: none;
       position: fixed;
-      z-index: 1002;
+      z-index: 1001;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
     }
-
     .courses-modal-content {
       background-color: var(--content-bg);
       margin: 5% auto;
@@ -397,7 +304,6 @@
       position: relative;
       transition: background-color 0.3s;
     }
-
     .courses-close {
       color: var(--text-color);
       float: right;
@@ -406,28 +312,23 @@
       cursor: pointer;
       line-height: 1;
     }
-
     .courses-close:hover {
       color: var(--subheading-color);
     }
-
     .course-category {
       margin-bottom: 15px;
     }
-
     .course-category h4 {
       color: var(--subheading-color);
       margin-bottom: 8px;
       font-size: 16px;
     }
-
     .course-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 8px;
       margin-bottom: 15px;
     }
-
     .course-item {
       background-color: var(--collapsible-bg);
       padding: 8px 12px;
@@ -435,73 +336,24 @@
       font-size: 13px;
       border-left: 3px solid var(--subheading-color);
     }
-
-    /* responsive adjustments */
-    @media (max-width: 768px) {
-      .download-resume {
-        right: 120px;
-        font-size: 12px;
-        padding: 8px 12px;
-      }
-      
-      .search-btn {
-        right: 60px;
-        width: 35px;
-        height: 35px;
-        font-size: 16px;
-      }
-      
-      .theme-toggle {
-        width: 35px;
-        height: 35px;
-        font-size: 20px;
-      }
-      
-      nav button {
-        padding: 12px 15px;
-        font-size: 14px;
-      }
-
-      .shortcut-key {
-        display: none;
-      }
-
-      .search-overlay {
-        padding-top: 50px;
-      }
-
-      .search-container {
-        width: 95%;
-        padding: 15px;
-      }
-    }
   </style>
 </head>
 <body>
-
 <a href="https://finn1817.github.io/Main-Website/" class="back-to-home">Click this to see my main website!</a>
-
 <button class="theme-toggle" id="themeToggle">☀️</button>
-
 <button class="download-resume" id="downloadResume">📄 Download Resume</button>
-
-<!-- Universal search button will be automatically created by universal-search.js -->
-
 <header>
   <h1>Dan Finn - Resume Website</h1>
   <p>Computer Science Student at SUNY Fredonia</p>
-  <div class="availability-status">🟢 Currently seeking internships</div>
 </header>
-
 <nav>
-  <button class="tab-button active" data-tab="about">📋 About Me<span class="shortcut-key">1</span></button>
-  <button class="tab-button" data-tab="education">🎓 Education | School<span class="shortcut-key">2</span></button>
-  <button class="tab-button" data-tab="experience">💼 IT Experience<span class="shortcut-key">3</span></button>
-  <button class="tab-button" data-tab="skills">⚡ Skills<span class="shortcut-key">4</span></button>
-  <button class="tab-button" data-tab="contact">📧 Contact<span class="shortcut-key">5</span></button>
-  <button class="tab-button" data-tab="programming">💻 Programming<span class="shortcut-key">6</span></button>
+  <button class="tab-button active" data-tab="about">About Me</button>
+  <button class="tab-button" data-tab="education">Education | School</button>
+  <button class="tab-button" data-tab="experience">IT Experience</button>
+  <button class="tab-button" data-tab="skills">Skills</button>
+  <button class="tab-button" data-tab="contact">Contact</button>
+  <button class="tab-button" data-tab="programming">Programming</button>
 </nav>
-
 <div class="content">
   <div id="about" class="tab-content active">
     <h2>About Me</h2>
@@ -512,7 +364,6 @@
       <li>I also enjoy web development. I've successfully connected websites to databases and created multiple personal websites (front and back end). I like to remaking games that help get foundations down, and I've recently found that that when I make something that works well, AI can make it look better. When I am working with AI, I like to clearly say that I do not want to change any of the the work I did, but instead just improve the design when it's possible.</li>
     </ul>
   </div>
-
   <div id="education" class="tab-content">
     <h2>Education</h2>
     
@@ -525,9 +376,7 @@
       </ul>
       <button class="courses-button" id="viewCoursesBtn">📚 View my Completed Computer Science Courses</button>
     </div>
-
     <hr class="education-divider">
-
     <div class="education-section">
       <h3>🏫 High School Education</h3>
       <ul>
@@ -537,7 +386,6 @@
       </ul>
     </div>
   </div>
-
   <!-- Courses Modal -->
   <div id="coursesModal" class="courses-modal">
     <div class="courses-modal-content">
@@ -577,7 +425,6 @@
           <div class="course-item">MATH 121 - Calculus II</div>
         </div>
       </div>
-
       <div class="course-category">
         <h4>Business</h4>
         <div class="course-list">
@@ -587,8 +434,7 @@
           <div class="course-item">BUAD 346 - Professional B2B Selling</div>
         </div>
       </div>
-
-      <div class="course-category">
+            <div class="course-category">
         <h4>Music</h4>
         <div class="course-list">
           <div class="course-item">MUS 101 - Music Theory I</div>
@@ -599,10 +445,8 @@
       </div>
     </div>
   </div>
-
   <div id="experience" class="tab-content">
     <h2>IT Experience</h2>
-
     <div class="collapsible">
       <h3>Lounge Attendant -- SUNY Fredonia</h3>
       <div class="collapsible-content">
@@ -613,7 +457,6 @@
         </ul>
       </div>
     </div>
-
     <div class="collapsible">
       <h3>AV Club -- Bishop Timon St. Jude</h3>
       <div class="collapsible-content">
@@ -624,7 +467,6 @@
         </ul>
       </div>
     </div>
-
     <div class="collapsible">
       <h3>ITS Internship (Programming) -- 2024--2025</h3>
       <div class="collapsible-content">
@@ -635,7 +477,6 @@
         </ul>
       </div>
     </div>
-
     <div class="collapsible">
       <h3>ITS Internship (Help Desk) -- Summer 2025 (Current)</h3>
       <div class="collapsible-content">
@@ -647,10 +488,8 @@
       </div>
     </div>
   </div>
-
   <div id="skills" class="tab-content">
     <h2>Skills</h2>
-
     <div class="collapsible">
       <h3>Programming Languages</h3>
       <div class="collapsible-content">
@@ -659,7 +498,6 @@
         </ul>
       </div>
     </div>
-
     <div class="collapsible">
       <h3>Web Dev</h3>
       <div class="collapsible-content">
@@ -668,7 +506,6 @@
         </ul>
       </div>
     </div>
-
     <div class="collapsible">
       <h3>Cybersecurity</h3>
       <div class="collapsible-content">
@@ -677,7 +514,6 @@
         </ul>
       </div>
     </div>
-
     <div class="collapsible">
       <h3>Operating Systems</h3>
       <div class="collapsible-content">
@@ -686,7 +522,6 @@
         </ul>
       </div>
     </div>
-
     <div class="collapsible">
       <h3>Virtual Machines</h3>
       <div class="collapsible-content">
@@ -695,7 +530,6 @@
         </ul>
       </div>
     </div>
-
     <div class="collapsible">
       <h3>Tools Used</h3>
       <div class="collapsible-content">
@@ -710,7 +544,6 @@
         </ul>
       </div>
     </div>
-
     <div class="collapsible">
       <h3>Projects</h3>
       <div class="collapsible-content">
@@ -723,7 +556,6 @@
       </div>
     </div>
   </div>
-
   <div id="programming" class="tab-content">
     <h2>Programming Projects</h2>
     <div class="collapsible">
@@ -751,7 +583,6 @@
       </div>
     </div>
   </div>
-
   <div id="contact" class="tab-content">
     <h2>Contact Me</h2>
     <p>If you'd like to get in touch with me, fill out the form below and I'll reach out as soon as I can!</p>
@@ -767,254 +598,23 @@
     <div class="popup" id="popup"></div>
   </div>
 </div>
-
 <footer>
   &copy; 2025 Dan Finn -- All rights reserved.
 </footer>
-
 <script>
-  // Universal search will be handled by universal-search.js
-
-  // search data - all the content that can be searched
-  const searchData = [
-    {
-      title: "About Me",
-      section: "about",
-      content: "computer science student SUNY Fredonia programming apps websites PC mobile Android step by step projects challenge automation useful web development databases front end back end games AI design"
-    },
-    {
-      title: "Education - College",
-      section: "education", 
-      content: "Bachelor Science Computer Science SUNY Fredonia software development web development design projects system modification Captain eSports Rocket League"
-    },
-    {
-      title: "Education - High School",
-      section: "education",
-      content: "High School Diploma Bishop Timon St Jude AV Club audio video equipment Captain Varsity Soccer"
-    },
-    {
-      title: "Lounge Attendant",
-      section: "experience",
-      content: "SUNY Fredonia gaming PCs consoles Xbox PS5 Nintendo Switch user accountability sign-in application lounge rules support"
-    },
-    {
-      title: "AV Club Experience",
-      section: "experience", 
-      content: "Bishop Timon St Jude audio video equipment school events livestreams basketball football games pep rallies sound setup recording editing soundboards wireless mics cameras"
-    },
-    {
-      title: "ITS Programming Internship",
-      section: "experience",
-      content: "ITS Internship Programming Python app manage workers workplaces cloud database automate schedule generation worker availability hours operation time sync shift coverage"
-    },
-    {
-      title: "ITS Help Desk Internship",
-      section: "experience",
-      content: "ITS Internship Help Desk technical help staff students remote phone swapping drives computers setup google microsoft transfer ticket system permission issues hardware TVs phones touchpads inventory campus"
-    },
-    {
-      title: "Programming Languages",
-      section: "skills",
-      content: "C++ C# Python HTML SQL Bash Java Kotlin R Perl Assembly programming languages experience"
-    },
-    {
-      title: "Web Development",
-      section: "skills", 
-      content: "HTML JavaScript web apps websites SUNY ITS workplace web development"
-    },
-    {
-      title: "Cybersecurity",
-      section: "skills",
-      content: "Networking routers switches troubleshooting cybersecurity"
-    },
-    {
-      title: "Operating Systems",
-      section: "skills",
-      content: "Windows Linux Ubuntu Debian macOS Android command-line system admin operating systems"
-    },
-    {
-      title: "Virtual Machines",
-      section: "skills",
-      content: "virtual machines VMs setup configuring experience"
-    },
-    {
-      title: "Tools Used",
-      section: "skills",
-      content: "Microsoft Office Word Excel PowerPoint Access Outlook Calendar Google Docs Sheets Slides Forms Visual Studio VS Code GitHub Unity WinSCP Terminal PowerShell automation"
-    },
-    {
-      title: "Programming Projects",
-      section: "skills",
-      content: "C++ file editors automation tools windows manipulation games database apps Python Schedule Maker ITS scripting pattern parsing Bash install uninstall scripts system tweaks Homebrew Modding custom firmware WiiFlow USB Loader Wii troubleshooting"
-    },
-    {
-      title: "Fredonia Workplace Dashboard",
-      section: "programming",
-      content: "web app SUNY Fredonia ITS automate manage workplaces scheduling admin tasks staff students GitHub"
-    },
-    {
-      title: "NATracker",
-      section: "programming", 
-      content: "group project real-time file system tracking workplace python app GitHub"
-    },
-    {
-      title: "Main Website",
-      section: "programming",
-      content: "portfolio website individual sites single modern multi-page dashboard light dark mode GitHub"
-    },
-    {
-      title: "Contact Information",
-      section: "contact",
-      content: "contact form message email get in touch"
-    }
-  ];
-
-  // open search overlay
-  searchBtn.addEventListener('click', () => {
-    searchOverlay.style.display = 'flex';
-    searchInput.focus();
-  });
-
-  // close search overlay
-  searchClose.addEventListener('click', () => {
-    searchOverlay.style.display = 'none';
-    searchInput.value = '';
-    searchResults.innerHTML = '';
-  });
-
-  // close search when clicking outside
-  searchOverlay.addEventListener('click', (e) => {
-    if (e.target === searchOverlay) {
-      searchOverlay.style.display = 'none';
-      searchInput.value = '';
-      searchResults.innerHTML = '';
-    }
-  });
-
-  // search functionality
-  searchInput.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase().trim();
-    
-    if (query.length < 2) {
-      searchResults.innerHTML = '';
-      return;
-    }
-
-    const results = searchData.filter(item => 
-      item.content.toLowerCase().includes(query) || 
-      item.title.toLowerCase().includes(query)
-    );
-
-    displaySearchResults(results, query);
-  });
-
-  // display search results
-  function displaySearchResults(results, query) {
-    if (results.length === 0) {
-      searchResults.innerHTML = '<div class="no-results">No results found</div>';
-      return;
-    }
-
-    const resultsHTML = results.map(result => {
-      const highlightedTitle = highlightText(result.title, query);
-      const snippet = getSnippet(result.content, query);
-      const highlightedSnippet = highlightText(snippet, query);
-      
-      return `
-        <div class="search-result-item" onclick="goToSection('${result.section}')">
-          <div class="search-result-title">${highlightedTitle}</div>
-          <div class="search-result-content">${highlightedSnippet}</div>
-        </div>
-      `;
-    }).join('');
-
-    searchResults.innerHTML = resultsHTML;
-  }
-
-  // highlight search terms in text
-  function highlightText(text, query) {
-    const regex = new RegExp(`(${query})`, 'gi');
-    return text.replace(regex, '<span class="search-highlight">$1</span>');
-  }
-
-  // get snippet around search term
-  function getSnippet(content, query) {
-    const index = content.toLowerCase().indexOf(query.toLowerCase());
-    if (index === -1) return content.substring(0, 100) + '...';
-    
-    const start = Math.max(0, index - 50);
-    const end = Math.min(content.length, index + query.length + 50);
-    
-    let snippet = content.substring(start, end);
-    if (start > 0) snippet = '...' + snippet;
-    if (end < content.length) snippet = snippet + '...';
-    
-    return snippet;
-  }
-
-  // navigate to section from search results
-  function goToSection(sectionName) {
-    searchOverlay.style.display = 'none';
-    searchInput.value = '';
-    searchResults.innerHTML = '';
-    switchToTab(sectionName);
-  }
-
-  // tab switching with smooth scrolling
   document.querySelectorAll('.tab-button').forEach(button => {
     button.addEventListener('click', () => {
-      switchToTab(button.getAttribute('data-tab'));
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      button.classList.add('active');
+      document.getElementById(button.getAttribute('data-tab')).classList.add('active');
     });
   });
-
-  // function to switch tabs (used by both click and keyboard shortcuts)
-  function switchToTab(tabName) {
-    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    
-    const targetButton = document.querySelector(`[data-tab="${tabName}"]`);
-    const targetTab = document.getElementById(tabName);
-    
-    if (targetButton && targetTab) {
-      targetButton.classList.add('active');
-      targetTab.classList.add('active');
-      
-      // smooth scroll to content
-      targetTab.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  }
-
-  // keyboard shortcuts for tab navigation
-  document.addEventListener('keydown', (e) => {
-    // only trigger if not typing in an input field
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-      return;
-    }
-
-    const tabMap = {
-      '1': 'about',
-      '2': 'education', 
-      '3': 'experience',
-      '4': 'skills',
-      '5': 'contact',
-      '6': 'programming'
-    };
-
-    if (tabMap[e.key]) {
-      e.preventDefault();
-      switchToTab(tabMap[e.key]);
-    }
-  });
-
   document.querySelectorAll('.collapsible').forEach(card => {
     card.addEventListener('click', () => {
       card.classList.toggle('open');
     });
   });
-
   // PDF Generation Function
   function generateResumePDF() {
     const { jsPDF } = window.jspdf;
@@ -1114,7 +714,6 @@
     addText("OS: Windows, Linux (Ubuntu/Debian), macOS, Android. Command-line and system admin experience.", 11, false, 5);
     addText("VMs: Experienced setting up and configuring virtual machines.", 11, false, 5);
     yPosition += 3;
-
     // Programming Projects Section
     addText("PROGRAMMING PROJECTS", 14, true);
     yPosition += 3;
@@ -1127,7 +726,6 @@
     addText("Main Website", 12, true, 5);
     addText("My main portfolio website, combining all my individual sites into a single, modern, multi-page dashboard with light/dark mode feature.", 10, false, 10);
     yPosition += 3;
-
     addText("Tools Used:", 11, true, 5);
     addText("• Microsoft Office Suite (Word, Excel, PowerPoint, Access)", 10, false, 10);
     addText("• Visual Studio / VS Code", 10, false, 10);
@@ -1153,7 +751,6 @@
       popup.style.display = "none";
     }, 3000);
   }
-
   document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("contactForm");
     const popup = document.getElementById("popup");
@@ -1162,32 +759,26 @@
     const viewCoursesBtn = document.getElementById("viewCoursesBtn");
     const coursesModal = document.getElementById("coursesModal");
     const coursesClose = document.getElementById("coursesClose");
-
     // download resume functionality
     downloadButton.addEventListener("click", generateResumePDF);
-
     // courses modal functionality
     viewCoursesBtn.addEventListener("click", () => {
       coursesModal.style.display = "block";
     });
-
     coursesClose.addEventListener("click", () => {
       coursesModal.style.display = "none";
     });
-
     window.addEventListener("click", (event) => {
       if (event.target === coursesModal) {
         coursesModal.style.display = "none";
       }
     });
-
     // load saved theme from localStorage
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
       document.body.setAttribute("data-theme", "dark");
       themeToggle.textContent = "🌙";
     }
-
     // Theme toggle functionality
     themeToggle.addEventListener("click", () => {
       if (document.body.getAttribute("data-theme") === "dark") {
@@ -1200,17 +791,14 @@
         localStorage.setItem("theme", "dark");
       }
     });
-
     // form submission functionality
     if (localStorage.getItem("formSubmitted") === "true") {
       disableForm();
     }
-
     function disableForm() {
       form.querySelector("button[type='submit']").disabled = true;
       showPopup("Message already sent. You can only submit once!");
     }
-
     function showPopup(message) {
       popup.innerText = message;
       popup.style.display = "block";
@@ -1218,7 +806,6 @@
         popup.style.display = "none";
       }, 3000);
     }
-
     form.addEventListener("submit", function(e) {
       if (!localStorage.getItem("formSubmitted") && !form.querySelector("button[type='submit']").disabled) {
         localStorage.setItem("formSubmitted", "true");
@@ -1229,6 +816,7 @@
       }
     });
   });
+  // end -- added in comment for push
 </script>
 <script src="../assets/js/universal-search.js"></script>
 </body>
