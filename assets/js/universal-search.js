@@ -121,6 +121,30 @@ class UniversalSearch {
         description: "Word search puzzle generator and solver.",
         keywords: ["word", "search", "puzzle", "game"]
       },
+      {
+        title: "Family Betting",
+        path: "Home › Projects › Family Betting",
+        url: `${this.basePath}projects/family-betting/`,
+        type: "projects",
+        description: "Family-friendly betting games including blackjack and poker.",
+        keywords: ["family", "betting", "games", "blackjack", "poker", "casino"]
+      },
+      {
+        title: "Team Manager",
+        path: "Home › Projects › Team Manager",
+        url: `${this.basePath}projects/Team-Manager/`,
+        type: "projects",
+        description: "Sports team management system with roster and tournament features.",
+        keywords: ["team", "manager", "sports", "roster", "tournament", "management"]
+      },
+      {
+        title: "Square Chase",
+        path: "Home › Projects › Square Chase",
+        url: `${this.basePath}projects/Square-Chase/`,
+        type: "projects",
+        description: "Interactive cursor-chasing game with dynamic zones and effects.",
+        keywords: ["square", "chase", "game", "cursor", "interactive", "zones"]
+      },
 
       // Top-level pages
       {
