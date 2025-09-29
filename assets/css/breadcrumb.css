@@ -12,11 +12,24 @@
   overflow: hidden;
 }
 
+/* Enhanced visibility for breadcrumbs inside containers */
+.container .breadcrumb {
+  background: rgba(255, 255, 255, 0.98);
+  border: 2px solid rgba(0, 123, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+body.dark .container .breadcrumb {
+  background: rgba(20, 20, 28, 0.95);
+  border: 2px solid rgba(77, 171, 247, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
 /* Light mode styling */
 body:not(.dark) .breadcrumb {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Dark mode styling */
@@ -65,7 +78,19 @@ body.dark .breadcrumb {
 
 /* Light mode separator */
 body:not(.dark) .breadcrumb li:not(:last-child)::after {
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 500;
+}
+
+/* Enhanced separator contrast inside containers */
+body:not(.dark) .container .breadcrumb li:not(:last-child)::after {
+  color: rgba(0, 0, 0, 0.8);
+  font-weight: 600;
+}
+
+body.dark .container .breadcrumb li:not(:last-child)::after {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
 }
 
 /* Dark mode separator */
@@ -84,7 +109,19 @@ body.dark .breadcrumb li:not(:last-child)::after {
 
 /* Light mode links */
 body:not(.dark) .breadcrumb a {
-  color: rgba(0, 0, 0, 0.7);
+  color: rgba(0, 0, 0, 0.8);
+  font-weight: 500;
+}
+
+/* Enhanced contrast for breadcrumbs inside containers */
+body:not(.dark) .container .breadcrumb a {
+  color: rgba(0, 0, 0, 0.9);
+  font-weight: 600;
+}
+
+body.dark .container .breadcrumb a {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
 }
 
 body:not(.dark) .breadcrumb a:hover {
@@ -117,8 +154,22 @@ body.dark .breadcrumb a:hover {
 
 /* Light mode current item */
 body:not(.dark) .breadcrumb .current {
-  color: #007bff;
-  background: rgba(0, 123, 255, 0.15);
+  color: #0056b3;
+  background: rgba(0, 123, 255, 0.2);
+  font-weight: 600;
+}
+
+/* Enhanced contrast for current item inside containers */
+body:not(.dark) .container .breadcrumb .current {
+  color: #003d82;
+  background: rgba(0, 123, 255, 0.25);
+  font-weight: 700;
+}
+
+body.dark .container .breadcrumb .current {
+  color: #ffffff;
+  background: rgba(77, 171, 247, 0.3);
+  font-weight: 700;
 }
 
 /* Dark mode current item */
