@@ -43,8 +43,8 @@
       min-height: 100vh;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      padding: 20px 0 20px 5%;
+      justify-content: center;
+      padding: 20px;
       position: relative;
       overflow-x: hidden;
     }
@@ -98,16 +98,13 @@
       border-radius: var(--border-radius);
       box-shadow: var(--shadow-light);
       max-width: 900px;
-      width: 90%;
+      width: 95%;
       max-height: 85vh;
       overflow-y: auto;
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.2);
       position: relative;
       z-index: 10;
-      margin-left: 5%;
-      margin-right: auto;
-      margin-top: 80px;
     }
 
     body.dark .container {
@@ -690,18 +687,18 @@
   <!-- theme toggle button -->
   <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙</button>
 
-  <!-- Breadcrumb Navigation -->
-  <nav class="breadcrumb animated" role="navigation" aria-label="Breadcrumb" style="position: fixed; top: 80px; left: 5%; max-width: 900px; width: 90%; z-index: 15;">
-    <ol>
-      <li><a href="../index.html"><span class="breadcrumb-icon">🏠</span>Home</a></li>
-      <li><span class="current"><span class="breadcrumb-icon">🚀</span>All Projects</span></li>
-    </ol>
-  </nav>
-
   <!-- back to home link -->
   <a href="../index.html" class="back-to-home">← Back to Home</a>
   
   <div class="container">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb animated" role="navigation" aria-label="Breadcrumb" style="margin-bottom: 30px;">
+      <ol>
+        <li><a href="../index.html"><span class="breadcrumb-icon">🏠</span>Home</a></li>
+        <li><span class="current"><span class="breadcrumb-icon">🚀</span>All Projects</span></li>
+      </ol>
+    </nav>
+    
     <h1 class="fade-in">Welcome to My Public Websites!</h1>
     <p class="fade-in">Here are some of my current projects organized by category:</p>
     
