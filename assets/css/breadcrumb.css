@@ -1,15 +1,28 @@
 /* Breadcrumb Navigation Component for Dan Finn's Website */
 
 .breadcrumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 8px;
   padding: 12px 20px;
   margin-bottom: 20px;
   font-size: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
+}
+
+/* Light mode styling */
+body:not(.dark) .breadcrumb {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode styling */
+body.dark .breadcrumb {
+  background: rgba(20, 20, 28, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .breadcrumb::before {
@@ -45,13 +58,23 @@
 .breadcrumb li:not(:last-child)::after {
   content: '›';
   margin: 0 12px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(100, 100, 100, 0.7);
   font-size: 1.1rem;
   font-weight: 300;
 }
 
+/* Light mode separator */
+body:not(.dark) .breadcrumb li:not(:last-child)::after {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* Dark mode separator */
+body.dark .breadcrumb li:not(:last-child)::after {
+  color: rgba(255, 255, 255, 0.6);
+}
+
 .breadcrumb a {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(60, 60, 60, 0.9);
   text-decoration: none;
   transition: all 0.3s ease;
   padding: 4px 8px;
@@ -59,7 +82,23 @@
   position: relative;
 }
 
-.breadcrumb a:hover {
+/* Light mode links */
+body:not(.dark) .breadcrumb a {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+body:not(.dark) .breadcrumb a:hover {
+  color: #007bff;
+  background: rgba(0, 123, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Dark mode links */
+body.dark .breadcrumb a {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+body.dark .breadcrumb a:hover {
   color: #4dabf7;
   background: rgba(77, 171, 247, 0.1);
   transform: translateY(-1px);
@@ -71,17 +110,21 @@
 }
 
 .breadcrumb .current {
-  color: white;
   font-weight: 500;
   padding: 4px 8px;
-  background: rgba(0, 123, 255, 0.2);
   border-radius: 4px;
 }
 
-/* Dark theme adjustments */
-body.dark .breadcrumb {
-  background: rgba(20, 20, 28, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
+/* Light mode current item */
+body:not(.dark) .breadcrumb .current {
+  color: #007bff;
+  background: rgba(0, 123, 255, 0.15);
+}
+
+/* Dark mode current item */
+body.dark .breadcrumb .current {
+  color: white;
+  background: rgba(0, 123, 255, 0.2);
 }
 
 /* Responsive design */
