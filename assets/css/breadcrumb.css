@@ -78,13 +78,13 @@ body.dark .breadcrumb {
 
 /* Light mode separator */
 body:not(.dark) .breadcrumb li:not(:last-child)::after {
-  color: #666666;
+  color: #666666 !important;
   font-weight: 500;
 }
 
 /* Enhanced separator contrast inside containers */
 body:not(.dark) .container .breadcrumb li:not(:last-child)::after {
-  color: #444444;
+  color: #444444 !important;
   font-weight: 600;
 }
 
@@ -99,7 +99,7 @@ body.dark .breadcrumb li:not(:last-child)::after {
 }
 
 .breadcrumb a {
-  color: #333333;
+  color: #333333 !important;
   text-decoration: none;
   transition: all 0.3s ease;
   padding: 4px 8px;
@@ -109,13 +109,13 @@ body.dark .breadcrumb li:not(:last-child)::after {
 
 /* Light mode links */
 body:not(.dark) .breadcrumb a {
-  color: #333333;
+  color: #333333 !important;
   font-weight: 500;
 }
 
 /* Enhanced contrast for breadcrumbs inside containers */
 body:not(.dark) .container .breadcrumb a {
-  color: #222222;
+  color: #222222 !important;
   font-weight: 600;
 }
 
@@ -150,19 +150,19 @@ body.dark .breadcrumb a:hover {
   font-weight: 500;
   padding: 4px 8px;
   border-radius: 4px;
-  color: #333333;
+  color: #333333 !important;
 }
 
 /* Light mode current item */
 body:not(.dark) .breadcrumb .current {
-  color: #0056b3;
+  color: #0056b3 !important;
   background: rgba(0, 123, 255, 0.2);
   font-weight: 600;
 }
 
 /* Enhanced contrast for current item inside containers */
 body:not(.dark) .container .breadcrumb .current {
-  color: #003d82;
+  color: #003d82 !important;
   background: rgba(0, 123, 255, 0.25);
   font-weight: 700;
 }
