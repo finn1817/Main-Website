@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Running Websites</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/breadcrumb.css">
+  <link rel="stylesheet" href="../assets/css/loading-states.css">
   <link href="../assets/css/universal-search.css" rel="stylesheet">
+  <script src="../assets/js/universal-search.js" defer></script>
+  <script src="../assets/js/loading-states.js" defer></script>
   <style>
     /* css custom properties for consistent theming */
     :root {
@@ -682,6 +686,14 @@
 
   <!-- theme toggle button -->
   <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙</button>
+
+  <!-- Breadcrumb Navigation -->
+  <nav class="breadcrumb animated" role="navigation" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="../index.html"><span class="breadcrumb-icon">🏠</span>Home</a></li>
+      <li><span class="current"><span class="breadcrumb-icon">🚀</span>All Projects</span></li>
+    </ol>
+  </nav>
 
   <!-- back to home link -->
   <a href="../index.html" class="back-to-home">← Back to Home</a>

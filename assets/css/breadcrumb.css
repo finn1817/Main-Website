@@ -1,0 +1,119 @@
+/* Breadcrumb Navigation Component for Dan Finn's Website */
+
+.breadcrumb {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.breadcrumb::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.breadcrumb ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.breadcrumb li {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb li:not(:last-child)::after {
+  content: '›';
+  margin: 0 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.1rem;
+  font-weight: 300;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 4px 8px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.breadcrumb a:hover {
+  color: #4dabf7;
+  background: rgba(77, 171, 247, 0.1);
+  transform: translateY(-1px);
+}
+
+.breadcrumb a:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.breadcrumb .current {
+  color: white;
+  font-weight: 500;
+  padding: 4px 8px;
+  background: rgba(0, 123, 255, 0.2);
+  border-radius: 4px;
+}
+
+/* Dark theme adjustments */
+body.dark .breadcrumb {
+  background: rgba(20, 20, 28, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .breadcrumb {
+    padding: 10px 15px;
+    font-size: 0.8rem;
+  }
+  
+  .breadcrumb li:not(:last-child)::after {
+    margin: 0 8px;
+  }
+}
+
+/* Icon breadcrumbs */
+.breadcrumb-icon {
+  margin-right: 6px;
+  font-size: 0.9rem;
+}
+
+/* Animated breadcrumb */
+.breadcrumb.animated {
+  animation: slideInTop 0.5s ease-out;
+}
+
+@keyframes slideInTop {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

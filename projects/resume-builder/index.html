@@ -6,9 +6,12 @@
     <title>Professional Resume Builder | Dan Finn</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
+    <link rel="stylesheet" href="../../assets/css/loading-states.css">
     <!-- Universal Search Component -->
     <link rel="stylesheet" href="../../assets/css/universal-search.css">
     <script src="../../assets/js/universal-search.js" defer></script>
+    <script src="../../assets/js/loading-states.js" defer></script>
     <style>
         :root {
             --primary-color: #3498db;
@@ -778,6 +781,15 @@
 
     <!-- Theme toggle button -->
     <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">🌙</button>
+
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb animated" role="navigation" aria-label="Breadcrumb">
+        <ol>
+            <li><a href="../../index.html"><span class="breadcrumb-icon">🏠</span>Home</a></li>
+            <li><a href="../index.html"><span class="breadcrumb-icon">🚀</span>Projects</a></li>
+            <li><span class="current"><span class="breadcrumb-icon">📝</span>Resume Builder</span></li>
+        </ol>
+    </nav>
 
     <!-- Back to Home link -->
     <a href="../../index.html" class="back-to-home">
