@@ -494,7 +494,7 @@
       <h3>IT Staff -- SUNY Fredonia (Current)</h3>
       <div class="collapsible-content">
         <ul>
-          <li>Issue runner and technical support helper / move around and help over the phone when needed.</li>
+          <li>Issue runner and technical support helper / Moving around and helping over the phone when needed.</li>
           <li>Managing and resolving IT support tickets through Jira ticketing system.</li>
           <li>Providing tech assistance and system maintenance / set up.</li>
         </ul>
@@ -571,6 +571,19 @@
   </div>
   <div id="programming" class="tab-content">
     <h2>Programming Projects</h2>
+    
+    <!-- Portfolio Overview Banner -->
+    <div style="background: linear-gradient(135deg, var(--header-bg), var(--subheading-color)); color: white; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+      <h3 style="color: white; margin: 0 0 10px 0; font-size: 20px;">🚀 Complete Projects Site</h3>
+      <p style="margin: 0 0 15px 0; opacity: 0.95; font-size: 16px;">More than 15 Live Web Apps & Interactive Projects</p>
+      <a href="../projects/" target="_blank" style="display: inline-block; background: rgba(255,255,255,0.2); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; border: 2px solid rgba(255,255,255,0.3); transition: all 0.3s ease;">
+        🌐 Explore All Projects Live →
+      </a>
+    </div>
+
+    <!-- Featured Projects -->
+    <h3 style="color: var(--subheading-color); margin-bottom: 15px; font-size: 18px;">⭐ Featured Projects</h3>
+    
     <div class="collapsible">
       <h3>Fredonia Workplace Dashboard <a href="https://github.com/finn1817/Fredonia-Workplace-Dashboard" target="_blank" style="font-size:14px; font-weight:normal; margin-left:10px;">[View on GitHub]</a></h3>
       <div class="collapsible-content">
@@ -593,6 +606,28 @@
         <ul>
           <li>My main portfolio website, combining all my individual sites into a single, modern, multi-page dashboard with light/dark mode feature.</li>
         </ul>
+      </div>
+    </div>
+    
+    <!-- Portfolio Categories Overview -->
+    <div style="margin-top: 30px; padding: 20px; background: var(--collapsible-bg); border-radius: 10px; border: 1px solid var(--collapsible-border);">
+      <h3 style="color: var(--subheading-color); margin: 0 0 15px 0;">📋 Portfolio Categories</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+        <div style="background: var(--content-bg); padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
+          <h4 style="margin: 0 0 8px 0; color: #28a745; font-size: 14px;">🎮 Games & Interactive (5 projects)</h4>
+          <p style="margin: 0; font-size: 13px; color: var(--text-color); opacity: 0.8;">2048, Hangman, Word Search, Square Chase, Calculator</p>
+        </div>
+        <div style="background: var(--content-bg); padding: 15px; border-radius: 8px; border-left: 4px solid #007bff;">
+          <h4 style="margin: 0 0 8px 0; color: #007bff; font-size: 14px;">🏢 Business Tools (8 projects)</h4>
+          <p style="margin: 0; font-size: 13px; color: var(--text-color); opacity: 0.8;">Team Manager, Calendar, Resume Builder, File Transfer</p>
+        </div>
+        <div style="background: var(--content-bg); padding: 15px; border-radius: 8px; border-left: 4px solid #6f42c1;">
+          <h4 style="margin: 0 0 8px 0; color: #6f42c1; font-size: 14px;">🔧 Developer Utilities (5 projects)</h4>
+          <p style="margin: 0; font-size: 13px; color: var(--text-color); opacity: 0.8;">Git Tools, Unit Converter, Text Editor, Word Counter</p>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 15px;">
+        <a href="../projects/" target="_blank" style="color: var(--subheading-color); text-decoration: none; font-weight: 600; font-size: 14px;">View All Projects with Live Demos →</a>
       </div>
     </div>
   </div>
@@ -737,6 +772,8 @@
     // Programming Projects Section
     addText("PROGRAMMING PROJECTS", 14, true);
     yPosition += 3;
+    addText("Portfolio: 18+ Live Web Applications (view at: finn1817.github.io/Main-Website/projects/)", 11, true, 5);
+    yPosition += 2;
     addText("Fredonia Workplace Dashboard", 12, true, 5);
     addText("A web app I built on my own for SUNY Fredonia ITS to automate and manage 3 workplaces, making scheduling and admin tasks much easier for both staff and students.", 10, false, 10);
     yPosition += 2;
@@ -745,6 +782,11 @@
     yPosition += 2;
     addText("Main Website", 12, true, 5);
     addText("My main portfolio website, combining all my individual sites into a single, modern, multi-page dashboard with light/dark mode feature.", 10, false, 10);
+    yPosition += 2;
+    addText("Additional Projects Include:", 11, true, 5);
+    addText("• Games: 2048, Hangman, Word Search, Square Chase, Calculator", 10, false, 10);
+    addText("• Business Tools: Team Manager, Shared Calendar, Resume Builder, File Transfer", 10, false, 10);
+    addText("• Utilities: Git Account Info, Unit Converter, Text Editor, Word Counter", 10, false, 10);
     yPosition += 3;
     addText("Tools Used:", 11, true, 5);
     addText("• Microsoft Office Suite (Word, Excel, PowerPoint, Access)", 10, false, 10);
