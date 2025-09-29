@@ -338,6 +338,17 @@
     .button-list a:nth-child(4) { animation-delay: 0.5s; }
     .button-list a:nth-child(5) { animation-delay: 0.6s; }
 
+    /* specific styling for "More Projects" button (5th button) */
+    .button-list a:nth-child(5) {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .button-list a:nth-child(5):hover {
+      background: linear-gradient(135deg, #c82333, #bd2130);
+      box-shadow: 0 12px 35px rgba(220, 53, 69, 0.5);
+    }
+
     /* ripple effect on button click */
     .button-list a::before,
     .resume-button::before {
