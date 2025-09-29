@@ -86,7 +86,8 @@ body.dark {
 }
 
 /* navigation buttons */
-.toggle-btn {
+.toggle-btn,
+.theme-toggle {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -107,7 +108,8 @@ body.dark {
   justify-content: center;
 }
 
-.toggle-btn:hover {
+.toggle-btn:hover,
+.theme-toggle:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.1) rotate(180deg);
   box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
