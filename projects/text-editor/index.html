@@ -965,15 +965,19 @@
 
       // auto save draft to localStorage every 30 seconds
       function autoSave() {
-        const content = richTextBtn.classList.contains('active') 
-          ? JSON.stringify(quill.getContents()) 
-          : codeEditor.value;
-        
-        const editorMode = richTextBtn.classList.contains('active') ? 'rich-text' : 'code';
-        
-        localStorage.setItem('editor-draft-content', content);
-        localStorage.setItem('editor-draft-mode', editorMode);
-        console.log('Auto-saved draft');
+        try {
+          const content = richTextBtn.classList.contains('active') 
+            ? JSON.stringify(quill.getContents()) 
+            : codeEditor.value;
+          
+          const editorMode = richTextBtn.classList.contains('active') ? 'rich-text' : 'code';
+          
+          localStorage.setItem('editor-draft-content', content);
+          localStorage.setItem('editor-draft-mode', editorMode);
+          console.log('Auto-saved draft');
+        } catch (error) {
+          console.warn('Auto-save failed:', error);
+        }
       }
       
       // load the draft from localStorage if there is one
@@ -997,8 +1001,18 @@
         }
       }
       
-      // set up auto-save timer
-      const autoSaveInterval = setInterval(autoSave, 30000);
+      // set up auto-save timer with cleanup
+      let autoSaveInterval = setInterval(autoSave, 30000);
+      
+      // Cleanup on page unload
+      window.addEventListener('beforeunload', () => {
+        if (autoSaveInterval) {
+          clearInterval(autoSaveInterval);
+          autoSaveInterval = null;
+        }
+        // Final save before leaving
+        autoSave();
+      });
       
       // try to load saved draft
       loadDraft();

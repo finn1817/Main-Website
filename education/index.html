@@ -1260,7 +1260,14 @@
     }
 
     // Create floating shapes periodically
-    setInterval(createFloatingShape, 3000);
+    const floatingShapeInterval = setInterval(createFloatingShape, 3000);
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (floatingShapeInterval) {
+        clearInterval(floatingShapeInterval);
+      }
+    });
 
     // Add interactive hover effects
     document.querySelectorAll('.achievement-card, .skill-category').forEach(card => {

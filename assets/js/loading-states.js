@@ -3,6 +3,9 @@
 class LoadingManager {
   constructor() {
     this.activeLoaders = new Set();
+    this.timeouts = new Set();
+    this.intervals = new Set();
+    this.eventListeners = new Map();
     this.init();
   }
 
@@ -14,12 +17,58 @@ class LoadingManager {
     this.createPageLoadingBar();
     
     // Auto-hide loading on page load
-    window.addEventListener('load', () => {
+    const loadHandler = () => {
       this.hidePageLoading();
-    });
+    };
+    window.addEventListener('load', loadHandler);
+    this.eventListeners.set('load', loadHandler);
 
     // Add loading to external links
     this.addExternalLinkLoading();
+    
+    // Cleanup on page unload
+    const beforeUnloadHandler = () => {
+      this.cleanup();
+    };
+    window.addEventListener('beforeunload', beforeUnloadHandler);
+    this.eventListeners.set('beforeunload', beforeUnloadHandler);
+  }
+  
+  // Cleanup method to prevent memory leaks
+  cleanup() {
+    // Clear all timeouts
+    this.timeouts.forEach(timeout => clearTimeout(timeout));
+    this.timeouts.clear();
+    
+    // Clear all intervals  
+    this.intervals.forEach(interval => clearInterval(interval));
+    this.intervals.clear();
+    
+    // Remove event listeners
+    this.eventListeners.forEach((handler, event) => {
+      window.removeEventListener(event, handler);
+    });
+    this.eventListeners.clear();
+    
+    // Clear active loaders
+    this.activeLoaders.clear();
+  }
+  
+  // Wrapper for setTimeout with cleanup tracking
+  setTimeout(callback, delay) {
+    const timeoutId = setTimeout(() => {
+      callback();
+      this.timeouts.delete(timeoutId);
+    }, delay);
+    this.timeouts.add(timeoutId);
+    return timeoutId;
+  }
+  
+  // Wrapper for setInterval with cleanup tracking
+  setInterval(callback, delay) {
+    const intervalId = setInterval(callback, delay);
+    this.intervals.add(intervalId);
+    return intervalId;
   }
 
   createLoadingOverlay() {
@@ -99,7 +148,7 @@ class LoadingManager {
     if (!loadingBar) return;
 
     this.updatePageLoading(100);
-    setTimeout(() => {
+    this.setTimeout(() => {
       loadingBar.style.display = 'none';
     }, 500);
   }
@@ -191,7 +240,7 @@ class LoadingManager {
       // Only show loading for project links, not social media
       if (link.href.includes('finn1817.github.io') || link.href.includes('localhost')) {
         this.showLoading('Opening project...', 'dots');
-        setTimeout(() => this.hideLoading(), 2000);
+        this.setTimeout(() => this.hideLoading(), 2000);
       }
     });
   }

@@ -274,6 +274,11 @@
     // start animation immediately
     animateChase();
 
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      // No specific cleanup needed for RAF loop as it will stop when page unloads
+    });
+
     // track mouse movement
     document.addEventListener('mousemove', e => {
       if (!panelRect) return;

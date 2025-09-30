@@ -331,6 +331,11 @@
       drawCodeRain();
     }
     
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      // RAF loops will stop automatically when page unloads
+    });
+    
     // Celebration effect on load
     setTimeout(() => {
       console.log('🎉 Congratulations! You discovered the triple-click secret!');

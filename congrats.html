@@ -924,9 +924,22 @@
       });
     });
 
-    // Add more dynamic confetti
+    // Cleanup variables for memory management
+    let confettiIntervals = [];
+    let confettiTimeouts = [];
+    let maxConfettiInstances = 3;
+    let confettiInstanceCount = 0;
+
+    // Add more dynamic confetti with memory management
     function createConfetti() {
-      for (let i = 0; i < 50; i++) {
+      // Limit confetti instances to prevent memory buildup
+      if (confettiInstanceCount >= maxConfettiInstances) {
+        return;
+      }
+      
+      confettiInstanceCount++;
+      
+      for (let i = 0; i < 30; i++) { // Reduced from 50 to 30
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
         confetti.style.left = Math.random() * 100 + '%';
@@ -939,18 +952,33 @@
         
         document.body.appendChild(confetti);
         
-        // Remove confetti after animation
-        setTimeout(() => {
-          confetti.remove();
+        // Remove confetti after animation with proper cleanup
+        const timeoutId = setTimeout(() => {
+          if (confetti.parentNode) {
+            confetti.remove();
+          }
+          confettiInstanceCount = Math.max(0, confettiInstanceCount - 1);
         }, 5000);
+        
+        confettiTimeouts.push(timeoutId);
       }
     }
 
     // Create confetti on page load
-    setTimeout(createConfetti, 1000);
+    const initialTimeout = setTimeout(createConfetti, 1000);
+    confettiTimeouts.push(initialTimeout);
     
-    // Create more confetti every 3 seconds
-    setInterval(createConfetti, 3000);
+    // Create more confetti every 5 seconds (reduced frequency)
+    const confettiInterval = setInterval(createConfetti, 5000);
+    confettiIntervals.push(confettiInterval);
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      confettiIntervals.forEach(clearInterval);
+      confettiTimeouts.forEach(clearTimeout);
+      confettiIntervals = [];
+      confettiTimeouts = [];
+    });
 
     // Add celebration sound effect (optional - commented out to avoid autoplay issues)
     // const audio = new Audio('data:audio/wav;base64,UklGRvIGAABXQVZFZm10IBAAAAABA...');
@@ -1004,10 +1032,22 @@
       }, 60);
     }
     function cancelHold(){
-      clearTimeout(holdTimer); holdTimer=null;
-      clearInterval(holdProgressInterval); holdProgressInterval=null;
+      if(holdTimer) {
+        clearTimeout(holdTimer); 
+        holdTimer=null;
+      }
+      if(holdProgressInterval) {
+        clearInterval(holdProgressInterval); 
+        holdProgressInterval=null;
+      }
       if(!portalArmed) resetHoldVisual();
     }
+    
+    // Cleanup intervals on page unload
+    window.addEventListener('beforeunload', () => {
+      cancelHold();
+      if(portalToast._t) clearTimeout(portalToast._t);
+    });
 
     ['mousedown','touchstart','contextmenu'].forEach(evt=>{
       portalEmoji.addEventListener(evt,(e)=>{ if(evt==='contextmenu'){ e.preventDefault(); } startHold(); });

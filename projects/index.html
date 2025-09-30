@@ -1117,7 +1117,14 @@ updateLoginUI();
       }
 
       // generate particles periodically
-      setInterval(createParticle, 800);
+      const projectsParticleInterval = setInterval(createParticle, 800);
+      
+      // Cleanup on page unload
+      window.addEventListener('beforeunload', () => {
+        if (projectsParticleInterval) {
+          clearInterval(projectsParticleInterval);
+        }
+      });
 
       // enhanced page transition effect
       function applyTransition(callback) {

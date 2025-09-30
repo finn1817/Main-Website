@@ -1166,7 +1166,17 @@ updateLoginUI();
 
       // update time immediately and then every second
       updateDateTime();
-      setInterval(updateDateTime, 1000);
+      const dateTimeInterval = setInterval(updateDateTime, 1000);
+      
+      // Cleanup on page unload
+      window.addEventListener('beforeunload', () => {
+        if (dateTimeInterval) {
+          clearInterval(dateTimeInterval);
+        }
+        if (particleInterval) {
+          clearInterval(particleInterval);
+        }
+      });
 
       // Apply saved theme or system preference
       const savedTheme = localStorage.getItem("theme");
@@ -1220,7 +1230,7 @@ updateLoginUI();
       }
 
       // generate particles periodically
-      setInterval(createParticle, 500);
+      const particleInterval = setInterval(createParticle, 500);
 
       // keyboard shortcuts for quick navigation
       document.addEventListener('keydown', (e) => {
@@ -1296,8 +1306,23 @@ updateLoginUI();
       if (isLowPerformance) {
         document.body.style.setProperty('--transition-speed', '0.2s');
         // reduce particle generation
-        clearInterval();
-        setInterval(createParticle, 2000);
+        if (particleInterval) {
+          clearInterval(particleInterval);
+        }
+        const performanceInterval = setInterval(createParticle, 2000);
+        
+        // Add performance interval to cleanup
+        window.addEventListener('beforeunload', () => {
+          if (dateTimeInterval) {
+            clearInterval(dateTimeInterval);
+          }
+          if (particleInterval) {
+            clearInterval(particleInterval);
+          }
+          if (performanceInterval) {
+            clearInterval(performanceInterval);
+          }
+        });
       }
 
       // add focus management for accessibility
