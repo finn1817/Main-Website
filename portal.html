@@ -241,6 +241,11 @@
     // speed for approximately 1 second delay
     const chaseSpeed = 0.02;
     
+    // Click tracking for secret portal
+    let clickCount = 0;
+    const maxClicks = 3;
+    let lastClickTime = 0;
+    
     let panelRect;
     function updatePanelRect() {
       panelRect = panel.getBoundingClientRect();
@@ -290,6 +295,49 @@
         targetY = e.clientY - 15;
       }
     });
+
+    // Add click handler for the chasing square
+    chase.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const currentTime = Date.now();
+      
+      // Reset if too much time has passed (5 seconds)
+      if (currentTime - lastClickTime > 5000) {
+        clickCount = 0;
+      }
+      
+      clickCount++;
+      lastClickTime = currentTime;
+      
+      // Visual feedback for click
+      chase.style.transform = 'scale(1.3)';
+      chase.style.filter = 'brightness(1.5) drop-shadow(0 0 15px #fff)';
+      
+      setTimeout(() => {
+        chase.style.transform = 'scale(1)';
+        chase.style.filter = '';
+      }, 200);
+      
+      console.log(`Chase square clicked: ${clickCount}/${maxClicks}`);
+      
+      // Check if we've reached the magic number
+      if (clickCount >= maxClicks) {
+        // Dramatic flash effect
+        chase.style.background = '#00ff00';
+        chase.style.boxShadow = '0 0 30px #00ff00, 0 0 60px #00ff00';
+        
+        setTimeout(() => {
+          // Redirect to the next portal after a moment
+          window.location.href = 'portal-2.html';
+        }, 800);
+      }
+    });
+
+    // Make the square clickable
+    chase.style.pointerEvents = 'auto';
+    chase.style.cursor = 'pointer';
 
     // fallback to ensure square is visible
     setTimeout(() => {

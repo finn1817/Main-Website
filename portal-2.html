@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>The Discovery Chamber</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Enhanced palette for discovery theme */
+    --accent: #00ff88;
+    --accent-alt: #ff6b00;
+    --accent-glow: #88ffaa;
+    --text-primary: #e8fff0;
+    --text-dim: #9fccb0;
+    --panel-bg: rgba(0,255,136,0.08);
+    --panel-border: rgba(0,255,136,0.15);
+    --radius-xl: 35px;
+    --focus-ring: 0 0 0 3px rgba(0,255,136,0.55);
+    --gradient-accent: linear-gradient(135deg,#00ff88,#00cc66);
+    --gradient-accent-alt: linear-gradient(135deg,#ff6b00,#cc4400);
+    --easing-spring: cubic-bezier(.16,.8,.34,1);
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background:
+      radial-gradient(circle at 30% 20%, #0a2818 0%, #051510 45%, #020a06 100%);
+    color:var(--text-primary);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    -webkit-font-smoothing: antialiased;
+    position:relative;
+  }
+
+  /* Matrix-style code rain */
+  canvas#codeRain { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:0.3; }
+  
+  .discovery-wrapper {
+    position:relative; width:380px; height:380px; display:flex;align-items:center;justify-content:center;
+    filter: drop-shadow(0 0 25px rgba(0,255,136,0.6));
+    perspective:1400px;
+  }
+  
+  .discovery-orb {
+    position:relative; width:100%; height:100%; border-radius:50%;
+    background:radial-gradient(circle at 25% 25%, var(--accent) 0%, #1a4d33 35%, #0d1f16 65%, #040a08 100%);
+    animation: discoverPulse 4s ease-in-out infinite;
+    box-shadow:0 0 0 2px rgba(0,255,136,0.2),0 0 50px 15px rgba(0,255,136,0.3) inset,0 0 140px -5px rgba(0,255,136,0.5);
+    overflow:hidden;
+    transform-style:preserve-3d;
+    will-change: transform;
+  }
+  
+  .discovery-orb::after { 
+    content:""; position:absolute; inset:-3px; border-radius:inherit; 
+    background:conic-gradient(from 45deg,#00ff8844,#ff6b0066,#00ff8844 180deg,#ff6b0066 270deg,#00ff8844); 
+    animation: discoveryAura 8s linear infinite; mix-blend-mode:screen; pointer-events:none; 
+  }
+  
+  @keyframes discoveryAura { to { transform:rotate(360deg);} }
+  
+  .data-ring { 
+    position:absolute; top:50%; left:50%; width:160%; height:160%; 
+    border:3px solid rgba(0,255,136,0.15); border-radius:50%; 
+    transform:translate(-50%,-50%) rotateX(70deg); animation: dataFlow 12s linear infinite; 
+    backdrop-filter: blur(3px); 
+  }
+  .data-ring:nth-child(2){ width:130%; height:130%; animation-direction:reverse; animation-duration:20s; border-color: rgba(255,107,0,0.12); }
+  .data-ring:nth-child(3){ width:100%; height:100%; animation-duration:25s; border-width:2px; }
+  
+  @keyframes dataFlow { to { transform:translate(-50%,-50%) rotateX(70deg) rotateZ(360deg); } }
+  @keyframes discoverPulse { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
+  
+  h1 { 
+    text-align:center; font-size:2.4rem; letter-spacing:2px; margin-top:35px; 
+    background:linear-gradient(90deg,#ffffff,#88ffaa,#ffffff); 
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; 
+    animation: discoveryShimmer 5s linear infinite; font-weight:700; 
+  }
+  @keyframes discoveryShimmer { 0%{ background-position:0% 50%; } 100%{ background-position:200% 50%; } }
+  
+  .panel { 
+    max-width:720px; padding:40px 45px 55px; background:var(--panel-bg); 
+    backdrop-filter:blur(25px) saturate(180%); border:1px solid var(--panel-border); 
+    border-radius:var(--radius-xl); 
+    box-shadow:0 35px 80px -20px rgba(0,0,0,0.7), 0 8px 28px rgba(0,0,0,0.5); 
+    text-align:center; position:relative; overflow:hidden; 
+  }
+  
+  .panel::before { 
+    content:""; position:absolute; inset:0; 
+    background:radial-gradient(circle at 80% 30%,rgba(0,255,136,.2),transparent 60%), 
+               radial-gradient(circle at 15% 70%,rgba(255,107,0,.18),transparent 65%); 
+    mix-blend-mode:overlay; pointer-events:none; 
+  }
+  
+  .panel::after { 
+    content:""; position:absolute; inset:-1px; border-radius:inherit; padding:1px; 
+    background:linear-gradient(170deg,rgba(255,255,255,0.6),rgba(0,255,136,0.5) 30%,rgba(255,107,0,0.4) 70%,rgba(255,255,255,0.2)); 
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); 
+    mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); 
+    -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; 
+  }
+  
+  p { margin:18px 0 14px; line-height:1.6; font-size:1rem; color:var(--text-dim); }
+  p strong { color:var(--text-primary); font-weight:600; }
+  
+  .discovery-badge { 
+    display:inline-flex; align-items:center; gap:8px; background:var(--gradient-accent); 
+    padding:8px 20px 9px; border-radius:999px; font-size:0.72rem; letter-spacing:1.4px; 
+    font-weight:700; color:#000; box-shadow:0 0 0 2px rgba(0,255,136,0.3),0 6px 18px rgba(0,255,136,0.45); 
+    text-transform:uppercase; margin-top:12px; animation: badgeGlow 3s ease-in-out infinite;
+  }
+  .discovery-badge::before { content:"🎯"; font-size:0.8rem; }
+  
+  @keyframes badgeGlow {
+    0%, 100% { box-shadow:0 0 0 2px rgba(0,255,136,0.3),0 6px 18px rgba(0,255,136,0.45); }
+    50% { box-shadow:0 0 0 3px rgba(0,255,136,0.5),0 8px 25px rgba(0,255,136,0.6); }
+  }
+  
+  .actions { margin-top:38px; display:flex; gap:18px; justify-content:center; flex-wrap:wrap; }
+  
+  .btn { 
+    position:relative; background:var(--gradient-accent); color:#000; padding:16px 32px; 
+    border:none; border-radius:18px; cursor:pointer; font-size:0.95rem; font-weight:700; 
+    letter-spacing:0.8px; transition:transform .5s var(--easing-spring), box-shadow .45s, filter .45s; 
+    box-shadow:0 12px 32px -10px rgba(0,255,136,0.6), 0 3px 10px rgba(0,0,0,0.4); 
+    isolation:isolate; 
+  }
+  
+  .btn:focus-visible { outline:none; box-shadow: var(--focus-ring), 0 12px 32px -10px rgba(0,255,136,0.6); }
+  
+  .btn::after { 
+    content:""; position:absolute; inset:0; border-radius:inherit; 
+    background:linear-gradient(130deg,rgba(255,255,255,0.8),transparent 45% 55%,rgba(255,255,255,0.6)); 
+    opacity:0; mix-blend-mode:overlay; transition:opacity .6s; 
+  }
+  
+  .btn:hover { 
+    transform:translateY(-6px) scale(1.04); 
+    box-shadow:0 25px 45px -15px rgba(0,255,136,0.7), 0 8px 20px -6px rgba(0,0,0,0.6); 
+  }
+  .btn:hover::after { opacity:1; }
+  .btn:active { transform:translateY(-2px) scale(.98); transition-duration:.18s; }
+  
+  .btn.alt { 
+    background:var(--gradient-accent-alt); color:#fff;
+    box-shadow:0 12px 32px -10px rgba(255,107,0,0.6), 0 3px 10px rgba(0,0,0,0.45); 
+  }
+  .btn.alt:hover { 
+    box-shadow:0 25px 45px -15px rgba(255,107,0,0.7), 0 8px 20px -6px rgba(0,0,0,0.6); 
+  }
+  
+  .btn.neu { 
+    background:linear-gradient(135deg,#2d4a3a,#1e3028); color:var(--text-primary);
+    box-shadow:0 14px 30px -12px rgba(0,0,0,0.65); 
+  }
+  .btn.neu:hover { 
+    box-shadow:0 22px 40px -12px rgba(0,0,0,0.7); 
+  }
+  
+  .achievement-text {
+    margin-top:20px;
+    font-size:0.85rem;
+    color:var(--accent);
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    opacity:0.9;
+  }
+  
+  .discovery-glyphs { 
+    margin-top:18px; font-size:1.2rem; letter-spacing:12px; opacity:.65; user-select:none; 
+  }
+
+  footer { 
+    margin-top:35px; font-size:0.7rem; opacity:.6; letter-spacing:.6px; 
+  }
+
+  /* Responsive tweaks */
+  @media (max-width:780px) {
+    .discovery-wrapper { width:300px; height:300px; }
+    h1 { font-size:2.1rem; margin-top:30px; }
+    .panel { padding:35px 30px 50px; }
+    .actions { gap:14px; }
+    .btn { padding:14px 26px; }
+  }
+  @media (max-width:520px) {
+    .discovery-wrapper { width:250px; height:250px; }
+    h1 { font-size:1.8rem; }
+    .discovery-glyphs { letter-spacing:8px; }
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .discovery-orb, .data-ring, .discovery-orb::after, h1, .discovery-badge { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="codeRain" aria-hidden="true"></canvas>
+  
+  <div class="panel">
+    <div class="discovery-wrapper">
+      <div class="discovery-orb">
+        <div class="data-ring"></div>
+        <div class="data-ring"></div>
+        <div class="data-ring"></div>
+      </div>
+    </div>
+    
+    <h1>Discovery Achieved</h1>
+    <span class="discovery-badge">EASTER EGG #3</span>
+    
+    <p>Incredible! You found the <strong>triple-click secret</strong> on the chasing square. Your persistence and curiosity have unlocked this hidden discovery chamber.</p>
+    
+    <p>The algorithm detected your precise interaction pattern and granted access to this exclusive space. You've proven yourself as a true <strong>digital explorer</strong>.</p>
+    
+    <div class="achievement-text">
+      🏆 Achievement Unlocked: Master Detective
+    </div>
+    
+    <div class="discovery-glyphs">⚡ 🔍 ⭐ 🎯 🚀</div>
+    
+    <div class="actions">
+      <button class="btn" onclick="window.location.href='index.html'">Return Home</button>
+      <button class="btn alt" onclick="window.location.href='portal.html'">Back to Portal</button>
+      <button class="btn neu" onclick="window.location.href='congrats.html'">View All Eggs</button>
+    </div>
+    
+    <footer>
+      Triple-Click Discovery • Sequence Complete • You Found Me! 🎉
+    </footer>
+  </div>
+
+  <script>
+    // Interactive discovery orb tilt
+    const orb = document.querySelector('.discovery-orb');
+    let rect;
+    
+    function updateRect(){ 
+      rect = orb.getBoundingClientRect(); 
+    }
+    updateRect();
+    window.addEventListener('resize', updateRect);
+    
+    document.addEventListener('pointermove', e => {
+      if(!rect) return;
+      const x = (e.clientX - rect.left)/rect.width - 0.5;
+      const y = (e.clientY - rect.top)/rect.height - 0.5;
+      orb.style.transform = `rotateX(${(-y*15).toFixed(2)}deg) rotateY(${(x*20).toFixed(2)}deg)`;
+    });
+    
+    document.addEventListener('pointerleave', () => { 
+      orb.style.transform=''; 
+    });
+
+    // Matrix-style code rain effect
+    const canvas = document.getElementById('codeRain');
+    const ctx = canvas.getContext('2d');
+    let drops = [];
+    
+    function resizeCanvas(){ 
+      canvas.width = innerWidth; 
+      canvas.height = innerHeight; 
+      initDrops();
+    }
+    
+    window.addEventListener('resize', resizeCanvas); 
+    resizeCanvas();
+    
+    function initDrops(){
+      drops = [];
+      const columns = Math.floor(canvas.width / 20);
+      for(let i = 0; i < columns; i++){
+        drops.push({
+          x: i * 20,
+          y: Math.random() * canvas.height,
+          speed: Math.random() * 3 + 1,
+          chars: '01',
+          trail: []
+        });
+      }
+    }
+    
+    function drawCodeRain(){
+      ctx.fillStyle = 'rgba(2,10,6,0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.fillStyle = '#00ff88';
+      ctx.font = '14px monospace';
+      
+      for(const drop of drops){
+        // Add new character to trail
+        if(Math.random() > 0.95){
+          drop.trail.unshift({
+            char: drop.chars[Math.floor(Math.random() * drop.chars.length)],
+            y: drop.y
+          });
+        }
+        
+        // Draw trail
+        drop.trail.forEach((char, index) => {
+          const alpha = Math.max(0, 1 - (index * 0.1));
+          ctx.fillStyle = `rgba(0, 255, 136, ${alpha})`;
+          ctx.fillText(char.char, drop.x, char.y);
+        });
+        
+        // Update positions
+        drop.y += drop.speed;
+        drop.trail = drop.trail.map(char => ({...char, y: char.y + drop.speed}));
+        
+        // Remove old characters
+        drop.trail = drop.trail.filter(char => char.y < canvas.height + 20);
+        
+        // Reset when off screen
+        if(drop.y > canvas.height + 100){
+          drop.y = -20;
+          drop.trail = [];
+        }
+      }
+      
+      requestAnimationFrame(drawCodeRain);
+    }
+    
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      drawCodeRain();
+    }
+    
+    // Celebration effect on load
+    setTimeout(() => {
+      console.log('🎉 Congratulations! You discovered the triple-click secret!');
+      console.log('🎯 You are now a certified Digital Explorer!');
+    }, 500);
+  </script>
+</body>
+</html>
