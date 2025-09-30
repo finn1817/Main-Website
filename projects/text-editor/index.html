@@ -215,6 +215,30 @@
       border-color: var(--toolbar-border-dark);
     }
 
+    /* image styling within editor */
+    .ql-editor img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 10px 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .ql-editor img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark .ql-editor img {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark .ql-editor img:hover {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
     /* code editor mode */
     #code-editor {
       display: none;
@@ -562,19 +586,96 @@
       // initialize Quill rich text editor
       const quill = new Quill('#editor-container', {
         modules: {
-          toolbar: [
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            [{ 'script': 'sub'}, { 'script': 'super' }],
-            [{ 'indent': '-1'}, { 'indent': '+1' }],
-            [{ 'align': [] }],
-            ['link', 'image', 'code-block'],
-            ['clean']
-          ]
+          toolbar: {
+            container: [
+              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ 'color': [] }, { 'background': [] }],
+              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+              [{ 'script': 'sub'}, { 'script': 'super' }],
+              [{ 'indent': '-1'}, { 'indent': '+1' }],
+              [{ 'align': [] }],
+              ['link', 'image', 'code-block'],
+              ['clean']
+            ],
+            handlers: {
+              'image': imageHandler
+            }
+          }
         },
         theme: 'snow'
+      });
+
+      // custom image handler for file uploads
+      function imageHandler() {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+
+        input.onchange = () => {
+          const file = input.files[0];
+          if (file) {
+            handleImageFile(file);
+          }
+        };
+      }
+
+      // handle image file processing
+      function handleImageFile(file) {
+        // Check file size (limit to 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('Image file size should be less than 5MB');
+          return;
+        }
+
+        // Check file type
+        if (!file.type.startsWith('image/')) {
+          alert('Please select a valid image file');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const range = quill.getSelection() || { index: 0 };
+          // Insert image as base64 data URL
+          quill.insertEmbed(range.index, 'image', e.target.result);
+          
+          // Move cursor to after the image
+          quill.setSelection(range.index + 1);
+          updateWordCount();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // add drag and drop functionality for images
+      const editorContainer = document.getElementById('editor-container');
+      
+      editorContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        editorContainer.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
+      });
+
+      editorContainer.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        editorContainer.style.backgroundColor = '';
+      });
+
+      editorContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        editorContainer.style.backgroundColor = '';
+        
+        const files = Array.from(e.dataTransfer.files);
+        const imageFiles = files.filter(file => file.type.startsWith('image/'));
+        
+        if (imageFiles.length > 0) {
+          imageFiles.forEach(file => handleImageFile(file));
+        } else if (files.length > 0) {
+          alert('Please drop only image files');
+        }
       });
 
       // set initial content
