@@ -856,6 +856,119 @@
   </div>
 
   <script>
+    // Memory Management System
+    const memoryManager = {
+      animationFrames: new Set(),
+      timeouts: new Set(),
+      intervals: new Set(),
+      eventListeners: new Map(),
+      dynamicElements: new Set(),
+      isCleanedUp: false,
+      
+      addAnimationFrame(id) {
+        this.animationFrames.add(id);
+        return id;
+      },
+      
+      addTimeout(id) {
+        this.timeouts.add(id);
+        return id;
+      },
+      
+      addInterval(id) {
+        this.intervals.add(id);
+        return id;
+      },
+      
+      addDynamicElement(element) {
+        this.dynamicElements.add(element);
+        return element;
+      },
+      
+      addEventListener(element, event, handler, options) {
+        if (!this.eventListeners.has(element)) {
+          this.eventListeners.set(element, []);
+        }
+        this.eventListeners.get(element).push({ event, handler, options });
+        element.addEventListener(event, handler, options);
+      },
+      
+      cleanup() {
+        if (this.isCleanedUp) return;
+        
+        console.log('🧹 Congrats page cleanup initiated - removing animations and event listeners');
+        
+        // Cancel all animation frames
+        this.animationFrames.forEach(id => cancelAnimationFrame(id));
+        this.animationFrames.clear();
+        
+        // Clear all timeouts
+        this.timeouts.forEach(id => clearTimeout(id));
+        this.timeouts.clear();
+        
+        // Clear all intervals
+        this.intervals.forEach(id => clearInterval(id));
+        this.intervals.clear();
+        
+        // Remove all event listeners
+        this.eventListeners.forEach((listeners, element) => {
+          listeners.forEach(({ event, handler, options }) => {
+            element.removeEventListener(event, handler, options);
+          });
+        });
+        this.eventListeners.clear();
+        
+        // Remove dynamic elements
+        this.dynamicElements.forEach(element => {
+          if (element && element.parentNode) {
+            element.remove();
+          }
+        });
+        this.dynamicElements.clear();
+        
+        // Stop CSS animations
+        const animatedElements = document.querySelectorAll('.confetti, .firework, .celebration-emoji, .main-title');
+        animatedElements.forEach(el => {
+          el.style.animation = 'none';
+          el.style.transform = 'none';
+        });
+        
+        // Clear portal effects
+        const portalEffect = document.getElementById('portalEffect');
+        if (portalEffect) {
+          portalEffect.classList.remove('active');
+        }
+        
+        // Clean up global variables
+        if (window.holdTimer) {
+          clearTimeout(window.holdTimer);
+          window.holdTimer = null;
+        }
+        if (window.holdProgressInterval) {
+          clearInterval(window.holdProgressInterval);
+          window.holdProgressInterval = null;
+        }
+        
+        this.isCleanedUp = true;
+        console.log('✅ Congrats page cleanup completed - all resources freed');
+      }
+    };
+    
+    // Auto-cleanup after 10 seconds
+    const cleanupTimeout = memoryManager.addTimeout(
+      setTimeout(() => memoryManager.cleanup(), 10000)
+    );
+    
+    // Cleanup on page unload
+    memoryManager.addEventListener(window, 'beforeunload', () => memoryManager.cleanup());
+    
+    // Cleanup on visibility change (tab switch)
+    memoryManager.addEventListener(document, 'visibilitychange', () => {
+      if (document.hidden) {
+        memoryManager.cleanup();
+      }
+    });
+
     // Theme system (local to this page only)
     const CONGRATS_THEME_KEY = 'congrats_page_theme';
     const bodyEl = document.body;
@@ -901,45 +1014,51 @@
     // Initialize theme
     applyTheme(getCurrentTheme());
 
-    // Theme dropdown toggle
-    themeToggleBtn.addEventListener('click', (e) => {
+    // Theme dropdown toggle with memory management
+    const themeToggleHandler = (e) => {
+      if (memoryManager.isCleanedUp) return;
       e.stopPropagation();
       themeDropdown.classList.toggle('open');
-    });
+    };
+    memoryManager.addEventListener(themeToggleBtn, 'click', themeToggleHandler);
 
     // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
+    const documentClickHandler = (e) => {
+      if (memoryManager.isCleanedUp) return;
       if (!themeDropdown.contains(e.target)) {
         themeDropdown.classList.remove('open');
       }
-    });
+    };
+    memoryManager.addEventListener(document, 'click', documentClickHandler);
 
     // Handle theme selection
     document.querySelectorAll('.theme-option').forEach(option => {
-      option.addEventListener('click', (e) => {
+      const themeSelectHandler = (e) => {
+        if (memoryManager.isCleanedUp) return;
         e.stopPropagation();
         const themeName = option.dataset.theme;
         applyTheme(themeName);
         themeDropdown.classList.remove('open');
-      });
+      };
+      memoryManager.addEventListener(option, 'click', themeSelectHandler);
     });
 
-    // Cleanup variables for memory management
-    let confettiIntervals = [];
-    let confettiTimeouts = [];
+    // Confetti management with memory cleanup
     let maxConfettiInstances = 3;
     let confettiInstanceCount = 0;
 
     // Add more dynamic confetti with memory management
     function createConfetti() {
-      // Limit confetti instances to prevent memory buildup
-      if (confettiInstanceCount >= maxConfettiInstances) {
+      // Stop creating confetti if cleaned up or too many instances
+      if (memoryManager.isCleanedUp || confettiInstanceCount >= maxConfettiInstances) {
         return;
       }
       
       confettiInstanceCount++;
       
       for (let i = 0; i < 30; i++) { // Reduced from 50 to 30
+        if (memoryManager.isCleanedUp) break;
+        
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
         confetti.style.left = Math.random() * 100 + '%';
@@ -951,44 +1070,38 @@
         confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
         
         document.body.appendChild(confetti);
+        memoryManager.addDynamicElement(confetti);
         
         // Remove confetti after animation with proper cleanup
-        const timeoutId = setTimeout(() => {
-          if (confetti.parentNode) {
-            confetti.remove();
-          }
-          confettiInstanceCount = Math.max(0, confettiInstanceCount - 1);
-        }, 5000);
-        
-        confettiTimeouts.push(timeoutId);
+        const timeoutId = memoryManager.addTimeout(
+          setTimeout(() => {
+            if (!memoryManager.isCleanedUp && confetti.parentNode) {
+              confetti.remove();
+              memoryManager.dynamicElements.delete(confetti);
+            }
+            confettiInstanceCount = Math.max(0, confettiInstanceCount - 1);
+          }, 5000)
+        );
       }
     }
 
     // Create confetti on page load
-    const initialTimeout = setTimeout(createConfetti, 1000);
-    confettiTimeouts.push(initialTimeout);
+    const initialTimeout = memoryManager.addTimeout(
+      setTimeout(() => {
+        if (!memoryManager.isCleanedUp) createConfetti();
+      }, 1000)
+    );
     
     // Create more confetti every 5 seconds (reduced frequency)
-    const confettiInterval = setInterval(createConfetti, 5000);
-    confettiIntervals.push(confettiInterval);
-    
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-      confettiIntervals.forEach(clearInterval);
-      confettiTimeouts.forEach(clearTimeout);
-      confettiIntervals = [];
-      confettiTimeouts = [];
-    });
-
-    // Add celebration sound effect (optional - commented out to avoid autoplay issues)
-    // const audio = new Audio('data:audio/wav;base64,UklGRvIGAABXQVZFZm10IBAAAAABA...');
-    // audio.volume = 0.3;
-    // setTimeout(() => audio.play(), 1000);
+    const confettiInterval = memoryManager.addInterval(
+      setInterval(() => {
+        if (!memoryManager.isCleanedUp) createConfetti();
+      }, 5000)
+    );
 
     console.log("🎉 Congratulations! You found the Easter egg! 🎉");
+    
     // -------- SECOND EASTER EGG (Portal Unlock) --------
-    // Mechanic: Long-press the 🎉 emoji for 1.8s (or right click & hold) then quickly type the sequence P O R T A L.
-    // Feedback given via a toast. On success: animated portal & redirect to portal.html.
     const portalEmoji = document.getElementById('portalEmoji');
     const portalToast = document.getElementById('portalToast');
     const holdIndicator = document.getElementById('holdIndicator');
@@ -1003,34 +1116,52 @@
     let portalUnlocked = false;
 
     function showToast(msg, persist=false){
+      if (memoryManager.isCleanedUp) return;
       portalToast.textContent = msg;
       portalToast.classList.add('show');
       if(!persist){
-        clearTimeout(portalToast._t);
-        portalToast._t = setTimeout(()=>portalToast.classList.remove('show'),2200);
+        if (portalToast._t) {
+          clearTimeout(portalToast._t);
+        }
+        portalToast._t = memoryManager.addTimeout(
+          setTimeout(() => {
+            if (!memoryManager.isCleanedUp) {
+              portalToast.classList.remove('show');
+            }
+          }, 2200)
+        );
       }
     }
 
     function resetHoldVisual(){
+      if (memoryManager.isCleanedUp) return;
       holdIndicator.style.background = 'conic-gradient(var(--primary-gradient) 0deg, rgba(255,255,255,0.08) 0deg 360deg)';
       portalEmoji.classList.remove('holding');
     }
 
     function startHold(){
-      if(portalUnlocked) return;
+      if(portalUnlocked || memoryManager.isCleanedUp) return;
       portalEmoji.classList.add('holding');
       holdStartTime = performance.now();
-      holdTimer = setTimeout(()=>{
-        portalArmed = true;
-        showToast('Sequence armed! Type PORTAL', true);
-      }, HOLD_DURATION);
-      holdProgressInterval = setInterval(()=>{
-        const elapsed = performance.now() - holdStartTime;
-        const pct = Math.min(elapsed / HOLD_DURATION, 1);
-        const deg = Math.round(pct*360);
-        holdIndicator.style.background = `conic-gradient(var(--celebration-gradient) 0deg ${deg}deg, rgba(255,255,255,0.08) ${deg}deg 360deg)`;
-      }, 60);
+      holdTimer = memoryManager.addTimeout(
+        setTimeout(() => {
+          if (!memoryManager.isCleanedUp) {
+            portalArmed = true;
+            showToast('Sequence armed! Type PORTAL', true);
+          }
+        }, HOLD_DURATION)
+      );
+      holdProgressInterval = memoryManager.addInterval(
+        setInterval(() => {
+          if (memoryManager.isCleanedUp) return;
+          const elapsed = performance.now() - holdStartTime;
+          const pct = Math.min(elapsed / HOLD_DURATION, 1);
+          const deg = Math.round(pct*360);
+          holdIndicator.style.background = `conic-gradient(var(--celebration-gradient) 0deg ${deg}deg, rgba(255,255,255,0.08) ${deg}deg 360deg)`;
+        }, 60)
+      );
     }
+    
     function cancelHold(){
       if(holdTimer) {
         clearTimeout(holdTimer); 
@@ -1040,24 +1171,28 @@
         clearInterval(holdProgressInterval); 
         holdProgressInterval=null;
       }
-      if(!portalArmed) resetHoldVisual();
+      if(!portalArmed && !memoryManager.isCleanedUp) resetHoldVisual();
     }
-    
-    // Cleanup intervals on page unload
-    window.addEventListener('beforeunload', () => {
-      cancelHold();
-      if(portalToast._t) clearTimeout(portalToast._t);
+
+    // Portal emoji event handlers
+    const portalEmojiHandlers = {
+      'mousedown': startHold,
+      'touchstart': startHold,
+      'contextmenu': (e) => { e.preventDefault(); startHold(); },
+      'mouseup': cancelHold,
+      'mouseleave': cancelHold,
+      'touchend': cancelHold,
+      'touchcancel': cancelHold,
+      'blur': cancelHold
+    };
+
+    Object.entries(portalEmojiHandlers).forEach(([event, handler]) => {
+      memoryManager.addEventListener(portalEmoji, event, handler);
     });
 
-    ['mousedown','touchstart','contextmenu'].forEach(evt=>{
-      portalEmoji.addEventListener(evt,(e)=>{ if(evt==='contextmenu'){ e.preventDefault(); } startHold(); });
-    });
-    ['mouseup','mouseleave','touchend','touchcancel','blur'].forEach(evt=>{
-      portalEmoji.addEventListener(evt,()=>{ cancelHold(); });
-    });
-
-    document.addEventListener('keydown',(e)=>{
-      if(!portalArmed || portalUnlocked) return;
+    // Keyboard handler for portal sequence
+    const keydownHandler = (e) => {
+      if(!portalArmed || portalUnlocked || memoryManager.isCleanedUp) return;
       if(e.key.length===1) {
         keySequence += e.key.toUpperCase();
         showToast(`Sequence: ${keySequence}`);
@@ -1067,16 +1202,20 @@
         } else if(keySequence === TARGET_SEQUENCE){
           portalUnlocked = true;
           showToast('Portal opening...');
-          portalToast._t && clearTimeout(portalToast._t);
+          if (portalToast._t) clearTimeout(portalToast._t);
           // visual effect
           portalEffect.classList.add('active');
-          setTimeout(()=>{ window.location.href='portal.html'; },1400);
+          // Clean up before navigation
+          memoryManager.cleanup();
+          setTimeout(() => {
+            window.location.href='portal.html';
+          }, 1400);
         }
       } else if(e.key==='Escape') {
         keySequence=''; portalArmed=false; resetHoldVisual(); showToast('Cancelled');
       }
-    });
-
+    };
+    memoryManager.addEventListener(document, 'keydown', keydownHandler);
     
     // --- Tabs & Modals Behavior ---
     const tabStats = document.getElementById('tab-stats');
@@ -1088,6 +1227,7 @@
     const modalShare = document.getElementById('modalShare');
 
     function openModal(modal) {
+      if (memoryManager.isCleanedUp) return;
       modal.classList.add('active');
       modal.setAttribute('aria-hidden', 'false');
       // trap focus lightly: focus first button
@@ -1096,23 +1236,34 @@
     }
 
     function closeModal(modal) {
+      if (memoryManager.isCleanedUp) return;
       modal.classList.remove('active');
       modal.setAttribute('aria-hidden', 'true');
     }
 
-    document.querySelectorAll('.modal-close').forEach(b => b.addEventListener('click', (e) => {
-      const overlay = e.target.closest('.modal-overlay');
-      if (overlay) closeModal(overlay);
-    }));
+    // Modal close handlers
+    document.querySelectorAll('.modal-close').forEach(b => {
+      const closeHandler = (e) => {
+        if (memoryManager.isCleanedUp) return;
+        const overlay = e.target.closest('.modal-overlay');
+        if (overlay) closeModal(overlay);
+      };
+      memoryManager.addEventListener(b, 'click', closeHandler);
+    });
 
-    // close on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', (e) => {
-      if (e.target === o) closeModal(o);
-    }));
+    // Close on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(o => {
+      const overlayClickHandler = (e) => {
+        if (memoryManager.isCleanedUp) return;
+        if (e.target === o) closeModal(o);
+      };
+      memoryManager.addEventListener(o, 'click', overlayClickHandler);
+    });
 
-    tabStats.addEventListener('click', () => openModal(modalStats));
-    tabSecret.addEventListener('click', () => openModal(modalSecret));
-    tabShare.addEventListener('click', () => openModal(modalShare));
+    // Tab handlers
+    memoryManager.addEventListener(tabStats, 'click', () => openModal(modalStats));
+    memoryManager.addEventListener(tabSecret, 'click', () => openModal(modalSecret));
+    memoryManager.addEventListener(tabShare, 'click', () => openModal(modalShare));
 
     // --- Visitor Counter (local) and stats ---
     const localKey = 'congrats_discoveries_v1';
@@ -1145,30 +1296,51 @@
       shareText.value = shareText.value.replace('{url}', window.location.href.replace('congrats.html','index.html'));
     }
 
-    copyShare.addEventListener('click', async () => {
+    const copyShareHandler = async () => {
+      if (memoryManager.isCleanedUp) return;
       try {
         await navigator.clipboard.writeText(shareText.value);
         shareResult.style.opacity = '1';
-        setTimeout(() => shareResult.style.opacity = '0', 2000);
+        const hideTimeout = memoryManager.addTimeout(
+          setTimeout(() => {
+            if (!memoryManager.isCleanedUp) {
+              shareResult.style.opacity = '0';
+            }
+          }, 2000)
+        );
       } catch (err) {
         shareResult.style.opacity = '1';
         shareResult.textContent = 'Failed to copy';
-        setTimeout(() => { shareResult.style.opacity = '0'; shareResult.textContent = 'Copied!'; }, 2000);
+        const resetTimeout = memoryManager.addTimeout(
+          setTimeout(() => {
+            if (!memoryManager.isCleanedUp) {
+              shareResult.style.opacity = '0';
+              shareResult.textContent = 'Copied!';
+            }
+          }, 2000)
+        );
       }
-    });
+    };
+    memoryManager.addEventListener(copyShare, 'click', copyShareHandler);
 
-    openShare.addEventListener('click', () => {
+    const openShareHandler = () => {
+      if (memoryManager.isCleanedUp) return;
       const u = encodeURIComponent(shareText.value);
       const twitter = `https://twitter.com/intent/tweet?text=${u}`;
       window.open(twitter, '_blank');
-    });
+    };
+    memoryManager.addEventListener(openShare, 'click', openShareHandler);
 
     // Accessibility: allow Esc to close modals
-    document.addEventListener('keydown', (e) => {
+    const escapeHandler = (e) => {
+      if (memoryManager.isCleanedUp) return;
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay.active').forEach(m => closeModal(m));
       }
-    });
+    };
+    memoryManager.addEventListener(document, 'keydown', escapeHandler);
+    
+    console.log('🚀 Congrats page initialized with 10-second auto-cleanup');
   </script>
 </body>
 </html>

@@ -400,40 +400,142 @@
   </main>
 
   <script>
+    // Memory Management System
+    const memoryManager = {
+      animationFrames: new Set(),
+      timeouts: new Set(),
+      intervals: new Set(),
+      eventListeners: new Map(),
+      isCleanedUp: false,
+      
+      addAnimationFrame(id) {
+        this.animationFrames.add(id);
+        return id;
+      },
+      
+      addTimeout(id) {
+        this.timeouts.add(id);
+        return id;
+      },
+      
+      addInterval(id) {
+        this.intervals.add(id);
+        return id;
+      },
+      
+      addEventListener(element, event, handler, options) {
+        if (!this.eventListeners.has(element)) {
+          this.eventListeners.set(element, []);
+        }
+        this.eventListeners.get(element).push({ event, handler, options });
+        element.addEventListener(event, handler, options);
+      },
+      
+      cleanup() {
+        if (this.isCleanedUp) return;
+        
+        console.log('🧹 Discovery chamber cleanup initiated - removing animations and event listeners');
+        
+        // Cancel all animation frames
+        this.animationFrames.forEach(id => cancelAnimationFrame(id));
+        this.animationFrames.clear();
+        
+        // Clear all timeouts
+        this.timeouts.forEach(id => clearTimeout(id));
+        this.timeouts.clear();
+        
+        // Clear all intervals
+        this.intervals.forEach(id => clearInterval(id));
+        this.intervals.clear();
+        
+        // Remove all event listeners
+        this.eventListeners.forEach((listeners, element) => {
+          listeners.forEach(({ event, handler, options }) => {
+            element.removeEventListener(event, handler, options);
+          });
+        });
+        this.eventListeners.clear();
+        
+        // Stop CSS animations
+        const animatedElements = document.querySelectorAll('.discovery-hexagon, .discovery-core, .discovery-orbit, .discovery-glow, .discovery-badge');
+        animatedElements.forEach(el => {
+          el.style.animation = 'none';
+          el.style.transform = 'none';
+        });
+        
+        // Clear code rain canvas
+        const canvas = document.getElementById('codeRain');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Remove any dynamic DOM elements
+        const flashElements = document.querySelectorAll('[data-temp-element]');
+        flashElements.forEach(el => el.remove());
+        
+        this.isCleanedUp = true;
+        console.log('✅ Discovery chamber cleanup completed - all resources freed');
+      }
+    };
+    
+    // Auto-cleanup after 10 seconds
+    const cleanupTimeout = memoryManager.addTimeout(
+      setTimeout(() => memoryManager.cleanup(), 10000)
+    );
+    
+    // Cleanup on page unload
+    memoryManager.addEventListener(window, 'beforeunload', () => memoryManager.cleanup());
+    
+    // Cleanup on visibility change (tab switch)
+    memoryManager.addEventListener(document, 'visibilitychange', () => {
+      if (document.hidden) {
+        memoryManager.cleanup();
+      }
+    });
+
     // Interactive discovery hexagon tilt
     const hexagon = document.querySelector('.discovery-hexagon');
     const container = document.querySelector('.discovery-container');
     let rect;
     
     function updateRect(){ 
+      if (memoryManager.isCleanedUp) return;
       rect = container.getBoundingClientRect(); 
     }
     updateRect();
-    window.addEventListener('resize', updateRect);
+    memoryManager.addEventListener(window, 'resize', updateRect);
     
-    document.addEventListener('pointermove', e => {
-      if(!rect) return;
+    const pointerMoveHandler = (e) => {
+      if (memoryManager.isCleanedUp || !rect) return;
       const x = (e.clientX - rect.left)/rect.width - 0.5;
       const y = (e.clientY - rect.top)/rect.height - 0.5;
       hexagon.style.transform = `translate(-50%, -50%) rotateX(${(-y*10).toFixed(2)}deg) rotateY(${(x*10).toFixed(2)}deg) rotateZ(${(x*5).toFixed(2)}deg)`;
-    });
+    };
     
-    document.addEventListener('pointerleave', () => { 
+    const pointerLeaveHandler = () => { 
+      if (memoryManager.isCleanedUp) return;
       hexagon.style.transform = 'translate(-50%, -50%)'; 
-    });
+    };
+    
+    memoryManager.addEventListener(document, 'pointermove', pointerMoveHandler);
+    memoryManager.addEventListener(document, 'pointerleave', pointerLeaveHandler);
 
-    // Enhanced code rain effect
+    // Enhanced code rain effect with cleanup
     const canvas = document.getElementById('codeRain');
     const ctx = canvas.getContext('2d');
     let drops = [];
+    let codeRainAnimationId = null;
     
     function resizeCanvas(){ 
+      if (memoryManager.isCleanedUp) return;
       canvas.width = innerWidth; 
       canvas.height = innerHeight; 
       initDrops();
     }
     
     function initDrops(){
+      if (memoryManager.isCleanedUp) return;
       drops = [];
       const columns = Math.floor(canvas.width / 25);
       const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZαβγδεζηθ';
@@ -451,6 +553,14 @@
     }
     
     function drawCodeRain(){
+      if (memoryManager.isCleanedUp) {
+        if (codeRainAnimationId) {
+          cancelAnimationFrame(codeRainAnimationId);
+          codeRainAnimationId = null;
+        }
+        return;
+      }
+      
       ctx.fillStyle = 'rgba(6, 78, 59, 0.15)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
@@ -492,34 +602,61 @@
         }
       }
       
-      requestAnimationFrame(drawCodeRain);
+      codeRainAnimationId = memoryManager.addAnimationFrame(requestAnimationFrame(drawCodeRain));
     }
     
-    window.addEventListener('resize', resizeCanvas); 
+    memoryManager.addEventListener(window, 'resize', resizeCanvas); 
     resizeCanvas();
     
-    if(!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches && !memoryManager.isCleanedUp) {
       drawCodeRain();
     }
     
-    // Celebration effect on load
-    setTimeout(() => {
-      console.log('🎉 Discovery Chamber Accessed!');
-      console.log('🎯 Master Detective Status: CONFIRMED');
-      
-      // Add a subtle screen flash effect
-      const flash = document.createElement('div');
-      flash.style.cssText = `
-        position: fixed; inset: 0; background: rgba(16, 185, 129, 0.1);
-        pointer-events: none; z-index: 10000; opacity: 0;
-        transition: opacity 0.3s ease-out;
-      `;
-      document.body.appendChild(flash);
-      
-      setTimeout(() => flash.style.opacity = '1', 50);
-      setTimeout(() => flash.style.opacity = '0', 400);
-      setTimeout(() => document.body.removeChild(flash), 700);
-    }, 800);
+    // Celebration effect on load with cleanup
+    const celebrationTimeout = memoryManager.addTimeout(
+      setTimeout(() => {
+        if (memoryManager.isCleanedUp) return;
+        
+        console.log('🎉 Discovery Chamber Accessed!');
+        console.log('🎯 Master Detective Status: CONFIRMED');
+        
+        // Add a subtle screen flash effect
+        const flash = document.createElement('div');
+        flash.setAttribute('data-temp-element', 'true'); // Mark for cleanup
+        flash.style.cssText = `
+          position: fixed; inset: 0; background: rgba(16, 185, 129, 0.1);
+          pointer-events: none; z-index: 10000; opacity: 0;
+          transition: opacity 0.3s ease-out;
+        `;
+        document.body.appendChild(flash);
+        
+        const flashInTimeout = memoryManager.addTimeout(
+          setTimeout(() => {
+            if (!memoryManager.isCleanedUp && flash.parentNode) {
+              flash.style.opacity = '1';
+            }
+          }, 50)
+        );
+        
+        const flashOutTimeout = memoryManager.addTimeout(
+          setTimeout(() => {
+            if (!memoryManager.isCleanedUp && flash.parentNode) {
+              flash.style.opacity = '0';
+            }
+          }, 400)
+        );
+        
+        const removeFlashTimeout = memoryManager.addTimeout(
+          setTimeout(() => {
+            if (flash.parentNode) {
+              document.body.removeChild(flash);
+            }
+          }, 700)
+        );
+      }, 800)
+    );
+    
+    console.log('🚀 Discovery chamber initialized with 10-second auto-cleanup');
   </script>
 </body>
 </html>

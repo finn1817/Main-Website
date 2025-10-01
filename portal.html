@@ -440,6 +440,96 @@
     </div>
   </main>
   <script>
+    // Memory Management System
+    const memoryManager = {
+      animationFrames: new Set(),
+      timeouts: new Set(),
+      intervals: new Set(),
+      eventListeners: new Map(),
+      isCleanedUp: false,
+      
+      addAnimationFrame(id) {
+        this.animationFrames.add(id);
+        return id;
+      },
+      
+      addTimeout(id) {
+        this.timeouts.add(id);
+        return id;
+      },
+      
+      addInterval(id) {
+        this.intervals.add(id);
+        return id;
+      },
+      
+      addEventListener(element, event, handler, options) {
+        if (!this.eventListeners.has(element)) {
+          this.eventListeners.set(element, []);
+        }
+        this.eventListeners.get(element).push({ event, handler, options });
+        element.addEventListener(event, handler, options);
+      },
+      
+      cleanup() {
+        if (this.isCleanedUp) return;
+        
+        console.log('🧹 Memory cleanup initiated - removing animations and event listeners');
+        
+        // Cancel all animation frames
+        this.animationFrames.forEach(id => cancelAnimationFrame(id));
+        this.animationFrames.clear();
+        
+        // Clear all timeouts
+        this.timeouts.forEach(id => clearTimeout(id));
+        this.timeouts.clear();
+        
+        // Clear all intervals
+        this.intervals.forEach(id => clearInterval(id));
+        this.intervals.clear();
+        
+        // Remove all event listeners
+        this.eventListeners.forEach((listeners, element) => {
+          listeners.forEach(({ event, handler, options }) => {
+            element.removeEventListener(event, handler, options);
+          });
+        });
+        this.eventListeners.clear();
+        
+        // Stop CSS animations
+        const animatedElements = document.querySelectorAll('.portal-ring, .portal-core, .portal-glow');
+        animatedElements.forEach(el => {
+          el.style.animation = 'none';
+          el.style.transform = 'none';
+        });
+        
+        // Clear particle canvas
+        const canvas = document.getElementById('particles');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        this.isCleanedUp = true;
+        console.log('✅ Memory cleanup completed - all resources freed');
+      }
+    };
+    
+    // Auto-cleanup after 10 seconds
+    const cleanupTimeout = memoryManager.addTimeout(
+      setTimeout(() => memoryManager.cleanup(), 10000)
+    );
+    
+    // Cleanup on page unload
+    memoryManager.addEventListener(window, 'beforeunload', () => memoryManager.cleanup());
+    
+    // Cleanup on visibility change (tab switch)
+    memoryManager.addEventListener(document, 'visibilitychange', () => {
+      if (document.hidden) {
+        memoryManager.cleanup();
+      }
+    });
+
     // Interactive portal tilt
     const portalCore = document.querySelector('.portal-core');
     const container = document.querySelector('.gateway-container');
@@ -449,24 +539,30 @@
       rect = container.getBoundingClientRect(); 
     }
     updateRect();
-    window.addEventListener('resize', updateRect);
+    memoryManager.addEventListener(window, 'resize', updateRect);
     
-    document.addEventListener('pointermove', e => {
+    const pointerMoveHandler = (e) => {
+      if (memoryManager.isCleanedUp) return;
       if(!rect) return;
       const x = (e.clientX - rect.left)/rect.width - 0.5;
       const y = (e.clientY - rect.top)/rect.height - 0.5;
       portalCore.style.transform = `translate(-50%, -50%) rotateX(${(-y*8).toFixed(2)}deg) rotateY(${(x*8).toFixed(2)}deg)`;
-    });
+    };
     
-    document.addEventListener('pointerleave', () => { 
+    const pointerLeaveHandler = () => { 
+      if (memoryManager.isCleanedUp) return;
       portalCore.style.transform = 'translate(-50%, -50%)'; 
-    });
+    };
+    
+    memoryManager.addEventListener(document, 'pointermove', pointerMoveHandler);
+    memoryManager.addEventListener(document, 'pointerleave', pointerLeaveHandler);
 
     // Copy password functionality
     const copyBtn = document.getElementById('copyPass');
     const feedback = document.getElementById('copyFeedback');
     
-    copyBtn.addEventListener('click', async () => {
+    const copyHandler = async () => {
+      if (memoryManager.isCleanedUp) return;
       try {
         await navigator.clipboard.writeText('PORTAL');
         feedback.textContent = 'Copied!';
@@ -474,21 +570,32 @@
         feedback.textContent = 'Failed';
       }
       feedback.classList.add('show');
-      setTimeout(() => feedback.classList.remove('show'), 2000);
-    });
+      const hideTimeout = memoryManager.addTimeout(
+        setTimeout(() => {
+          if (!memoryManager.isCleanedUp) {
+            feedback.classList.remove('show');
+          }
+        }, 2000)
+      );
+    };
+    
+    memoryManager.addEventListener(copyBtn, 'click', copyHandler);
 
-    // Modern particle system
+    // Modern particle system with cleanup
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let particles = [];
+    let animationId = null;
     
     function resize(){ 
+      if (memoryManager.isCleanedUp) return;
       canvas.width = innerWidth; 
       canvas.height = innerHeight; 
       initParticles();
     }
     
     function initParticles() {
+      if (memoryManager.isCleanedUp) return;
       particles = [];
       const COUNT = Math.min(100, Math.round(innerWidth/15));
       for(let i = 0; i < COUNT; i++){
@@ -505,6 +612,14 @@
     }
     
     function animateParticles(){
+      if (memoryManager.isCleanedUp) {
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+          animationId = null;
+        }
+        return;
+      }
+      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       for(const particle of particles){
@@ -531,13 +646,13 @@
         ctx.fill();
       }
       
-      requestAnimationFrame(animateParticles);
+      animationId = memoryManager.addAnimationFrame(requestAnimationFrame(animateParticles));
     }
     
-    window.addEventListener('resize', resize);
+    memoryManager.addEventListener(window, 'resize', resize);
     resize();
     
-    if(!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches && !memoryManager.isCleanedUp) {
       animateParticles();
     }
 
@@ -550,6 +665,7 @@
     let targetX = 20;
     let targetY = 20;
     const chaseSpeed = 0.02;
+    let chaseAnimationId = null;
     
     // Click tracking for secret portal
     let clickCount = 0;
@@ -558,32 +674,41 @@
     
     let panelRect;
     function updatePanelRect() {
+      if (memoryManager.isCleanedUp) return;
       panelRect = panel.getBoundingClientRect();
     }
     updatePanelRect();
-    window.addEventListener('resize', updatePanelRect);
+    memoryManager.addEventListener(window, 'resize', updatePanelRect);
 
     // Force initial position
     chase.style.left = chaseX + 'px';
     chase.style.top = chaseY + 'px';
     chase.style.transform = 'none';
 
-    // Animation loop
+    // Animation loop with cleanup
     function animateChase(){
+      if (memoryManager.isCleanedUp) {
+        if (chaseAnimationId) {
+          cancelAnimationFrame(chaseAnimationId);
+          chaseAnimationId = null;
+        }
+        return;
+      }
+      
       chaseX += (targetX - chaseX) * chaseSpeed;
       chaseY += (targetY - chaseY) * chaseSpeed;
       
       chase.style.left = Math.round(chaseX) + 'px';
       chase.style.top = Math.round(chaseY) + 'px';
       
-      requestAnimationFrame(animateChase);
+      chaseAnimationId = memoryManager.addAnimationFrame(requestAnimationFrame(animateChase));
     }
     
     animateChase();
 
     // Track mouse movement
-    document.addEventListener('mousemove', e => {
-      if (!panelRect) return;
+    const mouseMoveHandler = (e) => {
+      if (memoryManager.isCleanedUp || !panelRect) return;
       
       const inside = e.clientX >= panelRect.left && 
                     e.clientX <= panelRect.right && 
@@ -597,10 +722,13 @@
         targetX = e.clientX - 15;
         targetY = e.clientY - 15;
       }
-    });
+    };
+    
+    memoryManager.addEventListener(document, 'mousemove', mouseMoveHandler);
 
     // Click handler for the chasing square
-    chase.addEventListener('click', (e) => {
+    const chaseClickHandler = (e) => {
+      if (memoryManager.isCleanedUp) return;
       e.preventDefault();
       e.stopPropagation();
       
@@ -617,10 +745,14 @@
       chase.style.transform = 'scale(1.3)';
       chase.style.filter = 'brightness(1.5) drop-shadow(0 0 15px #fff)';
       
-      setTimeout(() => {
-        chase.style.transform = 'scale(1)';
-        chase.style.filter = '';
-      }, 200);
+      const resetTimeout = memoryManager.addTimeout(
+        setTimeout(() => {
+          if (!memoryManager.isCleanedUp) {
+            chase.style.transform = 'scale(1)';
+            chase.style.filter = '';
+          }
+        }, 200)
+      );
       
       console.log(`Chase square clicked: ${clickCount}/${maxClicks}`);
       
@@ -628,23 +760,34 @@
         chase.style.background = '#00ff00';
         chase.style.boxShadow = '0 0 30px #00ff00, 0 0 60px #00ff00';
         
+        // Clean up before navigation
+        memoryManager.cleanup();
+        
         setTimeout(() => {
           window.location.href = 'portal-2.html';
         }, 800);
       }
-    });
+    };
+    
+    memoryManager.addEventListener(chase, 'click', chaseClickHandler);
 
     // Make the square clickable
     chase.style.pointerEvents = 'auto';
     chase.style.cursor = 'pointer';
 
     // Ensure visibility
-    setTimeout(() => {
-      chase.style.display = 'block';
-      chase.style.visibility = 'visible';
-      chase.style.opacity = '1';
-      console.log('Chase square initialized');
-    }, 100);
+    const visibilityTimeout = memoryManager.addTimeout(
+      setTimeout(() => {
+        if (!memoryManager.isCleanedUp) {
+          chase.style.display = 'block';
+          chase.style.visibility = 'visible';
+          chase.style.opacity = '1';
+          console.log('Chase square initialized');
+        }
+      }, 100)
+    );
+    
+    console.log('🚀 Portal initialized with 10-second auto-cleanup');
   </script>
 </body>
 </html>
