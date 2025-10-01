@@ -4,114 +4,365 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>The Portal Chamber</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Core palette */
-    --accent: #6f8dff;
-    --accent-alt: #8b5cf6; /* replaces previous green variant for consistency */
-    --accent-glow: #9fb8ff;
-    --text-primary: #ecf2ff;
-    --text-dim: #9aa7c2;
-    --panel-bg: rgba(255,255,255,0.05);
-    --panel-border: rgba(255,255,255,0.12);
-    --radius-xl: 30px;
-    --focus-ring: 0 0 0 3px rgba(111,141,255,0.55);
-    --gradient-accent: linear-gradient(135deg,#6f8dff,#3d62ff);
-    --gradient-accent-alt: linear-gradient(135deg,#8b5cf6,#5d32c9);
-    --easing-spring: cubic-bezier(.16,.8,.34,1);
+    /* Modern color system */
+    --primary: #667eea;
+    --primary-light: #818cf8;
+    --primary-dark: #4338ca;
+    --accent: #f472b6;
+    --surface: #0f172a;
+    --surface-light: rgba(15, 23, 42, 0.8);
+    --surface-border: rgba(100, 116, 139, 0.2);
+    --text: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    
+    /* Spacing */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+    
+    /* Radius */
+    --radius-sm: 0.5rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-full: 9999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    --shadow-glow: 0 0 20px rgb(102 126 234 / 0.3);
+    
+    /* Transitions */
+    --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);
   }
-  * { box-sizing: border-box; margin:0; padding:0; }
+  
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+  }
+  
   body {
-    font-family: 'Roboto', sans-serif;
-    background:
-      radial-gradient(circle at 50% 55%, #162034 0%, #090d14 65%, #05070a 100%);
-    color:var(--text-primary);
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: var(--text);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
-    position:relative;
+    position: relative;
   }
-
-  /* Subtle animated particle field */
-  canvas#particles { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
-  .sphere-wrapper {
-    position:relative; width:340px; height:340px; display:flex;align-items:center;justify-content:center;
-    filter: drop-shadow(0 0 18px rgba(111,141,255,0.45));
-    perspective:1200px;
+  
+  /* Ambient particles */
+  canvas#particles { 
+    position: absolute; 
+    inset: 0; 
+    width: 100%; 
+    height: 100%; 
+    pointer-events: none; 
+    opacity: 0.6;
   }
-  .sphere {
-    position:relative; width:100%; height:100%; border-radius:50%;
-    background:radial-gradient(circle at 28% 30%, var(--accent) 0%, #24386f 38%, #0d1324 70%, #060a15 100%);
-    animation: pulse 6s ease-in-out infinite;
-    box-shadow:0 0 0 1px rgba(255,255,255,0.06),0 0 35px 10px rgba(111,141,255,0.25) inset,0 0 120px -10px rgba(111,141,255,0.45);
-    overflow:hidden;
-    transform-style:preserve-3d;
-    will-change: transform;
+  
+  /* Main container */
+  .gateway-container {
+    position: relative;
+    max-width: 28rem;
+    width: 90%;
+    padding: var(--space-xl);
+    background: var(--surface-light);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl), var(--shadow-glow);
+    text-align: center;
   }
-  .sphere::after { content:""; position:absolute; inset:-2px; border-radius:inherit; background:conic-gradient(from 0deg,#6f8dff22,#8b5cf644,#6f8dff22 70%); animation: spinAura 10s linear infinite; mix-blend-mode:screen; pointer-events:none; }
-  @keyframes spinAura { to { transform:rotate(360deg);} }
-  .ring { position:absolute; top:50%; left:50%; width:180%; height:180%; border:2px solid rgba(255,255,255,0.08); border-radius:50%; transform:translate(-50%,-50%) rotateX(65deg); animation: spin 18s linear infinite; backdrop-filter: blur(2px); }
-  .ring:nth-child(2){ width:150%; height:150%; animation-direction:reverse; animation-duration:28s; }
-  .ring:nth-child(3){ width:120%; height:120%; animation-duration:36s; }
-  @keyframes spin { to { transform:translate(-50%,-50%) rotateX(65deg) rotateZ(360deg); } }
-  @keyframes pulse { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.04);} }
-  h1 { text-align:center; font-size:2.2rem; letter-spacing:1.5px; margin-top:30px; background:linear-gradient(90deg,#ffffff,#b8c8ff,#ffffff); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation: shimmer 6s linear infinite; font-weight:700; }
-  @keyframes shimmer { 0%{ background-position:0% 50%; } 100%{ background-position:200% 50%; } }
-  .panel { max-width:680px; padding:34px 40px 52px; background:var(--panel-bg); backdrop-filter:blur(22px) saturate(160%); border:1px solid var(--panel-border); border-radius:var(--radius-xl); box-shadow:0 30px 70px -18px rgba(0,0,0,0.65), 0 6px 24px rgba(0,0,0,0.45); text-align:center; position:relative; overflow:hidden; }
-  .panel::before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 70% 20%,rgba(111,141,255,.18),transparent 60%), radial-gradient(circle at 20% 80%,rgba(139,92,246,.22),transparent 65%); mix-blend-mode:overlay; pointer-events:none; }
-  .panel::after { content:""; position:absolute; inset:-1px; border-radius:inherit; padding:1px; background:linear-gradient(160deg,rgba(255,255,255,0.5),rgba(111,141,255,0.4) 35%,rgba(139,92,246,0.4) 65%,rgba(255,255,255,0.15)); -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; }
-  p { margin:16px 0 12px; line-height:1.55; font-size:0.97rem; color:var(--text-dim); }
-  p strong { color:var(--text-primary); }
-  .badge { display:inline-flex; align-items:center; gap:6px; background:var(--gradient-accent); padding:6px 16px 7px; border-radius:999px; font-size:0.68rem; letter-spacing:1.2px; font-weight:600; color:#fff; box-shadow:0 0 0 2px rgba(255,255,255,0.05),0 4px 14px rgba(111,141,255,0.38); text-transform:uppercase; margin-top:8px; }
-  .badge::before { content:"★"; font-size:0.7rem; }
-  .actions { margin-top:34px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
-  .btn { position:relative; background:var(--gradient-accent); color:#fff; padding:14px 30px; border:none; border-radius:16px; cursor:pointer; font-size:0.9rem; font-weight:600; letter-spacing:0.6px; transition:transform .5s var(--easing-spring), box-shadow .45s, filter .45s; box-shadow:0 10px 28px -8px rgba(64,93,255,0.55), 0 2px 8px rgba(0,0,0,0.4); isolation:isolate; }
-  .btn:focus-visible { outline:none; box-shadow: var(--focus-ring), 0 10px 28px -8px rgba(64,93,255,0.55); }
-  .btn::after { content:""; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(120deg,rgba(255,255,255,0.75),transparent 40% 60%,rgba(255,255,255,0.55)); opacity:0; mix-blend-mode:overlay; transition:opacity .6s; }
-  .btn:hover { transform:translateY(-5px) scale(1.03); box-shadow:0 20px 40px -12px rgba(64,93,255,0.65), 0 6px 16px -4px rgba(0,0,0,0.55); }
-  .btn:hover::after { opacity:1; }
-  .btn:active { transform:translateY(-1px) scale(.97); transition-duration:.15s; }
-  .btn.alt { background:var(--gradient-accent-alt); box-shadow:0 10px 28px -8px rgba(139,92,246,0.55), 0 2px 8px rgba(0,0,0,0.45); }
-  .btn.alt:hover { box-shadow:0 20px 40px -12px rgba(139,92,246,0.6), 0 6px 16px -4px rgba(0,0,0,0.55); }
-  .btn.neu { background:linear-gradient(135deg,#2b3550,#1b2435); box-shadow:0 12px 26px -10px rgba(0,0,0,0.6); }
-  .btn.neu:hover { box-shadow:0 18px 34px -10px rgba(0,0,0,0.65); }
-  .copy-wrap { position:relative; display:inline-flex; align-items:center; gap:10px; margin-top:14px; }
-  .copy-wrap button { background:linear-gradient(135deg,#202b3c,#192231); padding:8px 14px; border-radius:10px; font-size:0.7rem; letter-spacing:.8px; border:1px solid rgba(255,255,255,0.08); color:#d2dbef; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:.35s; }
-  .copy-wrap button:hover { color:#fff; background:#273449; }
-  .copy-feedback { position:absolute; top:-32px; left:50%; transform:translateX(-50%) scale(.8); background:#111a28; padding:4px 10px; border-radius:6px; font-size:0.65rem; opacity:0; letter-spacing:.5px; pointer-events:none; transition:.35s; box-shadow:0 4px 14px -4px rgba(0,0,0,0.6); }
-  .copy-feedback.show { opacity:1; transform:translateX(-50%) scale(1); }
-  footer { margin-top:30px; font-size:0.68rem; opacity:.55; letter-spacing:.55px; }
-  .glyphs { margin-top:14px; font-size:1.15rem; letter-spacing:10px; opacity:.58; user-select:none; }
-
-  /* Teaser bar */
-  .teaser { margin:38px auto 4px; display:flex; align-items:center; justify-content:center; gap:10px; font-size:0.7rem; letter-spacing:.65px; color:var(--text-dim); opacity:.75; }
-  .teaser span.lock { font-size:.85rem; filter:drop-shadow(0 0 4px rgba(111,141,255,.5)); }
-
-  /* Responsive tweaks */
-  @media (max-width:780px) {
-    .sphere-wrapper { width:270px; height:270px; }
-    h1 { font-size:1.9rem; margin-top:26px; }
-    .panel { padding:30px 26px 46px; }
-    .actions { gap:12px; }
-    .btn { padding:12px 22px; }
+  
+  /* Portal visualization */
+  .portal-visual {
+    position: relative;
+    width: 12rem;
+    height: 12rem;
+    margin: 0 auto var(--space-lg);
   }
-  @media (max-width:520px) {
-    .sphere-wrapper { width:220px; height:220px; }
-    h1 { font-size:1.65rem; }
-    .glyphs { letter-spacing:6px; }
+  
+  .portal-ring {
+    position: absolute;
+    inset: 0;
+    border: 2px solid transparent;
+    border-radius: var(--radius-full);
+    background: linear-gradient(45deg, var(--primary), var(--accent)) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: portal-rotate 20s linear infinite;
   }
-
-  /* Respect reduced motion */
+  
+  .portal-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    height: 60%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+    border-radius: var(--radius-full);
+    animation: portal-pulse 3s ease-in-out infinite;
+  }
+  
+  .portal-glow {
+    position: absolute;
+    inset: -1rem;
+    background: radial-gradient(circle, var(--primary) 0%, transparent 50%);
+    border-radius: var(--radius-full);
+    opacity: 0.3;
+    animation: portal-glow 4s ease-in-out infinite alternate;
+  }
+  
+  @keyframes portal-rotate {
+    to { transform: rotate(360deg); }
+  }
+  
+  @keyframes portal-pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+  }
+  
+  @keyframes portal-glow {
+    0% { opacity: 0.2; }
+    100% { opacity: 0.4; }
+  }
+  
+  /* Typography */
+  .gateway-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: var(--space-xs);
+    background: linear-gradient(90deg, var(--text), var(--primary-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.025em;
+  }
+  
+  .gateway-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0.375rem 0.875rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--space-md);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .gateway-badge::before {
+    content: '⚡';
+    font-size: 0.875rem;
+  }
+  
+  .gateway-description {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: var(--space-md);
+    font-size: 0.9rem;
+  }
+  
+  .gateway-description strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  
+  /* Password section */
+  .password-section {
+    background: rgba(100, 116, 139, 0.1);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin: var(--space-md) 0;
+  }
+  
+  .password-label {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    margin-bottom: var(--space-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .password-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-light);
+    margin-bottom: var(--space-sm);
+    letter-spacing: 0.1em;
+  }
+  
+  .copy-btn {
+    background: rgba(100, 116, 139, 0.2);
+    border: 1px solid var(--surface-border);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .copy-btn:hover {
+    background: rgba(100, 116, 139, 0.3);
+    color: var(--text);
+    transform: translateY(-1px);
+  }
+  
+  .copy-feedback {
+    position: absolute;
+    top: -2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface);
+    color: var(--success);
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s var(--ease-out);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .copy-feedback.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-0.25rem);
+  }
+  
+  /* Action buttons */
+  .gateway-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+  }
+  
+  .action-btn {
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .action-btn.primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: var(--shadow-md);
+  }
+  
+  .action-btn.secondary {
+    background: linear-gradient(135deg, var(--accent), #ec4899);
+    color: white;
+    box-shadow: var(--shadow-md);
+  }
+  
+  .action-btn.ghost {
+    background: transparent;
+    border: 1px solid var(--surface-border);
+    color: var(--text-muted);
+  }
+  
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .action-btn.primary:hover {
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(102, 126, 234, 0.4);
+  }
+  
+  .action-btn.secondary:hover {
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(244, 114, 182, 0.4);
+  }
+  
+  .action-btn.ghost:hover {
+    background: rgba(100, 116, 139, 0.1);
+    color: var(--text);
+  }
+  
+  .action-btn:active {
+    transform: translateY(0);
+  }
+  
+  .action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+  
+  /* Footer */
+  .gateway-footer {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--surface-border);
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 640px) {
+    .gateway-container {
+      padding: var(--space-lg);
+      width: 95%;
+    }
+    
+    .portal-visual {
+      width: 10rem;
+      height: 10rem;
+    }
+    
+    .gateway-title {
+      font-size: 1.5rem;
+    }
+    
+    .gateway-actions {
+      gap: 0.75rem;
+    }
+  }
+  
+  /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    .sphere, .ring, .sphere::after, h1 { animation: none !important; }
-    #chaseSquare { animation: none !important; }
+    .portal-ring,
+    .portal-core,
+    .portal-glow {
+      animation: none;
+    }
   }
-
-  /* Cursor-chasing square - FIXED VERSION */
+  
+  /* Cursor-chasing square - PRESERVED */
   #chaseSquare {
     position: fixed !important;
     top: 20px;
@@ -131,6 +382,7 @@
     transition: opacity .4s, filter .4s;
     will-change: transform;
   }
+  
   #chaseSquare.paused { 
     opacity: 0.7; 
     filter: grayscale(.25) brightness(.85); 
@@ -140,49 +392,80 @@
 <body>
   <canvas id="particles" aria-hidden="true"></canvas>
   <div id="chaseSquare" aria-hidden="true"></div>
-  <div class="panel">
-    <div class="sphere-wrapper">
-      <div class="sphere">
-        <div class="ring"></div>
-        <div class="ring"></div>
-        <div class="ring"></div>
+  
+  <main class="gateway-container">
+    <!-- Portal Visualization -->
+    <div class="portal-visual">
+      <div class="portal-glow"></div>
+      <div class="portal-ring"></div>
+      <div class="portal-core"></div>
+    </div>
+    
+    <!-- Content -->
+    <h1 class="gateway-title">Access Granted</h1>
+    <div class="gateway-badge">Hidden Gateway #2</div>
+    
+    <p class="gateway-description">
+      Sequence authenticated. You've unlocked this <strong>classified portal</strong> through precise execution of the hidden protocol.
+    </p>
+    
+    <!-- Password Section -->
+    <div class="password-section">
+      <div class="password-label">Security Key</div>
+      <div class="password-display">PORTAL</div>
+      <div style="position: relative; display: inline-block;">
+        <button class="copy-btn" id="copyPass">
+          <span>📋</span>
+          Copy Key
+        </button>
+        <div class="copy-feedback" id="copyFeedback">Copied!</div>
       </div>
     </div>
-    <h1>Portal Unlocked</h1>
-    <span class="badge">EASTER EGG #2</span>
-    <p>You mastered the long-press + secret sequence challenge. This hidden chamber confirms your elite explorer status.</p>
-    <p>Remember the password: <strong>PORTAL</strong>. It may come in handy for future secrets.</p>
-    <div class="copy-wrap" role="group" aria-label="Password actions">
-      <button id="copyPass" aria-label="Copy password"><span>📋</span> COPY PASSWORD</button>
-      <div class="copy-feedback" id="copyFeedback" role="status" aria-live="polite">Copied!</div>
+    
+    <!-- Actions -->
+    <div class="gateway-actions">
+      <button class="action-btn primary" onclick="window.location.href='index.html'">
+        Return to Surface
+      </button>
+      <button class="action-btn secondary" onclick="window.location.href='congrats.html'">
+        Previous Discovery
+      </button>
+      <button class="action-btn ghost" id="futureBtn" disabled title="Awaiting next sequence">
+        Deep Access • Locked
+      </button>
     </div>
-    <div class="glyphs">⚡ ✨ 🜂 🜁 🜄</div>
-    <div class="actions">
-      <button class="btn" onclick="window.location.href='index.html'">Return Home</button>
-      <button class="btn alt" onclick="window.location.href='congrats.html'">Back to Egg #1</button>
-      <button class="btn neu" id="futureBtn" disabled title="Coming soon">Future Chamber</button>
+    
+    <div class="gateway-footer">
+      Protocol: Long-Press + PORTAL • Level 2 Clearance
     </div>
-    <div class="teaser"><span class="lock">🔒</span> Future portal sequences will appear here -- stay curious.</div>
-    <footer>Sequence: Long Press + PORTAL • Crafted for curiosity</footer>
-  </div>
+  </main>
   <script>
-    // Interactive sphere tilt
-    const sphere = document.querySelector('.sphere');
+    // Interactive portal tilt
+    const portalCore = document.querySelector('.portal-core');
+    const container = document.querySelector('.gateway-container');
     let rect;
-    function updateRect(){ rect = sphere.getBoundingClientRect(); }
+    
+    function updateRect(){ 
+      rect = container.getBoundingClientRect(); 
+    }
     updateRect();
     window.addEventListener('resize', updateRect);
+    
     document.addEventListener('pointermove', e => {
       if(!rect) return;
       const x = (e.clientX - rect.left)/rect.width - 0.5;
       const y = (e.clientY - rect.top)/rect.height - 0.5;
-      sphere.style.transform = `rotateX(${(-y*12).toFixed(2)}deg) rotateY(${(x*18).toFixed(2)}deg)`;
+      portalCore.style.transform = `translate(-50%, -50%) rotateX(${(-y*8).toFixed(2)}deg) rotateY(${(x*8).toFixed(2)}deg)`;
     });
-    document.addEventListener('pointerleave', () => { sphere.style.transform=''; });
+    
+    document.addEventListener('pointerleave', () => { 
+      portalCore.style.transform = 'translate(-50%, -50%)'; 
+    });
 
-    // Copy password
+    // Copy password functionality
     const copyBtn = document.getElementById('copyPass');
     const feedback = document.getElementById('copyFeedback');
+    
     copyBtn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText('PORTAL');
@@ -191,54 +474,81 @@
         feedback.textContent = 'Failed';
       }
       feedback.classList.add('show');
-      setTimeout(()=> feedback.classList.remove('show'), 1700);
+      setTimeout(() => feedback.classList.remove('show'), 2000);
     });
 
-    // Particle canvas
+    // Modern particle system
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let particles = [];
-    function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
-    window.addEventListener('resize', resize); resize();
-    const COUNT = Math.min(160, Math.round(innerWidth/10));
-    for(let i=0;i<COUNT;i++){ particles.push({
-      x: Math.random()*canvas.width,
-      y: Math.random()*canvas.height,
-      r: Math.random()*1.8 + 0.4,
-      a: Math.random()*Math.PI*2,
-      s: Math.random()*0.25 + 0.05,
-      o: Math.random()*0.5+0.15
-    }); }
-    function tick(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      for(const p of particles){
-        p.x += Math.cos(p.a)*p.s; p.y += Math.sin(p.a)*p.s*0.6; p.a += 0.002;
-        if(p.x < -50) p.x = canvas.width+50; if(p.x > canvas.width+50) p.x = -50;
-        if(p.y < -50) p.y = canvas.height+50; if(p.y > canvas.height+50) p.y = -50;
-        const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);
-        g.addColorStop(0,`rgba(159,184,255,${p.o})`);
-        g.addColorStop(1,'rgba(159,184,255,0)');
-        ctx.fillStyle = g;
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
-      }
-      requestAnimationFrame(tick);
+    
+    function resize(){ 
+      canvas.width = innerWidth; 
+      canvas.height = innerHeight; 
+      initParticles();
     }
-    if(!matchMedia('(prefers-reduced-motion: reduce)').matches) tick();
+    
+    function initParticles() {
+      particles = [];
+      const COUNT = Math.min(100, Math.round(innerWidth/15));
+      for(let i = 0; i < COUNT; i++){
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 2 + 0.5,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          opacity: Math.random() * 0.6 + 0.2,
+          hue: 220 + Math.random() * 40
+        });
+      }
+    }
+    
+    function animateParticles(){
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      for(const particle of particles){
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        
+        // Wrap around edges
+        if(particle.x < 0) particle.x = canvas.width;
+        if(particle.x > canvas.width) particle.x = 0;
+        if(particle.y < 0) particle.y = canvas.height;
+        if(particle.y > canvas.height) particle.y = 0;
+        
+        // Draw particle
+        const gradient = ctx.createRadialGradient(
+          particle.x, particle.y, 0,
+          particle.x, particle.y, particle.r * 3
+        );
+        gradient.addColorStop(0, `hsla(${particle.hue}, 70%, 70%, ${particle.opacity})`);
+        gradient.addColorStop(1, `hsla(${particle.hue}, 70%, 70%, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      requestAnimationFrame(animateParticles);
+    }
+    
+    window.addEventListener('resize', resize);
+    resize();
+    
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      animateParticles();
+    }
 
-    // --- CURSOR CHASING SQUARE - COMPLETELY REWRITTEN ---
+    // --- CURSOR CHASING SQUARE - PRESERVED FUNCTIONALITY ---
     const chase = document.getElementById('chaseSquare');
-    const panel = document.querySelector('.panel');
+    const panel = container; // Updated to use new container
     
-    // ensure the element exists and is visible
-    console.log('Chase element found:', chase);
-    
-    // start position (top-left corner with some margin)
     let chaseX = 20;
     let chaseY = 20;
     let targetX = 20;
     let targetY = 20;
-    
-    // speed for approximately 1 second delay
     const chaseSpeed = 0.02;
     
     // Click tracking for secret portal
@@ -253,62 +563,49 @@
     updatePanelRect();
     window.addEventListener('resize', updatePanelRect);
 
-    // force initial position
+    // Force initial position
     chase.style.left = chaseX + 'px';
     chase.style.top = chaseY + 'px';
     chase.style.transform = 'none';
 
-    // animation loop
+    // Animation loop
     function animateChase(){
-      // smoothly move towards target
       chaseX += (targetX - chaseX) * chaseSpeed;
       chaseY += (targetY - chaseY) * chaseSpeed;
       
-      // update position using left/top instead of transform
       chase.style.left = Math.round(chaseX) + 'px';
       chase.style.top = Math.round(chaseY) + 'px';
       
       requestAnimationFrame(animateChase);
     }
     
-    // start animation immediately
     animateChase();
 
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-      // No specific cleanup needed for RAF loop as it will stop when page unloads
-    });
-
-    // track mouse movement
+    // Track mouse movement
     document.addEventListener('mousemove', e => {
       if (!panelRect) return;
       
-      // check if mouse is over the panel
       const inside = e.clientX >= panelRect.left && 
                     e.clientX <= panelRect.right && 
                     e.clientY >= panelRect.top && 
                     e.clientY <= panelRect.bottom;
       
       if(inside){
-        // pause and dim when over panel
         chase.classList.add('paused');
       } else {
-        // normal tracking when outside panel
         chase.classList.remove('paused');
-        // center the 30px square on cursor
         targetX = e.clientX - 15;
         targetY = e.clientY - 15;
       }
     });
 
-    // Add click handler for the chasing square
+    // Click handler for the chasing square
     chase.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       
       const currentTime = Date.now();
       
-      // Reset if too much time has passed (5 seconds)
       if (currentTime - lastClickTime > 5000) {
         clickCount = 0;
       }
@@ -316,7 +613,7 @@
       clickCount++;
       lastClickTime = currentTime;
       
-      // Visual feedback for click
+      // Visual feedback
       chase.style.transform = 'scale(1.3)';
       chase.style.filter = 'brightness(1.5) drop-shadow(0 0 15px #fff)';
       
@@ -327,14 +624,11 @@
       
       console.log(`Chase square clicked: ${clickCount}/${maxClicks}`);
       
-      // Check if we've reached the magic number
       if (clickCount >= maxClicks) {
-        // Dramatic flash effect
         chase.style.background = '#00ff00';
         chase.style.boxShadow = '0 0 30px #00ff00, 0 0 60px #00ff00';
         
         setTimeout(() => {
-          // Redirect to the next portal after a moment
           window.location.href = 'portal-2.html';
         }, 800);
       }
@@ -344,12 +638,12 @@
     chase.style.pointerEvents = 'auto';
     chase.style.cursor = 'pointer';
 
-    // fallback to ensure square is visible
+    // Ensure visibility
     setTimeout(() => {
       chase.style.display = 'block';
       chase.style.visibility = 'visible';
       chase.style.opacity = '1';
-      console.log('Square visibility forced');
+      console.log('Chase square initialized');
     }, 100);
   </script>
 </body>

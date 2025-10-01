@@ -4,246 +4,409 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>The Discovery Chamber</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Enhanced palette for discovery theme */
-    --accent: #00ff88;
-    --accent-alt: #ff6b00;
-    --accent-glow: #88ffaa;
-    --text-primary: #e8fff0;
-    --text-dim: #9fccb0;
-    --panel-bg: rgba(0,255,136,0.08);
-    --panel-border: rgba(0,255,136,0.15);
-    --radius-xl: 35px;
-    --focus-ring: 0 0 0 3px rgba(0,255,136,0.55);
-    --gradient-accent: linear-gradient(135deg,#00ff88,#00cc66);
-    --gradient-accent-alt: linear-gradient(135deg,#ff6b00,#cc4400);
-    --easing-spring: cubic-bezier(.16,.8,.34,1);
+    /* Discovery theme color system */
+    --primary: #10b981;
+    --primary-light: #34d399;
+    --primary-dark: #047857;
+    --accent: #f59e0b;
+    --surface: #064e3b;
+    --surface-light: rgba(6, 78, 59, 0.8);
+    --surface-border: rgba(52, 211, 153, 0.2);
+    --text: #f0fdf4;
+    --text-muted: #a7f3d0;
+    --text-dim: #6ee7b7;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    
+    /* Spacing */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+    
+    /* Radius */
+    --radius-sm: 0.5rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-full: 9999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    --shadow-glow: 0 0 25px rgb(16 185 129 / 0.4);
+    
+    /* Transitions */
+    --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);
   }
-  * { box-sizing: border-box; margin:0; padding:0; }
+  
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+  }
+  
   body {
-    font-family: 'Roboto', sans-serif;
-    background:
-      radial-gradient(circle at 30% 20%, #0a2818 0%, #051510 45%, #020a06 100%);
-    color:var(--text-primary);
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #0c4a3e 0%, #064e3b 50%, #022c22 100%);
+    color: var(--text);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
-    position:relative;
-  }
-
-  /* Matrix-style code rain */
-  canvas#codeRain { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:0.3; }
-  
-  .discovery-wrapper {
-    position:relative; width:380px; height:380px; display:flex;align-items:center;justify-content:center;
-    filter: drop-shadow(0 0 25px rgba(0,255,136,0.6));
-    perspective:1400px;
+    position: relative;
   }
   
-  .discovery-orb {
-    position:relative; width:100%; height:100%; border-radius:50%;
-    background:radial-gradient(circle at 25% 25%, var(--accent) 0%, #1a4d33 35%, #0d1f16 65%, #040a08 100%);
-    animation: discoverPulse 4s ease-in-out infinite;
-    box-shadow:0 0 0 2px rgba(0,255,136,0.2),0 0 50px 15px rgba(0,255,136,0.3) inset,0 0 140px -5px rgba(0,255,136,0.5);
-    overflow:hidden;
-    transform-style:preserve-3d;
-    will-change: transform;
+  /* Code rain background */
+  canvas#codeRain { 
+    position: absolute; 
+    inset: 0; 
+    width: 100%; 
+    height: 100%; 
+    pointer-events: none; 
+    opacity: 0.4;
   }
   
-  .discovery-orb::after { 
-    content:""; position:absolute; inset:-3px; border-radius:inherit; 
-    background:conic-gradient(from 45deg,#00ff8844,#ff6b0066,#00ff8844 180deg,#ff6b0066 270deg,#00ff8844); 
-    animation: discoveryAura 8s linear infinite; mix-blend-mode:screen; pointer-events:none; 
+  /* Main container */
+  .discovery-container {
+    position: relative;
+    max-width: 30rem;
+    width: 90%;
+    padding: var(--space-xl);
+    background: var(--surface-light);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl), var(--shadow-glow);
+    text-align: center;
   }
   
-  @keyframes discoveryAura { to { transform:rotate(360deg);} }
-  
-  .data-ring { 
-    position:absolute; top:50%; left:50%; width:160%; height:160%; 
-    border:3px solid rgba(0,255,136,0.15); border-radius:50%; 
-    transform:translate(-50%,-50%) rotateX(70deg); animation: dataFlow 12s linear infinite; 
-    backdrop-filter: blur(3px); 
-  }
-  .data-ring:nth-child(2){ width:130%; height:130%; animation-direction:reverse; animation-duration:20s; border-color: rgba(255,107,0,0.12); }
-  .data-ring:nth-child(3){ width:100%; height:100%; animation-duration:25s; border-width:2px; }
-  
-  @keyframes dataFlow { to { transform:translate(-50%,-50%) rotateX(70deg) rotateZ(360deg); } }
-  @keyframes discoverPulse { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
-  
-  h1 { 
-    text-align:center; font-size:2.4rem; letter-spacing:2px; margin-top:35px; 
-    background:linear-gradient(90deg,#ffffff,#88ffaa,#ffffff); 
-    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; 
-    animation: discoveryShimmer 5s linear infinite; font-weight:700; 
-  }
-  @keyframes discoveryShimmer { 0%{ background-position:0% 50%; } 100%{ background-position:200% 50%; } }
-  
-  .panel { 
-    max-width:720px; padding:40px 45px 55px; background:var(--panel-bg); 
-    backdrop-filter:blur(25px) saturate(180%); border:1px solid var(--panel-border); 
-    border-radius:var(--radius-xl); 
-    box-shadow:0 35px 80px -20px rgba(0,0,0,0.7), 0 8px 28px rgba(0,0,0,0.5); 
-    text-align:center; position:relative; overflow:hidden; 
+  /* Discovery visualization */
+  .discovery-visual {
+    position: relative;
+    width: 14rem;
+    height: 14rem;
+    margin: 0 auto var(--space-lg);
   }
   
-  .panel::before { 
-    content:""; position:absolute; inset:0; 
-    background:radial-gradient(circle at 80% 30%,rgba(0,255,136,.2),transparent 60%), 
-               radial-gradient(circle at 15% 70%,rgba(255,107,0,.18),transparent 65%); 
-    mix-blend-mode:overlay; pointer-events:none; 
+  .discovery-hexagon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 80%;
+    transform: translate(-50%, -50%);
+    clip-path: polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%);
+    background: linear-gradient(45deg, var(--primary), var(--primary-light));
+    animation: discovery-rotate 15s linear infinite;
   }
   
-  .panel::after { 
-    content:""; position:absolute; inset:-1px; border-radius:inherit; padding:1px; 
-    background:linear-gradient(170deg,rgba(255,255,255,0.6),rgba(0,255,136,0.5) 30%,rgba(255,107,0,0.4) 70%,rgba(255,255,255,0.2)); 
-    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); 
-    mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); 
-    -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; 
+  .discovery-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40%;
+    height: 40%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    border-radius: var(--radius-full);
+    animation: discovery-pulse 2s ease-in-out infinite;
   }
   
-  p { margin:18px 0 14px; line-height:1.6; font-size:1rem; color:var(--text-dim); }
-  p strong { color:var(--text-primary); font-weight:600; }
-  
-  .discovery-badge { 
-    display:inline-flex; align-items:center; gap:8px; background:var(--gradient-accent); 
-    padding:8px 20px 9px; border-radius:999px; font-size:0.72rem; letter-spacing:1.4px; 
-    font-weight:700; color:#000; box-shadow:0 0 0 2px rgba(0,255,136,0.3),0 6px 18px rgba(0,255,136,0.45); 
-    text-transform:uppercase; margin-top:12px; animation: badgeGlow 3s ease-in-out infinite;
-  }
-  .discovery-badge::before { content:"🎯"; font-size:0.8rem; }
-  
-  @keyframes badgeGlow {
-    0%, 100% { box-shadow:0 0 0 2px rgba(0,255,136,0.3),0 6px 18px rgba(0,255,136,0.45); }
-    50% { box-shadow:0 0 0 3px rgba(0,255,136,0.5),0 8px 25px rgba(0,255,136,0.6); }
+  .discovery-orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    transform: translate(-50%, -50%);
+    border: 2px solid var(--primary);
+    border-radius: var(--radius-full);
+    opacity: 0.3;
+    animation: discovery-orbit 20s linear infinite reverse;
   }
   
-  .actions { margin-top:38px; display:flex; gap:18px; justify-content:center; flex-wrap:wrap; }
-  
-  .btn { 
-    position:relative; background:var(--gradient-accent); color:#000; padding:16px 32px; 
-    border:none; border-radius:18px; cursor:pointer; font-size:0.95rem; font-weight:700; 
-    letter-spacing:0.8px; transition:transform .5s var(--easing-spring), box-shadow .45s, filter .45s; 
-    box-shadow:0 12px 32px -10px rgba(0,255,136,0.6), 0 3px 10px rgba(0,0,0,0.4); 
-    isolation:isolate; 
+  .discovery-orbit:nth-child(4) {
+    width: 140%;
+    height: 140%;
+    border-color: var(--accent);
+    animation-duration: 25s;
+    animation-direction: normal;
   }
   
-  .btn:focus-visible { outline:none; box-shadow: var(--focus-ring), 0 12px 32px -10px rgba(0,255,136,0.6); }
-  
-  .btn::after { 
-    content:""; position:absolute; inset:0; border-radius:inherit; 
-    background:linear-gradient(130deg,rgba(255,255,255,0.8),transparent 45% 55%,rgba(255,255,255,0.6)); 
-    opacity:0; mix-blend-mode:overlay; transition:opacity .6s; 
+  .discovery-glow {
+    position: absolute;
+    inset: -1.5rem;
+    background: radial-gradient(circle, var(--primary) 0%, transparent 60%);
+    border-radius: var(--radius-full);
+    opacity: 0.4;
+    animation: discovery-glow 3s ease-in-out infinite alternate;
   }
   
-  .btn:hover { 
-    transform:translateY(-6px) scale(1.04); 
-    box-shadow:0 25px 45px -15px rgba(0,255,136,0.7), 0 8px 20px -6px rgba(0,0,0,0.6); 
-  }
-  .btn:hover::after { opacity:1; }
-  .btn:active { transform:translateY(-2px) scale(.98); transition-duration:.18s; }
-  
-  .btn.alt { 
-    background:var(--gradient-accent-alt); color:#fff;
-    box-shadow:0 12px 32px -10px rgba(255,107,0,0.6), 0 3px 10px rgba(0,0,0,0.45); 
-  }
-  .btn.alt:hover { 
-    box-shadow:0 25px 45px -15px rgba(255,107,0,0.7), 0 8px 20px -6px rgba(0,0,0,0.6); 
+  @keyframes discovery-rotate {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
   }
   
-  .btn.neu { 
-    background:linear-gradient(135deg,#2d4a3a,#1e3028); color:var(--text-primary);
-    box-shadow:0 14px 30px -12px rgba(0,0,0,0.65); 
-  }
-  .btn.neu:hover { 
-    box-shadow:0 22px 40px -12px rgba(0,0,0,0.7); 
+  @keyframes discovery-pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
   }
   
-  .achievement-text {
-    margin-top:20px;
-    font-size:0.85rem;
-    color:var(--accent);
-    font-weight:600;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    opacity:0.9;
+  @keyframes discovery-orbit {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
   }
   
-  .discovery-glyphs { 
-    margin-top:18px; font-size:1.2rem; letter-spacing:12px; opacity:.65; user-select:none; 
+  @keyframes discovery-glow {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.5; }
   }
-
-  footer { 
-    margin-top:35px; font-size:0.7rem; opacity:.6; letter-spacing:.6px; 
+  
+  /* Typography */
+  .discovery-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: var(--space-xs);
+    background: linear-gradient(90deg, var(--text), var(--primary-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.025em;
   }
-
-  /* Responsive tweaks */
-  @media (max-width:780px) {
-    .discovery-wrapper { width:300px; height:300px; }
-    h1 { font-size:2.1rem; margin-top:30px; }
-    .panel { padding:35px 30px 50px; }
-    .actions { gap:14px; }
-    .btn { padding:14px 26px; }
+  
+  .discovery-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--surface);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--space-md);
+    box-shadow: var(--shadow-md);
+    animation: badge-pulse 2s ease-in-out infinite;
   }
-  @media (max-width:520px) {
-    .discovery-wrapper { width:250px; height:250px; }
-    h1 { font-size:1.8rem; }
-    .discovery-glyphs { letter-spacing:8px; }
+  
+  .discovery-badge::before {
+    content: '🎯';
+    font-size: 1rem;
   }
-
-  /* Respect reduced motion */
+  
+  @keyframes badge-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  .discovery-description {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: var(--space-md);
+    font-size: 0.95rem;
+  }
+  
+  .discovery-description strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  
+  /* Achievement section */
+  .achievement-section {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin: var(--space-md) 0;
+  }
+  
+  .achievement-icon {
+    font-size: 2rem;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .achievement-title {
+    color: var(--primary-light);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-xs);
+  }
+  
+  .achievement-subtitle {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    opacity: 0.9;
+  }
+  
+  /* Action buttons */
+  .discovery-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+  }
+  
+  .action-btn {
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .action-btn.primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--surface);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .action-btn.secondary {
+    background: linear-gradient(135deg, var(--accent), #d97706);
+    color: var(--surface);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .action-btn.ghost {
+    background: transparent;
+    border: 1px solid var(--surface-border);
+    color: var(--text-muted);
+  }
+  
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .action-btn.primary:hover {
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(16, 185, 129, 0.5);
+  }
+  
+  .action-btn.secondary:hover {
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(245, 158, 11, 0.5);
+  }
+  
+  .action-btn.ghost:hover {
+    background: rgba(52, 211, 153, 0.1);
+    color: var(--text);
+  }
+  
+  .action-btn:active {
+    transform: translateY(0);
+  }
+  
+  /* Footer */
+  .discovery-footer {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--surface-border);
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    opacity: 0.9;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 640px) {
+    .discovery-container {
+      padding: var(--space-lg);
+      width: 95%;
+    }
+    
+    .discovery-visual {
+      width: 12rem;
+      height: 12rem;
+    }
+    
+    .discovery-title {
+      font-size: 1.75rem;
+    }
+    
+    .discovery-actions {
+      gap: 0.75rem;
+    }
+  }
+  
+  /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    .discovery-orb, .data-ring, .discovery-orb::after, h1, .discovery-badge { animation: none !important; }
+    .discovery-hexagon,
+    .discovery-core,
+    .discovery-orbit,
+    .discovery-glow,
+    .discovery-badge {
+      animation: none;
+    }
   }
 </style>
 </head>
 <body>
   <canvas id="codeRain" aria-hidden="true"></canvas>
   
-  <div class="panel">
-    <div class="discovery-wrapper">
-      <div class="discovery-orb">
-        <div class="data-ring"></div>
-        <div class="data-ring"></div>
-        <div class="data-ring"></div>
+  <main class="discovery-container">
+    <!-- Discovery Visualization -->
+    <div class="discovery-visual">
+      <div class="discovery-glow"></div>
+      <div class="discovery-orbit"></div>
+      <div class="discovery-orbit"></div>
+      <div class="discovery-hexagon"></div>
+      <div class="discovery-core"></div>
+    </div>
+    
+    <!-- Content -->
+    <h1 class="discovery-title">Discovery Achieved</h1>
+    <div class="discovery-badge">Master Detective</div>
+    
+    <p class="discovery-description">
+      Exceptional! You discovered the <strong>triple-click protocol</strong> on the cursor tracker. Your analytical skills have unlocked this elite discovery chamber.
+    </p>
+    
+    <!-- Achievement Section -->
+    <div class="achievement-section">
+      <div class="achievement-icon">🏆</div>
+      <div class="achievement-title">Achievement Unlocked</div>
+      <div class="achievement-subtitle">
+        Advanced Pattern Recognition • Sequence Complete
       </div>
     </div>
     
-    <h1>Discovery Achieved</h1>
-    <span class="discovery-badge">EASTER EGG #3</span>
-    
-    <p>Incredible! You found the <strong>triple-click secret</strong> on the chasing square. Your persistence and curiosity have unlocked this hidden discovery chamber.</p>
-    
-    <p>The algorithm detected your precise interaction pattern and granted access to this exclusive space. You've proven yourself as a true <strong>digital explorer</strong>.</p>
-    
-    <div class="achievement-text">
-      🏆 Achievement Unlocked: Master Detective
+    <!-- Actions -->
+    <div class="discovery-actions">
+      <button class="action-btn primary" onclick="window.location.href='index.html'">
+        Return to Surface
+      </button>
+      <button class="action-btn secondary" onclick="window.location.href='portal.html'">
+        Previous Gateway
+      </button>
+      <button class="action-btn ghost" onclick="window.location.href='congrats.html'">
+        View Discovery Log
+      </button>
     </div>
     
-    <div class="discovery-glyphs">⚡ 🔍 ⭐ 🎯 🚀</div>
-    
-    <div class="actions">
-      <button class="btn" onclick="window.location.href='index.html'">Return Home</button>
-      <button class="btn alt" onclick="window.location.href='portal.html'">Back to Portal</button>
-      <button class="btn neu" onclick="window.location.href='congrats.html'">View All Eggs</button>
+    <div class="discovery-footer">
+      Protocol: Triple-Click Discovery • Maximum Clearance Achieved 🎉
     </div>
-    
-    <footer>
-      Triple-Click Discovery • Sequence Complete • You Found Me! 🎉
-    </footer>
-  </div>
+  </main>
 
   <script>
-    // Interactive discovery orb tilt
-    const orb = document.querySelector('.discovery-orb');
+    // Interactive discovery hexagon tilt
+    const hexagon = document.querySelector('.discovery-hexagon');
+    const container = document.querySelector('.discovery-container');
     let rect;
     
     function updateRect(){ 
-      rect = orb.getBoundingClientRect(); 
+      rect = container.getBoundingClientRect(); 
     }
     updateRect();
     window.addEventListener('resize', updateRect);
@@ -252,14 +415,14 @@
       if(!rect) return;
       const x = (e.clientX - rect.left)/rect.width - 0.5;
       const y = (e.clientY - rect.top)/rect.height - 0.5;
-      orb.style.transform = `rotateX(${(-y*15).toFixed(2)}deg) rotateY(${(x*20).toFixed(2)}deg)`;
+      hexagon.style.transform = `translate(-50%, -50%) rotateX(${(-y*10).toFixed(2)}deg) rotateY(${(x*10).toFixed(2)}deg) rotateZ(${(x*5).toFixed(2)}deg)`;
     });
     
     document.addEventListener('pointerleave', () => { 
-      orb.style.transform=''; 
+      hexagon.style.transform = 'translate(-50%, -50%)'; 
     });
 
-    // Matrix-style code rain effect
+    // Enhanced code rain effect
     const canvas = document.getElementById('codeRain');
     const ctx = canvas.getContext('2d');
     let drops = [];
@@ -270,44 +433,46 @@
       initDrops();
     }
     
-    window.addEventListener('resize', resizeCanvas); 
-    resizeCanvas();
-    
     function initDrops(){
       drops = [];
-      const columns = Math.floor(canvas.width / 20);
+      const columns = Math.floor(canvas.width / 25);
+      const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZαβγδεζηθ';
+      
       for(let i = 0; i < columns; i++){
         drops.push({
-          x: i * 20,
+          x: i * 25,
           y: Math.random() * canvas.height,
-          speed: Math.random() * 3 + 1,
-          chars: '01',
-          trail: []
+          speed: Math.random() * 2 + 1,
+          chars: chars,
+          trail: [],
+          opacity: Math.random() * 0.8 + 0.2
         });
       }
     }
     
     function drawCodeRain(){
-      ctx.fillStyle = 'rgba(2,10,6,0.1)';
+      ctx.fillStyle = 'rgba(6, 78, 59, 0.15)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      ctx.fillStyle = '#00ff88';
-      ctx.font = '14px monospace';
+      ctx.font = '16px monospace';
       
       for(const drop of drops){
-        // Add new character to trail
-        if(Math.random() > 0.95){
+        // Add new character to trail occasionally
+        if(Math.random() > 0.92){
           drop.trail.unshift({
             char: drop.chars[Math.floor(Math.random() * drop.chars.length)],
-            y: drop.y
+            y: drop.y,
+            age: 0
           });
         }
         
-        // Draw trail
+        // Draw trail with fade effect
         drop.trail.forEach((char, index) => {
-          const alpha = Math.max(0, 1 - (index * 0.1));
-          ctx.fillStyle = `rgba(0, 255, 136, ${alpha})`;
+          const alpha = Math.max(0, (1 - (index * 0.08)) * drop.opacity);
+          const green = Math.floor(185 - (index * 8));
+          ctx.fillStyle = `rgba(${Math.max(16, green-50)}, ${green}, ${Math.max(129, green)}, ${alpha})`;
           ctx.fillText(char.char, drop.x, char.y);
+          char.age++;
         });
         
         // Update positions
@@ -315,32 +480,46 @@
         drop.trail = drop.trail.map(char => ({...char, y: char.y + drop.speed}));
         
         // Remove old characters
-        drop.trail = drop.trail.filter(char => char.y < canvas.height + 20);
+        drop.trail = drop.trail.filter((char, index) => 
+          char.y < canvas.height + 30 && index < 20
+        );
         
         // Reset when off screen
         if(drop.y > canvas.height + 100){
-          drop.y = -20;
+          drop.y = -30;
           drop.trail = [];
+          drop.opacity = Math.random() * 0.8 + 0.2;
         }
       }
       
       requestAnimationFrame(drawCodeRain);
     }
     
+    window.addEventListener('resize', resizeCanvas); 
+    resizeCanvas();
+    
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches) {
       drawCodeRain();
     }
     
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-      // RAF loops will stop automatically when page unloads
-    });
-    
     // Celebration effect on load
     setTimeout(() => {
-      console.log('🎉 Congratulations! You discovered the triple-click secret!');
-      console.log('🎯 You are now a certified Digital Explorer!');
-    }, 500);
+      console.log('🎉 Discovery Chamber Accessed!');
+      console.log('🎯 Master Detective Status: CONFIRMED');
+      
+      // Add a subtle screen flash effect
+      const flash = document.createElement('div');
+      flash.style.cssText = `
+        position: fixed; inset: 0; background: rgba(16, 185, 129, 0.1);
+        pointer-events: none; z-index: 10000; opacity: 0;
+        transition: opacity 0.3s ease-out;
+      `;
+      document.body.appendChild(flash);
+      
+      setTimeout(() => flash.style.opacity = '1', 50);
+      setTimeout(() => flash.style.opacity = '0', 400);
+      setTimeout(() => document.body.removeChild(flash), 700);
+    }, 800);
   </script>
 </body>
 </html>
