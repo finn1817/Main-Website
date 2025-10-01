@@ -672,14 +672,20 @@
       cursor: pointer;
       border-radius: 50%;
       transition: all 0.3s ease;
-      opacity: 0;
-      z-index: 10;
+      opacity: 0.02; /* Barely visible but clickable */
+      z-index: 50; /* Higher z-index to ensure clickability */
     }
 
     .easter-egg-btn:hover {
-      opacity: 0.1;
+      opacity: 0.15;
       background: rgba(255, 255, 255, 0.1);
       transform: scale(1.2);
+    }
+    
+    .easter-egg-btn:active {
+      opacity: 0.3;
+      background: rgba(255, 215, 0, 0.2);
+      transform: scale(0.9);
     }
 
     .easter-egg-btn.clicked {
@@ -867,7 +873,7 @@
       <a class="resume-button" href="resume/"><span>My Resume</span></a>
       
       <!-- Hidden Easter Egg Button -->
-      <button class="easter-egg-btn" id="easterEggBtn" title="🤔"></button>
+      <button class="easter-egg-btn" id="easterEggBtn" title="🤔 Secret Easter Egg - Click 3 times!"></button>
       <div class="click-counter" id="clickCounter">🥚 0/3</div>
     </div>
   </div>
@@ -1138,10 +1144,15 @@
       const clickCounter = document.getElementById('clickCounter');
 
       if (easterEggBtn && clickCounter) {
+        console.log('🥚 Easter egg button found and initialized');
+        
         easterEggBtn.addEventListener('click', function(e) {
+          console.log('🥚 Easter egg clicked!', easterEggClicks + 1, '/', maxClicks);
+          
           if (memoryManager.isCleanedUp) return;
           
           e.preventDefault();
+          e.stopPropagation();
           easterEggClicks++;
           
           easterEggBtn.classList.add('clicked');
@@ -1151,6 +1162,7 @@
           clickCounter.classList.add('visible');
           
           if (easterEggClicks >= maxClicks) {
+            console.log('🎉 Easter egg completed! Redirecting to congrats.html');
             clickCounter.textContent = '🎉 Found it!';
             setTimeout(() => {
               memoryManager.cleanup();
@@ -1160,6 +1172,16 @@
             setTimeout(() => clickCounter.classList.remove('visible'), 2000);
           }
         });
+        
+        // Add mousedown event as backup
+        easterEggBtn.addEventListener('mousedown', function(e) {
+          console.log('🥚 Easter egg mousedown detected');
+          e.preventDefault();
+          e.stopPropagation();
+        });
+        
+      } else {
+        console.error('🚨 Easter egg elements not found:', { easterEggBtn, clickCounter });
       }
       
       console.log('🚀 homepage initialized with minimal memory usage');
