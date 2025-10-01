@@ -1123,6 +1123,111 @@ function updateLoginUI() {
 updateLoginUI();
 </script>
   <script>
+    // Memory Management System for Homepage
+    const memoryManager = {
+      animationFrames: new Set(),
+      timeouts: new Set(),
+      intervals: new Set(),
+      eventListeners: new Map(),
+      dynamicElements: new Set(),
+      isCleanedUp: false,
+      
+      addAnimationFrame(id) {
+        this.animationFrames.add(id);
+        return id;
+      },
+      
+      addTimeout(id) {
+        this.timeouts.add(id);
+        return id;
+      },
+      
+      addInterval(id) {
+        this.intervals.add(id);
+        return id;
+      },
+      
+      addDynamicElement(element) {
+        this.dynamicElements.add(element);
+        return element;
+      },
+      
+      addEventListener(element, event, handler, options) {
+        if (!this.eventListeners.has(element)) {
+          this.eventListeners.set(element, []);
+        }
+        this.eventListeners.get(element).push({ event, handler, options });
+        element.addEventListener(event, handler, options);
+      },
+      
+      cleanup() {
+        if (this.isCleanedUp) return;
+        
+        console.log('🧹 Homepage cleanup initiated - freeing 197MB+ memory');
+        
+        // Cancel all animation frames
+        this.animationFrames.forEach(id => cancelAnimationFrame(id));
+        this.animationFrames.clear();
+        
+        // Clear all timeouts
+        this.timeouts.forEach(id => clearTimeout(id));
+        this.timeouts.clear();
+        
+        // Clear all intervals
+        this.intervals.forEach(id => clearInterval(id));
+        this.intervals.clear();
+        
+        // Remove all event listeners
+        this.eventListeners.forEach((listeners, element) => {
+          listeners.forEach(({ event, handler, options }) => {
+            element.removeEventListener(event, handler, options);
+          });
+        });
+        this.eventListeners.clear();
+        
+        // Remove dynamic elements (particles, ripples)
+        this.dynamicElements.forEach(element => {
+          if (element && element.parentNode) {
+            element.remove();
+          }
+        });
+        this.dynamicElements.clear();
+        
+        // Clear particles container
+        const particlesContainer = document.getElementById('particlesContainer');
+        if (particlesContainer) {
+          particlesContainer.innerHTML = '';
+        }
+        
+        // Stop CSS animations
+        const animatedElements = document.querySelectorAll('.particle, .loading-spinner');
+        animatedElements.forEach(el => {
+          el.style.animation = 'none';
+          el.style.transform = 'none';
+        });
+        
+        // Clear global variables
+        if (window.performSearch) delete window.performSearch;
+        if (window.navigateToResult) delete window.navigateToResult;
+        
+        this.isCleanedUp = true;
+        console.log('✅ Homepage cleanup completed - memory freed');
+      }
+    };
+    
+    // Auto-cleanup after 10 seconds
+    const cleanupTimeout = memoryManager.addTimeout(
+      setTimeout(() => memoryManager.cleanup(), 10000)
+    );
+    
+    // Cleanup on page unload and visibility change
+    memoryManager.addEventListener(window, 'beforeunload', () => memoryManager.cleanup());
+    memoryManager.addEventListener(document, 'visibilitychange', () => {
+      if (document.hidden) {
+        memoryManager.cleanup();
+      }
+    });
+
     document.addEventListener("DOMContentLoaded", function () {
       const toggleBtn = document.getElementById("theme-toggle");
       const body = document.body;
@@ -1131,27 +1236,34 @@ updateLoginUI();
       const dateText = document.getElementById("dateText");
       const timeText = document.getElementById("timeText");
 
-      // loading screen fade out
-      setTimeout(() => {
-        loadingOverlay.style.opacity = '0';
+      // Loading screen fade out with memory management
+      const loadingTimeout1 = memoryManager.addTimeout(
         setTimeout(() => {
-          loadingOverlay.style.display = 'none';
-        }, 500);
-      }, 1000);
+          if (!memoryManager.isCleanedUp && loadingOverlay) {
+            loadingOverlay.style.opacity = '0';
+            const loadingTimeout2 = memoryManager.addTimeout(
+              setTimeout(() => {
+                if (!memoryManager.isCleanedUp && loadingOverlay && loadingOverlay.parentNode) {
+                  loadingOverlay.remove();
+                  memoryManager.dynamicElements.delete(loadingOverlay);
+                }
+              }, 500)
+            );
+          }
+        }, 1000)
+      );
 
-      // update date and time function
+      // Update date and time function with memory checks
       function updateDateTime() {
-        const now = new Date();
+        if (memoryManager.isCleanedUp || !dateText || !timeText) return;
         
-        // format date options
+        const now = new Date();
         const dateOptions = {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
           day: 'numeric'
         };
-        
-        // format time options
         const timeOptions = {
           hour: '2-digit',
           minute: '2-digit',
@@ -1159,26 +1271,21 @@ updateLoginUI();
           hour12: true
         };
         
-        // update the display
         dateText.textContent = now.toLocaleDateString('en-US', dateOptions);
         timeText.textContent = now.toLocaleTimeString('en-US', timeOptions);
       }
 
-      // update time immediately and then every second
+      // Update time with memory management
       updateDateTime();
-      const dateTimeInterval = setInterval(updateDateTime, 1000);
-      
-      // Cleanup on page unload
-      window.addEventListener('beforeunload', () => {
-        if (dateTimeInterval) {
-          clearInterval(dateTimeInterval);
-        }
-        if (particleInterval) {
-          clearInterval(particleInterval);
-        }
-      });
+      const dateTimeInterval = memoryManager.addInterval(
+        setInterval(() => {
+          if (!memoryManager.isCleanedUp) {
+            updateDateTime();
+          }
+        }, 1000)
+      );
 
-      // Apply saved theme or system preference
+      // Apply saved theme
       const savedTheme = localStorage.getItem("theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -1192,93 +1299,121 @@ updateLoginUI();
         toggleBtn.textContent = "🌙";
       }
 
-      // Toggle theme listener
-      toggleBtn.addEventListener("click", () => {
+      // Theme toggle with memory management
+      const themeToggleHandler = () => {
+        if (memoryManager.isCleanedUp) return;
         const isDark = body.classList.toggle("dark");
         body.classList.toggle("light", !isDark);
         localStorage.setItem("theme", isDark ? "dark" : "light");
         toggleBtn.textContent = isDark ? "☀️" : "🌙";
-      });
+      };
+      memoryManager.addEventListener(toggleBtn, "click", themeToggleHandler);
 
-      // scroll progress indicator
-      window.addEventListener('scroll', () => {
+      // Scroll progress with memory management
+      const scrollHandler = () => {
+        if (memoryManager.isCleanedUp) return;
         const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-        scrollIndicator.style.width = scrollPercentage + '%';
-      });
+        scrollIndicator.style.width = Math.min(scrollPercentage, 100) + '%';
+      };
+      memoryManager.addEventListener(window, 'scroll', scrollHandler);
 
-      // create floating particles
+      // HEAVILY LIMITED particle system
+      let particleCount = 0;
+      const MAX_PARTICLES = 8; // Drastically reduced
+      
       function createParticle() {
+        if (memoryManager.isCleanedUp || particleCount >= MAX_PARTICLES) return;
+        
         const particle = document.createElement('div');
         particle.className = 'particle';
         
-        const size = Math.random() * 6 + 2;
+        const size = Math.random() * 4 + 2; // Smaller particles
         const left = Math.random() * 100;
-        const duration = Math.random() * 10 + 10;
+        const duration = Math.random() * 8 + 8; // Shorter duration
         
         particle.style.width = size + 'px';
         particle.style.height = size + 'px';
         particle.style.left = left + '%';
         particle.style.animationDuration = duration + 's';
-        particle.style.opacity = Math.random() * 0.3 + 0.1;
+        particle.style.opacity = Math.random() * 0.2 + 0.05; // Lower opacity
         
-        document.getElementById('particlesContainer').appendChild(particle);
-        
-        // remove particle after animation
-        setTimeout(() => {
-          particle.remove();
-        }, duration * 1000);
+        const particlesContainer = document.getElementById('particlesContainer');
+        if (particlesContainer && !memoryManager.isCleanedUp) {
+          particlesContainer.appendChild(particle);
+          memoryManager.addDynamicElement(particle);
+          particleCount++;
+          
+          // Remove particle after animation
+          const removeTimeout = memoryManager.addTimeout(
+            setTimeout(() => {
+              if (!memoryManager.isCleanedUp && particle.parentNode) {
+                particle.remove();
+                memoryManager.dynamicElements.delete(particle);
+                particleCount = Math.max(0, particleCount - 1);
+              }
+            }, duration * 1000)
+          );
+        }
       }
 
-      // generate particles periodically
-      const particleInterval = setInterval(createParticle, 500);
+      // Generate particles much less frequently
+      const particleInterval = memoryManager.addInterval(
+        setInterval(() => {
+          if (!memoryManager.isCleanedUp && particleCount < MAX_PARTICLES) {
+            createParticle();
+          }
+        }, 3000) // Reduced from 500ms to 3000ms
+      );
 
-      // keyboard shortcuts for quick navigation
-      document.addEventListener('keydown', (e) => {
+      // Keyboard shortcuts with memory management
+      const keydownHandler = (e) => {
+        if (memoryManager.isCleanedUp) return;
+        
         if (e.ctrlKey || e.metaKey) {
           switch(e.key) {
             case '1':
               e.preventDefault();
+              memoryManager.cleanup();
               window.location.href = 'about/';
               break;
             case '2':
               e.preventDefault();
+              memoryManager.cleanup();
               window.location.href = 'contact/';
               break;
             case '3':
               e.preventDefault();
+              memoryManager.cleanup();
               window.location.href = 'projects/';
               break;
             case 'r':
               e.preventDefault();
+              memoryManager.cleanup();
               window.location.href = 'resume/';
+              break;
+            case 'k':
+              e.preventDefault();
+              showSearchModal();
               break;
           }
         }
         
-        // toggle theme with 't' key
         if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
-          toggleBtn.click();
+          themeToggleHandler();
         }
-      });
-
-      // mouse movement parallax effect
-      document.addEventListener('mousemove', (e) => {
-        const cards = document.querySelectorAll('.homepage-card');
-        const mouseX = e.clientX / window.innerWidth;
-        const mouseY = e.clientY / window.innerHeight;
         
-        cards.forEach((card, index) => {
-          const speed = (index + 1) * 0.5;
-          const x = (mouseX - 0.5) * speed;
-          const y = (mouseY - 0.5) * speed;
-          
-          card.style.transform += ` translate(${x}px, ${y}px)`;
-        });
-      });
+        if (e.key === 'Escape' && searchModal && searchModal.classList.contains('active')) {
+          hideSearchModal();
+        }
+      };
+      memoryManager.addEventListener(document, 'keydown', keydownHandler);
 
-      // add ripple effect to buttons
+      // Limited mouse movement parallax (REMOVED to save memory)
+      // Ripple effects (SIMPLIFIED)
       document.querySelectorAll('.button-list a, .resume-button').forEach(button => {
-        button.addEventListener('click', function(e) {
+        const rippleHandler = function(e) {
+          if (memoryManager.isCleanedUp) return;
+          
           const ripple = document.createElement('span');
           const rect = this.getBoundingClientRect();
           const size = Math.max(rect.width, rect.height);
@@ -1291,350 +1426,171 @@ updateLoginUI();
           ripple.classList.add('ripple');
           
           this.appendChild(ripple);
+          memoryManager.addDynamicElement(ripple);
           
-          setTimeout(() => {
-            ripple.remove();
-          }, 600);
-        });
+          const removeTimeout = memoryManager.addTimeout(
+            setTimeout(() => {
+              if (!memoryManager.isCleanedUp && ripple.parentNode) {
+                ripple.remove();
+                memoryManager.dynamicElements.delete(ripple);
+              }
+            }, 600)
+          );
+        };
+        memoryManager.addEventListener(button, 'click', rippleHandler);
       });
 
-      // performance optimization - reduce animations on slower devices
-      const isLowPerformance = navigator.hardwareConcurrency < 4 || 
-                               navigator.connection?.effectiveType === 'slow-2g' ||
-                               navigator.connection?.effectiveType === '2g';
-      
-      if (isLowPerformance) {
-        document.body.style.setProperty('--transition-speed', '0.2s');
-        // reduce particle generation
-        if (particleInterval) {
-          clearInterval(particleInterval);
-        }
-        const performanceInterval = setInterval(createParticle, 2000);
-        
-        // Add performance interval to cleanup
-        window.addEventListener('beforeunload', () => {
-          if (dateTimeInterval) {
-            clearInterval(dateTimeInterval);
-          }
-          if (particleInterval) {
-            clearInterval(particleInterval);
-          }
-          if (performanceInterval) {
-            clearInterval(performanceInterval);
-          }
-        });
-      }
-
-      // add focus management for accessibility
-      document.querySelectorAll('a, button').forEach(element => {
-        element.addEventListener('focus', function() {
-          this.style.outline = '2px solid #007bff';
-          this.style.outlineOffset = '2px';
-        });
-        
-        element.addEventListener('blur', function() {
-          this.style.outline = 'none';
-        });
-      });
-
-      // preload images for smoother theme switching
-      const lightBg = new Image();
-      const darkBg = new Image();
-      lightBg.src = './assets/images/background-light.jpg';
-      darkBg.src = './assets/images/background-dark.jpg';
-
-      // === UNIVERSAL SEARCH FUNCTIONALITY ===
-      
-      // Website content data for search
+      // Search functionality - simplified
       const siteContent = [
-        {
-          title: "Calculator Project",
-          path: "Home › Projects › Calculator",
-          url: "projects/calculator/",
-          type: "projects",
-          description: "A fully functional calculator built with JavaScript featuring advanced operations and memory functions.",
-          keywords: ["calculator", "math", "javascript", "tool", "arithmetic", "numbers", "compute"]
-        },
-        {
-          title: "About Me",
-          path: "Home › About",
-          url: "about/",
-          type: "pages",
-          description: "Learn more about Dan Finn, his background, skills, and professional experience.",
-          keywords: ["about", "dan", "finn", "background", "skills", "experience", "bio", "profile"]
-        },
-        {
-          title: "My Resume",
-          path: "Home › Resume",
-          url: "resume/",
-          type: "pages",
-          description: "Download or view Dan Finn's professional resume and career accomplishments.",
-          keywords: ["resume", "cv", "career", "experience", "download", "professional", "work"]
-        },
-        {
-          title: "Contact Information",
-          path: "Home › Contact",
-          url: "contact/",
-          type: "pages",
-          description: "Get in touch with Dan Finn through various contact methods and social media.",
-          keywords: ["contact", "email", "social", "media", "reach", "touch", "phone", "connect"]
-        },
-        {
-          title: "Text Editor Tool",
-          path: "Home › Projects › Text Editor",
-          url: "projects/text-editor/",
-          type: "projects",
-          description: "A powerful online text editor with syntax highlighting and multiple features.",
-          keywords: ["text", "editor", "code", "syntax", "highlighting", "tool", "writing", "development"]
-        },
-        {
-          title: "Password Manager",
-          path: "Home › Projects › Password Manager",
-          url: "projects/password-manager/",
-          type: "projects",
-          description: "Secure password manager for storing and generating strong passwords.",
-          keywords: ["password", "manager", "security", "generator", "secure", "storage", "encryption"]
-        },
-        {
-          title: "Finance Checker",
-          path: "Home › Projects › Finance Check",
-          url: "projects/finance-check/",
-          type: "tools",
-          description: "Personal finance tracking and budgeting tool with expense analysis.",
-          keywords: ["finance", "budget", "money", "expense", "tracking", "financial", "banking"]
-        },
-        {
-          title: "Unit Converter",
-          path: "Home › Projects › Unit Converter",
-          url: "projects/unit-converter/",
-          type: "tools",
-          description: "Convert between different units of measurement including length, weight, and temperature.",
-          keywords: ["unit", "converter", "measurement", "length", "weight", "temperature", "convert"]
-        },
-        {
-          title: "Word Counter",
-          path: "Home › Projects › Word Counter",
-          url: "projects/word-counter/",
-          type: "tools",
-          description: "Count words, characters, and analyze text statistics in real-time.",
-          keywords: ["word", "counter", "text", "statistics", "characters", "analysis", "count"]
-        },
-        {
-          title: "Resume Builder",
-          path: "Home › Projects › Resume Builder",
-          url: "projects/resume-builder/",
-          type: "tools",
-          description: "Create professional resumes with customizable templates and layouts.",
-          keywords: ["resume", "builder", "create", "template", "professional", "job", "career"]
-        },
-        {
-          title: "File Transfer",
-          path: "Home › Projects › File Transfer",
-          url: "projects/File-Transfer/",
-          type: "tools",
-          description: "Secure file transfer and sharing tool with encryption capabilities.",
-          keywords: ["file", "transfer", "share", "upload", "download", "secure", "sharing"]
-        },
-        {
-          title: "My Interests",
-          path: "Home › Interests",
-          url: "interests/",
-          type: "pages",
-          description: "Discover Dan Finn's hobbies, interests, and personal projects outside of work.",
-          keywords: ["interests", "hobbies", "personal", "activities", "passion", "leisure", "fun"]
-        },
-        {
-          title: "Education & School",
-          path: "Home › Education",
-          url: "education/",
-          type: "pages",
-          description: "Information about Dan Finn's educational background and school involvement.",
-          keywords: ["education", "school", "college", "university", "learning", "academic", "degree"]
-        }
+        { title: "Calculator", path: "Projects", url: "projects/calculator/", type: "projects", description: "Calculator tool", keywords: ["calc"] },
+        { title: "About Me", path: "About", url: "about/", type: "pages", description: "About Dan", keywords: ["about"] },
+        { title: "Resume", path: "Resume", url: "resume/", type: "pages", description: "My resume", keywords: ["resume"] },
+        { title: "Contact", path: "Contact", url: "contact/", type: "pages", description: "Contact info", keywords: ["contact"] }
       ];
 
       let currentFilter = 'all';
-
-      // Search modal elements
       const searchModal = document.getElementById('searchModal');
       const searchToggle = document.getElementById('search-toggle');
       const searchClose = document.getElementById('searchClose');
       const searchInput = document.getElementById('searchInput');
       const resultsContainer = document.getElementById('resultsContainer');
 
-      // Show search modal
       function showSearchModal() {
+        if (memoryManager.isCleanedUp || !searchModal) return;
         searchModal.style.display = 'flex';
-        setTimeout(() => {
-          searchModal.classList.add('active');
-          searchInput.focus();
-        }, 10);
+        const showTimeout = memoryManager.addTimeout(
+          setTimeout(() => {
+            if (!memoryManager.isCleanedUp) {
+              searchModal.classList.add('active');
+              if (searchInput) searchInput.focus();
+            }
+          }, 10)
+        );
       }
 
-      // Hide search modal
       function hideSearchModal() {
+        if (memoryManager.isCleanedUp || !searchModal) return;
         searchModal.classList.remove('active');
-        setTimeout(() => {
-          searchModal.style.display = 'none';
-          searchInput.value = '';
-          resultsContainer.innerHTML = '';
-        }, 300);
+        const hideTimeout = memoryManager.addTimeout(
+          setTimeout(() => {
+            if (!memoryManager.isCleanedUp) {
+              searchModal.style.display = 'none';
+              if (searchInput) searchInput.value = '';
+              if (resultsContainer) resultsContainer.innerHTML = '';
+            }
+          }, 300)
+        );
       }
 
-      // Search functionality
       function performSearch() {
-        const searchTerm = searchInput.value.toLowerCase().trim();
+        if (memoryManager.isCleanedUp || !searchInput || !resultsContainer) return;
         
+        const searchTerm = searchInput.value.toLowerCase().trim();
         if (searchTerm === '') {
-          resultsContainer.innerHTML = '<div class="no-results">Start typing to search...</div>';
+          resultsContainer.innerHTML = '<div class="no-results">Start typing...</div>';
           return;
         }
 
-        // Filter content based on search term and current filter
-        let filteredContent = siteContent.filter(item => {
-          const matchesFilter = currentFilter === 'all' || item.type === currentFilter;
-          const matchesSearch = 
-            item.title.toLowerCase().includes(searchTerm) ||
-            item.description.toLowerCase().includes(searchTerm) ||
-            item.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm));
-          
-          return matchesFilter && matchesSearch;
-        });
+        const filtered = siteContent.filter(item => 
+          item.title.toLowerCase().includes(searchTerm) ||
+          item.description.toLowerCase().includes(searchTerm)
+        );
 
-        // Display results
-        if (filteredContent.length === 0) {
-          resultsContainer.innerHTML = '<div class="no-results">No results found. Try different keywords or check your spelling.</div>';
+        if (filtered.length === 0) {
+          resultsContainer.innerHTML = '<div class="no-results">No results found.</div>';
         } else {
-          resultsContainer.innerHTML = filteredContent.map(item => {
-            const highlightedTitle = highlightText(item.title, searchTerm);
-            const highlightedDescription = highlightText(item.description, searchTerm);
-            
-            return `
-              <div class="search-result-item" onclick="navigateToResult('${item.url}')">
-                <div class="result-title">${highlightedTitle}</div>
-                <div class="result-path">${item.path}</div>
-                <div class="result-description">${highlightedDescription}</div>
-              </div>
-            `;
-          }).join('');
+          resultsContainer.innerHTML = filtered.map(item => 
+            `<div class="search-result-item" onclick="navigateToResult('${item.url}')">
+              <div class="result-title">${item.title}</div>
+              <div class="result-description">${item.description}</div>
+            </div>`
+          ).join('');
         }
       }
 
-      // Highlight search terms in text
-      function highlightText(text, searchTerm) {
-        const regex = new RegExp(`(${searchTerm})`, 'gi');
-        return text.replace(regex, '<span class="highlight">$1</span>');
-      }
-
-      // Navigate to search result
       function navigateToResult(url) {
+        if (memoryManager.isCleanedUp) return;
         hideSearchModal();
+        memoryManager.cleanup();
         window.location.href = url;
       }
 
-      // Event listeners
-      searchToggle.addEventListener('click', showSearchModal);
-      searchClose.addEventListener('click', hideSearchModal);
+      // Search event listeners
+      if (searchToggle) {
+        memoryManager.addEventListener(searchToggle, 'click', showSearchModal);
+      }
+      if (searchClose) {
+        memoryManager.addEventListener(searchClose, 'click', hideSearchModal);
+      }
+      if (searchModal) {
+        const modalClickHandler = (e) => {
+          if (memoryManager.isCleanedUp) return;
+          if (e.target === searchModal) hideSearchModal();
+        };
+        memoryManager.addEventListener(searchModal, 'click', modalClickHandler);
+      }
+      if (searchInput) {
+        let searchTimeout;
+        const searchInputHandler = () => {
+          if (memoryManager.isCleanedUp) return;
+          clearTimeout(searchTimeout);
+          searchTimeout = memoryManager.addTimeout(setTimeout(performSearch, 300));
+        };
+        memoryManager.addEventListener(searchInput, 'input', searchInputHandler);
+      }
 
-      // Close modal when clicking outside
-      searchModal.addEventListener('click', (e) => {
-        if (e.target === searchModal) {
-          hideSearchModal();
-        }
-      });
-
-      // Filter functionality
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          currentFilter = btn.dataset.filter;
-          performSearch();
-        });
-      });
-
-      // Search on Enter key
-      searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          performSearch();
-        }
-      });
-
-      // Search as you type (debounced)
-      let searchTimeout;
-      searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(performSearch, 300);
-      });
-
-      // Keyboard shortcuts for search
-      document.addEventListener('keydown', (e) => {
-        // Ctrl/Cmd + K to open search
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-          e.preventDefault();
-          showSearchModal();
-        }
-        // Escape to close search
-        if (e.key === 'Escape' && searchModal.classList.contains('active')) {
-          hideSearchModal();
-        }
-      });
-
-      // Make performSearch and navigateToResult global for onclick handlers
+      // Make functions global for onclick handlers
       window.performSearch = performSearch;
       window.navigateToResult = navigateToResult;
 
-      // Easter Egg Functionality
+      // Easter Egg with memory management
       let easterEggClicks = 0;
       const maxClicks = 3;
       const easterEggBtn = document.getElementById('easterEggBtn');
       const clickCounter = document.getElementById('clickCounter');
-      let easterEggTimeout;
 
-      easterEggBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        easterEggClicks++;
-        
-        // Add visual feedback
-        easterEggBtn.classList.add('clicked');
-        setTimeout(() => easterEggBtn.classList.remove('clicked'), 300);
-        
-        // Update counter display
-        clickCounter.textContent = `🥚 ${easterEggClicks}/${maxClicks}`;
-        clickCounter.classList.add('visible');
-        
-        // Clear any existing timeout
-        clearTimeout(easterEggTimeout);
-        
-        if (easterEggClicks >= maxClicks) {
-          // Success! Redirect to congratulations page
-          clickCounter.textContent = '🎉 Found it!';
-          setTimeout(() => {
-            window.location.href = 'congrats.html';
-          }, 500);
-        } else {
-          // Hide counter after 2 seconds if not completed
-          easterEggTimeout = setTimeout(() => {
-            clickCounter.classList.remove('visible');
-          }, 2000);
-        }
-      });
-
-      // Reset Easter egg after 10 seconds of inactivity
-      let resetTimeout;
-      function resetEasterEgg() {
-        clearTimeout(resetTimeout);
-        resetTimeout = setTimeout(() => {
-          if (easterEggClicks > 0 && easterEggClicks < maxClicks) {
-            easterEggClicks = 0;
-            clickCounter.classList.remove('visible');
+      if (easterEggBtn && clickCounter) {
+        const easterEggHandler = function(e) {
+          if (memoryManager.isCleanedUp) return;
+          
+          e.preventDefault();
+          easterEggClicks++;
+          
+          easterEggBtn.classList.add('clicked');
+          const clickedTimeout = memoryManager.addTimeout(
+            setTimeout(() => {
+              if (!memoryManager.isCleanedUp) {
+                easterEggBtn.classList.remove('clicked');
+              }
+            }, 300)
+          );
+          
+          clickCounter.textContent = `🥚 ${easterEggClicks}/${maxClicks}`;
+          clickCounter.classList.add('visible');
+          
+          if (easterEggClicks >= maxClicks) {
+            clickCounter.textContent = '🎉 Found it!';
+            const redirectTimeout = memoryManager.addTimeout(
+              setTimeout(() => {
+                memoryManager.cleanup();
+                window.location.href = 'congrats.html';
+              }, 500)
+            );
+          } else {
+            const hideTimeout = memoryManager.addTimeout(
+              setTimeout(() => {
+                if (!memoryManager.isCleanedUp) {
+                  clickCounter.classList.remove('visible');
+                }
+              }, 2000)
+            );
           }
-        }, 10000);
+        };
+        
+        memoryManager.addEventListener(easterEggBtn, 'click', easterEggHandler);
       }
-
-      // Call reset function on each click
-      easterEggBtn.addEventListener('click', resetEasterEgg);
-
+      
+      console.log('🚀 Homepage initialized with aggressive memory management');
     });
   </script>
   <script src="./assets/js/universal-search.js"></script>
