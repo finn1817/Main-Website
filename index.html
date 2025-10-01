@@ -46,7 +46,7 @@
       background-image: url('./assets/images/background-dark.jpg');
     }
 
-    /* animated background particles for visual depth */
+    /* static background particles - no animation to save memory */
     .particles-container {
       position: fixed;
       top: 0;
@@ -56,31 +56,14 @@
       pointer-events: none;
       z-index: 1;
       overflow: hidden;
+      opacity: 0.3;
     }
 
     .particle {
       position: absolute;
-      background: rgba(0, 123, 255, 0.1);
+      background: rgba(0, 123, 255, 0.05);
       border-radius: 50%;
-      animation: float-particle 15s linear infinite;
-    }
-
-    /* floating animation for particles */
-    @keyframes float-particle {
-      0% {
-        transform: translateY(100vh) translateX(0) rotate(0deg);
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      90% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-100px) translateX(100px) rotate(360deg);
-        opacity: 0;
-      }
+      /* removed animation to save memory */
     }
 
     /* pulsing animation for buttons */
@@ -273,9 +256,6 @@
     /* typing cursor effect for main title - REMOVED cursor for normal viewing */
     .typing-text {
       display: inline-block;
-      /* Removed cursor effect for production:
-      border-right: 2px solid #007bff;
-      animation: blink 1s step-end infinite; */
     }
 
     p {
@@ -349,34 +329,6 @@
       box-shadow: 0 12px 35px rgba(220, 53, 69, 0.5);
     }
 
-    /* ripple effect on button click */
-    .button-list a::before,
-    .resume-button::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
-      transform: translate(-50%, -50%);
-      z-index: 0;
-    }
-
-    .button-list a:active::before,
-    .resume-button:active::before {
-      width: 300px;
-      height: 300px;
-    }
-
-    .button-list a span,
-    .resume-button span {
-      position: relative;
-      z-index: 1;
-    }
-
     .button-list a:hover,
     .resume-button:hover {
       transform: translateY(var(--hover-lift));
@@ -398,7 +350,7 @@
       box-shadow: 0 12px 35px rgba(40, 167, 69, 0.5);
     }
 
-    /* quick access toolbar - moved to a vertical left column so it doesn't overlap the resume button */
+    /* quick access toolbar */
     .quick-access {
       position: fixed;
       left: 20px;
@@ -852,8 +804,15 @@
   <!-- scroll progress indicator -->
   <div class="scroll-indicator" id="scrollIndicator"></div>
 
-  <!-- floating particles background -->
-  <div class="particles-container" id="particlesContainer"></div>
+  <!-- static particles background - no animation -->
+  <div class="particles-container" id="particlesContainer">
+    <!-- 5 static particles only -->
+    <div class="particle" style="width:3px;height:3px;left:10%;top:20%;"></div>
+    <div class="particle" style="width:4px;height:4px;left:80%;top:30%;"></div>
+    <div class="particle" style="width:2px;height:2px;left:60%;top:70%;"></div>
+    <div class="particle" style="width:3px;height:3px;left:30%;top:80%;"></div>
+    <div class="particle" style="width:2px;height:2px;left:90%;top:60%;"></div>
+  </div>
 
   <!-- date and time display -->
   <div class="datetime-display" id="datetimeDisplay">
@@ -921,221 +880,15 @@
     <a href="https://github.com/finn1817" class="quick-btn" title="GitHub" target="_blank">🔗</a>
   </div>
   
-  <!-- Firebase & bcryptjs imports -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-  import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
-<script>
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDDKiZsbGxeYA0_vzB40Gx2cpuagL1ByLM",
-  authDomain: "mywebappdb.firebaseapp.com",
-  projectId: "mywebappdb",
-  storageBucket: "mywebappdb.firebasestorage.app",
-  messagingSenderId: "505396456908",
-  appId: "1:505396456908:web:ae62308ccbd47addef8169"
-};
-
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// --- UI Elements ---
-// Add login/register button next to theme toggle
-const themeBtn = document.getElementById('theme-toggle');
-const loginBtn = document.createElement('button');
-loginBtn.id = 'login-btn';
-loginBtn.className = 'toggle-btn';
-loginBtn.style.right = '80px';
-loginBtn.style.position = 'fixed';
-loginBtn.style.top = themeBtn.style.top || '20px';
-loginBtn.style.zIndex = 101;
-loginBtn.innerHTML = '🔑 Login';
-document.body.appendChild(loginBtn);
-
-// Modal HTML (injected)
-const modal = document.createElement('div');
-modal.id = 'auth-modal';
-modal.style.display = 'none';
-modal.style.position = 'fixed';
-modal.style.top = 0;
-modal.style.left = 0;
-modal.style.width = '100vw';
-modal.style.height = '100vh';
-modal.style.background = 'rgba(0,0,0,0.5)';
-modal.style.zIndex = 2000;
-modal.innerHTML = `
-  <div style="background: var(--card-bg-light); color: var(--text-light); max-width: 350px; margin: 8vh auto; padding: 32px 24px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); position: relative;">
-    <button id="close-auth-modal" style="position:absolute;top:10px;right:10px;font-size:1.2em;background:none;border:none;cursor:pointer;">&times;</button>
-    <h2 id="auth-modal-title">Login</h2>
-    <form id="auth-form">
-      <div id="auth-form-fields"></div>
-      <button type="submit" style="margin-top:18px;width:100%;padding:10px 0;background:var(--primary-color);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Login</button>
-    </form>
-    <div style="margin-top:16px;text-align:center;">
-      <span id="toggle-auth-mode" style="color:var(--primary-color);cursor:pointer;text-decoration:underline;">Don't have an account? Register</span>
-    </div>
-    <div id="auth-error" style="color:#e55a2b;margin-top:10px;text-align:center;"></div>
-  </div>
-`;
-document.body.appendChild(modal);
-
-// --- Auth Logic ---
-let isLoginMode = true;
-let currentUser = null;
-
-function showAuthModal(loginMode = true) {
-  isLoginMode = loginMode;
-  modal.style.display = 'block';
-  document.getElementById('auth-modal-title').textContent = loginMode ? 'Login' : 'Register';
-  document.getElementById('auth-form').querySelector('button[type="submit"]').textContent = loginMode ? 'Login' : 'Register';
-  document.getElementById('toggle-auth-mode').textContent = loginMode ? "Don't have an account? Register" : "Already have an account? Login";
-  document.getElementById('auth-error').textContent = '';
-  renderAuthFields();
-}
-
-function hideAuthModal() {
-  modal.style.display = 'none';
-}
-
-document.getElementById('close-auth-modal').onclick = hideAuthModal;
-window.onclick = function(e) { if (e.target === modal) hideAuthModal(); };
-
-loginBtn.onclick = () => showAuthModal(true);
-document.getElementById('toggle-auth-mode').onclick = () => showAuthModal(!isLoginMode);
-
-function renderAuthFields() {
-  const fields = document.getElementById('auth-form-fields');
-  fields.innerHTML = '';
-  if (!isLoginMode) {
-    fields.innerHTML += '<input type="text" id="reg-firstname" placeholder="First Name" required style="margin-bottom:10px;width:100%;padding:8px;">';
-    fields.innerHTML += '<input type="text" id="reg-lastname" placeholder="Last Name" required style="margin-bottom:10px;width:100%;padding:8px;">';
-  }
-  fields.innerHTML += '<input type="email" id="auth-email" placeholder="Email" required style="margin-bottom:10px;width:100%;padding:8px;">';
-  fields.innerHTML += '<input type="password" id="auth-password" placeholder="Password" required style="margin-bottom:10px;width:100%;padding:8px;">';
-}
-
-renderAuthFields();
-
-// --- Registration/Login Handlers ---
-document.getElementById('auth-form').onsubmit = async function(e) {
-  e.preventDefault();
-  const email = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
-  const errorDiv = document.getElementById('auth-error');
-  errorDiv.textContent = '';
-  if (!email.includes('@')) { errorDiv.textContent = 'Email must contain @'; return; }
-  if (password.length < 6) { errorDiv.textContent = 'Password must be at least 6 characters.'; return; }
-  if (isLoginMode) {
-    // Login
-    try {
-      const q = await db.collection('Users').where('email', '==', email).get();
-      if (q.empty) { errorDiv.textContent = 'No user found.'; return; }
-      const userDoc = q.docs[0];
-      const user = userDoc.data();
-      if (!bcrypt.compareSync(password, user.hashedPassword)) {
-        errorDiv.textContent = 'Incorrect password.'; return;
-      }
-      // Update login info
-      const now = new Date();
-      await db.collection('Users').doc(userDoc.id).update({
-        lastLoginDate: now.toISOString().split('T')[0],
-        lastLoginTime: now.toTimeString().split(' ')[0],
-        lastKnownIP: await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip),
-        loginCount: (user.loginCount || 0) + 1
-      });
-      currentUser = { ...user, id: userDoc.id };
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      updateLoginUI();
-      hideAuthModal();
-    } catch (err) {
-      errorDiv.textContent = 'Login failed.';
-    }
-  } else {
-    // Register
-    const firstName = document.getElementById('reg-firstname').value.trim();
-    const lastName = document.getElementById('reg-lastname').value.trim();
-    if (!firstName || !lastName) { errorDiv.textContent = 'Please enter your name.'; return; }
-    try {
-      const q = await db.collection('Users').where('email', '==', email).get();
-      if (!q.empty) { errorDiv.textContent = 'Email already registered.'; return; }
-      const hashedPassword = bcrypt.hashSync(password, 10);
-      const now = new Date();
-      await db.collection('Users').add({
-        email,
-        firstName,
-        lastName,
-        isAdmin: 0,
-        lastLoginDate: now.toISOString().split('T')[0],
-        lastLoginTime: now.toTimeString().split(' ')[0],
-        lastKnownIP: await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip),
-        profilePicture: '',
-        accountCreated: now.toISOString().split('T')[0],
-        loginCount: 1,
-        hashedPassword
-      });
-      errorDiv.style.color = 'green';
-      errorDiv.textContent = 'Registration successful! Please login.';
-      setTimeout(() => showAuthModal(true), 1200);
-    } catch (err) {
-      errorDiv.textContent = 'Registration failed.';
-    }
-  }
-};
-
-// --- Session Management & UI ---
-function updateLoginUI() {
-  const userStr = localStorage.getItem('currentUser');
-  if (userStr) {
-    const user = JSON.parse(userStr);
-    loginBtn.innerHTML = `👤 ${user.firstName} <span style='font-size:0.8em;'>(Logout)</span>`;
-    loginBtn.onclick = () => { localStorage.removeItem('currentUser'); currentUser = null; loginBtn.innerHTML = '🔑 Login'; loginBtn.onclick = () => showAuthModal(true); };
-    // Optionally, show admin link if user.isAdmin === 1
-    if (user.isAdmin === 1 && !document.getElementById('admin-link')) {
-      const adminLink = document.createElement('a');
-      adminLink.id = 'admin-link';
-      adminLink.href = '/Main-Website/admin.html';
-      adminLink.textContent = 'Admin';
-      adminLink.style.position = 'fixed';
-      adminLink.style.top = loginBtn.style.top;
-      adminLink.style.right = '160px';
-      adminLink.style.zIndex = 101;
-      adminLink.style.background = 'var(--primary-color)';
-      adminLink.style.color = 'white';
-      adminLink.style.padding = '10px 18px';
-      adminLink.style.borderRadius = '10px';
-      adminLink.style.fontWeight = '600';
-      adminLink.style.textDecoration = 'none';
-      adminLink.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-      document.body.appendChild(adminLink);
-    }
-  } else {
-    loginBtn.innerHTML = '🔑 Login';
-    loginBtn.onclick = () => showAuthModal(true);
-    const adminLink = document.getElementById('admin-link');
-    if (adminLink) adminLink.remove();
-  }
-}
-
-// On page load, restore session
-updateLoginUI();
-</script>
+  <!-- REMOVED: Firebase imports that were causing massive memory leaks -->
+  <!-- REMOVED: All Firebase authentication code -->
+  
   <script>
-    // Memory Management System for Homepage
+    // lightweight memory management for essential functions only
     const memoryManager = {
-      animationFrames: new Set(),
       timeouts: new Set(),
       intervals: new Set(),
-      eventListeners: new Map(),
-      dynamicElements: new Set(),
       isCleanedUp: false,
-      
-      addAnimationFrame(id) {
-        this.animationFrames.add(id);
-        return id;
-      },
       
       addTimeout(id) {
         this.timeouts.add(id);
@@ -1147,85 +900,27 @@ updateLoginUI();
         return id;
       },
       
-      addDynamicElement(element) {
-        this.dynamicElements.add(element);
-        return element;
-      },
-      
-      addEventListener(element, event, handler, options) {
-        if (!this.eventListeners.has(element)) {
-          this.eventListeners.set(element, []);
-        }
-        this.eventListeners.get(element).push({ event, handler, options });
-        element.addEventListener(event, handler, options);
-      },
-      
       cleanup() {
         if (this.isCleanedUp) return;
         
-        console.log('🧹 Homepage cleanup initiated - freeing 197MB+ memory');
+        console.log('🧹 cleaning up memory');
         
-        // Cancel all animation frames
-        this.animationFrames.forEach(id => cancelAnimationFrame(id));
-        this.animationFrames.clear();
-        
-        // Clear all timeouts
+        // clear all timeouts and intervals
         this.timeouts.forEach(id => clearTimeout(id));
         this.timeouts.clear();
         
-        // Clear all intervals
         this.intervals.forEach(id => clearInterval(id));
         this.intervals.clear();
         
-        // Remove all event listeners
-        this.eventListeners.forEach((listeners, element) => {
-          listeners.forEach(({ event, handler, options }) => {
-            element.removeEventListener(event, handler, options);
-          });
-        });
-        this.eventListeners.clear();
-        
-        // Remove dynamic elements (particles, ripples)
-        this.dynamicElements.forEach(element => {
-          if (element && element.parentNode) {
-            element.remove();
-          }
-        });
-        this.dynamicElements.clear();
-        
-        // Clear particles container
-        const particlesContainer = document.getElementById('particlesContainer');
-        if (particlesContainer) {
-          particlesContainer.innerHTML = '';
-        }
-        
-        // Stop CSS animations
-        const animatedElements = document.querySelectorAll('.particle, .loading-spinner');
-        animatedElements.forEach(el => {
-          el.style.animation = 'none';
-          el.style.transform = 'none';
-        });
-        
-        // Clear global variables
-        if (window.performSearch) delete window.performSearch;
-        if (window.navigateToResult) delete window.navigateToResult;
-        
         this.isCleanedUp = true;
-        console.log('✅ Homepage cleanup completed - memory freed');
+        console.log('✅ memory cleaned');
       }
     };
     
-    // Auto-cleanup after 10 seconds
-    const cleanupTimeout = memoryManager.addTimeout(
-      setTimeout(() => memoryManager.cleanup(), 10000)
-    );
-    
-    // Cleanup on page unload and visibility change
-    memoryManager.addEventListener(window, 'beforeunload', () => memoryManager.cleanup());
-    memoryManager.addEventListener(document, 'visibilitychange', () => {
-      if (document.hidden) {
-        memoryManager.cleanup();
-      }
+    // cleanup on page unload
+    window.addEventListener('beforeunload', () => memoryManager.cleanup());
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) memoryManager.cleanup();
     });
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -1236,24 +931,17 @@ updateLoginUI();
       const dateText = document.getElementById("dateText");
       const timeText = document.getElementById("timeText");
 
-      // Loading screen fade out with memory management
-      const loadingTimeout1 = memoryManager.addTimeout(
+      // loading screen fade out
+      const loadingTimeout = memoryManager.addTimeout(
         setTimeout(() => {
-          if (!memoryManager.isCleanedUp && loadingOverlay) {
+          if (loadingOverlay) {
             loadingOverlay.style.opacity = '0';
-            const loadingTimeout2 = memoryManager.addTimeout(
-              setTimeout(() => {
-                if (!memoryManager.isCleanedUp && loadingOverlay && loadingOverlay.parentNode) {
-                  loadingOverlay.remove();
-                  memoryManager.dynamicElements.delete(loadingOverlay);
-                }
-              }, 500)
-            );
+            setTimeout(() => loadingOverlay && loadingOverlay.remove(), 500);
           }
         }, 1000)
       );
 
-      // Update date and time function with memory checks
+      // update date and time function
       function updateDateTime() {
         if (memoryManager.isCleanedUp || !dateText || !timeText) return;
         
@@ -1275,17 +963,15 @@ updateLoginUI();
         timeText.textContent = now.toLocaleTimeString('en-US', timeOptions);
       }
 
-      // Update time with memory management
+      // update time every 30 seconds instead of every second to save memory
       updateDateTime();
       const dateTimeInterval = memoryManager.addInterval(
         setInterval(() => {
-          if (!memoryManager.isCleanedUp) {
-            updateDateTime();
-          }
-        }, 1000)
+          if (!memoryManager.isCleanedUp) updateDateTime();
+        }, 30000)
       );
 
-      // Apply saved theme
+      // apply saved theme
       const savedTheme = localStorage.getItem("theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -1299,96 +985,42 @@ updateLoginUI();
         toggleBtn.textContent = "🌙";
       }
 
-      // Theme toggle with memory management
-      const themeToggleHandler = () => {
+      // theme toggle
+      toggleBtn.addEventListener("click", () => {
         if (memoryManager.isCleanedUp) return;
         const isDark = body.classList.toggle("dark");
         body.classList.toggle("light", !isDark);
         localStorage.setItem("theme", isDark ? "dark" : "light");
         toggleBtn.textContent = isDark ? "☀️" : "🌙";
-      };
-      memoryManager.addEventListener(toggleBtn, "click", themeToggleHandler);
+      });
 
-      // Scroll progress with memory management
-      const scrollHandler = () => {
+      // scroll progress
+      window.addEventListener('scroll', () => {
         if (memoryManager.isCleanedUp) return;
         const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
         scrollIndicator.style.width = Math.min(scrollPercentage, 100) + '%';
-      };
-      memoryManager.addEventListener(window, 'scroll', scrollHandler);
+      });
 
-      // HEAVILY LIMITED particle system
-      let particleCount = 0;
-      const MAX_PARTICLES = 8; // Drastically reduced
-      
-      function createParticle() {
-        if (memoryManager.isCleanedUp || particleCount >= MAX_PARTICLES) return;
-        
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        
-        const size = Math.random() * 4 + 2; // Smaller particles
-        const left = Math.random() * 100;
-        const duration = Math.random() * 8 + 8; // Shorter duration
-        
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
-        particle.style.left = left + '%';
-        particle.style.animationDuration = duration + 's';
-        particle.style.opacity = Math.random() * 0.2 + 0.05; // Lower opacity
-        
-        const particlesContainer = document.getElementById('particlesContainer');
-        if (particlesContainer && !memoryManager.isCleanedUp) {
-          particlesContainer.appendChild(particle);
-          memoryManager.addDynamicElement(particle);
-          particleCount++;
-          
-          // Remove particle after animation
-          const removeTimeout = memoryManager.addTimeout(
-            setTimeout(() => {
-              if (!memoryManager.isCleanedUp && particle.parentNode) {
-                particle.remove();
-                memoryManager.dynamicElements.delete(particle);
-                particleCount = Math.max(0, particleCount - 1);
-              }
-            }, duration * 1000)
-          );
-        }
-      }
-
-      // Generate particles much less frequently
-      const particleInterval = memoryManager.addInterval(
-        setInterval(() => {
-          if (!memoryManager.isCleanedUp && particleCount < MAX_PARTICLES) {
-            createParticle();
-          }
-        }, 3000) // Reduced from 500ms to 3000ms
-      );
-
-      // Keyboard shortcuts with memory management
-      const keydownHandler = (e) => {
+      // keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
         if (memoryManager.isCleanedUp) return;
         
         if (e.ctrlKey || e.metaKey) {
           switch(e.key) {
             case '1':
               e.preventDefault();
-              memoryManager.cleanup();
               window.location.href = 'about/';
               break;
             case '2':
               e.preventDefault();
-              memoryManager.cleanup();
               window.location.href = 'contact/';
               break;
             case '3':
               e.preventDefault();
-              memoryManager.cleanup();
               window.location.href = 'projects/';
               break;
             case 'r':
               e.preventDefault();
-              memoryManager.cleanup();
               window.location.href = 'resume/';
               break;
             case 'k':
@@ -1398,49 +1030,12 @@ updateLoginUI();
           }
         }
         
-        if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
-          themeToggleHandler();
-        }
-        
         if (e.key === 'Escape' && searchModal && searchModal.classList.contains('active')) {
           hideSearchModal();
         }
-      };
-      memoryManager.addEventListener(document, 'keydown', keydownHandler);
-
-      // Limited mouse movement parallax (REMOVED to save memory)
-      // Ripple effects (SIMPLIFIED)
-      document.querySelectorAll('.button-list a, .resume-button').forEach(button => {
-        const rippleHandler = function(e) {
-          if (memoryManager.isCleanedUp) return;
-          
-          const ripple = document.createElement('span');
-          const rect = this.getBoundingClientRect();
-          const size = Math.max(rect.width, rect.height);
-          const x = e.clientX - rect.left - size / 2;
-          const y = e.clientY - rect.top - size / 2;
-          
-          ripple.style.width = ripple.style.height = size + 'px';
-          ripple.style.left = x + 'px';
-          ripple.style.top = y + 'px';
-          ripple.classList.add('ripple');
-          
-          this.appendChild(ripple);
-          memoryManager.addDynamicElement(ripple);
-          
-          const removeTimeout = memoryManager.addTimeout(
-            setTimeout(() => {
-              if (!memoryManager.isCleanedUp && ripple.parentNode) {
-                ripple.remove();
-                memoryManager.dynamicElements.delete(ripple);
-              }
-            }, 600)
-          );
-        };
-        memoryManager.addEventListener(button, 'click', rippleHandler);
       });
 
-      // Search functionality - simplified
+      // simplified search functionality
       const siteContent = [
         { title: "Calculator", path: "Projects", url: "projects/calculator/", type: "projects", description: "Calculator tool", keywords: ["calc"] },
         { title: "About Me", path: "About", url: "about/", type: "pages", description: "About Dan", keywords: ["about"] },
@@ -1448,7 +1043,6 @@ updateLoginUI();
         { title: "Contact", path: "Contact", url: "contact/", type: "pages", description: "Contact info", keywords: ["contact"] }
       ];
 
-      let currentFilter = 'all';
       const searchModal = document.getElementById('searchModal');
       const searchToggle = document.getElementById('search-toggle');
       const searchClose = document.getElementById('searchClose');
@@ -1458,28 +1052,24 @@ updateLoginUI();
       function showSearchModal() {
         if (memoryManager.isCleanedUp || !searchModal) return;
         searchModal.style.display = 'flex';
-        const showTimeout = memoryManager.addTimeout(
-          setTimeout(() => {
-            if (!memoryManager.isCleanedUp) {
-              searchModal.classList.add('active');
-              if (searchInput) searchInput.focus();
-            }
-          }, 10)
-        );
+        setTimeout(() => {
+          if (!memoryManager.isCleanedUp) {
+            searchModal.classList.add('active');
+            if (searchInput) searchInput.focus();
+          }
+        }, 10);
       }
 
       function hideSearchModal() {
         if (memoryManager.isCleanedUp || !searchModal) return;
         searchModal.classList.remove('active');
-        const hideTimeout = memoryManager.addTimeout(
-          setTimeout(() => {
-            if (!memoryManager.isCleanedUp) {
-              searchModal.style.display = 'none';
-              if (searchInput) searchInput.value = '';
-              if (resultsContainer) resultsContainer.innerHTML = '';
-            }
-          }, 300)
-        );
+        setTimeout(() => {
+          if (!memoryManager.isCleanedUp) {
+            searchModal.style.display = 'none';
+            if (searchInput) searchInput.value = '';
+            if (resultsContainer) resultsContainer.innerHTML = '';
+          }
+        }, 300);
       }
 
       function performSearch() {
@@ -1515,82 +1105,64 @@ updateLoginUI();
         window.location.href = url;
       }
 
-      // Search event listeners
+      // search event listeners
       if (searchToggle) {
-        memoryManager.addEventListener(searchToggle, 'click', showSearchModal);
+        searchToggle.addEventListener('click', showSearchModal);
       }
       if (searchClose) {
-        memoryManager.addEventListener(searchClose, 'click', hideSearchModal);
+        searchClose.addEventListener('click', hideSearchModal);
       }
       if (searchModal) {
-        const modalClickHandler = (e) => {
+        searchModal.addEventListener('click', (e) => {
           if (memoryManager.isCleanedUp) return;
           if (e.target === searchModal) hideSearchModal();
-        };
-        memoryManager.addEventListener(searchModal, 'click', modalClickHandler);
+        });
       }
       if (searchInput) {
         let searchTimeout;
-        const searchInputHandler = () => {
+        searchInput.addEventListener('input', () => {
           if (memoryManager.isCleanedUp) return;
           clearTimeout(searchTimeout);
-          searchTimeout = memoryManager.addTimeout(setTimeout(performSearch, 300));
-        };
-        memoryManager.addEventListener(searchInput, 'input', searchInputHandler);
+          searchTimeout = setTimeout(performSearch, 300);
+        });
       }
 
-      // Make functions global for onclick handlers
+      // make functions global for onclick handlers
       window.performSearch = performSearch;
       window.navigateToResult = navigateToResult;
 
-      // Easter Egg with memory management
+      // easter egg
       let easterEggClicks = 0;
       const maxClicks = 3;
       const easterEggBtn = document.getElementById('easterEggBtn');
       const clickCounter = document.getElementById('clickCounter');
 
       if (easterEggBtn && clickCounter) {
-        const easterEggHandler = function(e) {
+        easterEggBtn.addEventListener('click', function(e) {
           if (memoryManager.isCleanedUp) return;
           
           e.preventDefault();
           easterEggClicks++;
           
           easterEggBtn.classList.add('clicked');
-          const clickedTimeout = memoryManager.addTimeout(
-            setTimeout(() => {
-              if (!memoryManager.isCleanedUp) {
-                easterEggBtn.classList.remove('clicked');
-              }
-            }, 300)
-          );
+          setTimeout(() => easterEggBtn.classList.remove('clicked'), 300);
           
           clickCounter.textContent = `🥚 ${easterEggClicks}/${maxClicks}`;
           clickCounter.classList.add('visible');
           
           if (easterEggClicks >= maxClicks) {
             clickCounter.textContent = '🎉 Found it!';
-            const redirectTimeout = memoryManager.addTimeout(
-              setTimeout(() => {
-                memoryManager.cleanup();
-                window.location.href = 'congrats.html';
-              }, 500)
-            );
+            setTimeout(() => {
+              memoryManager.cleanup();
+              window.location.href = 'congrats.html';
+            }, 500);
           } else {
-            const hideTimeout = memoryManager.addTimeout(
-              setTimeout(() => {
-                if (!memoryManager.isCleanedUp) {
-                  clickCounter.classList.remove('visible');
-                }
-              }, 2000)
-            );
+            setTimeout(() => clickCounter.classList.remove('visible'), 2000);
           }
-        };
-        
-        memoryManager.addEventListener(easterEggBtn, 'click', easterEggHandler);
+        });
       }
       
-      console.log('🚀 Homepage initialized with aggressive memory management');
+      console.log('🚀 homepage initialized with minimal memory usage');
     });
   </script>
   <script src="./assets/js/universal-search.js"></script>
