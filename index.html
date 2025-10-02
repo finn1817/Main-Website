@@ -979,27 +979,40 @@
         }, 30000)
       );
 
-      // apply saved theme
-      const savedTheme = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      // THEME SYSTEM (refactored for reliability)
+      const THEME_KEY = 'theme';
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-      if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-        body.classList.remove("light");
-        body.classList.add("dark");
-        toggleBtn.textContent = "☀️";
-      } else {
-        body.classList.remove("dark");
-        body.classList.add("light");
-        toggleBtn.textContent = "🌙";
+      function applyTheme(theme) {
+        const wantDark = theme === 'dark';
+        body.classList.toggle('dark', wantDark);
+        body.classList.toggle('light', !wantDark);
+        toggleBtn.textContent = wantDark ? '☀️' : '🌙';
+        toggleBtn.setAttribute('aria-pressed', String(wantDark));
       }
 
-      // theme toggle
-      toggleBtn.addEventListener("click", () => {
+      function initTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved === 'dark' || saved === 'light') {
+          applyTheme(saved);
+        } else {
+          applyTheme(mediaQuery.matches ? 'dark' : 'light');
+        }
+      }
+
+      initTheme();
+      mediaQuery.addEventListener('change', (e) => {
+        // Only auto-switch if user hasn't explicitly chosen
+        if (!localStorage.getItem(THEME_KEY)) {
+          applyTheme(e.matches ? 'dark' : 'light');
+        }
+      });
+
+      toggleBtn.addEventListener('click', () => {
         if (memoryManager.isCleanedUp) return;
-        const isDark = body.classList.toggle("dark");
-        body.classList.toggle("light", !isDark);
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-        toggleBtn.textContent = isDark ? "☀️" : "🌙";
+        const next = body.classList.contains('dark') ? 'light' : 'dark';
+        localStorage.setItem(THEME_KEY, next);
+        applyTheme(next);
       });
 
       // scroll progress
