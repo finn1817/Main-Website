@@ -1119,11 +1119,12 @@ updateLoginUI();
       // generate particles periodically
       const projectsParticleInterval = setInterval(createParticle, 800);
       
-      // Cleanup on page unload
-      window.addEventListener('beforeunload', () => {
-        if (projectsParticleInterval) {
-          clearInterval(projectsParticleInterval);
-        }
+      // Lifecycle cleanup (pagehide replaces deprecated beforeunload)
+      window.addEventListener('pagehide', () => {
+        if (projectsParticleInterval) clearInterval(projectsParticleInterval);
+      }, { once: true });
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && projectsParticleInterval) clearInterval(projectsParticleInterval);
       });
 
       // enhanced page transition effect

@@ -1262,11 +1262,12 @@
     // Create floating shapes periodically
     const floatingShapeInterval = setInterval(createFloatingShape, 3000);
     
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-      if (floatingShapeInterval) {
-        clearInterval(floatingShapeInterval);
-      }
+    // Lifecycle cleanup (pagehide replaces deprecated beforeunload)
+    window.addEventListener('pagehide', () => {
+      if (floatingShapeInterval) clearInterval(floatingShapeInterval);
+    }, { once: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && floatingShapeInterval) clearInterval(floatingShapeInterval);
     });
 
     // Add interactive hover effects

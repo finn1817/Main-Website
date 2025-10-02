@@ -520,14 +520,11 @@
       setTimeout(() => memoryManager.cleanup(), 10000)
     );
     
-    // Cleanup on page unload
-    memoryManager.addEventListener(window, 'beforeunload', () => memoryManager.cleanup());
-    
-    // Cleanup on visibility change (tab switch)
+    // Lifecycle cleanup (pagehide replaces deprecated beforeunload)
+    memoryManager.addEventListener(window, 'pagehide', () => memoryManager.cleanup());
+    // Cleanup on tab switch / backgrounding
     memoryManager.addEventListener(document, 'visibilitychange', () => {
-      if (document.hidden) {
-        memoryManager.cleanup();
-      }
+      if (document.hidden) memoryManager.cleanup();
     });
 
     // Interactive portal tilt

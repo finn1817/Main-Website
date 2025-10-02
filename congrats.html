@@ -959,14 +959,12 @@
       setTimeout(() => memoryManager.cleanup(), 10000)
     );
     
-    // Cleanup on page unload
-    memoryManager.addEventListener(window, 'beforeunload', () => memoryManager.cleanup());
-    
-    // Cleanup on visibility change (tab switch)
+    // Cleanup on page lifecycle (pagehide replaces deprecated beforeunload)
+    memoryManager.addEventListener(window, 'pagehide', () => memoryManager.cleanup());
+
+    // Cleanup on visibility change (tab switch / backgrounding)
     memoryManager.addEventListener(document, 'visibilitychange', () => {
-      if (document.hidden) {
-        memoryManager.cleanup();
-      }
+      if (document.hidden) memoryManager.cleanup();
     });
 
     // Theme system (local to this page only)

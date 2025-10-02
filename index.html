@@ -923,8 +923,10 @@
       }
     };
     
-    // cleanup on page unload
-    window.addEventListener('beforeunload', () => memoryManager.cleanup());
+    // lifecycle cleanup (use pagehide instead of deprecated beforeunload)
+    // pagehide fires for normal navigations and BFCache entries
+    window.addEventListener('pagehide', () => memoryManager.cleanup(), { once: true });
+    // visibilitychange handles tab switches / backgrounding
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) memoryManager.cleanup();
     });

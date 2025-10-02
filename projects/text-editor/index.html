@@ -1004,14 +1004,20 @@
       // set up auto-save timer with cleanup
       let autoSaveInterval = setInterval(autoSave, 30000);
       
-      // Cleanup on page unload
-      window.addEventListener('beforeunload', () => {
+      // Lifecycle cleanup (pagehide replaces deprecated beforeunload)
+      window.addEventListener('pagehide', () => {
         if (autoSaveInterval) {
           clearInterval(autoSaveInterval);
           autoSaveInterval = null;
         }
-        // Final save before leaving
-        autoSave();
+        autoSave(); // final save
+      }, { once: true });
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && autoSaveInterval) {
+          clearInterval(autoSaveInterval);
+          autoSaveInterval = null;
+          autoSave();
+        }
       });
       
       // try to load saved draft
