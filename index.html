@@ -1145,41 +1145,46 @@
 
       if (easterEggBtn && clickCounter) {
         console.log('🥚 Easter egg button found and initialized');
-        
-        easterEggBtn.addEventListener('click', function(e) {
-          console.log('🥚 Easter egg clicked!', easterEggClicks + 1, '/', maxClicks);
-          
-          if (memoryManager.isCleanedUp) return;
-          
-          e.preventDefault();
-          e.stopPropagation();
-          easterEggClicks++;
-          
-          easterEggBtn.classList.add('clicked');
-          setTimeout(() => easterEggBtn.classList.remove('clicked'), 300);
-          
-          clickCounter.textContent = `🥚 ${easterEggClicks}/${maxClicks}`;
-          clickCounter.classList.add('visible');
-          
-          if (easterEggClicks >= maxClicks) {
-            console.log('🎉 Easter egg completed! Redirecting to congrats.html');
-            clickCounter.textContent = '🎉 Found it!';
-            setTimeout(() => {
-              memoryManager.cleanup();
-              window.location.href = 'congrats.html';
-            }, 500);
-          } else {
-            setTimeout(() => clickCounter.classList.remove('visible'), 2000);
+        let redirecting = false;
+        let hideCounterTimeout = null;
+
+        function handleEasterEggClick(e){
+          if (redirecting) return; // already succeeded
+          if (memoryManager.isCleanedUp) {
+            // If cleaned prematurely, allow continuing (do NOT return)
+            memoryManager.isCleanedUp = false; // revive minimal for sequence
           }
-        });
-        
-        // Add mousedown event as backup
-        easterEggBtn.addEventListener('mousedown', function(e) {
-          console.log('🥚 Easter egg mousedown detected');
           e.preventDefault();
           e.stopPropagation();
-        });
-        
+
+          easterEggClicks = Math.min(easterEggClicks + 1, maxClicks);
+          console.log(`🥚 Easter egg click ${easterEggClicks}/${maxClicks}`);
+
+          // feedback
+          easterEggBtn.classList.add('clicked');
+          setTimeout(() => easterEggBtn.classList.remove('clicked'), 280);
+          clickCounter.textContent = easterEggClicks >= maxClicks ? '🎉 Found it!' : `🥚 ${easterEggClicks}/${maxClicks}`;
+          clickCounter.classList.add('visible');
+
+          if (hideCounterTimeout) { clearTimeout(hideCounterTimeout); hideCounterTimeout = null; }
+
+            if (easterEggClicks >= maxClicks) {
+              redirecting = true;
+              console.log('🎉 Easter egg success – navigating to congrats.html');
+              setTimeout(() => {
+                // Do NOT call full cleanup before navigation; it can cancel pending navigation in some browsers
+                window.location.href = 'congrats.html';
+              }, 420);
+            } else {
+              hideCounterTimeout = setTimeout(() => {
+                clickCounter.classList.remove('visible');
+              }, 1600);
+            }
+        }
+
+        easterEggBtn.addEventListener('click', handleEasterEggClick);
+        // backup for touch devices
+        easterEggBtn.addEventListener('touchend', handleEasterEggClick, { passive: true });
       } else {
         console.error('🚨 Easter egg elements not found:', { easterEggBtn, clickCounter });
       }
