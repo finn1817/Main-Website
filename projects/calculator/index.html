@@ -98,6 +98,53 @@
             background-clip: text;
         }
 
+        /* Mode Toggle Bar */
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 0 0 18px 0;
+        }
+        .mode-btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid var(--light-border);
+            background: var(--light-card);
+            color: var(--light-text);
+            border-radius: 30px;
+            cursor: pointer;
+            letter-spacing: .5px;
+            transition: background .25s, color .25s, box-shadow .25s, border-color .25s;
+        }
+        body.dark-mode .mode-btn { background: var(--dark-card); color: var(--dark-text); border-color: var(--dark-border); }
+        .mode-btn:hover { box-shadow: 0 4px 12px var(--light-shadow); }
+        body.dark-mode .mode-btn:hover { box-shadow: 0 4px 12px var(--dark-shadow); }
+        .mode-btn.active { background: var(--primary-color); color:#fff; border-color: var(--primary-color); box-shadow: 0 4px 16px rgba(0,123,255,.35); }
+
+        /* Result wrapper with copy button */
+        .result-wrapper { display:flex; align-items:stretch; gap:10px; margin-top:20px; }
+        #copy-result {
+            background: var(--primary-color);
+            color:#fff;
+            border:1px solid var(--primary-color);
+            padding:0 16px;
+            border-radius:8px;
+            font-weight:600;
+            cursor:pointer;
+            font-size:.9rem;
+            min-width:72px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            transition: background .25s, transform .25s;
+        }
+        #copy-result:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        #copy-result:active { transform: scale(.94); }
+        body.dark-mode #copy-result { box-shadow: 0 4px 12px var(--dark-shadow); }
+        #copy-result.copied { background: #28a745; border-color:#28a745; }
+
         .subtitle {
             font-size: 1.1rem;
             color: #666;
@@ -522,6 +569,12 @@
                 <div class="calculator-header">
                     <h2>Calculator</h2>
                 </div>
+
+                <div class="mode-toggle" role="tablist" aria-label="Calculator modes">
+                    <button type="button" class="mode-btn active" data-mode="scientific" aria-selected="true">Scientific</button>
+                    <button type="button" class="mode-btn" data-mode="basic" aria-selected="false">Basic</button>
+                    <button type="button" class="mode-btn" data-mode="financial" aria-selected="false">Financial</button>
+                </div>
                 
                 <div class="input-section">
                     <div class="input-group">
@@ -546,7 +599,7 @@
                 
                 <div class="dropdown-section">
                     <!-- Trigonometric Functions -->
-                    <div class="dropdown-container">
+                    <div class="dropdown-container" data-modes="scientific">
                         <div class="dropdown-header" onclick="toggleDropdown('trig')">
                             Trigonometric Functions
                             <span class="dropdown-arrow" id="trig-arrow">▼</span>
@@ -570,7 +623,7 @@
                     </div>
 
                     <!-- Logarithmic & Exponential -->
-                    <div class="dropdown-container">
+                    <div class="dropdown-container" data-modes="scientific">
                         <div class="dropdown-header" onclick="toggleDropdown('log')">
                             Logarithmic & Exponential
                             <span class="dropdown-arrow" id="log-arrow">▼</span>
@@ -588,7 +641,7 @@
                     </div>
 
                     <!-- Root & Power Functions -->
-                    <div class="dropdown-container">
+                    <div class="dropdown-container" data-modes="scientific">
                         <div class="dropdown-header" onclick="toggleDropdown('root')">
                             Root & Power Functions
                             <span class="dropdown-arrow" id="root-arrow">▼</span>
@@ -606,7 +659,7 @@
                     </div>
 
                     <!-- Statistical Functions -->
-                    <div class="dropdown-container">
+                    <div class="dropdown-container" data-modes="scientific">
                         <div class="dropdown-header" onclick="toggleDropdown('stats')">
                             Statistical & Special Functions
                             <span class="dropdown-arrow" id="stats-arrow">▼</span>
@@ -626,7 +679,7 @@
                     </div>
 
                     <!-- Constants & Utilities -->
-                    <div class="dropdown-container">
+                    <div class="dropdown-container" data-modes="scientific">
                         <div class="dropdown-header" onclick="toggleDropdown('constants')">
                             Constants & Utilities
                             <span class="dropdown-arrow" id="constants-arrow">▼</span>
@@ -644,7 +697,7 @@
                     </div>
 
                     <!-- Financial Functions -->
-                    <div class="dropdown-container">
+                    <div class="dropdown-container" data-modes="financial">
                         <div class="dropdown-header" onclick="toggleDropdown('finance')">
                             Financial & Practical Functions
                             <span class="dropdown-arrow" id="finance-arrow">▼</span>
@@ -662,7 +715,10 @@
                     </div>
                 </div>
                 
-                <div id="result">Result will appear here</div>
+                <div class="result-wrapper">
+                    <div id="result">Result will appear here</div>
+                    <button id="copy-result" type="button" aria-label="Copy result" title="Copy result">Copy</button>
+                </div>
             </div>
             
             <div class="history-section">
@@ -763,6 +819,50 @@
                 num1Input.value = value.toFixed(10);
             };
             
+            // Mode toggle logic
+            const modeButtons = Array.from(document.querySelectorAll('.mode-btn'));
+            const dropdownGroups = Array.from(document.querySelectorAll('.dropdown-container'));
+            let currentMode = 'scientific';
+
+            function applyMode(mode){
+                currentMode = mode;
+                modeButtons.forEach(btn => {
+                    const active = btn.dataset.mode === mode;
+                    btn.classList.toggle('active', active);
+                    btn.setAttribute('aria-selected', String(active));
+                });
+                dropdownGroups.forEach(group => {
+                    const modes = group.dataset.modes || '';
+                    if (mode === 'basic') {
+                        group.style.display = 'none';
+                    } else if (modes.includes(mode)) {
+                        group.style.display = '';
+                    } else {
+                        group.style.display = 'none';
+                    }
+                });
+            }
+            modeButtons.forEach(btn => btn.addEventListener('click', () => applyMode(btn.dataset.mode)));
+            applyMode('scientific');
+
+            // Copy result button logic
+            const copyBtn = document.getElementById('copy-result');
+            copyBtn.addEventListener('click', () => {
+                const resultNode = document.getElementById('result');
+                let text = resultNode.textContent.replace(/^Result:\s*/, '').trim();
+                if (!text || text === 'Result will appear here') {
+                    text = '';
+                }
+                navigator.clipboard.writeText(text).then(() => {
+                    copyBtn.classList.add('copied');
+                    copyBtn.textContent = 'Copied';
+                    setTimeout(()=>{ copyBtn.classList.remove('copied'); copyBtn.textContent = 'Copy'; }, 1600);
+                }).catch(()=>{
+                    copyBtn.textContent = 'Error';
+                    setTimeout(()=>{ copyBtn.textContent = 'Copy'; }, 1500);
+                });
+            });
+
             // Enhanced calculate function
             window.calculate = function(operation, requiresSecondNumber = true) {
                 const num1Input = document.getElementById("num1");
@@ -786,6 +886,7 @@
                 }
                 
                 // perform calculation based on operation
+                const EPS = 1e-12; // small epsilon for floating point zero comparisons
                 switch (operation) {
                     // Basic operations
                     case "add":
@@ -870,36 +971,36 @@
                         result = Math.tanh(num1);
                         operationText = `tanh(${num1}) = ${result}`;
                         break;
-                    case "csc":
+                    case "csc": {
                         const sinValue = Math.sin(num1 * (Math.PI / 180));
-                        if (sinValue === 0) {
-                            result = "Cannot calculate csc of 0!";
+                        if (Math.abs(sinValue) < EPS) {
+                            result = "Undefined (csc at multiples of 180°)";
                             operationText = `csc(${num1}°) = Error`;
                         } else {
                             result = 1 / sinValue;
                             operationText = `csc(${num1}°) = ${result}`;
                         }
-                        break;
-                    case "sec":
+                        break; }
+                    case "sec": {
                         const cosValue = Math.cos(num1 * (Math.PI / 180));
-                        if (cosValue === 0) {
-                            result = "Cannot calculate sec of 90°!";
+                        if (Math.abs(cosValue) < EPS) {
+                            result = "Undefined (sec at 90° + k·180°)";
                             operationText = `sec(${num1}°) = Error`;
                         } else {
                             result = 1 / cosValue;
                             operationText = `sec(${num1}°) = ${result}`;
                         }
-                        break;
-                    case "cot":
+                        break; }
+                    case "cot": {
                         const tanValue = Math.tan(num1 * (Math.PI / 180));
-                        if (tanValue === 0) {
-                            result = "Cannot calculate cot of 0!";
+                        if (Math.abs(tanValue) < EPS) {
+                            result = "Undefined (cot at multiples of 180°)";
                             operationText = `cot(${num1}°) = Error`;
                         } else {
                             result = 1 / tanValue;
                             operationText = `cot(${num1}°) = ${result}`;
                         }
-                        break;
+                        break; }
                     
                     // Logarithmic functions
                     case "log":
@@ -968,6 +1069,14 @@
                         if (num2 === 0) {
                             result = "Cannot calculate 0th root!";
                             operationText = `${num2}√${num1} = Error`;
+                        } else if (num1 < 0 && Number.isInteger(num2) && Math.abs(num2 % 2) < EPS && (num2 % 2 === 0)) {
+                            result = "Even root of negative number is not real";
+                            operationText = `${num2}√${num1} = Error`;
+                        } else if (num1 < 0 && Number.isInteger(num2) && Math.abs(num2 % 2) >= EPS && (Math.abs((num2 % 2)) > EPS)) {
+                            // odd integer root of negative number
+                            const magnitude = Math.pow(Math.abs(num1), 1/num2);
+                            result = -magnitude;
+                            operationText = `${num2}√${num1} = ${result}`;
                         } else {
                             result = Math.pow(num1, 1/num2);
                             operationText = `${num2}√${num1} = ${result}`;
@@ -1047,12 +1156,22 @@
                         operationText = `${num2}% of ${num1} = ${result}`;
                         break;
                     case "percentIncrease":
-                        result = ((num2 - num1) / num1) * 100;
-                        operationText = `${num1} to ${num2} = ${result}% increase`;
+                        if (num1 === 0) {
+                            result = "Cannot compute increase from 0 baseline";
+                            operationText = `${num1} to ${num2} = Error`;
+                        } else {
+                            result = ((num2 - num1) / num1) * 100;
+                            operationText = `${num1} to ${num2} = ${result}% increase`;
+                        }
                         break;
                     case "percentDecrease":
-                        result = ((num1 - num2) / num1) * 100;
-                        operationText = `${num1} to ${num2} = ${result}% decrease`;
+                        if (num1 === 0) {
+                            result = "Cannot compute decrease from 0 baseline";
+                            operationText = `${num1} to ${num2} = Error`;
+                        } else {
+                            result = ((num1 - num2) / num1) * 100;
+                            operationText = `${num1} to ${num2} = ${result}% decrease`;
+                        }
                         break;
                     case "tip":
                         result = num1 * (num2/100);
