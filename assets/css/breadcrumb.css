@@ -99,7 +99,8 @@ body.dark .breadcrumb li:not(:last-child)::after {
 }
 
 .breadcrumb a {
-  color: #333333 !important;
+  /* Base (neutral) color; specific light/dark variants below handle final contrast */
+  color: #333333;
   text-decoration: none;
   transition: all 0.3s ease;
   padding: 4px 8px;
@@ -150,7 +151,8 @@ body.dark .breadcrumb a:hover {
   font-weight: 500;
   padding: 4px 8px;
   border-radius: 4px;
-  color: #333333 !important;
+  /* Allow theme-specific overrides to take effect */
+  color: #333333;
 }
 
 /* Light mode current item */
