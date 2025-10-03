@@ -214,3 +214,35 @@ body.dark .breadcrumb .current {
     opacity: 1;
   }
 }
+
+/* -------------------------------------------------- */
+/* Dark Mode High-Contrast Enhancements (Breadcrumb)  */
+/* Applied last to ensure they override earlier rules */
+/* -------------------------------------------------- */
+body.dark .breadcrumb {
+  background: rgba(10, 12, 18, 0.95); /* more opaque for readability */
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.6);
+}
+
+body.dark .breadcrumb li:not(:last-child)::after {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark .breadcrumb a {
+  color: #f5f9ff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  font-weight: 600;
+}
+
+body.dark .breadcrumb a:hover {
+  background: rgba(77, 171, 247, 0.15);
+  color: #ffffff;
+}
+
+body.dark .breadcrumb .current {
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(0,123,255,0.55), rgba(0,123,255,0.35));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.4);
+  font-weight: 700;
+}
