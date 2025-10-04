@@ -1120,44 +1120,100 @@
                 });
             });
 
-            // generate resume
+            // generate resume (enhanced structured version)
             function generateResume() {
-                const fullName = document.getElementById("fullName").value;
-                const email = document.getElementById("email").value;
-                const phone = document.getElementById("phone").value;
-                
-                // validate required fields
+                const fullName = document.getElementById("fullName").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const phone = document.getElementById("phone").value.trim();
+
                 if (!fullName || !email || !phone) {
                     showToast("Please fill out all required fields in the Personal Information section.", "error");
                     return;
                 }
-                
-                const objective = document.getElementById("objective").value;
-                const education = document.getElementById("education").value;
-                const workExperience = document.getElementById("workExperience").value;
-                const skills = document.getElementById("skills").value;
-                const achievements = document.getElementById("achievements").value;
-                const projects = document.getElementById("projects").value;
-                const references = document.getElementById("references").value;
-                
-                // generate resume HTML based on template
-                let resumeHTML = '';
-                
-                switch (currentTemplate) {
-                    case "modern":
-                        resumeHTML = generateModernTemplate(fullName, email, phone, objective, education, workExperience, skills, achievements, projects, references);
-                        break;
-                    case "professional":
-                        resumeHTML = generateProfessionalTemplate(fullName, email, phone, objective, education, workExperience, skills, achievements, projects, references);
-                        break;
-                    default: // classic
-                        resumeHTML = generateClassicTemplate(fullName, email, phone, objective, education, workExperience, skills, achievements, projects, references);
+
+                // Raw values
+                const raw = {
+                    objective: document.getElementById("objective").value,
+                    education: document.getElementById("education").value,
+                    workExperience: document.getElementById("workExperience").value,
+                    skills: document.getElementById("skills").value,
+                    achievements: document.getElementById("achievements").value,
+                    projects: document.getElementById("projects").value,
+                    references: document.getElementById("references").value
+                };
+
+                // Basic HTML escape to avoid accidental tag injection (users can still purposely add HTML if needed by disabling below)
+                const escapeHTML = (str) => str
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/\"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
+
+                // Detect if a block is already HTML-ish (very naive) to skip escaping paragraphs
+                const looksLikeHTML = (text) => /<[^>]+>/.test(text.trim());
+
+                const toList = (text) => {
+                    const lines = text.split(/\r?\n/)
+                        .map(l => l.trim())
+                        .filter(l => l.length > 0);
+                    if (!lines.length) return '';
+                    return `<ul>${lines.map(l => {
+                        // strip leading bullets / dashes / numbering
+                        const cleaned = l.replace(/^[-*•\d).\s]+/, '').trim();
+                        return `<li>${escapeHTML(cleaned)}</li>`;
+                    }).join('')}</ul>`;
+                };
+
+                const toParagraphs = (text) => {
+                    const blocks = text.trim().split(/\n{2,}/).map(b => b.trim()).filter(Boolean);
+                    if (!blocks.length) return '';
+                    return blocks.map(block => {
+                        if (looksLikeHTML(block)) return block; // leave user-provided HTML
+                        // single line breaks -> <br>
+                        const html = escapeHTML(block).replace(/\n+/g, '<br>');
+                        return `<p>${html}</p>`;
+                    }).join('');
+                };
+
+                // Decide which fields become lists vs paragraphs
+                const listFields = ["skills", "achievements", "projects", "references"];
+                const processed = {};
+                for (const [key, value] of Object.entries(raw)) {
+                    if (!value.trim()) {
+                        processed[key] = '';
+                        continue;
+                    }
+                    if (listFields.includes(key)) {
+                        processed[key] = toList(value);
+                    } else if (key === 'workExperience') {
+                        // If majority of non-empty lines start with a bullet marker, treat as list
+                        const lines = value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+                        const bulletish = lines.filter(l => /^[-*•]/.test(l)).length;
+                        if (lines.length && bulletish / lines.length >= 0.5) {
+                            processed[key] = toList(value);
+                        } else {
+                            processed[key] = toParagraphs(value);
+                        }
+                    } else {
+                        processed[key] = toParagraphs(value);
+                    }
                 }
-                
+
+                let resumeHTML = '';
+                switch (currentTemplate) {
+                    case 'modern':
+                        resumeHTML = generateModernTemplate(fullName, email, phone, processed.objective, processed.education, processed.workExperience, processed.skills, processed.achievements, processed.projects, processed.references);
+                        break;
+                    case 'professional':
+                        resumeHTML = generateProfessionalTemplate(fullName, email, phone, processed.objective, processed.education, processed.workExperience, processed.skills, processed.achievements, processed.projects, processed.references);
+                        break;
+                    default:
+                        resumeHTML = generateClassicTemplate(fullName, email, phone, processed.objective, processed.education, processed.workExperience, processed.skills, processed.achievements, processed.projects, processed.references);
+                }
+
                 resumeOutput.innerHTML = resumeHTML;
-                previewContainer.classList.add("active");
-                
-                // scroll to preview if on mobile
+                previewContainer.classList.add('active');
                 if (window.innerWidth <= 768) {
                     previewContainer.scrollIntoView({ behavior: 'smooth' });
                 }
