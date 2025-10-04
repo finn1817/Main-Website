@@ -1,5 +1,22 @@
 /* Breadcrumb Navigation Component for Dan Finn's Website */
 
+/* EARLY HARD OVERRIDES (placed high so even stale cached truncations still include them) */
+body.dark .breadcrumb {
+  background: #0b121b !important; /* fully opaque dark surface */
+  border-color: rgba(255,255,255,0.25) !important;
+}
+body.dark .breadcrumb a,
+body.dark .breadcrumb .current {
+  color: #ffffff !important; /* pure white for max contrast */
+  font-weight: 600 !important;
+  text-shadow: 0 0 3px #000, 0 0 6px #000; /* glow outline to survive busy bg */
+}
+body.dark .breadcrumb .current {
+  background: #0d4fa8 !important; /* solid pill so text never blends */
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.6) !important;
+}
+
+
 .breadcrumb {
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
