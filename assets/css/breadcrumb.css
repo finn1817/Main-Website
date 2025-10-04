@@ -131,11 +131,6 @@ body:not(.dark) .breadcrumb a:hover {
   transform: translateY(-1px);
 }
 
-/* Dark mode links */
-body.dark .breadcrumb a {
-  color: rgba(255, 255, 255, 0.8);
-}
-
 body.dark .breadcrumb a:hover {
   color: #4dabf7;
   background: rgba(77, 171, 247, 0.1);
