@@ -366,162 +366,90 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
     
-    // download as DOCX
+    // download as DOCX (refactored & structured parsing)
     downloadDocxBtn.addEventListener("click", function() {
         showLoading();
-        
         try {
-            const Document = docx.Document;
-            const Packer = docx.Packer;
-            const Paragraph = docx.Paragraph;
-            const TextRun = docx.TextRun;
-            const HeadingLevel = docx.HeadingLevel;
-            
-            // create a new document
-            const doc = new Document();
-            
-            // add content based on form values
-            const fullName = document.getElementById("fullName").value;
-            const email = document.getElementById("email").value;
-            const phone = document.getElementById("phone").value;
-            const objective = document.getElementById("objective").value;
-            const education = document.getElementById("education").value;
-            const workExperience = document.getElementById("workExperience").value;
-            const skills = document.getElementById("skills").value;
-            const achievements = document.getElementById("achievements").value;
-            const projects = document.getElementById("projects").value;
-            const references = document.getElementById("references").value;
-            
-            // create document sections
+            const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
+
+            const getVal = id => document.getElementById(id).value.trim();
+            const fullName = getVal("fullName");
+            const email = getVal("email");
+            const phone = getVal("phone");
+            const objective = getVal("objective");
+            const education = getVal("education");
+            const workExperience = getVal("workExperience");
+            const skills = getVal("skills");
+            const achievements = getVal("achievements");
+            const projects = getVal("projects");
+            const references = getVal("references");
+
+            // Helpers
+            const blank = () => new Paragraph({ text: "" });
+            const heading = (text) => new Paragraph({ text, heading: HeadingLevel.HEADING_2 });
+            const para = (text) => new Paragraph(text);
+            const bullet = (text) => new Paragraph({ text, bullet: { level: 0 } });
+
+            const splitLines = (val) => val.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+
+            const pushMultiline = (label, raw, opts = {}) => {
+                if (!raw) return;
+                sections.push(heading(label));
+                const lines = splitLines(raw);
+                // treat bullet style lines specially
+                lines.forEach(line => {
+                    const cleaned = line.replace(/^[-*•\d).\s]+/, '').trim();
+                    if (/^[-*•]/.test(line) || opts.forceBullets) {
+                        sections.push(bullet(cleaned));
+                    } else {
+                        sections.push(para(cleaned));
+                    }
+                });
+                sections.push(blank());
+            };
+
             const sections = [];
-            
-            // personal info
-            sections.push(
-                new Paragraph({
-                    text: fullName,
-                    heading: HeadingLevel.HEADING_1,
-                    thematicBreak: true
-                }),
-                new Paragraph({
-                    children: [
-                        new TextRun({ text: "Email: ", bold: true }),
-                        new TextRun(email),
-                        new TextRun({ text: " | Phone: ", bold: true }),
-                        new TextRun(phone)
-                    ]
-                }),
-                new Paragraph({ text: "" })
-            );
-            
-            // objective
+            // Header
+            sections.push(new Paragraph({ text: fullName || "Unnamed", heading: HeadingLevel.HEADING_1, thematicBreak: true }));
+            sections.push(new Paragraph({
+                children: [
+                    new TextRun({ text: "Email: ", bold: true }), new TextRun(email || "N/A"),
+                    new TextRun({ text: "  |  Phone: ", bold: true }), new TextRun(phone || "N/A")
+                ]
+            }));
+            sections.push(blank());
+
             if (objective) {
-                sections.push(
-                    new Paragraph({
-                        text: "PROFESSIONAL SUMMARY",
-                        heading: HeadingLevel.HEADING_2
-                    }),
-                    new Paragraph(objective),
-                    new Paragraph({ text: "" })
-                );
-            }
-            
-            // work experience
-            if (workExperience) {
-                sections.push(
-                    new Paragraph({
-                        text: "WORK EXPERIENCE",
-                        heading: HeadingLevel.HEADING_2
-                    })
-                );
-                workExperience.split("\n").forEach(function(line) {
-                    sections.push(new Paragraph(line));
+                sections.push(heading("PROFESSIONAL SUMMARY"));
+                // Split objective by double newlines to paragraphs
+                objective.split(/\n{2,}/).map(b => b.trim()).filter(Boolean).forEach(block => {
+                    sections.push(para(block.replace(/\n+/g, ' ')));
                 });
-                sections.push(new Paragraph({ text: "" }));
+                sections.push(blank());
             }
-            
-            // education
-            if (education) {
-                sections.push(
-                    new Paragraph({
-                        text: "EDUCATION",
-                        heading: HeadingLevel.HEADING_2
-                    })
-                );
-                education.split("\n").forEach(function(line) {
-                    sections.push(new Paragraph(line));
-                });
-                sections.push(new Paragraph({ text: "" }));
-            }
-            
-            // skills
-            if (skills) {
-                sections.push(
-                    new Paragraph({
-                        text: "SKILLS",
-                        heading: HeadingLevel.HEADING_2
-                    })
-                );
-                skills.split("\n").forEach(function(line) {
-                    sections.push(new Paragraph(line));
-                });
-                sections.push(new Paragraph({ text: "" }));
-            }
-            
-            // achievements
-            if (achievements) {
-                sections.push(
-                    new Paragraph({
-                        text: "ACHIEVEMENTS & AWARDS",
-                        heading: HeadingLevel.HEADING_2
-                    })
-                );
-                achievements.split("\n").forEach(function(line) {
-                    sections.push(new Paragraph(line));
-                });
-                sections.push(new Paragraph({ text: "" }));
-            }
-            
-            // projects
-            if (projects) {
-                sections.push(
-                    new Paragraph({
-                        text: "PROJECTS & PUBLICATIONS",
-                        heading: HeadingLevel.HEADING_2
-                    })
-                );
-                projects.split("\n").forEach(function(line) {
-                    sections.push(new Paragraph(line));
-                });
-                sections.push(new Paragraph({ text: "" }));
-            }
-            
-            // references
-            if (references) {
-                sections.push(
-                    new Paragraph({
-                        text: "REFERENCES",
-                        heading: HeadingLevel.HEADING_2
-                    })
-                );
-                references.split("\n").forEach(function(line) {
-                    sections.push(new Paragraph(line));
-                });
-                sections.push(new Paragraph({ text: "" }));
-            }
-            
-            // add all sections to the document
-            doc.addSection({
-                children: sections
+
+            pushMultiline("WORK EXPERIENCE", workExperience);
+            pushMultiline("EDUCATION", education);
+            pushMultiline("SKILLS", skills, { forceBullets: true });
+            pushMultiline("ACHIEVEMENTS & AWARDS", achievements, { forceBullets: true });
+            pushMultiline("PROJECTS & PUBLICATIONS", projects, { forceBullets: false });
+            pushMultiline("REFERENCES", references);
+
+            const doc = new Document({
+                sections: [ { properties: {}, children: sections } ]
             });
-            
-            // generate and save the document
-            Packer.toBlob(doc).then(function(blob) {
-                saveAs(blob, fullName.replace(/\s+/g, "_") + "_Resume.docx");
+
+            Packer.toBlob(doc).then(blob => {
+                saveAs(blob, (fullName || 'Resume').replace(/\s+/g, '_') + "_Resume.docx");
                 hideLoading();
                 showToast("Word document downloaded successfully");
+            }).catch(err => {
+                console.error("Packer error generating Word document:", err);
+                hideLoading();
+                showToast("Error generating Word document. Please try again.", "error");
             });
         } catch (error) {
-            console.error("Error generating Word document:", error);
+            console.error("Unexpected error generating Word document:", error);
             hideLoading();
             showToast("Error generating Word document. Please try again.", "error");
         }
