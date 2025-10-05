@@ -56,100 +56,8 @@
       --background-image: linear-gradient(135deg, #ff9a56 0%, #ffad85 50%, #ffc3a0 100%);
     }
 
-    /* Ocean Theme */
-    body.ocean {
-      --primary-gradient: linear-gradient(135deg, #006994, #0099cc);
-      --secondary-gradient: linear-gradient(135deg, #20b2aa, #48cae4);
-      --celebration-gradient: linear-gradient(135deg, #006994, #0099cc, #20b2aa, #48cae4);
-      --card-glass: rgba(0,50,100,0.25);
-      --text-color: #ffffff;
-      --background-image: linear-gradient(135deg, #023047 0%, #126782 50%, #219ebc 100%);
-    }
-
-    /* Forest Theme */
-    body.forest {
-      --primary-gradient: linear-gradient(135deg, #333333, #666666);
-      --secondary-gradient: linear-gradient(135deg, #666666, #999999);
-      --celebration-gradient: linear-gradient(135deg, #000000, #333333, #666666, #999999);
-      --card-glass: rgba(50,50,50,0.3);
-      --text-color: #ffffff;
-      --background-image: linear-gradient(135deg, #1a1a1a 0%, #333333 50%, #666666 100%);
-    }
-
-    /* Purple Theme */
-    body.purple {
-      --primary-gradient: linear-gradient(135deg, #6a4c93, #8b5fbf);
-      --secondary-gradient: linear-gradient(135deg, #c77dff, #e0aaff);
-      --celebration-gradient: linear-gradient(135deg, #6a4c93, #8b5fbf, #c77dff, #e0aaff);
-      --card-glass: rgba(106,76,147,0.2);
-      --text-color: #ffffff;
-      --background-image: linear-gradient(135deg, #3c1361 0%, #5a189a 50%, #7209b7 100%);
-    }
-
-    /* Gold Theme */
-    body.gold {
-      --primary-gradient: linear-gradient(135deg, #666666, #999999);
-      --secondary-gradient: linear-gradient(135deg, #000000, #333333);
-      --celebration-gradient: linear-gradient(135deg, #000000, #333333, #666666, #999999);
-      --card-glass: rgba(100,100,100,0.2);
-      --text-color: #ffffff;
-      --background-image: linear-gradient(135deg, #333333 0%, #666666 50%, #999999 100%);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: var(--background-image);
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      color: var(--text-color);
-      overflow-x: hidden;
-      overflow-y: auto;
-      position: relative;
-      padding-top: 90px;
-      transition: all var(--transition-speed) ease;
-    }
-
-    body.dark { color: var(--text-color); }
-
-    @keyframes gradient-shift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* Confetti Animation */
-    .confetti {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background: #cccccc;
-      animation: confetti-fall 3s linear infinite;
-    }
-
-    .confetti:nth-child(odd) {
-      background: #666666;
-      width: 8px;
-      height: 8px;
-      animation-duration: 2.5s;
-    }
-
-    .confetti:nth-child(3n) {
-      background: #999999;
-      width: 6px;
-      height: 6px;
-      animation-duration: 3.5s;
-    }
+    /* Removed old multi-theme dropdown styles (replaced by global simple toggle) */
+    /* (Note: stray declarations cleaned up after refactor) */
 
     @keyframes confetti-fall {
       0% {
@@ -738,53 +646,14 @@
   @media (max-width:940px){ .fitz-static { width:180px; right:20px; } }
   @media (max-width:760px){ .fitz-static { top:auto; bottom:12px; transform:none; width:150px; right:12px; } }
   </style>
+ </style>
 </head>
-<body class="light">
+<body>
   <!-- Fitz companion + toast -->
   <div class="fitz-static" aria-hidden="true">
     <img src="assets/images/fitz.png" alt="Fitz the dog" loading="lazy" decoding="async">
   </div>
-  <div class="theme-dropdown" id="themeDropdown">
-    <button class="theme-toggle-btn" id="themeToggleBtn">
-      <span id="currentThemeIcon">🌙</span>
-      <span>Theme</span>
-      <span style="font-size: 0.8em;">▼</span>
-    </button>
-    <div class="theme-dropdown-menu" id="themeDropdownMenu">
-      <div class="theme-option" data-theme="light">
-        <span class="theme-icon">☀️</span>
-        <span>Light</span>
-      </div>
-      <div class="theme-option" data-theme="dark">
-        <span class="theme-icon">🌙</span>
-        <span>Dark</span>
-      </div>
-      <div class="theme-option" data-theme="neon">
-        <span class="theme-icon">⚡</span>
-        <span>Neon</span>
-      </div>
-      <div class="theme-option" data-theme="sunset">
-        <span class="theme-icon">🌅</span>
-        <span>Sunset</span>
-      </div>
-      <div class="theme-option" data-theme="ocean">
-        <span class="theme-icon">🌊</span>
-        <span>Ocean</span>
-      </div>
-      <div class="theme-option" data-theme="forest">
-        <span class="theme-icon">🌲</span>
-        <span>Forest</span>
-      </div>
-      <div class="theme-option" data-theme="purple">
-        <span class="theme-icon">💜</span>
-        <span>Purple</span>
-      </div>
-      <div class="theme-option" data-theme="gold">
-        <span class="theme-icon">✨</span>
-        <span>Gold</span>
-      </div>
-    </div>
-  </div>
+  <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme" style="position:fixed;top:20px;right:20px;z-index:3600;">🌙</button>
   <!-- Confetti Elements -->
   <div class="confetti" style="left: 10%; animation-delay: 0s;"></div>
   <div class="confetti" style="left: 20%; animation-delay: 0.2s;"></div>
@@ -978,79 +847,27 @@
       if (document.hidden) memoryManager.cleanup();
     });
 
-    // Theme system (local to this page only)
-    const CONGRATS_THEME_KEY = 'congrats_page_theme';
-    const bodyEl = document.body;
-    const themeDropdown = document.getElementById('themeDropdown');
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const themeDropdownMenu = document.getElementById('themeDropdownMenu');
-    const currentThemeIcon = document.getElementById('currentThemeIcon');
-    
-    const themes = {
-      light: { icon: '☀️', name: 'Light' },
-      dark: { icon: '🌙', name: 'Dark' },
-      neon: { icon: '⚡', name: 'Neon' },
-      sunset: { icon: '🌅', name: 'Sunset' },
-      ocean: { icon: '🌊', name: 'Ocean' },
-      forest: { icon: '🌲', name: 'Forest' },
-      purple: { icon: '💜', name: 'Purple' },
-      gold: { icon: '✨', name: 'Gold' }
-    };
-
-    function getCurrentTheme() {
-      return localStorage.getItem(CONGRATS_THEME_KEY) || 'light';
-    }
-
-    function applyTheme(themeName) {
-      // Remove all theme classes
-      Object.keys(themes).forEach(theme => {
-        bodyEl.classList.remove(theme);
-      });
-      
-      // Apply new theme
-      bodyEl.classList.add(themeName);
-      localStorage.setItem(CONGRATS_THEME_KEY, themeName);
-      
-      // Update UI
-      currentThemeIcon.textContent = themes[themeName].icon;
-      
-      // Update active state in dropdown
-      document.querySelectorAll('.theme-option').forEach(option => {
-        option.classList.toggle('active', option.dataset.theme === themeName);
-      });
-    }
-
-    // Initialize theme
-    applyTheme(getCurrentTheme());
-
-    // Theme dropdown toggle with memory management
-    const themeToggleHandler = (e) => {
-      if (memoryManager.isCleanedUp) return;
-      e.stopPropagation();
-      themeDropdown.classList.toggle('open');
-    };
-    memoryManager.addEventListener(themeToggleBtn, 'click', themeToggleHandler);
-
-    // Close dropdown when clicking outside
-    const documentClickHandler = (e) => {
-      if (memoryManager.isCleanedUp) return;
-      if (!themeDropdown.contains(e.target)) {
-        themeDropdown.classList.remove('open');
-      }
-    };
-    memoryManager.addEventListener(document, 'click', documentClickHandler);
-
-    // Handle theme selection
-    document.querySelectorAll('.theme-option').forEach(option => {
-      const themeSelectHandler = (e) => {
-        if (memoryManager.isCleanedUp) return;
-        e.stopPropagation();
-        const themeName = option.dataset.theme;
-        applyTheme(themeName);
-        themeDropdown.classList.remove('open');
+    // Global simple theme toggle (light/dark) consistent with rest of site
+    (function initGlobalThemeToggle(){
+      const toggleBtn = document.getElementById('theme-toggle');
+      if(!toggleBtn) return;
+      const apply = (mode) => {
+        if(mode === 'dark') {
+          document.body.classList.add('dark');
+          toggleBtn.textContent = '☀️';
+        } else {
+          document.body.classList.remove('dark');
+          toggleBtn.textContent = '🌙';
+        }
       };
-      memoryManager.addEventListener(option, 'click', themeSelectHandler);
-    });
+      const saved = localStorage.getItem('theme') || 'light';
+      apply(saved);
+      memoryManager.addEventListener(toggleBtn,'click',()=>{
+        const next = document.body.classList.contains('dark') ? 'light' : 'dark';
+        localStorage.setItem('theme', next);
+        apply(next);
+      });
+    })();
 
     // Confetti management with memory cleanup
     let maxConfettiInstances = 3;
