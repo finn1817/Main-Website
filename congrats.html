@@ -732,8 +732,11 @@
     }
     /* Fitz companion shared styling */
   /* Static Fitz image */
-  .fitz-static { position:fixed; bottom:12px; right:12px; width:140px; border-radius:18px; overflow:hidden; box-shadow:0 6px 24px rgba(0,0,0,0.55); opacity:.95; }
+  .fitz-static { position:fixed; top:50%; right:44px; transform:translateY(-50%); width:260px; border-radius:24px; overflow:hidden; box-shadow:0 12px 36px rgba(0,0,0,0.55); opacity:.98; background:#111; z-index:1200; }
   .fitz-static img { width:100%; height:auto; display:block; }
+  @media (max-width:1150px){ .fitz-static { width:210px; right:30px; } }
+  @media (max-width:940px){ .fitz-static { width:180px; right:20px; } }
+  @media (max-width:760px){ .fitz-static { top:auto; bottom:12px; transform:none; width:150px; right:12px; } }
   </style>
 </head>
 <body class="light">

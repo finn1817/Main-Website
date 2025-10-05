@@ -46,8 +46,11 @@
     --ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);
   }
   /* Static Fitz image styling */
-  .fitz-static { position:fixed; bottom:12px; right:12px; width:130px; border-radius:16px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.55); opacity:0.92; }
+  .fitz-static { position:fixed; top:50%; right:40px; transform:translateY(-50%); width:240px; border-radius:22px; overflow:hidden; box-shadow:0 10px 32px rgba(0,0,0,0.55); opacity:0.98; z-index:500; background:#022c22; }
   .fitz-static img { width:100%; height:auto; display:block; }
+  @media (max-width:1100px){ .fitz-static { width:190px; right:24px; } }
+  @media (max-width:900px){ .fitz-static { width:160px; right:16px; } }
+  @media (max-width:760px){ .fitz-static { top:auto; bottom:12px; transform:none; width:140px; right:12px; } }
   
   * { 
     box-sizing: border-box; 
