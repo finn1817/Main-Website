@@ -45,6 +45,33 @@
     --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);
   }
+  /* Light mode overrides */
+  body.light-mode {
+    --surface: #ffffff;
+    --surface-light: rgba(255,255,255,0.9);
+    --surface-border: rgba(0,0,0,0.08);
+    --text: #022c22;
+    --text-muted: #065f46;
+    --text-dim: #047857;
+    background: linear-gradient(135deg, #f0fff9 0%, #d9f5e8 50%, #c5ecdf 100%);
+    color: var(--text);
+  }
+  body.light-mode .discovery-badge { color:#064e3b; }
+  body.light-mode .action-btn.primary,
+  body.light-mode .action-btn.secondary { color:#064e3b; }
+
+  /* Fitz companion (shared styling) */
+  .fitz-companion { position: fixed; bottom: 18px; right: 18px; width: 90px; height: 90px; border-radius: 18px; background: linear-gradient(135deg,var(--primary),var(--accent)); box-shadow:0 6px 18px rgba(0,0,0,0.35),0 0 0 3px rgba(255,255,255,0.08); display:flex;align-items:center;justify-content:center; cursor:pointer; z-index:9999; backdrop-filter: blur(8px); overflow:hidden; isolation:isolate; transition: transform .45s var(--ease-out), box-shadow .45s var(--ease-out);}  
+  .fitz-companion:hover { transform: translateY(-4px) rotate(2deg); box-shadow:0 10px 28px rgba(0,0,0,0.5),0 0 0 3px rgba(255,255,255,0.15);}  
+  .fitz-companion:active { transform: translateY(0) scale(.95);}  
+  .fitz-img { width:100%; height:100%; object-fit:cover; filter:saturate(1.1) contrast(1.05); animation: fitz-bob 6s ease-in-out infinite; }  
+  body.light-mode .fitz-img { filter:saturate(1.2) contrast(1.05);}  
+  @keyframes fitz-bob { 0%,100% { transform: translateY(0) scale(1);} 50% { transform: translateY(-6px) scale(1.02);} }  
+  .fitz-toast { position:fixed; bottom:120px; right:24px; background:var(--surface-light); color:var(--text); padding:.65rem 1rem; border-radius:12px; font-size:.75rem; opacity:0; transform:translateY(8px); pointer-events:none; box-shadow:var(--shadow-md); transition:opacity .35s, transform .35s; }  
+  .fitz-toast.show { opacity:1; transform:translateY(0);}  
+  .theme-toggle-btn { position:fixed; top:18px; right:18px; width:44px; height:44px; border-radius:50%; background:var(--surface-light); border:1px solid var(--surface-border); color:var(--text); cursor:pointer; display:flex;align-items:center;justify-content:center; font-size:1.2rem; box-shadow:var(--shadow-md); backdrop-filter: blur(8px); transition: background .3s, transform .3s; z-index:9999; }
+  .theme-toggle-btn:hover { transform: translateY(-3px); }
+  body.light-mode .theme-toggle-btn { background:#ffffffcc; }
   
   * { 
     box-sizing: border-box; 
@@ -352,6 +379,11 @@
 </style>
 </head>
 <body>
+  <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle light / dark">🌙</button>
+  <div id="fitzCompanion" class="fitz-companion" title="Pet Fitz (0)" aria-label="Fitz the discovery guardian" role="button">
+    <img src="assets/images/fitz.png" class="fitz-img" alt="Fitz the dog" loading="lazy" decoding="async">
+  </div>
+  <div id="fitzToast" class="fitz-toast" role="status" aria-live="polite"></div>
   <canvas id="codeRain" aria-hidden="true"></canvas>
   
   <main class="discovery-container">
@@ -654,6 +686,36 @@
     );
     
     console.log('🚀 Discovery chamber initialized with 10-second auto-cleanup');
+
+    /* Theme toggle for discovery chamber */
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const storedDiscoveryTheme = localStorage.getItem('portalTheme');
+    if (storedDiscoveryTheme === 'light') { document.body.classList.add('light-mode'); themeToggleBtn.textContent='🌙'; }
+    else { themeToggleBtn.textContent='☀️'; }
+    const toggleTheme = () => { document.body.classList.toggle('light-mode'); const light=document.body.classList.contains('light-mode'); localStorage.setItem('portalTheme', light ? 'light':'dark'); themeToggleBtn.textContent = light ? '🌙':'☀️'; };
+    memoryManager.addEventListener(themeToggleBtn, 'click', toggleTheme);
+
+    /* Fitz companion shared pet count */
+    const fitz = document.getElementById('fitzCompanion');
+    const fitzToast = document.getElementById('fitzToast');
+    let petCount = parseInt(localStorage.getItem('fitzPets')||'0',10);
+    const updateTitle = () => { fitz.title = `Pet Fitz (${petCount})`; };
+    updateTitle();
+    const showFitzToast = (msg) => { fitzToast.textContent=msg; fitzToast.classList.add('show'); const tId=setTimeout(()=> fitzToast.classList.remove('show'), 2200); memoryManager.addTimeout(tId); };
+    const petMessages = ['Investigation approved','Fitz logs your pet','Stealth tail-wag','You are being trusted','Guardian satisfied','Patience level: High'];
+    const secretThreshold = 12; // second secret sets new threshold
+    const fitzClick = () => {
+      if (memoryManager.isCleanedUp) return;
+      petCount++; localStorage.setItem('fitzPets', petCount); updateTitle();
+      if (petCount === secretThreshold) { showFitzToast('Ultra secret: returning to gateway...'); const toId=setTimeout(()=> { if(!memoryManager.isCleanedUp) window.location.href='portal.html'; }, 1600); memoryManager.addTimeout(toId); }
+      else { showFitzToast(petMessages[Math.floor(Math.random()*petMessages.length)] + ` (${petCount})`); }
+      fitz.style.transform='translateY(-6px) scale(1.1) rotate(-3deg)';
+      memoryManager.addTimeout(setTimeout(()=> { if(!memoryManager.isCleanedUp) fitz.style.transform=''; }, 320));
+    };
+    memoryManager.addEventListener(fitz,'click', fitzClick);
+
+    const originalCleanup = memoryManager.cleanup.bind(memoryManager);
+    memoryManager.cleanup = () => { originalCleanup(); fitzToast.classList.remove('show'); };
   </script>
 </body>
 </html>

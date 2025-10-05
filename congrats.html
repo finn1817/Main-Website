@@ -730,9 +730,25 @@
         0 20px 60px rgba(150, 150, 150, 0.3);
       border-color: rgba(200, 200, 200, 0.3);
     }
+    /* Fitz companion shared styling */
+    .fitz-companion { position:fixed; bottom:18px; right:18px; width:95px; height:95px; border-radius:22px; background:linear-gradient(135deg,#0d6efd,#1a8cff); box-shadow:0 8px 26px rgba(0,0,0,0.4),0 0 0 3px rgba(255,255,255,0.12); overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter: blur(10px); z-index:11900; transition:transform .45s, box-shadow .45s; }
+    body.dark .fitz-companion { background:linear-gradient(135deg,#004b9a,#006bce); }
+    .fitz-companion:hover { transform:translateY(-4px) rotate(-3deg); box-shadow:0 14px 34px rgba(0,0,0,0.55),0 0 0 3px rgba(255,255,255,0.15); }
+    .fitz-companion:active { transform:translateY(0) scale(.95); }
+    .fitz-img { width:100%; height:100%; object-fit:cover; filter:saturate(1.08) contrast(1.05); animation: fitz-bob 6s ease-in-out infinite; }
+    body.light .fitz-img { filter:saturate(1.15) contrast(1.05); }
+    @keyframes fitz-bob { 0%,100% { transform: translateY(0) scale(1);} 50% { transform: translateY(-7px) scale(1.03);} }
+    .fitz-toast { position:fixed; bottom:122px; right:24px; background:rgba(0,0,0,0.6); color:#fff; padding:.65rem 1rem; border-radius:14px; font-size:.75rem; opacity:0; transform:translateY(8px); pointer-events:none; box-shadow:0 6px 20px rgba(0,0,0,.4); backdrop-filter: blur(8px); transition:opacity .35s, transform .35s; z-index:11950; }
+    body.light .fitz-toast { background:rgba(255,255,255,0.7); color:#111; }
+    .fitz-toast.show { opacity:1; transform:translateY(0); }
   </style>
 </head>
 <body class="light">
+  <!-- Fitz companion + toast -->
+  <div id="fitzCompanion" class="fitz-companion" title="Pet Fitz (0)" aria-label="Fitz the celebration guardian" role="button">
+    <img src="assets/images/fitz.png" alt="Fitz the dog" class="fitz-img" loading="lazy" decoding="async">
+  </div>
+  <div id="fitzToast" class="fitz-toast" role="status" aria-live="polite"></div>
   <div class="theme-dropdown" id="themeDropdown">
     <button class="theme-toggle-btn" id="themeToggleBtn">
       <span id="currentThemeIcon">🌙</span>
@@ -1338,6 +1354,36 @@
     };
     memoryManager.addEventListener(document, 'keydown', escapeHandler);
     
+    /* Fitz companion logic (shared across Easter eggs) */
+    const fitz = document.getElementById('fitzCompanion');
+    const fitzToast = document.getElementById('fitzToast');
+    if (fitz && fitzToast) {
+      let petCount = parseInt(localStorage.getItem('fitzPets')||'0',10);
+      const updateTitle = () => { fitz.title = `Pet Fitz (${petCount})`; };
+      updateTitle();
+      const showFitzToast = (msg) => {
+        fitzToast.textContent = msg;
+        fitzToast.classList.add('show');
+        const tId = setTimeout(()=> fitzToast.classList.remove('show'), 2200);
+        memoryManager.addTimeout(tId);
+      };
+      const msgs = ['System recalibrated','Fitz nods','Celebration secured','Another pet logged','Energy levels rising','Good human'];
+      const secretThreshold = 5; // first secret on this page
+      const fitzClick = () => {
+        if (memoryManager.isCleanedUp) return;
+        petCount++; localStorage.setItem('fitzPets', petCount); updateTitle();
+        if (petCount === secretThreshold) {
+          showFitzToast('Portal sequence primed! → Redirect...');
+          const toId = setTimeout(()=> { if(!memoryManager.isCleanedUp) window.location.href='portal.html'; }, 1600); memoryManager.addTimeout(toId);
+        } else {
+          showFitzToast(msgs[Math.floor(Math.random()*msgs.length)] + ` (${petCount})`);
+        }
+        fitz.style.transform='translateY(-6px) scale(1.08) rotate(3deg)';
+        memoryManager.addTimeout(setTimeout(()=> { if(!memoryManager.isCleanedUp) fitz.style.transform=''; }, 300));
+      };
+      memoryManager.addEventListener(fitz, 'click', fitzClick);
+    }
+
     console.log('🚀 Congrats page initialized with 10-second auto-cleanup');
   </script>
 </body>
