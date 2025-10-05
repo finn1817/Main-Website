@@ -46,48 +46,9 @@
     --ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);
   }
 
-  /* Light mode overrides */
-  body.light-mode {
-    --surface: #ffffff;
-    --surface-light: rgba(255,255,255,0.85);
-    --surface-border: rgba(0,0,0,0.08);
-    --text: #0f172a;
-    --text-muted: #475569;
-    --text-dim: #64748b;
-    background: linear-gradient(135deg, #eef2f7 0%, #d9e3f2 100%);
-    color: var(--text);
-  }
-  body.light-mode .gateway-badge,
-  body.light-mode .action-btn.primary { color:#fff; }
-  body.light-mode .action-btn.secondary { color:#fff; }
-  body.light-mode .portal-glow { opacity:.25; }
-  body.light-mode .copy-btn { background: rgba(0,0,0,0.05); }
-  body.light-mode .copy-btn:hover { background: rgba(0,0,0,0.1); }
-
-  /* Fitz Companion */
-  .fitz-companion {
-    position: fixed; 
-    bottom: 18px; 
-    right: 18px; 
-    width: 90px; 
-    height: 90px; 
-    border-radius: 18px; 
-    background: linear-gradient(135deg,var(--primary),var(--accent));
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35),0 0 0 3px rgba(255,255,255,0.08);
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer; z-index:9999; backdrop-filter: blur(8px);
-    overflow:hidden; isolation:isolate; transition: transform .4s var(--ease-out), box-shadow .4s var(--ease-out);
-  }
-  .fitz-companion:hover { transform: translateY(-4px) rotate(-2deg); box-shadow:0 10px 28px rgba(0,0,0,0.5),0 0 0 3px rgba(255,255,255,0.15); }
-  .fitz-companion:active { transform: translateY(0) scale(.96); }
-  .fitz-img { width:100%; height:100%; object-fit:cover; filter: saturate(1.05) contrast(1.05); animation: fitz-bob 6s ease-in-out infinite; }
-  body.light-mode .fitz-img { filter: saturate(1.15) contrast(1.05); }
-  @keyframes fitz-bob { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-6px) scale(1.02); } }
-  .fitz-toast { position:fixed; bottom:120px; right:24px; background:var(--surface-light); color:var(--text); padding:.65rem 1rem; border-radius:12px; font-size:.75rem; opacity:0; transform:translateY(8px); pointer-events:none; box-shadow:var(--shadow-md); transition:opacity .35s, transform .35s; }
-  .fitz-toast.show { opacity:1; transform:translateY(0); }
-  .theme-toggle-btn { position:fixed; top:18px; right:18px; width:44px; height:44px; border-radius:50%; background:var(--surface-light); border:1px solid var(--surface-border); color:var(--text); cursor:pointer; display:flex;align-items:center;justify-content:center; font-size:1.2rem; box-shadow:var(--shadow-md); backdrop-filter: blur(8px); transition: background .3s, transform .3s; z-index:9999; }
-  .theme-toggle-btn:hover { transform: translateY(-3px); }
-  body.light-mode .theme-toggle-btn { background:#ffffffcc; }
+  /* Static Fitz image styling (simple) */
+  .fitz-static { position:fixed; bottom:12px; right:12px; width:130px; border-radius:16px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.55); opacity:0.92; }
+  .fitz-static img { width:100%; height:auto; display:block; }
   
   * { 
     box-sizing: border-box; 
@@ -433,11 +394,9 @@
 </style>
 </head>
 <body>
-  <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle light / dark">🌙</button>
-  <div id="fitzCompanion" class="fitz-companion" title="Pet Fitz (0)" aria-label="Fitz the secret portal guardian" role="button">
-    <img src="assets/images/fitz.png" alt="Fitz the dog, secret portal guardian" class="fitz-img" loading="lazy" decoding="async">
+  <div class="fitz-static" aria-hidden="true">
+    <img src="assets/images/fitz.png" alt="Fitz the dog" loading="lazy" decoding="async">
   </div>
-  <div id="fitzToast" class="fitz-toast" role="status" aria-live="polite"></div>
   <canvas id="particles" aria-hidden="true"></canvas>
   <div id="chaseSquare" aria-hidden="true"></div>
   
@@ -834,62 +793,7 @@
     
     console.log('🚀 Portal initialized with 10-second auto-cleanup');
 
-    /* THEME TOGGLE (light/dark) */
-    const themeToggleBtn = document.getElementById('themeToggle');
-    const storedPortalTheme = localStorage.getItem('portalTheme');
-    if (storedPortalTheme === 'light') {
-      document.body.classList.add('light-mode');
-      themeToggleBtn.textContent = '🌙';
-    } else {
-      themeToggleBtn.textContent = '☀️';
-    }
-    const toggleTheme = () => {
-      document.body.classList.toggle('light-mode');
-      const light = document.body.classList.contains('light-mode');
-      localStorage.setItem('portalTheme', light ? 'light' : 'dark');
-      themeToggleBtn.textContent = light ? '🌙' : '☀️';
-    };
-    memoryManager.addEventListener(themeToggleBtn, 'click', toggleTheme);
-
-    /* FITZ COMPANION */
-    const fitz = document.getElementById('fitzCompanion');
-    const fitzToast = document.getElementById('fitzToast');
-    let petCount = parseInt(localStorage.getItem('fitzPets')||'0',10);
-    const updateTitle = () => { fitz.title = `Pet Fitz (${petCount})`; };
-    updateTitle();
-    const showFitzToast = (msg) => {
-      fitzToast.textContent = msg;
-      fitzToast.classList.add('show');
-      const tId = setTimeout(()=> fitzToast.classList.remove('show'), 2200);
-      memoryManager.addTimeout(tId);
-    };
-    const petMessages = [
-      'Boop!', 'Tail wag activated!', 'Security level: Cuddles',
-      'Portal integrity nominal.', 'Fitz approves this visit.', 'Legendary pet combo!'
-    ];
-    const secretThreshold = 7;
-    const fitzClick = () => {
-      if (memoryManager.isCleanedUp) return;
-      petCount++; localStorage.setItem('fitzPets', petCount); updateTitle();
-      if (petCount === secretThreshold) {
-        showFitzToast('Secret unlocked! Redirecting...');
-        const toId = setTimeout(()=> { if(!memoryManager.isCleanedUp) window.location.href='portal-2.html'; }, 1500);
-        memoryManager.addTimeout(toId);
-      } else {
-        const msg = petMessages[Math.floor(Math.random()*petMessages.length)];
-        showFitzToast(msg + ` (${petCount})`);
-      }
-      fitz.style.transform = 'translateY(-6px) scale(1.08) rotate(3deg)';
-      const rId = memoryManager.addTimeout(setTimeout(()=> { if(!memoryManager.isCleanedUp){ fitz.style.transform=''; } }, 300));
-    };
-    memoryManager.addEventListener(fitz, 'click', fitzClick);
-
-    // Clean Fitz elements on cleanup
-    const originalCleanup = memoryManager.cleanup.bind(memoryManager);
-    memoryManager.cleanup = () => {
-      originalCleanup();
-      fitzToast.classList.remove('show');
-    };
+    // (Removed interactive Fitz + theme toggle per user request; static image only)
   </script>
 </body>
 </html>

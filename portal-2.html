@@ -45,33 +45,9 @@
     --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);
   }
-  /* Light mode overrides */
-  body.light-mode {
-    --surface: #ffffff;
-    --surface-light: rgba(255,255,255,0.9);
-    --surface-border: rgba(0,0,0,0.08);
-    --text: #022c22;
-    --text-muted: #065f46;
-    --text-dim: #047857;
-    background: linear-gradient(135deg, #f0fff9 0%, #d9f5e8 50%, #c5ecdf 100%);
-    color: var(--text);
-  }
-  body.light-mode .discovery-badge { color:#064e3b; }
-  body.light-mode .action-btn.primary,
-  body.light-mode .action-btn.secondary { color:#064e3b; }
-
-  /* Fitz companion (shared styling) */
-  .fitz-companion { position: fixed; bottom: 18px; right: 18px; width: 90px; height: 90px; border-radius: 18px; background: linear-gradient(135deg,var(--primary),var(--accent)); box-shadow:0 6px 18px rgba(0,0,0,0.35),0 0 0 3px rgba(255,255,255,0.08); display:flex;align-items:center;justify-content:center; cursor:pointer; z-index:9999; backdrop-filter: blur(8px); overflow:hidden; isolation:isolate; transition: transform .45s var(--ease-out), box-shadow .45s var(--ease-out);}  
-  .fitz-companion:hover { transform: translateY(-4px) rotate(2deg); box-shadow:0 10px 28px rgba(0,0,0,0.5),0 0 0 3px rgba(255,255,255,0.15);}  
-  .fitz-companion:active { transform: translateY(0) scale(.95);}  
-  .fitz-img { width:100%; height:100%; object-fit:cover; filter:saturate(1.1) contrast(1.05); animation: fitz-bob 6s ease-in-out infinite; }  
-  body.light-mode .fitz-img { filter:saturate(1.2) contrast(1.05);}  
-  @keyframes fitz-bob { 0%,100% { transform: translateY(0) scale(1);} 50% { transform: translateY(-6px) scale(1.02);} }  
-  .fitz-toast { position:fixed; bottom:120px; right:24px; background:var(--surface-light); color:var(--text); padding:.65rem 1rem; border-radius:12px; font-size:.75rem; opacity:0; transform:translateY(8px); pointer-events:none; box-shadow:var(--shadow-md); transition:opacity .35s, transform .35s; }  
-  .fitz-toast.show { opacity:1; transform:translateY(0);}  
-  .theme-toggle-btn { position:fixed; top:18px; right:18px; width:44px; height:44px; border-radius:50%; background:var(--surface-light); border:1px solid var(--surface-border); color:var(--text); cursor:pointer; display:flex;align-items:center;justify-content:center; font-size:1.2rem; box-shadow:var(--shadow-md); backdrop-filter: blur(8px); transition: background .3s, transform .3s; z-index:9999; }
-  .theme-toggle-btn:hover { transform: translateY(-3px); }
-  body.light-mode .theme-toggle-btn { background:#ffffffcc; }
+  /* Static Fitz image styling */
+  .fitz-static { position:fixed; bottom:12px; right:12px; width:130px; border-radius:16px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.55); opacity:0.92; }
+  .fitz-static img { width:100%; height:auto; display:block; }
   
   * { 
     box-sizing: border-box; 
