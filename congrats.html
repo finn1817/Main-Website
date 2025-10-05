@@ -74,27 +74,6 @@
       position: relative;
     }
 
-    /* Fitz background image - subtle and centered */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 40%;
-      max-width: 600px;
-      min-width: 300px;
-      aspect-ratio: 1;
-      background: url('assets/images/fitz.png') center/contain no-repeat;
-      opacity: 0.15;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    body.dark::before {
-      opacity: 0.08;
-    }
-
     @keyframes confetti-fall {
       0% {
         transform: translateY(-100vh) rotate(0deg);
@@ -125,6 +104,35 @@
       overflow-x: hidden;
       padding-bottom: 110px;
       z-index: 1;
+    }
+
+    /* Fitz image on the modal */
+    .fitz-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      opacity: 0.9;
+      z-index: 2;
+    }
+
+    .fitz-modal img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @media (max-width: 768px) {
+      .fitz-modal {
+        width: 60px;
+        height: 60px;
+        top: 10px;
+        right: 10px;
+      }
     }
 
     body.dark .celebration-container { border: 1px solid rgba(255,255,255,0.12); }
@@ -425,15 +433,6 @@
       .subtitle {
         font-size: 1.2em;
       }
-
-      body::before {
-        width: 60%;
-        opacity: 0.12;
-      }
-
-      body.dark::before {
-        opacity: 0.06;
-      }
     }
     /* Tab bar and modal styles */
     .tab-bar {
@@ -634,6 +633,11 @@
 
   <!-- Main Celebration Content -->
   <div class="celebration-container">
+    <!-- Fitz image on modal -->
+    <div class="fitz-modal">
+      <img src="assets/images/fitz.png" alt="Fitz the dog" loading="lazy">
+    </div>
+    
     <div class="celebration-emoji" id="portalEmoji" title="" aria-label="Celebration Emoji">
       <div class="hold-indicator" id="holdIndicator"></div>
       🎉
