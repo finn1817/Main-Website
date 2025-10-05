@@ -639,14 +639,64 @@
       border-color: rgba(200, 200, 200, 0.3);
     }
     /* Fitz companion shared styling */
-  /* Static Fitz image */
-  .fitz-static { position:fixed; top:50%; right:44px; transform:translateY(-50%); width:260px; border-radius:24px; overflow:hidden; box-shadow:0 12px 36px rgba(0,0,0,0.55); opacity:.98; background:#111; z-index:1200; }
-  .fitz-static img { width:100%; height:auto; display:block; }
-  @media (max-width:1150px){ .fitz-static { width:210px; right:30px; } }
-  @media (max-width:940px){ .fitz-static { width:180px; right:20px; } }
-  @media (max-width:760px){ .fitz-static { top:auto; bottom:12px; transform:none; width:150px; right:12px; } }
+    /* Static Fitz image */
+    .fitz-static { 
+      position:fixed; 
+      top:50%; 
+      right:44px; 
+      transform:translateY(-50%); 
+      width:260px; 
+      border-radius:24px; 
+      overflow:hidden; 
+      box-shadow:0 12px 36px rgba(0,0,0,0.55); 
+      opacity:.98; 
+      background:#111; 
+      z-index:1200; 
+    }
+    .fitz-static img { 
+      width:100%; 
+      height:auto; 
+      display:block; 
+    }
+    @media (max-width:1150px){ 
+      .fitz-static { 
+        width:210px; 
+        right:30px; 
+      } 
+    }
+    @media (max-width:940px){ 
+      .fitz-static { 
+        width:180px; 
+        right:20px; 
+      } 
+    }
+    @media (max-width:760px){ 
+      .fitz-static { 
+        top:auto; 
+        bottom:12px; 
+        transform:none; 
+        width:150px; 
+        right:12px; 
+      } 
+    }
+
+    /* Toggle button styling */
+    .toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      padding: 10px 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5em;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .toggle-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.2);
+    }
   </style>
- </style>
 </head>
 <body>
   <!-- Fitz companion + toast -->
