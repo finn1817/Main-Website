@@ -59,6 +59,42 @@
     /* Removed old multi-theme dropdown styles (replaced by global simple toggle) */
     /* (Note: stray declarations cleaned up after refactor) */
 
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: auto;
+      font-family: 'Roboto', sans-serif;
+      background: var(--background-image) center/cover no-repeat fixed;
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Fitz background image - subtle and centered */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40%;
+      max-width: 600px;
+      min-width: 300px;
+      aspect-ratio: 1;
+      background: url('assets/images/fitz.png') center/contain no-repeat;
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body.dark::before {
+      opacity: 0.08;
+    }
+
     @keyframes confetti-fall {
       0% {
         transform: translateY(-100vh) rotate(0deg);
@@ -83,16 +119,12 @@
       animation: celebration-appear 1s ease-out 0.5s forwards;
       max-width: 600px;
       width: 90%;
-      /* keep container visible on smaller viewports */
       max-height: calc(100vh - 80px);
       overflow-y: auto;
       position: relative;
       overflow-x: hidden;
-      padding-bottom: 110px; /* ensure tabs always visible */
-      /* promote to its own compositing layer for crisper rendering */
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
-      will-change: transform;
+      padding-bottom: 110px;
+      z-index: 1;
     }
 
     body.dark .celebration-container { border: 1px solid rgba(255,255,255,0.12); }
@@ -393,6 +425,15 @@
       .subtitle {
         font-size: 1.2em;
       }
+
+      body::before {
+        width: 60%;
+        opacity: 0.12;
+      }
+
+      body.dark::before {
+        opacity: 0.06;
+      }
     }
     /* Tab bar and modal styles */
     .tab-bar {
@@ -499,87 +540,7 @@
       border: 1px solid rgba(255,255,255,0.2) !important;
     }
 
-    /* Theme Dropdown Styles */
-    .theme-dropdown {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 3600;
-    }
-
-    .theme-toggle-btn {
-      background: rgba(255,255,255,0.06);
-      color: white;
-      padding: 10px 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.08);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-weight: 500;
-      font-size: 1.05em;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      backdrop-filter: blur(8px);
-    }
-
-    .theme-toggle-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-      background: rgba(255,255,255,0.12);
-    }
-
-    .theme-dropdown-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: rgba(20,20,30,0.95);
-      border-radius: 12px;
-      padding: 8px;
-      min-width: 160px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.1);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.3s ease;
-      margin-top: 8px;
-    }
-
-    .theme-dropdown.open .theme-dropdown-menu {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .theme-option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      color: #e3e9f3;
-      font-size: 0.9em;
-    }
-
-    .theme-option:hover {
-      background: rgba(255,255,255,0.08);
-      transform: translateX(4px);
-    }
-
-    .theme-option.active {
-      background: var(--primary-gradient);
-      color: white;
-    }
-
-    .theme-icon {
-      font-size: 1.1em;
-      width: 20px;
-      text-align: center;
-    }
+    /* (Old theme dropdown styles removed) */
 
     /* Neon Theme Special Effects */
     body.neon .celebration-container {
@@ -638,47 +599,6 @@
         0 20px 60px rgba(150, 150, 150, 0.3);
       border-color: rgba(200, 200, 200, 0.3);
     }
-    /* Fitz companion shared styling */
-    /* Static Fitz image */
-    .fitz-static { 
-      position:fixed; 
-      top:50%; 
-      right:44px; 
-      transform:translateY(-50%); 
-      width:260px; 
-      border-radius:24px; 
-      overflow:hidden; 
-      box-shadow:0 12px 36px rgba(0,0,0,0.55); 
-      opacity:.98; 
-      background:#111; 
-      z-index:1200; 
-    }
-    .fitz-static img { 
-      width:100%; 
-      height:auto; 
-      display:block; 
-    }
-    @media (max-width:1150px){ 
-      .fitz-static { 
-        width:210px; 
-        right:30px; 
-      } 
-    }
-    @media (max-width:940px){ 
-      .fitz-static { 
-        width:180px; 
-        right:20px; 
-      } 
-    }
-    @media (max-width:760px){ 
-      .fitz-static { 
-        top:auto; 
-        bottom:12px; 
-        transform:none; 
-        width:150px; 
-        right:12px; 
-      } 
-    }
 
     /* Toggle button styling */
     .toggle-btn {
@@ -690,6 +610,7 @@
       font-size: 1.5em;
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
+      z-index: 3600;
     }
 
     .toggle-btn:hover {
@@ -699,11 +620,7 @@
   </style>
 </head>
 <body>
-  <!-- Fitz companion + toast -->
-  <div class="fitz-static" aria-hidden="true">
-    <img src="assets/images/fitz.png" alt="Fitz the dog" loading="lazy" decoding="async">
-  </div>
-  <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme" style="position:fixed;top:20px;right:20px;z-index:3600;">🌙</button>
+  <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme" style="position:fixed;top:20px;right:20px;">🌙</button>
   <!-- Confetti Elements -->
   <div class="confetti" style="left: 10%; animation-delay: 0s;"></div>
   <div class="confetti" style="left: 20%; animation-delay: 0.2s;"></div>
