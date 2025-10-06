@@ -7,6 +7,63 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="./assets/css/universal-search.css" rel="stylesheet">
   <script>
+    // Immediate inline theme manager for emergency fallback
+    window.__emergencyThemeManager = {
+      currentTheme: localStorage.getItem('theme') || 'light',
+      initialized: false,
+      
+      toggle() {
+        this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+        this.apply();
+      },
+      
+      apply() {
+        const body = document.body;
+        body.className = body.className.replace(/\b(light|dark|light-mode|dark-mode)\b/g, '');
+        body.classList.add(this.currentTheme, this.currentTheme + '-mode');
+        body.setAttribute('data-theme', this.currentTheme);
+        document.documentElement.setAttribute('data-theme', this.currentTheme);
+        localStorage.setItem('theme', this.currentTheme);
+        
+        // Update toggle buttons
+        document.querySelectorAll('#theme-toggle, .theme-toggle, .toggle-btn').forEach(btn => {
+          btn.textContent = this.currentTheme === 'dark' ? '☀️' : '🌙';
+          btn.setAttribute('aria-label', this.currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        });
+      },
+      
+      init() {
+        if (this.initialized) return;
+        this.initialized = true;
+        
+        this.apply();
+        document.querySelectorAll('#theme-toggle, .theme-toggle, .toggle-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.toggle();
+          });
+        });
+        console.log('🎨 Emergency theme manager initialized');
+      }
+    };
+    
+    // Apply theme immediately to prevent flash
+    window.__emergencyThemeManager.apply();
+    
+    // Setup toggle button listener immediately if possible
+    const setupEmergencyToggle = () => {
+      if (!window.themeManager && window.__emergencyThemeManager) {
+        window.__emergencyThemeManager.init();
+      }
+    };
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupEmergencyToggle);
+    } else {
+      setupEmergencyToggle();
+    }
+  </script>
+  <script>
     (function loadThemeManagerWithFallback() {
       if (window.__themeManagerLoaderRan) {
         return;
@@ -16,9 +73,16 @@
 
       const candidates = Array.from(new Set([
         './assets/js/theme-manager.js',
-        '/assets/js/theme-manager.js',
-        '/Main-Website/assets/js/theme-manager.js'
-      ]));
+        '/assets/js/theme-manager.js', 
+        '/Main-Website/assets/js/theme-manager.js',
+        'https://dfinn.me/Main-Website/assets/js/theme-manager.js',
+        'https://finn1817.github.io/Main-Website/assets/js/theme-manager.js',
+        'assets/js/theme-manager.js',
+        '../assets/js/theme-manager.js',
+        window.location.pathname.includes('Main-Website') 
+          ? window.location.pathname.split('Main-Website')[0] + 'Main-Website/assets/js/theme-manager.js'
+          : null
+      ].filter(Boolean)));
 
       const logPrefix = '[ThemeManager Loader]';
       let attemptIndex = 0;
@@ -31,6 +95,17 @@
 
         if (attemptIndex >= candidates.length) {
           console.error(`${logPrefix} failed to load script from all candidates`, candidates);
+          console.warn(`${logPrefix} using emergency inline theme manager`);
+          
+          // Initialize emergency theme manager
+          if (window.__emergencyThemeManager) {
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', () => window.__emergencyThemeManager.init());
+            } else {
+              window.__emergencyThemeManager.init();
+            }
+          }
+          
           return;
         }
 
@@ -44,13 +119,20 @@
         script.setAttribute('data-cfasync', 'false');
 
         script.onload = () => {
-          if (window.themeManager) {
-            console.info(`${logPrefix} loaded from ${path}`);
-          } else {
-            console.warn(`${logPrefix} script loaded from ${path} but themeManager is still undefined; trying next candidate.`);
-            script.remove();
-            tryNext();
-          }
+          // Give a brief moment for script to execute and define themeManager
+          setTimeout(() => {
+            if (window.themeManager) {
+              console.info(`${logPrefix} loaded from ${path}`);
+              // Disable emergency manager since real one loaded
+              if (window.__emergencyThemeManager) {
+                delete window.__emergencyThemeManager;
+              }
+            } else {
+              console.warn(`${logPrefix} script loaded from ${path} but themeManager is still undefined; trying next candidate.`);
+              script.remove();
+              tryNext();
+            }
+          }, 50);
         };
 
         script.onerror = () => {
@@ -65,6 +147,8 @@
       tryNext();
     })();
   </script>
+  <!-- Backup script tag as absolute fallback -->
+  <script src="https://finn1817.github.io/Main-Website/assets/js/theme-manager.js" defer onerror="console.warn('Backup theme-manager.js also failed')"></script>
   <style>
     /* css custom properties for consistent theming */
     :root {
