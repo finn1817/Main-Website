@@ -25,35 +25,21 @@ class AboutPageManager {
     console.log('✅ About page initialized successfully');
   }
 
-  // Theme Toggle Functionality (consistent with rest of site)
+  // Theme Toggle Functionality using global ThemeManager
   setupThemeToggle() {
     const toggleBtn = document.getElementById('theme-toggle');
     if (!toggleBtn) return;
 
-    const applyTheme = (mode) => {
-      if (mode === 'dark') {
-        document.body.classList.add('dark');
-        toggleBtn.textContent = '☀️';
-        toggleBtn.setAttribute('aria-label', 'Switch to light mode');
-      } else {
-        document.body.classList.remove('dark');
-        toggleBtn.textContent = '🌙';
-        toggleBtn.setAttribute('aria-label', 'Switch to dark mode');
-      }
-    };
+    // Initialize global theme manager
+    const themeManager = new ThemeManager();
+    themeManager.init();
+    
+    // Add the toggle button to the theme manager
+    themeManager.addToggleButton(toggleBtn);
 
-    // Initialize theme from localStorage
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    applyTheme(savedTheme);
-
-    // Toggle theme on click
+    // Set up click handler
     toggleBtn.addEventListener('click', () => {
-      const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      
-      localStorage.setItem('theme', newTheme);
-      applyTheme(newTheme);
-      
+      themeManager.toggleTheme();
       // Add subtle animation feedback
       this.addButtonClickFeedback(toggleBtn);
     });

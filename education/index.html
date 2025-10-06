@@ -1110,24 +1110,20 @@
   </section>
 
   <script>
-    // Theme Management
+    // Theme Management using global ThemeManager
     const themeToggle = document.getElementById('themeToggle');
     const body = document.body;
 
-    // Load saved theme
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      body.classList.add('dark-mode');
-      themeToggle.textContent = '☀️';
-    }
+    // Initialize global theme manager
+    const themeManager = new ThemeManager();
+    themeManager.init();
+    
+    // Add the toggle button to the theme manager
+    themeManager.addToggleButton(themeToggle);
 
     // Theme toggle functionality
     themeToggle.addEventListener('click', () => {
-      const isDark = body.classList.toggle('dark-mode');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      themeToggle.textContent = isDark ? '☀️' : '🌙';
+      themeManager.toggleTheme();
     });
 
     // Animated Number Counter
@@ -1301,6 +1297,7 @@
     `;
     document.head.appendChild(style);
   </script>
+  <script src="../assets/js/theme-manager.js"></script>
   <script src="../assets/js/universal-search.js"></script>
 </body>
 </html>

@@ -655,26 +655,16 @@
       const submitBtn = document.getElementById("submitBtn");
       const responseMessage = document.getElementById("responseMessage");
 
-      // Apply saved theme or system preference
-      const savedTheme = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-      if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-        body.classList.remove("light");
-        body.classList.add("dark");
-        toggleBtn.textContent = "☀️";
-      } else {
-        body.classList.remove("dark");
-        body.classList.add("light");
-        toggleBtn.textContent = "🌙";
-      }
+      // Initialize global theme manager
+      const themeManager = new ThemeManager();
+      themeManager.init();
+      
+      // Add the toggle button to the theme manager
+      themeManager.addToggleButton(toggleBtn);
 
       // Toggle theme listener
       toggleBtn.addEventListener("click", () => {
-        const isDark = body.classList.toggle("dark");
-        body.classList.toggle("light", !isDark);
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-        toggleBtn.textContent = isDark ? "☀️" : "🌙";
+        themeManager.toggleTheme();
       });
 
       // Form validation
@@ -827,6 +817,7 @@
     });
   </script>
   </script>
+  <script src="../assets/js/theme-manager.js"></script>
   <script src="../assets/js/universal-search.js"></script>
 </body>
 </html>

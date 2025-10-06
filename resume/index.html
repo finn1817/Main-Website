@@ -961,23 +961,16 @@
         coursesModal.style.display = "none";
       }
     });
-    // load saved theme from localStorage
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      document.body.setAttribute("data-theme", "dark");
-      themeToggle.textContent = "🌙";
-    }
+    // Initialize global theme manager
+    const themeManager = new ThemeManager();
+    themeManager.init();
+    
+    // Add the toggle button to the theme manager
+    themeManager.addToggleButton(themeToggle);
+
     // Theme toggle functionality
     themeToggle.addEventListener("click", () => {
-      if (document.body.getAttribute("data-theme") === "dark") {
-        document.body.removeAttribute("data-theme");
-        themeToggle.textContent = "☀️";
-        localStorage.setItem("theme", "light");
-      } else {
-        document.body.setAttribute("data-theme", "dark");
-        themeToggle.textContent = "🌙";
-        localStorage.setItem("theme", "dark");
-      }
+      themeManager.toggleTheme();
     });
     // form submission functionality
     if (localStorage.getItem("formSubmitted") === "true") {
@@ -1052,6 +1045,7 @@ Keep coding! 🔥`,
   );
   
 </script>
-<script src="../assets/js/universal-search.js"></script>
+  <script src="../assets/js/theme-manager.js"></script>
+  <script src="../assets/js/universal-search.js"></script>
 </body>
 </html>

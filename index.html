@@ -6,6 +6,7 @@
   <title>Dan Finn</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="./assets/css/universal-search.css" rel="stylesheet">
+  <script src="./assets/js/theme-manager.js"></script>
   <style>
     /* css custom properties for consistent theming */
     :root {
@@ -979,40 +980,16 @@
         }, 30000)
       );
 
-      // THEME SYSTEM (refactored for reliability)
-      const THEME_KEY = 'theme';
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-      function applyTheme(theme) {
-        const wantDark = theme === 'dark';
-        body.classList.toggle('dark', wantDark);
-        body.classList.toggle('light', !wantDark);
-        toggleBtn.textContent = wantDark ? '☀️' : '🌙';
-        toggleBtn.setAttribute('aria-pressed', String(wantDark));
-      }
-
-      function initTheme() {
-        const saved = localStorage.getItem(THEME_KEY);
-        if (saved === 'dark' || saved === 'light') {
-          applyTheme(saved);
-        } else {
-          applyTheme(mediaQuery.matches ? 'dark' : 'light');
-        }
-      }
-
-      initTheme();
-      mediaQuery.addEventListener('change', (e) => {
-        // Only auto-switch if user hasn't explicitly chosen
-        if (!localStorage.getItem(THEME_KEY)) {
-          applyTheme(e.matches ? 'dark' : 'light');
-        }
-      });
+      // THEME SYSTEM - using global ThemeManager
+      const themeManager = new ThemeManager();
+      themeManager.init();
+      
+      // Add the toggle button to the theme manager
+      themeManager.addToggleButton(toggleBtn);
 
       toggleBtn.addEventListener('click', () => {
         if (memoryManager.isCleanedUp) return;
-        const next = body.classList.contains('dark') ? 'light' : 'dark';
-        localStorage.setItem(THEME_KEY, next);
-        applyTheme(next);
+        themeManager.toggleTheme();
       });
 
       // scroll progress
