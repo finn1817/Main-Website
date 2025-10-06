@@ -981,15 +981,11 @@
       );
 
       // THEME SYSTEM - using global ThemeManager
-      const themeManager = new ThemeManager();
-      themeManager.init();
-      
-      // Add the toggle button to the theme manager
-      themeManager.addToggleButton(toggleBtn);
-
+      // The theme manager is already initialized globally via theme-manager.js
+      // Just set up the click handler
       toggleBtn.addEventListener('click', () => {
         if (memoryManager.isCleanedUp) return;
-        themeManager.toggleTheme();
+        window.themeManager.toggleTheme();
       });
 
       // scroll progress
