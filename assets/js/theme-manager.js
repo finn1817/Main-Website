@@ -6,12 +6,21 @@
 
 class ThemeManager {
   constructor() {
+    if (ThemeManager._instance) {
+      return ThemeManager._instance;
+    }
+
+    ThemeManager._instance = this;
+
     this.currentTheme = 'light';
-    this.toggleButton = null;
+    this.buttons = new Map();
     this.observers = [];
     this.isInitialized = false;
-    
-    // Initialize immediately if DOM is ready, otherwise wait
+    this.toggleSelector = '#theme-toggle, .theme-toggle, [data-theme-toggle]';
+    this.mutationObserver = null;
+    this.systemMediaQuery = null;
+    this.systemListener = null;
+
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => this.init());
     } else {
@@ -19,139 +28,319 @@ class ThemeManager {
     }
   }
 
+  static getInstance() {
+    return ThemeManager._instance || new ThemeManager();
+  }
+
   init() {
     if (this.isInitialized) return;
-    
-    this.findToggleButton();
-    this.loadSavedTheme();
-    this.setupEventListeners();
+
+    this.applyInitialTheme();
+    this.autoDiscoverToggleButtons();
+    this.updateToggleButtons();
+    this.setupSystemThemeListener();
+    this.setupMutationObserver();
+
     this.isInitialized = true;
-    
     console.log('🎨 Theme Manager initialized successfully');
   }
 
-  findToggleButton() {
-    // Look for theme toggle button with common IDs/classes
-    this.toggleButton = document.getElementById('theme-toggle') || 
-                       document.querySelector('.theme-toggle') ||
-                       document.querySelector('[data-theme-toggle]');
-    
-    if (!this.toggleButton) {
-      console.warn('⚠️ Theme toggle button not found. Theme management disabled.');
+  applyInitialTheme() {
+    const storedTheme = this.readStoredTheme();
+    const preferredTheme = storedTheme || this.getSystemPreference();
+    this.setTheme(preferredTheme, false);
+  }
+
+  readStoredTheme() {
+    try {
+      return localStorage.getItem('theme');
+    } catch (error) {
+      console.warn('Could not access localStorage for theme:', error);
+      return null;
+    }
+  }
+
+  hasStoredPreference() {
+    return !!this.readStoredTheme();
+  }
+
+  getSystemPreference() {
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
+    } catch (error) {
+      console.warn('Could not read system theme preference:', error);
+    }
+    return 'light';
+  }
+
+  saveTheme(theme) {
+    try {
+      localStorage.setItem('theme', theme);
+    } catch (error) {
+      console.warn('Could not save theme to localStorage:', error);
+    }
+  }
+
+  autoDiscoverToggleButtons() {
+    const buttons = document.querySelectorAll(this.toggleSelector);
+    buttons.forEach(button => this.registerToggleButton(button));
+
+    if (buttons.length === 0) {
+      console.warn('⚠️ Theme toggle button not found. Theme manager running without manual toggle.');
+    }
+  }
+
+  registerToggleButton(button, options = {}) {
+    if (!(button instanceof Element)) return;
+
+    let metadata = this.buttons.get(button);
+
+    if (metadata) {
+      metadata.options = { ...metadata.options, ...options };
+      this.updateButtonAppearance(button);
       return;
     }
 
-    // Ensure button has proper accessibility attributes
-    this.toggleButton.setAttribute('aria-label', 'Toggle theme');
-    this.toggleButton.setAttribute('role', 'button');
+    metadata = {
+      options: { ...options },
+      listeners: {
+        click: (event) => this.handleButtonClick(event, button),
+        keydown: (event) => this.handleButtonKeydown(event, button)
+      }
+    };
+
+    this.buttons.set(button, metadata);
+    this.applyButtonAccessibility(button);
+    button.addEventListener('click', metadata.listeners.click);
+    button.addEventListener('keydown', metadata.listeners.keydown);
+    this.updateButtonAppearance(button);
   }
 
-  loadSavedTheme() {
-    try {
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      this.setTheme(savedTheme, false); // Don't save again on initial load
-    } catch (error) {
-      console.warn('Could not load saved theme from localStorage:', error);
-      this.setTheme('light', false);
+  addToggleButton(button, options = {}) {
+    this.registerToggleButton(button, options);
+  }
+
+  unregisterToggleButton(button) {
+    const metadata = this.buttons.get(button);
+    if (!metadata) return;
+
+    button.removeEventListener('click', metadata.listeners.click);
+    button.removeEventListener('keydown', metadata.listeners.keydown);
+    this.buttons.delete(button);
+  }
+
+  handleButtonClick(event, button) {
+    this.processToggle(button, event);
+  }
+
+  handleButtonKeydown(event, button) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      this.processToggle(button, event);
     }
   }
 
-  setTheme(theme, save = true) {
+  processToggle(button, triggerEvent) {
+    if (triggerEvent) {
+      triggerEvent.preventDefault();
+    }
+
+    const metadata = this.buttons.get(button);
+    const context = {
+      manager: this,
+      sourceButton: button,
+      event: triggerEvent,
+      currentTheme: this.currentTheme,
+      toggle: () => this.toggleTheme(button)
+    };
+
+    if (metadata?.options?.beforeToggle) {
+      try {
+        const result = metadata.options.beforeToggle(context);
+
+        if (result === false) {
+          return;
+        }
+
+        if (result && typeof result.then === 'function') {
+          result
+            .then(shouldContinue => {
+              if (shouldContinue === false) return;
+              context.toggle();
+            })
+            .catch(error => {
+              console.error('Theme beforeToggle error:', error);
+              context.toggle();
+            });
+          return;
+        }
+      } catch (error) {
+        console.error('Theme beforeToggle error:', error);
+      }
+    }
+
+    context.toggle();
+  }
+
+  toggleTheme(sourceButton = null) {
+    const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+    this.setTheme(newTheme, true, sourceButton);
+  }
+
+  setTheme(theme, save = true, sourceButton = null) {
     if (!['light', 'dark'].includes(theme)) {
       console.warn(`Invalid theme: ${theme}. Using 'light' instead.`);
       theme = 'light';
     }
 
     const previousTheme = this.currentTheme;
+    if (previousTheme === theme) {
+      if (save) this.saveTheme(theme);
+      this.updateToggleButtons();
+      return;
+    }
+
     this.currentTheme = theme;
 
-    // Update body class
-    if (theme === 'dark') {
-      document.body.classList.add('dark');
-      document.body.classList.remove('light');
-    } else {
-      document.body.classList.add('light');
-      document.body.classList.remove('dark');
-    }
+    this.applyThemeClasses(theme);
+    this.updateToggleButtons();
+    this.updateDataThemeAttributes(theme);
 
-    // Update toggle button
-    this.updateToggleButton();
-
-    // Save to localStorage
     if (save) {
-      try {
-        localStorage.setItem('theme', theme);
-      } catch (error) {
-        console.warn('Could not save theme to localStorage:', error);
-      }
+      this.saveTheme(theme);
     }
 
-    // Notify observers of theme change
     this.notifyObservers(theme, previousTheme);
 
-    // Add visual feedback
-    if (save && this.toggleButton) {
-      this.addButtonFeedback();
+    if (sourceButton) {
+      this.runAfterToggleCallbacks(sourceButton, theme, previousTheme);
+      this.addButtonFeedback(sourceButton);
+    } else {
+      this.buttons.forEach((meta, button) => this.addButtonFeedback(button));
     }
   }
 
-  updateToggleButton() {
-    if (!this.toggleButton) return;
+  applyThemeClasses(theme) {
+    const body = document.body;
+    if (!body) return;
+
+    if (theme === 'dark') {
+      body.classList.add('dark', 'dark-mode');
+      body.classList.remove('light', 'light-mode');
+    } else {
+      body.classList.add('light', 'light-mode');
+      body.classList.remove('dark', 'dark-mode');
+    }
+  }
+
+  updateDataThemeAttributes(theme) {
+    document.body?.setAttribute('data-theme', theme);
+    document.documentElement?.setAttribute('data-theme', theme);
+  }
+
+  updateToggleButtons() {
+    this.buttons.forEach((metadata, button) => {
+      this.updateButtonAppearance(button);
+    });
+  }
+
+  updateButtonAppearance(button) {
+    if (!(button instanceof HTMLElement)) return;
 
     const isDark = this.currentTheme === 'dark';
-    
-    // Update button content and attributes
-    this.toggleButton.textContent = isDark ? '☀️' : '🌙';
-    this.toggleButton.setAttribute('aria-label', 
-      isDark ? 'Switch to light mode' : 'Switch to dark mode'
-    );
-    this.toggleButton.title = isDark ? 'Light mode' : 'Dark mode';
+    button.textContent = isDark ? '☀️' : '🌙';
+    button.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+    button.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
   }
 
-  toggleTheme() {
-    const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
-    this.setTheme(newTheme);
+  applyButtonAccessibility(button) {
+    if (!(button instanceof HTMLElement)) return;
+
+    button.setAttribute('role', 'button');
+    if (!button.hasAttribute('tabindex')) {
+      button.setAttribute('tabindex', '0');
+    }
   }
 
-  addButtonFeedback() {
-    if (!this.toggleButton) return;
+  addButtonFeedback(button) {
+    if (!(button instanceof HTMLElement)) return;
 
-    // Add visual feedback
-    this.toggleButton.style.transform = 'scale(0.95)';
-    
+    button.style.transform = 'scale(0.95)';
     setTimeout(() => {
-      if (this.toggleButton) {
-        this.toggleButton.style.transform = '';
+      if (button instanceof HTMLElement) {
+        button.style.transform = '';
       }
     }, 150);
   }
 
-  setupEventListeners() {
-    if (!this.toggleButton) return;
+  runAfterToggleCallbacks(button, newTheme, previousTheme) {
+    const metadata = this.buttons.get(button);
+    if (!metadata?.options?.afterToggle) return;
 
-    // Click event
-    this.toggleButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.toggleTheme();
-    });
-
-    // Keyboard support
-    this.toggleButton.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        this.toggleTheme();
-      }
-    });
-
-    // Listen for system theme changes
-    if (window.matchMedia) {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      mediaQuery.addEventListener('change', (e) => {
-        // Only auto-switch if no manual theme has been set
-        if (!localStorage.getItem('theme')) {
-          this.setTheme(e.matches ? 'dark' : 'light', false);
-        }
+    try {
+      metadata.options.afterToggle({
+        manager: this,
+        sourceButton: button,
+        newTheme,
+        previousTheme
       });
+    } catch (error) {
+      console.error('Theme afterToggle error:', error);
+    }
+  }
+
+  setupSystemThemeListener() {
+    if (!window.matchMedia) return;
+
+    try {
+      this.systemMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      this.systemListener = (event) => {
+        if (!this.hasStoredPreference()) {
+          this.setTheme(event.matches ? 'dark' : 'light', false);
+        }
+      };
+
+      if (this.systemMediaQuery.addEventListener) {
+        this.systemMediaQuery.addEventListener('change', this.systemListener);
+      } else if (this.systemMediaQuery.addListener) {
+        // Safari fallback
+        this.systemMediaQuery.addListener(this.systemListener);
+      }
+    } catch (error) {
+      console.warn('Could not attach system theme listener:', error);
+    }
+  }
+
+  setupMutationObserver() {
+    if (this.mutationObserver || !window.MutationObserver) return;
+
+    this.mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (!(node instanceof HTMLElement)) return;
+          if (node.matches?.(this.toggleSelector)) {
+            this.registerToggleButton(node);
+          }
+          node.querySelectorAll?.(this.toggleSelector).forEach(el => this.registerToggleButton(el));
+        });
+
+        mutation.removedNodes.forEach(node => {
+          if (!(node instanceof HTMLElement)) return;
+          if (this.buttons.has(node)) {
+            this.unregisterToggleButton(node);
+          }
+          node.querySelectorAll?.(this.toggleSelector).forEach(el => {
+            if (this.buttons.has(el)) {
+              this.unregisterToggleButton(el);
+            }
+          });
+        });
+      });
+    });
+
+    if (document.body) {
+      this.mutationObserver.observe(document.body, { childList: true, subtree: true });
     }
   }
 
@@ -159,7 +348,6 @@ class ThemeManager {
   addObserver(callback) {
     if (typeof callback === 'function') {
       this.observers.push(callback);
-      // Immediately call with current theme
       callback(this.currentTheme, null);
     }
   }
@@ -181,7 +369,6 @@ class ThemeManager {
     });
   }
 
-  // Public API methods
   getCurrentTheme() {
     return this.currentTheme;
   }
@@ -194,27 +381,39 @@ class ThemeManager {
     return this.currentTheme === 'light';
   }
 
-  // Cleanup method for SPA scenarios
   destroy() {
     this.observers = [];
-    if (this.toggleButton) {
-      // Remove event listeners by cloning the button
-      const newButton = this.toggleButton.cloneNode(true);
-      this.toggleButton.parentNode?.replaceChild(newButton, this.toggleButton);
+    this.buttons.forEach((metadata, button) => {
+      button.removeEventListener('click', metadata.listeners.click);
+      button.removeEventListener('keydown', metadata.listeners.keydown);
+    });
+    this.buttons.clear();
+
+    if (this.mutationObserver) {
+      this.mutationObserver.disconnect();
+      this.mutationObserver = null;
     }
+
+    if (this.systemMediaQuery) {
+      if (this.systemMediaQuery.removeEventListener) {
+        this.systemMediaQuery.removeEventListener('change', this.systemListener);
+      } else if (this.systemMediaQuery.removeListener) {
+        this.systemMediaQuery.removeListener(this.systemListener);
+      }
+    }
+
+    this.systemMediaQuery = null;
+    this.systemListener = null;
     this.isInitialized = false;
   }
 }
 
-// Create global instance
-const themeManager = new ThemeManager();
+const themeManager = ThemeManager.getInstance();
 
-// Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = ThemeManager;
+    module.exports = ThemeManager;
 }
 
-// Global access
 window.themeManager = themeManager;
 
 console.log('🎨 Global Theme Manager loaded');

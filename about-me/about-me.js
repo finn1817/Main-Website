@@ -30,19 +30,21 @@ class AboutPageManager {
     const toggleBtn = document.getElementById('theme-toggle');
     if (!toggleBtn) return;
 
-    // Initialize global theme manager
-    const themeManager = new ThemeManager();
-    themeManager.init();
-    
-    // Add the toggle button to the theme manager
-    themeManager.addToggleButton(toggleBtn);
+    const themeManager = window.themeManager || (typeof ThemeManager !== 'undefined' ? ThemeManager.getInstance?.() : null);
 
-    // Set up click handler
-    toggleBtn.addEventListener('click', () => {
-      themeManager.toggleTheme();
-      // Add subtle animation feedback
-      this.addButtonClickFeedback(toggleBtn);
+    if (!themeManager) {
+      console.error('ThemeManager is unavailable on the About Me page.');
+      return;
+    }
+
+    themeManager.registerToggleButton?.(toggleBtn, {
+      afterToggle: () => this.addButtonClickFeedback(toggleBtn)
     });
+
+    // Fallback animation if registerToggleButton is unavailable
+    if (!themeManager.registerToggleButton && window.themeManager) {
+      toggleBtn.addEventListener('click', () => this.addButtonClickFeedback(toggleBtn), { once: false });
+    }
   }
 
   // Intersection Observer for scroll animations

@@ -933,7 +933,6 @@
     });
 
     document.addEventListener("DOMContentLoaded", function () {
-      const toggleBtn = document.getElementById("theme-toggle");
       const body = document.body;
       const loadingOverlay = document.getElementById("loadingOverlay");
       const scrollIndicator = document.getElementById("scrollIndicator");
@@ -983,11 +982,6 @@
       // THEME SYSTEM - using global ThemeManager
       // The theme manager is already initialized globally via theme-manager.js
       // Just set up the click handler
-      toggleBtn.addEventListener('click', () => {
-        if (memoryManager.isCleanedUp) return;
-        window.themeManager.toggleTheme();
-      });
-
       // scroll progress
       window.addEventListener('scroll', () => {
         if (memoryManager.isCleanedUp) return;

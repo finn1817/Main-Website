@@ -11,6 +11,7 @@
   <link href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/default.min.css" rel="stylesheet">
   <!-- Universal Search Component -->
   <link rel="stylesheet" href="../../assets/css/universal-search.css">
+  <script src="../../assets/js/theme-manager.js"></script>
   <script src="../../assets/js/universal-search.js" defer></script>
   <script src="../../assets/js/loading-states.js" defer></script>
   <style>
@@ -580,7 +581,7 @@
       const saveBtn = document.getElementById('save-btn');
       const exportPdfBtn = document.getElementById('export-pdf-btn');
       const toggleBtn = document.getElementById("theme-toggle");
-      const body = document.body;
+  const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
       const pageTransition = document.querySelector(".page-transition");
       
       // initialize Quill rich text editor
@@ -724,25 +725,16 @@
         }, 300);
       }
 
-      // apply saved theme or system preference
-      const savedTheme = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-      if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-        body.classList.add("dark");
-        toggleBtn.textContent = "☀️";
-      } else {
-        toggleBtn.textContent = "🌙";
-      }
-
-      // toggle theme listener
-      toggleBtn.addEventListener("click", () => {
-        applyTransition(() => {
-          const isDark = body.classList.toggle("dark");
-          localStorage.setItem("theme", isDark ? "dark" : "light");
-          toggleBtn.textContent = isDark ? "☀️" : "🌙";
+      if (themeManager && toggleBtn && typeof themeManager.registerToggleButton === "function") {
+        themeManager.registerToggleButton(toggleBtn, {
+          beforeToggle: ({ toggle }) => {
+            applyTransition(() => toggle());
+            return false;
+          }
         });
-      });
+      } else if (!themeManager) {
+        console.error("ThemeManager is unavailable on the Text Editor page.");
+      }
 
       // mode switching functionality
       richTextBtn.addEventListener('click', function() {

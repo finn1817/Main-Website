@@ -775,6 +775,7 @@
 <footer>
   &copy; 2025 Dan Finn -- All rights reserved.
 </footer>
+<script src="../assets/js/theme-manager.js"></script>
 <script>
   document.querySelectorAll('.tab-button').forEach(button => {
     button.addEventListener('click', () => {
@@ -942,7 +943,7 @@
   document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("contactForm");
     const popup = document.getElementById("popup");
-    const themeToggle = document.getElementById("themeToggle");
+  const themeToggle = document.getElementById("themeToggle");
     const downloadButton = document.getElementById("downloadResume");
     const viewCoursesBtn = document.getElementById("viewCoursesBtn");
     const coursesModal = document.getElementById("coursesModal");
@@ -961,17 +962,9 @@
         coursesModal.style.display = "none";
       }
     });
-    // Initialize global theme manager
-    const themeManager = new ThemeManager();
-    themeManager.init();
-    
-    // Add the toggle button to the theme manager
-    themeManager.addToggleButton(themeToggle);
-
-    // Theme toggle functionality
-    themeToggle.addEventListener("click", () => {
-      themeManager.toggleTheme();
-    });
+    if (themeToggle && window.themeManager && typeof window.themeManager.registerToggleButton === 'function') {
+      window.themeManager.registerToggleButton(themeToggle);
+    }
     // form submission functionality
     if (localStorage.getItem("formSubmitted") === "true") {
       disableForm();
@@ -1045,7 +1038,6 @@ Keep coding! 🔥`,
   );
   
 </script>
-  <script src="../assets/js/theme-manager.js"></script>
   <script src="../assets/js/universal-search.js"></script>
 </body>
 </html>

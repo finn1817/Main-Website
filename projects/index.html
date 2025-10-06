@@ -1139,19 +1139,16 @@ updateLoginUI();
         }, 300);
       }
 
-      // Initialize global theme manager
-      const themeManager = new ThemeManager();
-      themeManager.init();
-      
-      // Add the toggle button to the theme manager
-      themeManager.addToggleButton(toggleBtn);
-
-      // toggle theme listener with transition
-      toggleBtn.addEventListener("click", () => {
-        applyTransition(() => {
-          themeManager.toggleTheme();
+      if (toggleBtn && window.themeManager && typeof window.themeManager.registerToggleButton === 'function') {
+        window.themeManager.registerToggleButton(toggleBtn, {
+          beforeToggle: ({ toggle }) => {
+            applyTransition(() => {
+              toggle();
+            });
+            return false;
+          }
         });
-      });
+      }
 
       // apply transition when navigating away (only for internal links)
       document.querySelectorAll("a").forEach(link => {

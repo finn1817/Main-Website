@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../../assets/css/universal-search.css">
     <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
     <link rel="stylesheet" href="../../assets/css/loading-states.css">
+    <script src="../../assets/js/theme-manager.js"></script>
     <script src="../../assets/js/universal-search.js" defer></script>
     <script src="../../assets/js/loading-states.js" defer></script>
     <style>
@@ -752,29 +753,15 @@
         document.addEventListener("DOMContentLoaded", function() {
             // theme toggle
             const themeToggle = document.getElementById("theme-toggle");
-            const body = document.body;
+            const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
             let memoryValue = 0;
             let calculationHistory = [];
             
-            // check for saved theme preference or prefer-color-scheme
-            const savedTheme = localStorage.getItem("calculator-theme");
-            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            
-            if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-                body.classList.add("dark-mode");
-                themeToggle.textContent = "🌙";
+            if (themeManager && themeToggle && typeof themeManager.registerToggleButton === "function") {
+                themeManager.registerToggleButton(themeToggle);
+            } else if (!themeManager) {
+                console.error("ThemeManager is unavailable on the Calculator page.");
             }
-            
-            themeToggle.addEventListener("click", function() {
-                body.classList.toggle("dark-mode");
-                if (body.classList.contains("dark-mode")) {
-                    localStorage.setItem("calculator-theme", "dark");
-                    themeToggle.textContent = "🌙";
-                } else {
-                    localStorage.setItem("calculator-theme", "light");
-                    themeToggle.textContent = "☀️";
-                }
-            });
             
             // load history from localStorage
             if (localStorage.getItem("calculator-history")) {

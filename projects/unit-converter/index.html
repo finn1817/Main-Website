@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../../assets/css/loading-states.css">
     <!-- Universal Search Component -->
     <link rel="stylesheet" href="../../assets/css/universal-search.css">
+    <script src="../../assets/js/theme-manager.js"></script>
     <script src="../../assets/js/universal-search.js" defer></script>
     <script src="../../assets/js/loading-states.js" defer></script>
     <style>
@@ -843,7 +844,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             // DOM Elements
             const themeToggle = document.getElementById("themeToggle");
-            const body = document.body;
+            const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
             const conversionForm = document.getElementById("unitConversionForm");
             const fromValueInput = document.getElementById("fromValue");
             const selectedFromUnitSpan = document.getElementById("selectedFromUnit");
@@ -945,25 +946,16 @@
                 }, 500);
             }
 
-            // Apply saved theme or system preference
-            const savedTheme = localStorage.getItem("theme");
-            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            
-            if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-                body.classList.add("dark-mode");
-                themeToggle.textContent = "☀️";
-            } else {
-                themeToggle.textContent = "🌙";
-            }
-            
-            // Toggle theme listener
-            themeToggle.addEventListener("click", function() {
-                applyTransition(() => {
-                    const isDark = body.classList.toggle("dark-mode");
-                    localStorage.setItem("theme", isDark ? "dark" : "light");
-                    themeToggle.textContent = isDark ? "☀️" : "🌙";
+            if (themeManager && themeToggle && typeof themeManager.registerToggleButton === "function") {
+                themeManager.registerToggleButton(themeToggle, {
+                    beforeToggle: ({ toggle }) => {
+                        applyTransition(() => toggle());
+                        return false;
+                    }
                 });
-            });
+            } else if (!themeManager) {
+                console.error("ThemeManager is unavailable on the Unit Converter page.");
+            }
 
             // Apply transition when navigating away
             document.querySelectorAll("a").forEach(link => {

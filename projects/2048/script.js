@@ -41,18 +41,10 @@ document.addEventListener('DOMContentLoaded', function() {
   setupKeyboardControls();
   setupTouchControls();
   
-  // Initialize global theme manager
-  const themeManager = new ThemeManager();
-  themeManager.init();
-  
-  // Add the toggle button to the theme manager
   const toggleBtn = document.getElementById('theme-toggle');
-  themeManager.addToggleButton(toggleBtn);
-  
-  // Set up click handler
-  toggleBtn.addEventListener('click', () => {
-    themeManager.toggleTheme();
-  });
+  if (toggleBtn && window.themeManager && typeof window.themeManager.registerToggleButton === 'function') {
+    window.themeManager.registerToggleButton(toggleBtn);
+  }
 });
 
 // particle animation system

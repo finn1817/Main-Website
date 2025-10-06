@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 <link rel="stylesheet" href="../../assets/css/loading-states.css">
 <link href="../../assets/css/universal-search.css" rel="stylesheet">
+<script src="../../assets/js/theme-manager.js"></script>
 <script src="../../assets/js/universal-search.js" defer></script>
 <script src="../../assets/js/loading-states.js" defer></script>
 <style>
@@ -422,38 +423,28 @@
   </div>
 
   <script>
-    // theme toggle functionality
+    // theme toggle via global ThemeManager
     const themeToggle = document.getElementById('themeToggle');
-    const body = document.body;
-    
-    // check for saved theme preference or default to light mode
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    
-    // apply saved theme on load
-    if (currentTheme === 'dark') {
-      body.setAttribute('data-theme', 'dark');
-      themeToggle.innerHTML = '☀️ Light Mode';
-    } else {
-      body.removeAttribute('data-theme');
-      themeToggle.innerHTML = '🌙 Dark Mode';
-    }
-    
-    // theme toggle event listener
-    themeToggle.addEventListener('click', () => {
-      const isDark = body.getAttribute('data-theme') === 'dark';
-      
-      if (isDark) {
-        // switch to light mode
-        body.removeAttribute('data-theme');
-        themeToggle.innerHTML = '🌙 Dark Mode';
-        localStorage.setItem('theme', 'light');
-      } else {
-        // switch to dark mode
-        body.setAttribute('data-theme', 'dark');
-        themeToggle.innerHTML = '☀️ Light Mode';
-        localStorage.setItem('theme', 'dark');
+    const themeManager = window.themeManager || (typeof ThemeManager !== 'undefined' ? ThemeManager.getInstance?.() : null);
+
+    const updateThemeToggleLabel = (theme) => {
+      if (!themeToggle) return;
+      themeToggle.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    };
+
+    if (themeManager && themeToggle && typeof themeManager.registerToggleButton === 'function') {
+      themeManager.registerToggleButton(themeToggle, {
+        afterToggle: ({ newTheme }) => updateThemeToggleLabel(newTheme),
+      });
+
+      if (typeof themeManager.getCurrentTheme === 'function') {
+        updateThemeToggleLabel(themeManager.getCurrentTheme());
       }
-    });
+
+      themeManager.addObserver((newTheme) => updateThemeToggleLabel(newTheme));
+    } else if (!themeManager) {
+      console.error('ThemeManager is unavailable on the Square Chase page.');
+    }
 
     // game elements and state
     const chase = document.getElementById('chaseSquare');
