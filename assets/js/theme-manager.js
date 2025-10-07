@@ -16,16 +16,29 @@ class ThemeManager {
     this.buttons = new Map();
     this.observers = [];
     this.isInitialized = false;
-    this.toggleSelector = '#theme-toggle, .theme-toggle, [data-theme-toggle]';
+    this.toggleSelector = '#theme-toggle, .theme-toggle, .toggle-btn, [data-theme-toggle]';
     this.mutationObserver = null;
     this.systemMediaQuery = null;
     this.systemListener = null;
 
+    // Initialize immediately to prevent any theme flashing
+    this.initializeImmediate();
+
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => this.init());
     } else {
-      this.init();
+      // Small delay to ensure DOM is fully ready
+      setTimeout(() => this.init(), 0);
     }
+  }
+
+  initializeImmediate() {
+    // Apply theme immediately to prevent flash
+    const storedTheme = this.readStoredTheme();
+    const preferredTheme = storedTheme || this.getSystemPreference();
+    this.currentTheme = preferredTheme;
+    this.applyThemeClasses(preferredTheme);
+    this.updateDataThemeAttributes(preferredTheme);
   }
 
   static getInstance() {
@@ -87,8 +100,18 @@ class ThemeManager {
     const buttons = document.querySelectorAll(this.toggleSelector);
     buttons.forEach(button => this.registerToggleButton(button));
 
+    console.log(`🎨 Found ${buttons.length} theme toggle buttons`);
+    
     if (buttons.length === 0) {
       console.warn('⚠️ Theme toggle button not found. Theme manager running without manual toggle.');
+      // Try again after a short delay in case buttons are dynamically added
+      setTimeout(() => {
+        const laterButtons = document.querySelectorAll(this.toggleSelector);
+        if (laterButtons.length > 0) {
+          console.log(`🎨 Found ${laterButtons.length} theme toggle buttons on retry`);
+          laterButtons.forEach(button => this.registerToggleButton(button));
+        }
+      }, 100);
     }
   }
 
@@ -410,10 +433,19 @@ class ThemeManager {
 
 const themeManager = ThemeManager.getInstance();
 
+// Global utilities for backward compatibility
+window.ThemeManager = ThemeManager;
+window.themeManager = themeManager;
+
+// Ensure the theme manager is available immediately
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = ThemeManager;
 }
 
-window.themeManager = themeManager;
-
-console.log('🎨 Global Theme Manager loaded');
+// Additional safety: if this script loads multiple times, don't reinitialize
+if (!window.__themeManagerInitialized) {
+  window.__themeManagerInitialized = true;
+  console.log('🎨 Global Theme Manager loaded and initialized');
+} else {
+  console.log('🎨 Global Theme Manager already initialized, skipping');
+}
