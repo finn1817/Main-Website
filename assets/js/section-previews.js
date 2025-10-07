@@ -35,10 +35,11 @@ class SectionPreviews {
             opacity: 1; visibility: visible;
         }
         .section-preview-tooltip::before {
-            content: ''; position: absolute; top: -6px; left: 20px;
+            content: ''; position: absolute; bottom: 100%; left: 20px;
             width: 12px; height: 12px; background: rgba(0,0,0,0.9);
-            transform: rotate(45deg); border-top: 1px solid rgba(255,255,255,0.2);
-            border-left: 1px solid rgba(255,255,255,0.2);
+            transform: rotate(45deg); border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-right: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: -6px;
         }
         `;
 
@@ -91,12 +92,17 @@ class SectionPreviews {
         const rect = element.getBoundingClientRect();
         const tooltipRect = this.tooltip.getBoundingClientRect();
         
+        // Position tooltip BELOW the button instead of above
         let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-        let top = rect.top - tooltipRect.height - 10;
+        let top = rect.bottom + 10; // Changed from rect.top - tooltipRect.height - 10
         
         // Keep tooltip in viewport
         left = Math.max(10, Math.min(left, window.innerWidth - tooltipRect.width - 10));
-        top = Math.max(10, top);
+        
+        // If tooltip would go below viewport, show above instead
+        if (top + tooltipRect.height > window.innerHeight - 10) {
+            top = rect.top - tooltipRect.height - 10;
+        }
         
         this.tooltip.style.left = left + 'px';
         this.tooltip.style.top = top + 'px';
