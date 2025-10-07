@@ -7,7 +7,6 @@
   <title>Dan Finn</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="./assets/css/universal-search.css" rel="stylesheet">
-  <script src="./assets/js/theme-manager.js"></script>
   <style>
     /* css custom properties for consistent theming */
     :root {
@@ -1178,60 +1177,12 @@
   </script>
   <script src="./assets/js/universal-search.js"></script>
   <script>
-    (function ensureUniversalSearchLoaded() {
-      if (window.__universalSearchFallbackScheduled) {
-        return;
+    // Simple initialization - script already loaded above
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof UniversalSearch !== 'undefined') {
+        new UniversalSearch();
       }
-
-      window.__universalSearchFallbackScheduled = true;
-
-      const candidates = Array.from(new Set([
-        '/assets/js/universal-search.js',
-        './assets/js/universal-search.js'
-      ]));
-
-      window.addEventListener('load', () => {
-        if (window.universalSearch) {
-          return;
-        }
-
-        const logPrefix = '[UniversalSearch Loader]';
-        let index = 0;
-
-        const tryNext = () => {
-          if (window.universalSearch || index >= candidates.length) {
-            if (!window.universalSearch) {
-              console.error(`${logPrefix} failed to load script from all candidates`, candidates);
-            }
-            return;
-          }
-
-          const path = candidates[index++];
-          const script = document.createElement('script');
-          script.src = path;
-          script.defer = true;
-          script.setAttribute('data-cfasync', 'false');
-          script.onload = () => {
-            if (window.universalSearch) {
-              console.info(`${logPrefix} loaded from ${path}`);
-            } else {
-              console.warn(`${logPrefix} script loaded from ${path} but universalSearch is still undefined; trying next candidate.`);
-              script.remove();
-              tryNext();
-            }
-          };
-          script.onerror = () => {
-            console.warn(`${logPrefix} failed to load from ${path}; trying next candidate.`);
-            script.remove();
-            tryNext();
-          };
-
-          document.head.appendChild(script);
-        };
-
-        tryNext();
-      }, { once: true });
-    })();
+    });
   </script>
 </body>
 </html>

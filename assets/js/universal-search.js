@@ -235,6 +235,11 @@ class UniversalSearch {
   }
 
   createSearchButton() {
+    // Check if button already exists
+    if (document.getElementById('universal-search-btn')) {
+      return;
+    }
+    
     const searchBtn = document.createElement('button');
     searchBtn.id = 'universal-search-btn';
     searchBtn.className = 'universal-search-btn';
@@ -245,6 +250,11 @@ class UniversalSearch {
   }
 
   createSearchModal() {
+    // Check if modal already exists
+    if (document.getElementById('universal-search-modal')) {
+      return;
+    }
+    
     const modal = document.createElement('div');
     modal.id = 'universal-search-modal';
     modal.className = 'universal-search-modal';
