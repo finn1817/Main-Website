@@ -91,21 +91,27 @@ class SectionPreviews {
     positionTooltip(element) {
         const rect = element.getBoundingClientRect();
         
-        // Always position tooltip BELOW the button
-        let left = rect.left + (rect.width / 2);
-        let top = rect.bottom + 15;
+        // Set initial position to get tooltip dimensions
+        this.tooltip.style.left = '0px';
+        this.tooltip.style.top = '0px';
+        this.tooltip.style.visibility = 'hidden';
+        this.tooltip.style.opacity = '1'; // Temporarily show to get dimensions
         
-        // Get tooltip dimensions after setting initial position
-        this.tooltip.style.left = left + 'px';
-        this.tooltip.style.top = top + 'px';
         const tooltipRect = this.tooltip.getBoundingClientRect();
         
-        // Center horizontally and keep in viewport
-        left = left - (tooltipRect.width / 2);
-        left = Math.max(10, Math.min(left, window.innerWidth - tooltipRect.width - 10));
+        // Calculate final position BELOW the button
+        let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+        let top = rect.bottom + 15; // 15px below button
         
+        // Keep in viewport
+        left = Math.max(10, Math.min(left, window.innerWidth - tooltipRect.width - 10));
+        top = Math.max(10, top);
+        
+        // Apply final position
         this.tooltip.style.left = left + 'px';
         this.tooltip.style.top = top + 'px';
+        this.tooltip.style.visibility = 'visible';
+        this.tooltip.style.opacity = '0'; // Will be set to 1 by .visible class
     }
 }
 
