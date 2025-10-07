@@ -589,7 +589,7 @@
       
       <div class="message" id="responseMessage"></div>
       
-      <form class="contact-form" id="contactForm" novalidate>
+      <form class="contact-form" id="contactForm" action="https://submit-form.com/w4rC8WMH3" method="POST">
         <div class="form-row">
           <div class="form-group">
             <label for="firstName">First Name *</label>
@@ -613,12 +613,12 @@
           <label for="subject">Subject *</label>
           <select id="subject" name="subject" required>
             <option value="">Select a subject</option>
-            <option value="general">General Inquiry</option>
-            <option value="collaboration">Collaboration Opportunity</option>
-            <option value="job">Job Opportunity</option>
-            <option value="feedback">Feedback on Resume/Portfolio</option>
-            <option value="technical">Technical Question</option>
-            <option value="other">Other</option>
+            <option value="General Inquiry">General Inquiry</option>
+            <option value="Collaboration Opportunity">Collaboration Opportunity</option>
+            <option value="Job Opportunity">Job Opportunity</option>
+            <option value="Feedback on Resume/Portfolio">Feedback on Resume/Portfolio</option>
+            <option value="Technical Question">Technical Question</option>
+            <option value="Other">Other</option>
           </select>
           <div class="error-message">Please select a subject</div>
         </div>
@@ -635,7 +635,7 @@
         </div>
         
         <!-- Hidden fields for form handling -->
-        <input type="hidden" name="_subject" value="Portfolio Contact Form">
+        <input type="hidden" name="_subject" value="Portfolio Contact Form - New Message">
         <input type="hidden" name="_cc" value="dan@dfinn.me">
         <input type="text" name="_gotcha" style="display:none">
         
@@ -652,9 +652,8 @@
     document.addEventListener("DOMContentLoaded", function () {
       const contactForm = document.getElementById("contactForm");
       const submitBtn = document.getElementById("submitBtn");
-      const responseMessage = document.getElementById("responseMessage");
 
-      // Form validation
+      // Form validation only - no custom submission handling
       function validateField(field) {
         const group = field.closest('.form-group');
         let isValid = true;
@@ -689,11 +688,9 @@
         });
       });
 
-      // Form submission
-      contactForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        // Validate all fields
+      // Simple form submission - let the browser handle it naturally
+      contactForm.addEventListener('submit', function(e) {
+        // Validate all fields before submission
         const fields = contactForm.querySelectorAll('input[required], select[required], textarea[required]');
         let isFormValid = true;
         
@@ -704,6 +701,7 @@
         });
         
         if (!isFormValid) {
+          e.preventDefault();
           showMessage('Please fix the errors above and try again.', 'error');
           return;
         }
@@ -711,31 +709,8 @@
         // Show loading state
         setSubmitLoading(true);
         
-        try {
-          // Submit to form service
-          const formData = new FormData(contactForm);
-          const response = await fetch('https://submit-form.com/w4rC8WMH3', {
-            method: 'POST',
-            body: formData
-          });
-          
-          if (response.ok) {
-            showMessage('✅ Thank you! Your message has been sent successfully. I\'ll get back to you soon!', 'success');
-            contactForm.reset();
-            
-            // Close modal after success
-            setTimeout(() => {
-              closeContactModal();
-            }, 3000);
-          } else {
-            throw new Error('Failed to send message');
-          }
-        } catch (error) {
-          console.error('Form submission error:', error);
-          showMessage('❌ Sorry, there was an error sending your message. Please try again or email me directly.', 'error');
-        } finally {
-          setSubmitLoading(false);
-        }
+        // Let the form submit naturally to submit-form.com
+        // The form will redirect or handle success automatically
       });
       
       function setSubmitLoading(loading) {
@@ -756,6 +731,7 @@
       }
       
       function showMessage(text, type) {
+        const responseMessage = document.getElementById('responseMessage');
         responseMessage.textContent = text;
         responseMessage.className = `message ${type} show`;
         
