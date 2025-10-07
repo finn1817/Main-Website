@@ -352,6 +352,71 @@
       box-shadow: 0 12px 35px rgba(40, 167, 69, 0.5);
     }
 
+    /* Most Popular Section */
+    .most-popular-section {
+      margin-top: 25px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fade-in-up 0.8s ease forwards;
+      transition: all var(--transition-speed) ease;
+    }
+
+    body.dark .most-popular-section {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .most-popular-section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.2);
+    }
+
+    .popular-label {
+      font-size: 1em;
+      font-weight: 600;
+      margin-bottom: 12px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+    }
+
+    .popular-display {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .popular-item {
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      color: #333;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+      box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+      transition: all 0.3s ease;
+      text-align: center;
+      min-width: 200px;
+    }
+
+    .popular-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+    }
+
+    .popular-item.loading {
+      background: linear-gradient(135deg, #6c757d, #868e96);
+      color: white;
+    }
+
     /* quick access toolbar */
     .quick-access {
       position: fixed;
@@ -867,6 +932,14 @@
       <p style="animation-delay: 0.7s;">Download or view my professional resume:</p>
       <a class="resume-button" href="resume/"><span>My Resume</span></a>
       
+      <!-- Most Popular Section -->
+      <div class="most-popular-section" id="mostPopularSection" style="animation-delay: 0.9s;">
+        <p class="popular-label">🔥 Most Popular:</p>
+        <div class="popular-display" id="popularDisplay">
+          <span class="popular-item">📊 Click buttons to see stats!</span>
+        </div>
+      </div>
+      
       <!-- Hidden Easter Egg Button -->
       <button class="easter-egg-btn" id="easterEggBtn" title="🤔 Secret Easter Egg - Click 3 times!"></button>
       <div class="click-counter" id="clickCounter">🥚 0/3</div>
@@ -1071,6 +1144,7 @@
     });
     // forcing back to old point when all theme was working
   </script>
+  <script src="./assets/js/analytics-feedback.js"></script>
   <script src="./assets/js/universal-search.js"></script>
   <script>
     (function ensureUniversalSearchLoaded() {
