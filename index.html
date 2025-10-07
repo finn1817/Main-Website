@@ -6,50 +6,7 @@
   <title>Dan Finn</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="./assets/css/universal-search.css" rel="stylesheet">
-  <script>
-    // Simple, robust theme manager loader with immediate theme application
-    (function() {
-      // Apply stored theme immediately to prevent flash
-      const theme = localStorage.getItem('theme') || 'light';
-      document.body.className = document.body.className.replace(/\b(light|dark|light-mode|dark-mode)\b/g, '');
-      document.body.classList.add(theme, theme + '-mode');
-      document.body.setAttribute('data-theme', theme);
-      document.documentElement.setAttribute('data-theme', theme);
-      
-      const script = document.createElement('script');
-      script.src = './assets/js/theme-manager.js';
-      script.async = false;
-      script.defer = false;
-      
-      script.onload = function() {
-        console.log('✅ Theme manager loaded successfully');
-      };
-      
-      script.onerror = function() {
-        console.warn('⚠️ Failed to load theme-manager.js, using fallback');
-        
-        // Fallback: basic theme functionality
-        document.addEventListener('DOMContentLoaded', function() {
-          const toggleBtn = document.querySelector('#theme-toggle, .theme-toggle, .toggle-btn');
-          if (toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
-              const currentTheme = localStorage.getItem('theme') || 'light';
-              const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-              localStorage.setItem('theme', newTheme);
-              document.body.className = document.body.className.replace(/\b(light|dark|light-mode|dark-mode)\b/g, '');
-              document.body.classList.add(newTheme, newTheme + '-mode');
-              document.body.setAttribute('data-theme', newTheme);
-              document.documentElement.setAttribute('data-theme', newTheme);
-              this.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            });
-            toggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
-          }
-        });
-      };
-      
-      document.head.appendChild(script);
-    })();
-  </script>
+  <script src="./assets/js/theme-manager.js"></script>
   <style>
     /* css custom properties for consistent theming */
     :root {

@@ -1,8 +1,17 @@
 /**
  * Global Theme Manager
  * Centralized theme management for the entire website
- * Eliminates code duplication and ensures consistent behavior
+ * Completely self-contained and bulletproof
  */
+
+// Immediately apply stored theme to prevent flash
+(function applyThemeImmediately() {
+  const theme = localStorage.getItem('theme') || 'light';
+  document.body.className = document.body.className.replace(/\b(light|dark|light-mode|dark-mode)\b/g, '');
+  document.body.classList.add(theme, theme + '-mode');
+  document.body.setAttribute('data-theme', theme);
+  document.documentElement.setAttribute('data-theme', theme);
+})();
 
 class ThemeManager {
   constructor() {
@@ -12,7 +21,7 @@ class ThemeManager {
 
     ThemeManager._instance = this;
 
-    this.currentTheme = 'light';
+    this.currentTheme = localStorage.getItem('theme') || 'light';
     this.buttons = new Map();
     this.observers = [];
     this.isInitialized = false;
@@ -21,7 +30,7 @@ class ThemeManager {
     this.systemMediaQuery = null;
     this.systemListener = null;
 
-    // Initialize immediately to prevent any theme flashing
+    // Initialize immediately
     this.initializeImmediate();
 
     if (document.readyState === 'loading') {
@@ -34,11 +43,71 @@ class ThemeManager {
 
   initializeImmediate() {
     // Apply theme immediately to prevent flash
-    const storedTheme = this.readStoredTheme();
-    const preferredTheme = storedTheme || this.getSystemPreference();
-    this.currentTheme = preferredTheme;
-    this.applyThemeClasses(preferredTheme);
-    this.updateDataThemeAttributes(preferredTheme);
+    this.applyThemeClasses(this.currentTheme);
+    this.updateDataThemeAttributes(this.currentTheme);
+    
+    // Setup basic fallback toggle immediately
+    this.setupImmediateFallback();
+  }
+
+  setupImmediateFallback() {
+    // Basic toggle functionality that works immediately
+    const handleToggle = (event) => {
+      event.preventDefault();
+      this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+      this.applyThemeClasses(this.currentTheme);
+      this.updateDataThemeAttributes(this.currentTheme);
+      localStorage.setItem('theme', this.currentTheme);
+      
+      // Update button appearance
+      const button = event.target;
+      button.textContent = this.currentTheme === 'dark' ? '☀️' : '🌙';
+      button.setAttribute('aria-label', this.currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+      
+      // Notify observers
+      this.notifyObservers(this.currentTheme, this.currentTheme === 'dark' ? 'light' : 'dark');
+    };
+
+    // Find and setup toggle buttons immediately
+    const setupButton = (button) => {
+      if (button.__themeManagerSetup) return; // Prevent duplicate setup
+      button.__themeManagerSetup = true;
+      
+      button.addEventListener('click', handleToggle);
+      button.textContent = this.currentTheme === 'dark' ? '☀️' : '🌙';
+      button.setAttribute('aria-label', this.currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+      button.setAttribute('role', 'button');
+      if (!button.hasAttribute('tabindex')) {
+        button.setAttribute('tabindex', '0');
+      }
+    };
+
+    // Setup existing buttons
+    document.querySelectorAll(this.toggleSelector).forEach(setupButton);
+
+    // Watch for new buttons
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (node instanceof HTMLElement) {
+            if (node.matches && node.matches(this.toggleSelector)) {
+              setupButton(node);
+            }
+            if (node.querySelectorAll) {
+              node.querySelectorAll(this.toggleSelector).forEach(setupButton);
+            }
+          }
+        });
+      });
+    });
+
+    if (document.body) {
+      observer.observe(document.body, { childList: true, subtree: true });
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        observer.observe(document.body, { childList: true, subtree: true });
+      });
+    }
   }
 
   static getInstance() {
@@ -116,29 +185,52 @@ class ThemeManager {
   }
 
   registerToggleButton(button, options = {}) {
+    // This method is now mostly for backward compatibility
+    // Buttons are automatically discovered and setup by setupImmediateFallback
     if (!(button instanceof Element)) return;
 
-    let metadata = this.buttons.get(button);
-
-    if (metadata) {
+    // If button is already setup, just update metadata
+    if (button.__themeManagerSetup) {
+      console.log('🎨 Button already setup, updating metadata only');
+      let metadata = this.buttons.get(button) || { options: {} };
       metadata.options = { ...metadata.options, ...options };
-      this.updateButtonAppearance(button);
+      this.buttons.set(button, metadata);
       return;
     }
 
-    metadata = {
-      options: { ...options },
-      listeners: {
-        click: (event) => this.handleButtonClick(event, button),
-        keydown: (event) => this.handleButtonKeydown(event, button)
-      }
-    };
+    // Let the immediate fallback handle the basic setup
+    // Just store the advanced options for later use
+    let metadata = this.buttons.get(button);
+    if (!metadata) {
+      metadata = {
+        options: { ...options },
+        listeners: {
+          click: (event) => this.handleAdvancedToggle(event, button),
+          keydown: (event) => this.handleButtonKeydown(event, button)
+        }
+      };
+      this.buttons.set(button, metadata);
+    }
 
-    this.buttons.set(button, metadata);
-    this.applyButtonAccessibility(button);
-    button.addEventListener('click', metadata.listeners.click);
-    button.addEventListener('keydown', metadata.listeners.keydown);
+    // Only add advanced listeners if there are advanced options
+    if (options.beforeToggle || options.afterToggle) {
+      button.addEventListener('click', metadata.listeners.click, { capture: true });
+      button.addEventListener('keydown', metadata.listeners.keydown);
+    }
+
     this.updateButtonAppearance(button);
+  }
+
+  handleAdvancedToggle(event, button) {
+    const metadata = this.buttons.get(button);
+    if (!metadata?.options?.beforeToggle && !metadata?.options?.afterToggle) {
+      return; // Let basic handler take over
+    }
+
+    event.stopPropagation();
+    event.preventDefault();
+
+    this.processToggle(button, event);
   }
 
   addToggleButton(button, options = {}) {
@@ -446,6 +538,12 @@ if (typeof module !== 'undefined' && module.exports) {
 if (!window.__themeManagerInitialized) {
   window.__themeManagerInitialized = true;
   console.log('🎨 Global Theme Manager loaded and initialized');
+  
+  // Setup immediate fallback for any existing buttons
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('#theme-toggle, .theme-toggle, .toggle-btn, [data-theme-toggle]');
+    console.log(`🎨 Theme Manager found ${buttons.length} toggle buttons on page load`);
+  });
 } else {
   console.log('🎨 Global Theme Manager already initialized, skipping');
 }

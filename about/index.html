@@ -619,18 +619,6 @@
   <script src="../assets/js/theme-manager.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const toggleBtn = document.getElementById("theme-toggle");
-      const body = document.body;
-
-      if (toggleBtn) {
-        if (window.themeManager && typeof window.themeManager.registerToggleButton === 'function') {
-          window.themeManager.registerToggleButton(toggleBtn);
-        } else if (!window.themeManager) {
-          console.error('ThemeManager is unavailable on the About page.');
-        }
-      }
-
-      // intersection observer for fade-in animations
       const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
