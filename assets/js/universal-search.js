@@ -158,7 +158,7 @@ class UniversalSearch {
       {
         title: "About Me",
         path: "Home › About",
-        url: `${this.basePath}about/`,
+        url: `${this.basePath}about-me/`,
         type: "pages",
         description: "Learn more about Dan Finn and his background.",
         keywords: ["about", "dan", "finn", "bio"]
