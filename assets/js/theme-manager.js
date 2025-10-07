@@ -1,87 +1,120 @@
-// Global Theme Manager - Simple and Reliable
-(function() {
-  // Apply stored theme immediately
-  const storedTheme = localStorage.getItem('theme') || 'light';
-  document.body.className = document.body.className.replace(/\b(light|dark|light-mode|dark-mode)\b/g, '');
-  document.body.classList.add(storedTheme, storedTheme + '-mode');
-  document.body.setAttribute('data-theme', storedTheme);
-  document.documentElement.setAttribute('data-theme', storedTheme);
+// Ultra Simple Theme Manager
+console.log('Theme Manager Starting...');
 
-  class ThemeManager {
-    constructor() {
-      if (window.themeManager) return window.themeManager;
-      
-      this.currentTheme = storedTheme;
-      this.observers = [];
-      this.setupToggle();
+// Global theme variable
+let currentTheme = 'light';
+
+// Try to get stored theme
+try {
+  const stored = localStorage.getItem('theme');
+  if (stored === 'dark' || stored === 'light') {
+    currentTheme = stored;
+  }
+} catch (e) {
+  console.log('localStorage not available');
+}
+
+console.log('Initial theme:', currentTheme);
+
+// Apply theme immediately
+function applyTheme(theme) {
+  console.log('Applying theme:', theme);
+  
+  if (theme === 'dark') {
+    document.body.classList.add('dark');
+  } else {
+    document.body.classList.remove('dark');
+  }
+  
+  // Update all theme buttons
+  const buttons = document.querySelectorAll('#theme-toggle, .theme-toggle, .toggle-btn');
+  buttons.forEach(button => {
+    if (button.id !== 'search-toggle') {
+      button.textContent = theme === 'dark' ? '☀️' : '🌙';
     }
+  });
+  
+  console.log('Theme applied, body classes:', document.body.className);
+}
 
-    setupToggle() {
-      const self = this;
-      
-      function handleClick(event) {
-        event.preventDefault();
-        const newTheme = self.currentTheme === 'dark' ? 'light' : 'dark';
-        self.setTheme(newTheme);
-      }
+// Toggle theme function
+function toggleTheme() {
+  console.log('Toggling theme...');
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  applyTheme(currentTheme);
+  
+  // Save to localStorage
+  try {
+    localStorage.setItem('theme', currentTheme);
+  } catch (e) {
+    console.log('Could not save to localStorage');
+  }
+  
+  console.log('New theme:', currentTheme);
+}
 
-      function setupButton(button) {
-        if (button._setup) return;
-        button._setup = true;
-        button.addEventListener('click', handleClick);
-        button.textContent = self.currentTheme === 'dark' ? '☀️' : '🌙';
-      }
+// Apply initial theme
+applyTheme(currentTheme);
 
-      // Setup existing buttons
-      const setup = () => {
-        document.querySelectorAll('#theme-toggle, .theme-toggle, .toggle-btn').forEach(setupButton);
-      };
-
-      setup();
-      document.addEventListener('DOMContentLoaded', setup);
-      
-      // Watch for new buttons
-      if (window.MutationObserver) {
-        const observer = new MutationObserver(setup);
-        if (document.body) observer.observe(document.body, { childList: true, subtree: true });
-      }
-    }
-
-    setTheme(theme) {
-      this.currentTheme = theme;
-      
-      document.body.className = document.body.className.replace(/\b(light|dark|light-mode|dark-mode)\b/g, '');
-      document.body.classList.add(theme, theme + '-mode');
-      document.body.setAttribute('data-theme', theme);
-      document.documentElement.setAttribute('data-theme', theme);
-      
+// Set up theme manager object
+window.themeManager = {
+  getCurrentTheme: function() {
+    return currentTheme;
+  },
+  
+  setTheme: function(theme) {
+    currentTheme = theme;
+    applyTheme(theme);
+    try {
       localStorage.setItem('theme', theme);
-      
-      document.querySelectorAll('#theme-toggle, .theme-toggle, .toggle-btn').forEach(button => {
-        button.textContent = theme === 'dark' ? '☀️' : '🌙';
-      });
-
-      this.observers.forEach(callback => {
-        try { callback(theme); } catch(e) {}
-      });
+    } catch (e) {
+      console.log('Could not save to localStorage');
     }
+  },
+  
+  toggleTheme: toggleTheme,
+  
+  addObserver: function(callback) {
+    console.log('Observer added (compatibility method)');
+  }
+};
 
-    registerToggleButton(button) {
-      // Already handled automatically
+// Set up buttons when ready
+function setupButtons() {
+  console.log('Setting up buttons...');
+  
+  const buttons = document.querySelectorAll('#theme-toggle, .theme-toggle, .toggle-btn');
+  console.log('Found buttons:', buttons.length);
+  
+  buttons.forEach(button => {
+    if (button.id === 'search-toggle') {
+      console.log('Skipping search button');
       return;
     }
+    
+    console.log('Setting up button:', button.id || button.className);
+    
+    // Remove any existing handlers
+    button.onclick = null;
+    
+    // Add new handler
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('Theme button clicked!');
+      toggleTheme();
+    });
+  });
+  
+  // Apply current theme to buttons
+  applyTheme(currentTheme);
+}
 
-    getCurrentTheme() {
-      return this.currentTheme;
-    }
+// Wait for DOM
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupButtons);
+} else {
+  setupButtons();
+}
 
-    addObserver(callback) {
-      this.observers.push(callback);
-    }
-  }
-
-  // Create global instance
-  window.themeManager = new ThemeManager();
-  window.ThemeManager = ThemeManager;
-  console.log('🎨 Theme Manager loaded');
-})();
+console.log('Theme Manager Ready!');
