@@ -367,7 +367,7 @@
             <div class="logo">GitHub Profile Analyzer</div>
             <div class="header-controls">
                 <button class="track-btn" onclick="toggleSearch()">Track my account</button>
-                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+                <button class="theme-toggle" id="theme-toggle" type="button">🌙</button>
             </div>
         </div>
     </header>
@@ -396,23 +396,12 @@
         <p><strong>Created by Dan Finn</strong></p>
     </footer>
 
+    <script src="../../assets/js/theme-manager.js"></script>
     <script>
         const API_BASE = 'https://api.github.com';
         const DEFAULT_USER = 'finn1817';
         let currentUser = DEFAULT_USER;
         let userSearchVisible = false;
-
-        // Theme management
-        function toggleTheme() {
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            const themeBtn = document.querySelector('.theme-toggle');
-            
-            body.setAttribute('data-theme', newTheme);
-            themeBtn.textContent = newTheme === 'light' ? '🌙' : '☀️';
-            localStorage.setItem('theme', newTheme);
-        }
 
         function toggleSearch() {
             const searchDiv = document.getElementById('userSearch');
@@ -753,12 +742,15 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            // Load saved theme
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.body.setAttribute('data-theme', savedTheme);
-            document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            const themeManager = window.themeManager || (typeof ThemeManager !== 'undefined' ? ThemeManager.getInstance?.() : null);
+            const toggleBtn = document.getElementById('theme-toggle');
+
+            // Theme manager handles the toggle automatically
             
-            // Load default profile
+            if (!themeManager) {
+                console.error('ThemeManager is unavailable on the Git Account Info page.');
+            }
+
             loadProfile();
         });
     </script>

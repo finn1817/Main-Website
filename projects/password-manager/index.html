@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
   <link rel="stylesheet" href="../../assets/css/loading-states.css">
+  <script src="../../assets/js/theme-manager.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <!-- Universal Search Component -->
   <link rel="stylesheet" href="../../assets/css/universal-search.css">
@@ -966,36 +967,16 @@
     }
 
     function initializeTheme() {
-      const body = document.body;
       const toggleBtn = document.getElementById("theme-toggle");
-      
+      const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
+
       if (!toggleBtn) return;
+
+      // Theme manager handles the toggle automatically
       
-      function setTheme(isDark) {
-        if (isDark) {
-          body.classList.add("dark");
-          toggleBtn.textContent = "☀️";
-          localStorage.setItem("theme", "dark");
-        } else {
-          body.classList.remove("dark");
-          toggleBtn.textContent = "🌙";
-          localStorage.setItem("theme", "light");
-        }
+      if (!themeManager) {
+        console.error("ThemeManager is unavailable on the Password Manager page.");
       }
-
-      // Load saved theme
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "dark") {
-        setTheme(true);
-      } else if (savedTheme === "light") {
-        setTheme(false);
-      } else {
-        setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
-      }
-
-      toggleBtn.addEventListener("click", () => {
-        setTheme(!body.classList.contains("dark"));
-      });
     }
 
     function createParticles() {

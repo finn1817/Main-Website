@@ -647,35 +647,12 @@
     </div>
   </div>
 
+  <script src="../assets/js/theme-manager.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const toggleBtn = document.getElementById("theme-toggle");
-      const body = document.body;
       const contactForm = document.getElementById("contactForm");
       const submitBtn = document.getElementById("submitBtn");
       const responseMessage = document.getElementById("responseMessage");
-
-      // Apply saved theme or system preference
-      const savedTheme = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-      if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-        body.classList.remove("light");
-        body.classList.add("dark");
-        toggleBtn.textContent = "☀️";
-      } else {
-        body.classList.remove("dark");
-        body.classList.add("light");
-        toggleBtn.textContent = "🌙";
-      }
-
-      // Toggle theme listener
-      toggleBtn.addEventListener("click", () => {
-        const isDark = body.classList.toggle("dark");
-        body.classList.toggle("light", !isDark);
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-        toggleBtn.textContent = isDark ? "☀️" : "🌙";
-      });
 
       // Form validation
       function validateField(field) {
@@ -825,7 +802,6 @@
         closeContactModal();
       }
     });
-  </script>
   </script>
   <script src="../assets/js/universal-search.js"></script>
 </body>

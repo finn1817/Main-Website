@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     // dom elements
     const themeToggle = document.getElementById("themeToggle");
-    const body = document.body;
+    const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
     const generateResumeBtn = document.getElementById("generateResumeBtn");
     const clearFormBtn = document.getElementById("clearFormBtn");
     const previewContainer = document.getElementById("previewContainer");
@@ -29,24 +29,16 @@ document.addEventListener("DOMContentLoaded", function() {
         }, 500);
     }
 
-    // theme management - updated to sync with main site
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    
-    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-        body.classList.add("dark-mode");
-        themeToggle.textContent = "☀️";
-    } else {
-        themeToggle.textContent = "🌙";
-    }
-    
-    themeToggle.addEventListener("click", function() {
-        applyTransition(function() {
-            const isDark = body.classList.toggle("dark-mode");
-            localStorage.setItem("theme", isDark ? "dark" : "light");
-            themeToggle.textContent = isDark ? "☀️" : "🌙";
+    if (themeManager && themeToggle && typeof themeManager.registerToggleButton === "function") {
+        themeManager.registerToggleButton(themeToggle, {
+            beforeToggle: ({ toggle }) => {
+                applyTransition(() => toggle());
+                return false;
+            }
         });
-    });
+    } else if (!themeManager) {
+        console.error("ThemeManager is unavailable on the Resume Builder page script.");
+    }
 
     // apply transition when navigating away
     document.querySelectorAll("a").forEach(function(link) {

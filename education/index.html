@@ -1109,26 +1109,8 @@
     </div>
   </section>
 
+  <script src="../assets/js/theme-manager.js"></script>
   <script>
-    // Theme Management
-    const themeToggle = document.getElementById('themeToggle');
-    const body = document.body;
-
-    // Load saved theme
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      body.classList.add('dark-mode');
-      themeToggle.textContent = '☀️';
-    }
-
-    // Theme toggle functionality
-    themeToggle.addEventListener('click', () => {
-      const isDark = body.classList.toggle('dark-mode');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      themeToggle.textContent = isDark ? '☀️' : '🌙';
-    });
 
     // Animated Number Counter
     function animateNumber(element, target) {

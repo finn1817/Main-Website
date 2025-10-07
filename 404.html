@@ -6,6 +6,7 @@
   <title>Page Not Found - Dan Finn</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="./assets/css/universal-search.css" rel="stylesheet">
+  <script src="./assets/js/theme-manager.js"></script>
   <style>
     :root {
       --primary-gradient: linear-gradient(135deg, #007bff, #4dabf7);
@@ -276,25 +277,13 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const themeToggle = document.getElementById('themeToggle');
-      const body = document.body;
+      const themeManager = window.themeManager || (typeof ThemeManager !== 'undefined' ? ThemeManager.getInstance?.() : null);
 
-      // Apply saved theme
-      const savedTheme = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      // Theme manager handles the toggle automatically
       
-      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-        body.classList.add('dark');
-        themeToggle.textContent = '☀️';
-      } else {
-        themeToggle.textContent = '🌙';
+      if (!themeManager) {
+        console.error('ThemeManager is unavailable on the 404 page.');
       }
-
-      // Theme toggle functionality
-      themeToggle.addEventListener('click', function() {
-        const isDark = body.classList.toggle('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        themeToggle.textContent = isDark ? '☀️' : '🌙';
-      });
 
       // Analytics for 404 errors (if you add Google Analytics)
       if (typeof gtag !== 'undefined') {

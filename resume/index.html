@@ -775,6 +775,7 @@
 <footer>
   &copy; 2025 Dan Finn -- All rights reserved.
 </footer>
+<script src="../assets/js/theme-manager.js"></script>
 <script>
   document.querySelectorAll('.tab-button').forEach(button => {
     button.addEventListener('click', () => {
@@ -942,7 +943,7 @@
   document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("contactForm");
     const popup = document.getElementById("popup");
-    const themeToggle = document.getElementById("themeToggle");
+  const themeToggle = document.getElementById("themeToggle");
     const downloadButton = document.getElementById("downloadResume");
     const viewCoursesBtn = document.getElementById("viewCoursesBtn");
     const coursesModal = document.getElementById("coursesModal");
@@ -961,24 +962,7 @@
         coursesModal.style.display = "none";
       }
     });
-    // load saved theme from localStorage
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      document.body.setAttribute("data-theme", "dark");
-      themeToggle.textContent = "🌙";
-    }
-    // Theme toggle functionality
-    themeToggle.addEventListener("click", () => {
-      if (document.body.getAttribute("data-theme") === "dark") {
-        document.body.removeAttribute("data-theme");
-        themeToggle.textContent = "☀️";
-        localStorage.setItem("theme", "light");
-      } else {
-        document.body.setAttribute("data-theme", "dark");
-        themeToggle.textContent = "🌙";
-        localStorage.setItem("theme", "dark");
-      }
-    });
+    // Theme manager handles the toggle automatically
     // form submission functionality
     if (localStorage.getItem("formSubmitted") === "true") {
       disableForm();
@@ -1052,6 +1036,6 @@ Keep coding! 🔥`,
   );
   
 </script>
-<script src="../assets/js/universal-search.js"></script>
+  <script src="../assets/js/universal-search.js"></script>
 </body>
 </html>

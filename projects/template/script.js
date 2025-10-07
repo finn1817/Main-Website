@@ -255,16 +255,12 @@ let filteredTemplates = [...TEMPLATES];
 let currentTemplate = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-	initTheme();
 	createParticles();
 	renderTemplates();
 	setupEventListeners();
 });
 
 function setupEventListeners() {
-	// Theme toggle
-	document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-	
 	// Search functionality
 	document.getElementById('searchInput').addEventListener('input', handleSearch);
 	document.getElementById('searchBtn').addEventListener('click', handleSearch);
@@ -474,26 +470,6 @@ function openInNewTab(html) {
 	const newWindow = window.open();
 	newWindow.document.write(html);
 	newWindow.document.close();
-}
-
-// Theme handling
-function initTheme() {
-	const saved = localStorage.getItem('site-theme');
-	const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-	
-	if (saved === 'dark' || (!saved && prefersDark)) {
-		document.body.classList.add('dark');
-		document.getElementById('theme-toggle').textContent = '☀️';
-	} else {
-		document.body.classList.remove('dark');
-		document.getElementById('theme-toggle').textContent = '🌙';
-	}
-}
-
-function toggleTheme() {
-	const isDark = document.body.classList.toggle('dark');
-	localStorage.setItem('site-theme', isDark ? 'dark' : 'light');
-	document.getElementById('theme-toggle').textContent = isDark ? '☀️' : '🌙';
 }
 
 // Particle system
