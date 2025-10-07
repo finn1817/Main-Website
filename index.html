@@ -837,7 +837,7 @@
       <h2>🔍 Search Everything</h2>
       <div class="search-box">
         <input type="text" class="search-input" id="searchInput" placeholder="Search projects, pages, or content..." autocomplete="off">
-        <button class="search-btn" onclick="performSearch()">Search</button>
+        <button class="search-btn" id="searchSubmitBtn">Search</button>
       </div>
       <div class="search-filters">
         <button class="filter-btn active" data-filter="all">All Content</button>
@@ -1013,9 +1013,7 @@
 
 
 
-      // make functions global for onclick handlers
-      window.performSearch = performSearch;
-      window.navigateToResult = navigateToResult;
+
 
       // easter egg
       let easterEggClicks = 0;
