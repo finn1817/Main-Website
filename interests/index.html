@@ -115,6 +115,56 @@
       animation: fadeInUp 1s ease-out 0.2s both;
     }
 
+    .hero-subtitle-container {
+      max-width: 800px;
+      margin: 0 auto;
+      animation: fadeInUp 1s ease-out 0.2s both;
+    }
+
+    .hero-subtitle-title {
+      font-size: 1.8em;
+      font-weight: 600;
+      color: #007bff;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    body.dark .hero-subtitle-title {
+      color: #4dabf7;
+    }
+
+    .hero-interests-list {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .hero-interests-list li {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px 20px;
+      border-radius: 12px;
+      font-size: 1.1em;
+      font-weight: 500;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      border-left: 4px solid #007bff;
+    }
+
+    body.dark .hero-interests-list li {
+      background: rgba(30, 30, 30, 0.9);
+      border-left-color: #4dabf7;
+    }
+
+    .hero-interests-list li:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.2);
+    }
+
     /* Floating Animation */
     @keyframes fadeInUp {
       from {
@@ -367,16 +417,25 @@
   </style>
 </head>
 <body class="light">
-  <!-- Top Bar -->
+  <!-- top bar -->
   <div class="top-bar">
     <a href="../index.html" class="btn-home">← Back to Home</a>
     <button id="theme-toggle" class="toggle-btn" aria-label="Toggle Theme">🌙</button>
   </div>
 
-  <!-- Hero Section -->
+  <!-- hero section (title -> main) -->
   <div class="hero-section">
     <h1 class="hero-title">My Interests</h1>
-    <p class="hero-subtitle">Learning & using new tech, programming, Josh Allen, most sports (hockey, soccer, football & lacrosse), working at ITS (Always learning new things and get to help people out all the time!) </p>
+    <div class="hero-subtitle-container">
+      <h2 class="hero-subtitle-title">What Drives Me</h2>
+      <ul class="hero-interests-list">
+        <li>📚 Learning & using new technology</li>
+        <li>💻 Programming and software development</li>
+        <li>🏒 Sports (hockey, soccer, football & lacrosse)</li>
+        <li>🔧 Working at ITS - always learning new things and helping people</li>
+        <li>🚀 Building projects that solve real problems / save time</li>
+      </ul>
+    </div>
   </div>
 
   <!-- interest cards -->
@@ -446,7 +505,7 @@
     </div>
   </div>
 
-  <!-- Stats Section -->
+  <!-- stats section -->
   <div class="stats-section">
     <div class="stats-grid">
       <div class="stat-item">
@@ -469,7 +528,7 @@
     </div>
   </div>
 
-  <!-- Quick Facts -->
+  <!-- quick facts -->
   <div class="quick-facts">
     <h2>Quick Facts About Me</h2>
     <ul class="facts-list">
@@ -482,7 +541,7 @@
     </ul>
   </div>
 
-  <!-- Current Focus -->
+  <!-- current focus -->
   <div class="current-focus">
     <h2>Currently Focusing On</h2>
     <p>
@@ -495,7 +554,7 @@
       const toggleBtn = document.getElementById("theme-toggle");
       const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
 
-      // Theme manager handles the toggle automatically
+      // theme manager handles the toggle automatically
       
       if (!themeManager) {
         console.error("ThemeManager is unavailable on the Interests page.");
