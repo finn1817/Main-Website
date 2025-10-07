@@ -28,7 +28,7 @@
       --popup-text: white;
       --input-border: #aaa;
     }
-    [data-theme="dark"] {
+    body.dark {
       --bg-color: #1a1a1a;
       --text-color: #eee;
       --header-bg: #003366;
@@ -469,7 +469,7 @@
 </head>
 <body>
 <a href="https://finn1817.github.io/Main-Website/" class="back-to-home">Click this to see my main website!</a>
-<button class="theme-toggle" id="themeToggle">☀️</button>
+<button class="theme-toggle" id="theme-toggle">☀️</button>
 <button class="download-resume" id="downloadResume"><span>Download Resume</span></button>
 <header>
   <h1>Dan Finn - Resume Website</h1>
@@ -943,7 +943,6 @@
   document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("contactForm");
     const popup = document.getElementById("popup");
-  const themeToggle = document.getElementById("themeToggle");
     const downloadButton = document.getElementById("downloadResume");
     const viewCoursesBtn = document.getElementById("viewCoursesBtn");
     const coursesModal = document.getElementById("coursesModal");
