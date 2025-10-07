@@ -23,21 +23,38 @@ class SectionPreviews {
         
         const tooltipCSS = `
         .section-preview-tooltip {
-            position: fixed; background: rgba(0,0,0,0.9); color: white;
-            padding: 12px 16px; border-radius: 8px; font-size: 0.9em;
-            max-width: 300px; z-index: 2100; opacity: 0; visibility: hidden;
-            transition: all 0.3s ease; pointer-events: none;
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);
+            position: fixed; 
+            background: rgba(0,0,0,0.9); 
+            color: white;
+            padding: 12px 16px; 
+            border-radius: 8px; 
+            font-size: 0.9em;
+            max-width: 300px; 
+            z-index: 2100; 
+            opacity: 0; 
+            visibility: hidden;
+            transition: all 0.3s ease; 
+            pointer-events: none;
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255,255,255,0.2);
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            font-weight: 500; line-height: 1.4;
+            font-weight: 500; 
+            line-height: 1.4;
+            word-wrap: break-word;
         }
         .section-preview-tooltip.visible {
-            opacity: 1; visibility: visible;
+            opacity: 1; 
+            visibility: visible;
         }
         .section-preview-tooltip::before {
-            content: ''; position: absolute; top: -6px; left: 50%;
+            content: ''; 
+            position: absolute; 
+            top: -6px; 
+            left: 50%;
             transform: translateX(-50%) rotate(45deg);
-            width: 12px; height: 12px; background: rgba(0,0,0,0.9);
+            width: 12px; 
+            height: 12px; 
+            background: rgba(0,0,0,0.9);
             border-top: 1px solid rgba(255,255,255,0.2);
             border-left: 1px solid rgba(255,255,255,0.2);
         }
@@ -81,7 +98,11 @@ class SectionPreviews {
     showPreview(element, text) {
         this.tooltip.textContent = text;
         this.tooltip.classList.add('visible');
-        this.positionTooltip(element);
+        
+        // Small delay to ensure tooltip is rendered before positioning
+        requestAnimationFrame(() => {
+            this.positionTooltip(element);
+        });
     }
 
     hidePreview() {
@@ -90,28 +111,39 @@ class SectionPreviews {
 
     positionTooltip(element) {
         const rect = element.getBoundingClientRect();
-        
-        // Set initial position to get tooltip dimensions
-        this.tooltip.style.left = '0px';
-        this.tooltip.style.top = '0px';
-        this.tooltip.style.visibility = 'hidden';
-        this.tooltip.style.opacity = '1'; // Temporarily show to get dimensions
-        
         const tooltipRect = this.tooltip.getBoundingClientRect();
         
-        // Calculate final position BELOW the button
+        // Calculate position BELOW the button
         let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-        let top = rect.bottom + 15; // 15px below button
+        let top = rect.bottom + 15; // 15px below the button
         
-        // Keep in viewport
-        left = Math.max(10, Math.min(left, window.innerWidth - tooltipRect.width - 10));
-        top = Math.max(10, top);
+        // Keep tooltip within viewport horizontally
+        const margin = 10;
+        left = Math.max(margin, Math.min(left, window.innerWidth - tooltipRect.width - margin));
         
-        // Apply final position
+        // If tooltip would go below viewport, position it ABOVE the button instead
+        if (top + tooltipRect.height > window.innerHeight - margin) {
+            top = rect.top - tooltipRect.height - 15; // 15px above the button
+            
+            // Update arrow position for above placement
+            this.tooltip.style.setProperty('--arrow-position', 'bottom');
+            
+            // You might want to add CSS for bottom arrow:
+            // .section-preview-tooltip[style*="--arrow-position: bottom"]::before {
+            //     top: auto; bottom: -6px;
+            //     border-top: none; border-bottom: 1px solid rgba(255,255,255,0.2);
+            // }
+        } else {
+            this.tooltip.style.setProperty('--arrow-position', 'top');
+        }
+        
+        // Ensure tooltip doesn't go above viewport
+        top = Math.max(margin, top);
+        
         this.tooltip.style.left = left + 'px';
         this.tooltip.style.top = top + 'px';
-        this.tooltip.style.visibility = 'visible';
-        this.tooltip.style.opacity = '0'; // Will be set to 1 by .visible class
+        
+        console.log(`📍 Tooltip positioned: left=${left}, top=${top}, button bottom=${rect.bottom}`);
     }
 }
 
