@@ -50,47 +50,13 @@ const wordLists = {
 
 // initialize the game
 document.addEventListener('DOMContentLoaded', function() {
-  initializeTheme();
   createParticles();
   createAlphabet();
   loadStats();
   
-  // theme toggle functionality
   const toggleBtn = document.getElementById('theme-toggle');
-  toggleBtn.addEventListener('click', toggleTheme);
-});
-
-// theme management
-function initializeTheme() {
-  const savedTheme = localStorage.getItem('site-theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-    document.body.classList.add('dark');
-    document.getElementById('theme-toggle').textContent = '☀️';
-  } else {
-    document.body.classList.remove('dark');
-    document.getElementById('theme-toggle').textContent = '🌙';
-  }
-}
-
-function toggleTheme() {
-  const isDark = document.body.classList.toggle('dark');
-  localStorage.setItem('site-theme', isDark ? 'dark' : 'light');
-  document.getElementById('theme-toggle').textContent = isDark ? '☀️' : '🌙';
-}
-
-// Sync theme across tabs/windows
-window.addEventListener('storage', (e) => {
-  if (e.key === 'site-theme') {
-    const newVal = e.newValue;
-    if (newVal === 'dark') {
-      document.body.classList.add('dark');
-      document.getElementById('theme-toggle').textContent = '☀️';
-    } else {
-      document.body.classList.remove('dark');
-      document.getElementById('theme-toggle').textContent = '🌙';
-    }
+  if (toggleBtn && window.themeManager && typeof window.themeManager.registerToggleButton === 'function') {
+    window.themeManager.registerToggleButton(toggleBtn);
   }
 });
 

@@ -25,38 +25,26 @@ class AboutPageManager {
     console.log('✅ About page initialized successfully');
   }
 
-  // Theme Toggle Functionality (consistent with rest of site)
+  // Theme Toggle Functionality using global ThemeManager
   setupThemeToggle() {
     const toggleBtn = document.getElementById('theme-toggle');
     if (!toggleBtn) return;
 
-    const applyTheme = (mode) => {
-      if (mode === 'dark') {
-        document.body.classList.add('dark');
-        toggleBtn.textContent = '☀️';
-        toggleBtn.setAttribute('aria-label', 'Switch to light mode');
-      } else {
-        document.body.classList.remove('dark');
-        toggleBtn.textContent = '🌙';
-        toggleBtn.setAttribute('aria-label', 'Switch to dark mode');
-      }
-    };
+    const themeManager = window.themeManager || (typeof ThemeManager !== 'undefined' ? ThemeManager.getInstance?.() : null);
 
-    // Initialize theme from localStorage
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    applyTheme(savedTheme);
+    if (!themeManager) {
+      console.error('ThemeManager is unavailable on the About Me page.');
+      return;
+    }
 
-    // Toggle theme on click
-    toggleBtn.addEventListener('click', () => {
-      const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      
-      localStorage.setItem('theme', newTheme);
-      applyTheme(newTheme);
-      
-      // Add subtle animation feedback
-      this.addButtonClickFeedback(toggleBtn);
+    themeManager.registerToggleButton?.(toggleBtn, {
+      afterToggle: () => this.addButtonClickFeedback(toggleBtn)
     });
+
+    // Fallback animation if registerToggleButton is unavailable
+    if (!themeManager.registerToggleButton && window.themeManager) {
+      toggleBtn.addEventListener('click', () => this.addButtonClickFeedback(toggleBtn), { once: false });
+    }
   }
 
   // Intersection Observer for scroll animations

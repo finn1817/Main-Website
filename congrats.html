@@ -716,6 +716,7 @@
     </div>
   </div>
 
+  <script src="./assets/js/theme-manager.js"></script>
   <script>
     // Memory Management System
     const memoryManager = {
@@ -827,28 +828,6 @@
     memoryManager.addEventListener(document, 'visibilitychange', () => {
       if (document.hidden) memoryManager.cleanup();
     });
-
-    // Global simple theme toggle (light/dark) consistent with rest of site
-    (function initGlobalThemeToggle(){
-      const toggleBtn = document.getElementById('theme-toggle');
-      if(!toggleBtn) return;
-      const apply = (mode) => {
-        if(mode === 'dark') {
-          document.body.classList.add('dark');
-          toggleBtn.textContent = '☀️';
-        } else {
-          document.body.classList.remove('dark');
-          toggleBtn.textContent = '🌙';
-        }
-      };
-      const saved = localStorage.getItem('theme') || 'light';
-      apply(saved);
-      memoryManager.addEventListener(toggleBtn,'click',()=>{
-        const next = document.body.classList.contains('dark') ? 'light' : 'dark';
-        localStorage.setItem('theme', next);
-        apply(next);
-      });
-    })();
 
     // Confetti management with memory cleanup
     let maxConfettiInstances = 3;

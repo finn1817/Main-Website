@@ -7,6 +7,7 @@
   <title>Dan Finn</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="./assets/css/universal-search.css" rel="stylesheet">
+  <script src="./assets/js/theme-manager.js"></script>
   <style>
     /* css custom properties for consistent theming */
     :root {
@@ -933,7 +934,6 @@
     });
 
     document.addEventListener("DOMContentLoaded", function () {
-      const toggleBtn = document.getElementById("theme-toggle");
       const body = document.body;
       const loadingOverlay = document.getElementById("loadingOverlay");
       const scrollIndicator = document.getElementById("scrollIndicator");
@@ -980,42 +980,9 @@
         }, 30000)
       );
 
-      // THEME SYSTEM (refactored for reliability)
-      const THEME_KEY = 'theme';
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-      function applyTheme(theme) {
-        const wantDark = theme === 'dark';
-        body.classList.toggle('dark', wantDark);
-        body.classList.toggle('light', !wantDark);
-        toggleBtn.textContent = wantDark ? '☀️' : '🌙';
-        toggleBtn.setAttribute('aria-pressed', String(wantDark));
-      }
-
-      function initTheme() {
-        const saved = localStorage.getItem(THEME_KEY);
-        if (saved === 'dark' || saved === 'light') {
-          applyTheme(saved);
-        } else {
-          applyTheme(mediaQuery.matches ? 'dark' : 'light');
-        }
-      }
-
-      initTheme();
-      mediaQuery.addEventListener('change', (e) => {
-        // Only auto-switch if user hasn't explicitly chosen
-        if (!localStorage.getItem(THEME_KEY)) {
-          applyTheme(e.matches ? 'dark' : 'light');
-        }
-      });
-
-      toggleBtn.addEventListener('click', () => {
-        if (memoryManager.isCleanedUp) return;
-        const next = body.classList.contains('dark') ? 'light' : 'dark';
-        localStorage.setItem(THEME_KEY, next);
-        applyTheme(next);
-      });
-
+      // THEME SYSTEM - using global ThemeManager
+      // The theme manager is already initialized globally via theme-manager.js
+      // Just set up the click handler
       // scroll progress
       window.addEventListener('scroll', () => {
         if (memoryManager.isCleanedUp) return;
@@ -1209,5 +1176,61 @@
     });
   </script>
   <script src="./assets/js/universal-search.js"></script>
+  <script>
+    (function ensureUniversalSearchLoaded() {
+      if (window.__universalSearchFallbackScheduled) {
+        return;
+      }
+
+      window.__universalSearchFallbackScheduled = true;
+
+      const candidates = Array.from(new Set([
+        '/assets/js/universal-search.js',
+        './assets/js/universal-search.js'
+      ]));
+
+      window.addEventListener('load', () => {
+        if (window.universalSearch) {
+          return;
+        }
+
+        const logPrefix = '[UniversalSearch Loader]';
+        let index = 0;
+
+        const tryNext = () => {
+          if (window.universalSearch || index >= candidates.length) {
+            if (!window.universalSearch) {
+              console.error(`${logPrefix} failed to load script from all candidates`, candidates);
+            }
+            return;
+          }
+
+          const path = candidates[index++];
+          const script = document.createElement('script');
+          script.src = path;
+          script.defer = true;
+          script.setAttribute('data-cfasync', 'false');
+          script.onload = () => {
+            if (window.universalSearch) {
+              console.info(`${logPrefix} loaded from ${path}`);
+            } else {
+              console.warn(`${logPrefix} script loaded from ${path} but universalSearch is still undefined; trying next candidate.`);
+              script.remove();
+              tryNext();
+            }
+          };
+          script.onerror = () => {
+            console.warn(`${logPrefix} failed to load from ${path}; trying next candidate.`);
+            script.remove();
+            tryNext();
+          };
+
+          document.head.appendChild(script);
+        };
+
+        tryNext();
+      }, { once: true });
+    })();
+  </script>
 </body>
 </html>

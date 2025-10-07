@@ -1225,6 +1225,7 @@
             // DOM Elements
             const themeToggle = document.getElementById("themeToggle");
             const body = document.body;
+            const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
             const pageTransition = document.querySelector(".page-transition");
             
             // Form elements
@@ -1262,28 +1263,16 @@
                 }, 500);
             }
 
-            // Apply saved theme or system preference - updated to match main site
-            const savedTheme = localStorage.getItem("theme");
-            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            
-            if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-                body.classList.add("dark-mode");
-                themeToggle.textContent = "☀️";
+            // Theme manager handles the toggle automatically
+            if (themeManager) {
+                if (typeof themeManager.addObserver === "function") {
+                    themeManager.addObserver(() => updateChartsTheme());
+                }
             } else {
-                themeToggle.textContent = "🌙";
+                console.error("ThemeManager is unavailable on the Finance Check page.");
             }
-            
-            // Toggle theme listener - updated to match main site
-            themeToggle.addEventListener("click", function() {
-                applyTransition(() => {
-                    const isDark = body.classList.toggle("dark-mode");
-                    localStorage.setItem("theme", isDark ? "dark" : "light");
-                    themeToggle.textContent = isDark ? "☀️" : "🌙";
-                    
-                    // Update charts if they exist
-                    updateChartsTheme();
-                });
-            });
+
+            updateChartsTheme();
 
             // Update charts based on theme
             function updateChartsTheme() {
