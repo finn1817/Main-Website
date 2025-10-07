@@ -46,18 +46,6 @@ class SectionPreviews {
             opacity: 1; 
             visibility: visible;
         }
-        .section-preview-tooltip::before {
-            content: ''; 
-            position: absolute; 
-            top: -6px; 
-            left: 50%;
-            transform: translateX(-50%) rotate(45deg);
-            width: 12px; 
-            height: 12px; 
-            background: rgba(0,0,0,0.9);
-            border-top: 1px solid rgba(255,255,255,0.2);
-            border-left: 1px solid rgba(255,255,255,0.2);
-        }
         `;
 
         const style = document.createElement('style');
@@ -124,17 +112,6 @@ class SectionPreviews {
         // If tooltip would go below viewport, position it ABOVE the button instead
         if (top + tooltipRect.height > window.innerHeight - margin) {
             top = rect.top - tooltipRect.height - 15; // 15px above the button
-            
-            // Update arrow position for above placement
-            this.tooltip.style.setProperty('--arrow-position', 'bottom');
-            
-            // You might want to add CSS for bottom arrow:
-            // .section-preview-tooltip[style*="--arrow-position: bottom"]::before {
-            //     top: auto; bottom: -6px;
-            //     border-top: none; border-bottom: 1px solid rgba(255,255,255,0.2);
-            // }
-        } else {
-            this.tooltip.style.setProperty('--arrow-position', 'top');
         }
         
         // Ensure tooltip doesn't go above viewport
