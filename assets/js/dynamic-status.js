@@ -3,11 +3,11 @@ class DynamicStatus {
     constructor() {
         this.messages = [
             { text: "Available to start working!", icon: "🟢" },
-            { text: "Contact me through the resume site!", icon: "�" },
+            { text: "Contact me through the resume site!", icon: "🟢" },
             { text: "Always actively learning!", icon: "📚" },
-            { text: "Open to solo jobs and collaboration", icon: "💼" },
+            { text: "Open to solo jobs and teamwork!", icon: "💼" },
             { text: "Check out my latest projects below!", icon: "🚀" },
-            { text: "Always excited to discuss new opportunities", icon: "✨" }
+            { text: "Always ready for new opportunities!", icon: "✨" }
         ];
         this.currentIndex = 0;
         this.statusElement = document.querySelector('.status-indicator');
@@ -24,7 +24,7 @@ class DynamicStatus {
         this.updateMessage();
         
         // rotate messages every 8 seconds
-        setInterval(() => this.rotateMessage(), 8000);
+        setInterval(() => this.rotateMessage(), 6500);
         
         // click to manually cycle
         this.statusElement.addEventListener('click', () => this.rotateMessage());
