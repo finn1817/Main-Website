@@ -732,12 +732,6 @@
         right: 15px;
       }
 
-      #search-toggle {
-        right: 75px;
-        font-size: 1em;
-        padding: 8px 12px;
-      }
-
       .search-modal-content {
         padding: 20px;
         margin: 10px;
@@ -835,7 +829,6 @@
   </div>
 
   <button class="toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙</button>
-  <button class="toggle-btn" id="search-toggle" aria-label="Search" style="right: 140px;">🔍</button>
 
   <!-- Universal Search Modal -->
   <div class="search-modal" id="searchModal" style="display: none;">
@@ -1012,109 +1005,13 @@
               e.preventDefault();
               window.location.href = 'resume/';
               break;
-            case 'k':
-              e.preventDefault();
-              showSearchModal();
-              break;
+
           }
         }
-        
-        if (e.key === 'Escape' && searchModal && searchModal.classList.contains('active')) {
-          hideSearchModal();
-        }
+
       });
 
-      // simplified search functionality
-      const siteContent = [
-        { title: "Calculator", path: "Projects", url: "projects/calculator/", type: "projects", description: "Calculator tool", keywords: ["calc"] },
-        { title: "About Me", path: "About", url: "about/", type: "pages", description: "About Dan", keywords: ["about"] },
-        { title: "Resume", path: "Resume", url: "resume/", type: "pages", description: "My resume", keywords: ["resume"] },
-        { title: "Contact", path: "Contact", url: "contact/", type: "pages", description: "Contact info", keywords: ["contact"] }
-      ];
 
-      const searchModal = document.getElementById('searchModal');
-      const searchToggle = document.getElementById('search-toggle');
-      const searchClose = document.getElementById('searchClose');
-      const searchInput = document.getElementById('searchInput');
-      const resultsContainer = document.getElementById('resultsContainer');
-
-      function showSearchModal() {
-        if (memoryManager.isCleanedUp || !searchModal) return;
-        searchModal.style.display = 'flex';
-        setTimeout(() => {
-          if (!memoryManager.isCleanedUp) {
-            searchModal.classList.add('active');
-            if (searchInput) searchInput.focus();
-          }
-        }, 10);
-      }
-
-      function hideSearchModal() {
-        if (memoryManager.isCleanedUp || !searchModal) return;
-        searchModal.classList.remove('active');
-        setTimeout(() => {
-          if (!memoryManager.isCleanedUp) {
-            searchModal.style.display = 'none';
-            if (searchInput) searchInput.value = '';
-            if (resultsContainer) resultsContainer.innerHTML = '';
-          }
-        }, 300);
-      }
-
-      function performSearch() {
-        if (memoryManager.isCleanedUp || !searchInput || !resultsContainer) return;
-        
-        const searchTerm = searchInput.value.toLowerCase().trim();
-        if (searchTerm === '') {
-          resultsContainer.innerHTML = '<div class="no-results">Start typing...</div>';
-          return;
-        }
-
-        const filtered = siteContent.filter(item => 
-          item.title.toLowerCase().includes(searchTerm) ||
-          item.description.toLowerCase().includes(searchTerm)
-        );
-
-        if (filtered.length === 0) {
-          resultsContainer.innerHTML = '<div class="no-results">No results found.</div>';
-        } else {
-          resultsContainer.innerHTML = filtered.map(item => 
-            `<div class="search-result-item" onclick="navigateToResult('${item.url}')">
-              <div class="result-title">${item.title}</div>
-              <div class="result-description">${item.description}</div>
-            </div>`
-          ).join('');
-        }
-      }
-
-      function navigateToResult(url) {
-        if (memoryManager.isCleanedUp) return;
-        hideSearchModal();
-        memoryManager.cleanup();
-        window.location.href = url;
-      }
-
-      // search event listeners
-      if (searchToggle) {
-        searchToggle.addEventListener('click', showSearchModal);
-      }
-      if (searchClose) {
-        searchClose.addEventListener('click', hideSearchModal);
-      }
-      if (searchModal) {
-        searchModal.addEventListener('click', (e) => {
-          if (memoryManager.isCleanedUp) return;
-          if (e.target === searchModal) hideSearchModal();
-        });
-      }
-      if (searchInput) {
-        let searchTimeout;
-        searchInput.addEventListener('input', () => {
-          if (memoryManager.isCleanedUp) return;
-          clearTimeout(searchTimeout);
-          searchTimeout = setTimeout(performSearch, 300);
-        });
-      }
 
       // make functions global for onclick handlers
       window.performSearch = performSearch;
