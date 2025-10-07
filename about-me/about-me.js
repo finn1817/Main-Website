@@ -113,6 +113,9 @@ class AboutPageManager {
     this.setupStatsAnimation();
     this.setupTimelineInteraction();
     this.setupCardHoverEffects();
+    this.setupProgressBars();
+    this.setupParallaxEffects();
+    this.setupDynamicBackground();
   }
 
   setupSkillsInteraction() {
@@ -134,13 +137,21 @@ class AboutPageManager {
   }
 
   setupStatsAnimation() {
-    const statNumbers = document.querySelectorAll('.stat-number');
-    
     const statsObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            this.animateNumber(entry.target);
+            // Check if this is a stats container or individual stat
+            const statNumbers = entry.target.classList.contains('stat-number') 
+              ? [entry.target]
+              : entry.target.querySelectorAll('.stat-number');
+            
+            statNumbers.forEach((stat, index) => {
+              // Stagger animations for multiple stats in same container
+              const delay = index * 200;
+              this.animateNumber(stat, delay);
+            });
+            
             statsObserver.unobserve(entry.target);
           }
         });
@@ -148,39 +159,56 @@ class AboutPageManager {
       { threshold: 0.5 }
     );
 
-    statNumbers.forEach(stat => {
+    // Observe individual stat numbers
+    document.querySelectorAll('.stat-number').forEach(stat => {
       statsObserver.observe(stat);
+    });
+    
+    // Also observe stat containers for batch animation
+    document.querySelectorAll('.stats-grid, .info-card').forEach(container => {
+      if (container.querySelector('.stat-number')) {
+        statsObserver.observe(container);
+      }
     });
 
     this.observers.set('statsObserver', statsObserver);
   }
 
-  animateNumber(element) {
-    const finalNumber = parseInt(element.textContent.replace(/[^0-9]/g, ''));
+  animateNumber(element, delay = 0) {
+    // Support both textContent and data-target attribute
+    const targetValue = element.dataset.target || element.textContent.replace(/[^0-9]/g, '');
+    const finalNumber = parseInt(targetValue);
+    if (isNaN(finalNumber)) return;
+    
     const duration = 2000; // 2 seconds
-    const startTime = performance.now();
     
-    const animate = (currentTime) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
+    const timeoutId = setTimeout(() => {
+      const startTime = performance.now();
       
-      // Easing function (ease-out)
-      const easedProgress = 1 - Math.pow(1 - progress, 3);
-      const currentNumber = Math.floor(finalNumber * easedProgress);
+      const animate = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function (ease-out)
+        const easedProgress = 1 - Math.pow(1 - progress, 3);
+        const currentNumber = Math.floor(finalNumber * easedProgress);
+        
+        // Preserve any non-numeric characters
+        const originalText = element.textContent;
+        const newText = originalText.replace(/\d+/, currentNumber);
+        element.textContent = newText;
+        
+        if (progress < 1) {
+          const frameId = requestAnimationFrame(animate);
+          this.animationFrames.add(frameId);
+        }
+      };
       
-      // Preserve any non-numeric characters
-      const originalText = element.textContent;
-      const newText = originalText.replace(/\d+/, currentNumber);
-      element.textContent = newText;
-      
-      if (progress < 1) {
-        const frameId = requestAnimationFrame(animate);
-        this.animationFrames.add(frameId);
-      }
-    };
+      const frameId = requestAnimationFrame(animate);
+      this.animationFrames.add(frameId);
+    }, delay);
     
-    const frameId = requestAnimationFrame(animate);
-    this.animationFrames.add(frameId);
+    this.timeouts.add(timeoutId);
   }
 
   setupTimelineInteraction() {
@@ -203,17 +231,108 @@ class AboutPageManager {
   }
 
   setupCardHoverEffects() {
-    const cards = document.querySelectorAll('.info-card, .about-hero');
+    const cards = document.querySelectorAll('.info-card, .about-hero, .about-card');
     
     cards.forEach(card => {
       card.addEventListener('mouseenter', () => {
         this.addGlowEffect(card);
+        card.style.transform = 'translateY(-8px) scale(1.02)';
+        card.style.transition = 'all 0.3s ease';
       });
       
       card.addEventListener('mouseleave', () => {
         this.removeGlowEffect(card);
+        card.style.transform = 'translateY(0) scale(1)';
       });
     });
+  }
+
+  setupProgressBars() {
+    const progressObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const progressBars = entry.target.querySelectorAll('.progress-fill');
+            progressBars.forEach((bar, index) => {
+              const width = bar.dataset.width;
+              if (width) {
+                const timeoutId = setTimeout(() => {
+                  bar.style.width = width + '%';
+                  bar.style.transition = 'width 2s ease-in-out';
+                }, index * 300); // stagger progress bars
+                this.timeouts.add(timeoutId);
+              }
+            });
+            progressObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    // observe cards with progress bars
+    document.querySelectorAll('.info-card').forEach(card => {
+      if (card.querySelector('.progress-fill')) {
+        progressObserver.observe(card);
+      }
+    });
+
+    this.observers.set('progressObserver', progressObserver);
+  }
+
+  setupParallaxEffects() {
+    const floatingElements = document.querySelectorAll('.floating-shape, .floating-elements .particle');
+    if (floatingElements.length === 0) return;
+
+    let ticking = false;
+    const handleParallax = () => {
+      const scrolled = window.pageYOffset;
+      const speed = 0.5;
+
+      floatingElements.forEach((element, index) => {
+        const yPos = -(scrolled * speed * (index + 1) * 0.1);
+        element.style.transform = `translate3d(0, ${yPos}px, 0)`;
+      });
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        const frameId = requestAnimationFrame(handleParallax);
+        this.animationFrames.add(frameId);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  setupDynamicBackground() {
+    const topBar = document.querySelector('.top-bar');
+    if (!topBar) return;
+
+    let ticking = false;
+    const handleBackgroundChange = () => {
+      const scrollPercentage = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+      const opacity = Math.min(scrollPercentage * 0.3, 0.3);
+      
+      const isDark = document.body.classList.contains('dark');
+      topBar.style.backgroundColor = isDark 
+        ? `rgba(0, 0, 0, ${0.1 + opacity})` 
+        : `rgba(255, 255, 255, ${0.1 + opacity})`;
+      
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        const frameId = requestAnimationFrame(handleBackgroundChange);
+        this.animationFrames.add(frameId);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
   }
 
   // Accessibility Enhancements
