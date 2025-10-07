@@ -1139,16 +1139,7 @@ updateLoginUI();
         }, 300);
       }
 
-      if (toggleBtn && window.themeManager && typeof window.themeManager.registerToggleButton === 'function') {
-        window.themeManager.registerToggleButton(toggleBtn, {
-          beforeToggle: ({ toggle }) => {
-            applyTransition(() => {
-              toggle();
-            });
-            return false;
-          }
-        });
-      }
+      // Theme manager handles the toggle automatically
 
       // apply transition when navigating away (only for internal links)
       document.querySelectorAll("a").forEach(link => {

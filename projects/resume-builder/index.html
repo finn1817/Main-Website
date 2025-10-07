@@ -1054,14 +1054,9 @@
                 }, 500);
             }
 
-            if (themeManager && themeToggle && typeof themeManager.registerToggleButton === "function") {
-                themeManager.registerToggleButton(themeToggle, {
-                    beforeToggle: ({ toggle }) => {
-                        applyTransition(() => toggle());
-                        return false;
-                    }
-                });
-            } else if (!themeManager) {
+            // Theme manager handles the toggle automatically
+            
+            if (!themeManager) {
                 console.error("ThemeManager is unavailable on the Resume Builder page.");
             }
 

@@ -972,9 +972,9 @@
 
       if (!toggleBtn) return;
 
-      if (themeManager && typeof themeManager.registerToggleButton === "function") {
-        themeManager.registerToggleButton(toggleBtn);
-      } else if (!themeManager) {
+      // Theme manager handles the toggle automatically
+      
+      if (!themeManager) {
         console.error("ThemeManager is unavailable on the Password Manager page.");
       }
     }

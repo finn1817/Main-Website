@@ -432,17 +432,16 @@
       themeToggle.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
     };
 
-    if (themeManager && themeToggle && typeof themeManager.registerToggleButton === 'function') {
-      themeManager.registerToggleButton(themeToggle, {
-        afterToggle: ({ newTheme }) => updateThemeToggleLabel(newTheme),
-      });
-
+    // Theme manager handles the toggle automatically
+    if (themeManager) {
+      // Update the label based on current theme
       if (typeof themeManager.getCurrentTheme === 'function') {
         updateThemeToggleLabel(themeManager.getCurrentTheme());
       }
-
+      
+      // Listen for theme changes
       themeManager.addObserver((newTheme) => updateThemeToggleLabel(newTheme));
-    } else if (!themeManager) {
+    } else {
       console.error('ThemeManager is unavailable on the Square Chase page.');
     }
 

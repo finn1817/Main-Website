@@ -962,9 +962,7 @@
         coursesModal.style.display = "none";
       }
     });
-    if (themeToggle && window.themeManager && typeof window.themeManager.registerToggleButton === 'function') {
-      window.themeManager.registerToggleButton(themeToggle);
-    }
+    // Theme manager handles the toggle automatically
     // form submission functionality
     if (localStorage.getItem("formSubmitted") === "true") {
       disableForm();

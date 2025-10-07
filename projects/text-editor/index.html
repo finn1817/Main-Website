@@ -725,14 +725,9 @@
         }, 300);
       }
 
-      if (themeManager && toggleBtn && typeof themeManager.registerToggleButton === "function") {
-        themeManager.registerToggleButton(toggleBtn, {
-          beforeToggle: ({ toggle }) => {
-            applyTransition(() => toggle());
-            return false;
-          }
-        });
-      } else if (!themeManager) {
+      // Theme manager handles the toggle automatically
+      
+      if (!themeManager) {
         console.error("ThemeManager is unavailable on the Text Editor page.");
       }
 

@@ -1,549 +1,87 @@
-/**
- * Global Theme Manager
- * Centralized theme management for the entire website
- * Completely self-contained and bulletproof
- */
-
-// Immediately apply stored theme to prevent flash
-(function applyThemeImmediately() {
-  const theme = localStorage.getItem('theme') || 'light';
+// Global Theme Manager - Simple and Reliable
+(function() {
+  // Apply stored theme immediately
+  const storedTheme = localStorage.getItem('theme') || 'light';
   document.body.className = document.body.className.replace(/\b(light|dark|light-mode|dark-mode)\b/g, '');
-  document.body.classList.add(theme, theme + '-mode');
-  document.body.setAttribute('data-theme', theme);
-  document.documentElement.setAttribute('data-theme', theme);
-})();
+  document.body.classList.add(storedTheme, storedTheme + '-mode');
+  document.body.setAttribute('data-theme', storedTheme);
+  document.documentElement.setAttribute('data-theme', storedTheme);
 
-class ThemeManager {
-  constructor() {
-    if (ThemeManager._instance) {
-      return ThemeManager._instance;
+  class ThemeManager {
+    constructor() {
+      if (window.themeManager) return window.themeManager;
+      
+      this.currentTheme = storedTheme;
+      this.observers = [];
+      this.setupToggle();
     }
 
-    ThemeManager._instance = this;
-
-    this.currentTheme = localStorage.getItem('theme') || 'light';
-    this.buttons = new Map();
-    this.observers = [];
-    this.isInitialized = false;
-    this.toggleSelector = '#theme-toggle, .theme-toggle, .toggle-btn, [data-theme-toggle]';
-    this.mutationObserver = null;
-    this.systemMediaQuery = null;
-    this.systemListener = null;
-
-    // Initialize immediately
-    this.initializeImmediate();
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => this.init());
-    } else {
-      // Small delay to ensure DOM is fully ready
-      setTimeout(() => this.init(), 0);
-    }
-  }
-
-  initializeImmediate() {
-    // Apply theme immediately to prevent flash
-    this.applyThemeClasses(this.currentTheme);
-    this.updateDataThemeAttributes(this.currentTheme);
-    
-    // Setup basic fallback toggle immediately
-    this.setupImmediateFallback();
-  }
-
-  setupImmediateFallback() {
-    // Basic toggle functionality that works immediately
-    const handleToggle = (event) => {
-      event.preventDefault();
-      this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
-      this.applyThemeClasses(this.currentTheme);
-      this.updateDataThemeAttributes(this.currentTheme);
-      localStorage.setItem('theme', this.currentTheme);
+    setupToggle() {
+      const self = this;
       
-      // Update button appearance
-      const button = event.target;
-      button.textContent = this.currentTheme === 'dark' ? '☀️' : '🌙';
-      button.setAttribute('aria-label', this.currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-      
-      // Notify observers
-      this.notifyObservers(this.currentTheme, this.currentTheme === 'dark' ? 'light' : 'dark');
-    };
-
-    // Find and setup toggle buttons immediately
-    const setupButton = (button) => {
-      if (button.__themeManagerSetup) return; // Prevent duplicate setup
-      button.__themeManagerSetup = true;
-      
-      button.addEventListener('click', handleToggle);
-      button.textContent = this.currentTheme === 'dark' ? '☀️' : '🌙';
-      button.setAttribute('aria-label', this.currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-      button.setAttribute('role', 'button');
-      if (!button.hasAttribute('tabindex')) {
-        button.setAttribute('tabindex', '0');
+      function handleClick(event) {
+        event.preventDefault();
+        const newTheme = self.currentTheme === 'dark' ? 'light' : 'dark';
+        self.setTheme(newTheme);
       }
-    };
 
-    // Setup existing buttons
-    document.querySelectorAll(this.toggleSelector).forEach(setupButton);
-
-    // Watch for new buttons
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
-          if (node instanceof HTMLElement) {
-            if (node.matches && node.matches(this.toggleSelector)) {
-              setupButton(node);
-            }
-            if (node.querySelectorAll) {
-              node.querySelectorAll(this.toggleSelector).forEach(setupButton);
-            }
-          }
-        });
-      });
-    });
-
-    if (document.body) {
-      observer.observe(document.body, { childList: true, subtree: true });
-    } else {
-      document.addEventListener('DOMContentLoaded', () => {
-        observer.observe(document.body, { childList: true, subtree: true });
-      });
-    }
-  }
-
-  static getInstance() {
-    return ThemeManager._instance || new ThemeManager();
-  }
-
-  init() {
-    if (this.isInitialized) return;
-
-    this.applyInitialTheme();
-    this.autoDiscoverToggleButtons();
-    this.updateToggleButtons();
-    this.setupSystemThemeListener();
-    this.setupMutationObserver();
-
-    this.isInitialized = true;
-    console.log('🎨 Theme Manager initialized successfully');
-  }
-
-  applyInitialTheme() {
-    const storedTheme = this.readStoredTheme();
-    const preferredTheme = storedTheme || this.getSystemPreference();
-    this.setTheme(preferredTheme, false);
-  }
-
-  readStoredTheme() {
-    try {
-      return localStorage.getItem('theme');
-    } catch (error) {
-      console.warn('Could not access localStorage for theme:', error);
-      return null;
-    }
-  }
-
-  hasStoredPreference() {
-    return !!this.readStoredTheme();
-  }
-
-  getSystemPreference() {
-    try {
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return 'dark';
+      function setupButton(button) {
+        if (button._setup) return;
+        button._setup = true;
+        button.addEventListener('click', handleClick);
+        button.textContent = self.currentTheme === 'dark' ? '☀️' : '🌙';
       }
-    } catch (error) {
-      console.warn('Could not read system theme preference:', error);
-    }
-    return 'light';
-  }
 
-  saveTheme(theme) {
-    try {
+      // Setup existing buttons
+      const setup = () => {
+        document.querySelectorAll('#theme-toggle, .theme-toggle, .toggle-btn').forEach(setupButton);
+      };
+
+      setup();
+      document.addEventListener('DOMContentLoaded', setup);
+      
+      // Watch for new buttons
+      if (window.MutationObserver) {
+        const observer = new MutationObserver(setup);
+        if (document.body) observer.observe(document.body, { childList: true, subtree: true });
+      }
+    }
+
+    setTheme(theme) {
+      this.currentTheme = theme;
+      
+      document.body.className = document.body.className.replace(/\b(light|dark|light-mode|dark-mode)\b/g, '');
+      document.body.classList.add(theme, theme + '-mode');
+      document.body.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+      
       localStorage.setItem('theme', theme);
-    } catch (error) {
-      console.warn('Could not save theme to localStorage:', error);
+      
+      document.querySelectorAll('#theme-toggle, .theme-toggle, .toggle-btn').forEach(button => {
+        button.textContent = theme === 'dark' ? '☀️' : '🌙';
+      });
+
+      this.observers.forEach(callback => {
+        try { callback(theme); } catch(e) {}
+      });
     }
-  }
 
-  autoDiscoverToggleButtons() {
-    const buttons = document.querySelectorAll(this.toggleSelector);
-    buttons.forEach(button => this.registerToggleButton(button));
-
-    console.log(`🎨 Found ${buttons.length} theme toggle buttons`);
-    
-    if (buttons.length === 0) {
-      console.warn('⚠️ Theme toggle button not found. Theme manager running without manual toggle.');
-      // Try again after a short delay in case buttons are dynamically added
-      setTimeout(() => {
-        const laterButtons = document.querySelectorAll(this.toggleSelector);
-        if (laterButtons.length > 0) {
-          console.log(`🎨 Found ${laterButtons.length} theme toggle buttons on retry`);
-          laterButtons.forEach(button => this.registerToggleButton(button));
-        }
-      }, 100);
-    }
-  }
-
-  registerToggleButton(button, options = {}) {
-    // This method is now mostly for backward compatibility
-    // Buttons are automatically discovered and setup by setupImmediateFallback
-    if (!(button instanceof Element)) return;
-
-    // If button is already setup, just update metadata
-    if (button.__themeManagerSetup) {
-      console.log('🎨 Button already setup, updating metadata only');
-      let metadata = this.buttons.get(button) || { options: {} };
-      metadata.options = { ...metadata.options, ...options };
-      this.buttons.set(button, metadata);
+    registerToggleButton(button) {
+      // Already handled automatically
       return;
     }
 
-    // Let the immediate fallback handle the basic setup
-    // Just store the advanced options for later use
-    let metadata = this.buttons.get(button);
-    if (!metadata) {
-      metadata = {
-        options: { ...options },
-        listeners: {
-          click: (event) => this.handleAdvancedToggle(event, button),
-          keydown: (event) => this.handleButtonKeydown(event, button)
-        }
-      };
-      this.buttons.set(button, metadata);
+    getCurrentTheme() {
+      return this.currentTheme;
     }
 
-    // Only add advanced listeners if there are advanced options
-    if (options.beforeToggle || options.afterToggle) {
-      button.addEventListener('click', metadata.listeners.click, { capture: true });
-      button.addEventListener('keydown', metadata.listeners.keydown);
-    }
-
-    this.updateButtonAppearance(button);
-  }
-
-  handleAdvancedToggle(event, button) {
-    const metadata = this.buttons.get(button);
-    if (!metadata?.options?.beforeToggle && !metadata?.options?.afterToggle) {
-      return; // Let basic handler take over
-    }
-
-    event.stopPropagation();
-    event.preventDefault();
-
-    this.processToggle(button, event);
-  }
-
-  addToggleButton(button, options = {}) {
-    this.registerToggleButton(button, options);
-  }
-
-  unregisterToggleButton(button) {
-    const metadata = this.buttons.get(button);
-    if (!metadata) return;
-
-    button.removeEventListener('click', metadata.listeners.click);
-    button.removeEventListener('keydown', metadata.listeners.keydown);
-    this.buttons.delete(button);
-  }
-
-  handleButtonClick(event, button) {
-    this.processToggle(button, event);
-  }
-
-  handleButtonKeydown(event, button) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      this.processToggle(button, event);
-    }
-  }
-
-  processToggle(button, triggerEvent) {
-    if (triggerEvent) {
-      triggerEvent.preventDefault();
-    }
-
-    const metadata = this.buttons.get(button);
-    const context = {
-      manager: this,
-      sourceButton: button,
-      event: triggerEvent,
-      currentTheme: this.currentTheme,
-      toggle: () => this.toggleTheme(button)
-    };
-
-    if (metadata?.options?.beforeToggle) {
-      try {
-        const result = metadata.options.beforeToggle(context);
-
-        if (result === false) {
-          return;
-        }
-
-        if (result && typeof result.then === 'function') {
-          result
-            .then(shouldContinue => {
-              if (shouldContinue === false) return;
-              context.toggle();
-            })
-            .catch(error => {
-              console.error('Theme beforeToggle error:', error);
-              context.toggle();
-            });
-          return;
-        }
-      } catch (error) {
-        console.error('Theme beforeToggle error:', error);
-      }
-    }
-
-    context.toggle();
-  }
-
-  toggleTheme(sourceButton = null) {
-    const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
-    this.setTheme(newTheme, true, sourceButton);
-  }
-
-  setTheme(theme, save = true, sourceButton = null) {
-    if (!['light', 'dark'].includes(theme)) {
-      console.warn(`Invalid theme: ${theme}. Using 'light' instead.`);
-      theme = 'light';
-    }
-
-    const previousTheme = this.currentTheme;
-    if (previousTheme === theme) {
-      if (save) this.saveTheme(theme);
-      this.updateToggleButtons();
-      return;
-    }
-
-    this.currentTheme = theme;
-
-    this.applyThemeClasses(theme);
-    this.updateToggleButtons();
-    this.updateDataThemeAttributes(theme);
-
-    if (save) {
-      this.saveTheme(theme);
-    }
-
-    this.notifyObservers(theme, previousTheme);
-
-    if (sourceButton) {
-      this.runAfterToggleCallbacks(sourceButton, theme, previousTheme);
-      this.addButtonFeedback(sourceButton);
-    } else {
-      this.buttons.forEach((meta, button) => this.addButtonFeedback(button));
-    }
-  }
-
-  applyThemeClasses(theme) {
-    const body = document.body;
-    if (!body) return;
-
-    if (theme === 'dark') {
-      body.classList.add('dark', 'dark-mode');
-      body.classList.remove('light', 'light-mode');
-    } else {
-      body.classList.add('light', 'light-mode');
-      body.classList.remove('dark', 'dark-mode');
-    }
-  }
-
-  updateDataThemeAttributes(theme) {
-    document.body?.setAttribute('data-theme', theme);
-    document.documentElement?.setAttribute('data-theme', theme);
-  }
-
-  updateToggleButtons() {
-    this.buttons.forEach((metadata, button) => {
-      this.updateButtonAppearance(button);
-    });
-  }
-
-  updateButtonAppearance(button) {
-    if (!(button instanceof HTMLElement)) return;
-
-    const isDark = this.currentTheme === 'dark';
-    button.textContent = isDark ? '☀️' : '🌙';
-    button.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
-    button.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
-  }
-
-  applyButtonAccessibility(button) {
-    if (!(button instanceof HTMLElement)) return;
-
-    button.setAttribute('role', 'button');
-    if (!button.hasAttribute('tabindex')) {
-      button.setAttribute('tabindex', '0');
-    }
-  }
-
-  addButtonFeedback(button) {
-    if (!(button instanceof HTMLElement)) return;
-
-    button.style.transform = 'scale(0.95)';
-    setTimeout(() => {
-      if (button instanceof HTMLElement) {
-        button.style.transform = '';
-      }
-    }, 150);
-  }
-
-  runAfterToggleCallbacks(button, newTheme, previousTheme) {
-    const metadata = this.buttons.get(button);
-    if (!metadata?.options?.afterToggle) return;
-
-    try {
-      metadata.options.afterToggle({
-        manager: this,
-        sourceButton: button,
-        newTheme,
-        previousTheme
-      });
-    } catch (error) {
-      console.error('Theme afterToggle error:', error);
-    }
-  }
-
-  setupSystemThemeListener() {
-    if (!window.matchMedia) return;
-
-    try {
-      this.systemMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      this.systemListener = (event) => {
-        if (!this.hasStoredPreference()) {
-          this.setTheme(event.matches ? 'dark' : 'light', false);
-        }
-      };
-
-      if (this.systemMediaQuery.addEventListener) {
-        this.systemMediaQuery.addEventListener('change', this.systemListener);
-      } else if (this.systemMediaQuery.addListener) {
-        // Safari fallback
-        this.systemMediaQuery.addListener(this.systemListener);
-      }
-    } catch (error) {
-      console.warn('Could not attach system theme listener:', error);
-    }
-  }
-
-  setupMutationObserver() {
-    if (this.mutationObserver || !window.MutationObserver) return;
-
-    this.mutationObserver = new MutationObserver((mutations) => {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
-          if (!(node instanceof HTMLElement)) return;
-          if (node.matches?.(this.toggleSelector)) {
-            this.registerToggleButton(node);
-          }
-          node.querySelectorAll?.(this.toggleSelector).forEach(el => this.registerToggleButton(el));
-        });
-
-        mutation.removedNodes.forEach(node => {
-          if (!(node instanceof HTMLElement)) return;
-          if (this.buttons.has(node)) {
-            this.unregisterToggleButton(node);
-          }
-          node.querySelectorAll?.(this.toggleSelector).forEach(el => {
-            if (this.buttons.has(el)) {
-              this.unregisterToggleButton(el);
-            }
-          });
-        });
-      });
-    });
-
-    if (document.body) {
-      this.mutationObserver.observe(document.body, { childList: true, subtree: true });
-    }
-  }
-
-  // Observer pattern for components that need to react to theme changes
-  addObserver(callback) {
-    if (typeof callback === 'function') {
+    addObserver(callback) {
       this.observers.push(callback);
-      callback(this.currentTheme, null);
     }
   }
 
-  removeObserver(callback) {
-    const index = this.observers.indexOf(callback);
-    if (index > -1) {
-      this.observers.splice(index, 1);
-    }
-  }
-
-  notifyObservers(newTheme, oldTheme) {
-    this.observers.forEach(callback => {
-      try {
-        callback(newTheme, oldTheme);
-      } catch (error) {
-        console.error('Theme observer error:', error);
-      }
-    });
-  }
-
-  getCurrentTheme() {
-    return this.currentTheme;
-  }
-
-  isDarkMode() {
-    return this.currentTheme === 'dark';
-  }
-
-  isLightMode() {
-    return this.currentTheme === 'light';
-  }
-
-  destroy() {
-    this.observers = [];
-    this.buttons.forEach((metadata, button) => {
-      button.removeEventListener('click', metadata.listeners.click);
-      button.removeEventListener('keydown', metadata.listeners.keydown);
-    });
-    this.buttons.clear();
-
-    if (this.mutationObserver) {
-      this.mutationObserver.disconnect();
-      this.mutationObserver = null;
-    }
-
-    if (this.systemMediaQuery) {
-      if (this.systemMediaQuery.removeEventListener) {
-        this.systemMediaQuery.removeEventListener('change', this.systemListener);
-      } else if (this.systemMediaQuery.removeListener) {
-        this.systemMediaQuery.removeListener(this.systemListener);
-      }
-    }
-
-    this.systemMediaQuery = null;
-    this.systemListener = null;
-    this.isInitialized = false;
-  }
-}
-
-const themeManager = ThemeManager.getInstance();
-
-// Global utilities for backward compatibility
-window.ThemeManager = ThemeManager;
-window.themeManager = themeManager;
-
-// Ensure the theme manager is available immediately
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ThemeManager;
-}
-
-// Additional safety: if this script loads multiple times, don't reinitialize
-if (!window.__themeManagerInitialized) {
-  window.__themeManagerInitialized = true;
-  console.log('🎨 Global Theme Manager loaded and initialized');
-  
-  // Setup immediate fallback for any existing buttons
-  document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('#theme-toggle, .theme-toggle, .toggle-btn, [data-theme-toggle]');
-    console.log(`🎨 Theme Manager found ${buttons.length} toggle buttons on page load`);
-  });
-} else {
-  console.log('🎨 Global Theme Manager already initialized, skipping');
-}
+  // Create global instance
+  window.themeManager = new ThemeManager();
+  window.ThemeManager = ThemeManager;
+  console.log('🎨 Theme Manager loaded');
+})();

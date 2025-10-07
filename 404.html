@@ -279,9 +279,9 @@
       const themeToggle = document.getElementById('themeToggle');
       const themeManager = window.themeManager || (typeof ThemeManager !== 'undefined' ? ThemeManager.getInstance?.() : null);
 
-      if (themeManager && themeToggle && typeof themeManager.registerToggleButton === 'function') {
-        themeManager.registerToggleButton(themeToggle);
-      } else if (!themeManager) {
+      // Theme manager handles the toggle automatically
+      
+      if (!themeManager) {
         console.error('ThemeManager is unavailable on the 404 page.');
       }
 

@@ -349,9 +349,9 @@
       const textInput = document.getElementById("textInput");
       const clearBtn = document.getElementById("clearBtn");
 
-      if (themeManager && toggleBtn && typeof themeManager.registerToggleButton === "function") {
-        themeManager.registerToggleButton(toggleBtn);
-      } else if (!themeManager) {
+      // Theme manager handles the toggle automatically
+      
+      if (!themeManager) {
         console.error("ThemeManager is unavailable on the Word Counter page.");
       }
 

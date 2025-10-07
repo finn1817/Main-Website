@@ -745,9 +745,9 @@
             const themeManager = window.themeManager || (typeof ThemeManager !== 'undefined' ? ThemeManager.getInstance?.() : null);
             const toggleBtn = document.getElementById('theme-toggle');
 
-            if (themeManager && toggleBtn && typeof themeManager.registerToggleButton === 'function') {
-                themeManager.registerToggleButton(toggleBtn);
-            } else if (!themeManager) {
+            // Theme manager handles the toggle automatically
+            
+            if (!themeManager) {
                 console.error('ThemeManager is unavailable on the Git Account Info page.');
             }
 

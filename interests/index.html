@@ -495,9 +495,9 @@
       const toggleBtn = document.getElementById("theme-toggle");
       const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
 
-      if (themeManager && toggleBtn && typeof themeManager.registerToggleButton === "function") {
-        themeManager.registerToggleButton(toggleBtn);
-      } else if (!themeManager) {
+      // Theme manager handles the toggle automatically
+      
+      if (!themeManager) {
         console.error("ThemeManager is unavailable on the Interests page.");
       }
 
