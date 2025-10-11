@@ -48,44 +48,12 @@
             padding: 40px 20px;
         }
 
-        body.dark-mode {
+        body.dark {
             background-color: var(--dark-bg);
             color: var(--dark-text);
         }
 
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1000;
-            transition: all 0.3s;
-        }
-
-        body.dark-mode .theme-toggle {
-            border-color: var(--primary-light);
-            color: var(--primary-light);
-        }
-
-        .theme-toggle:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        body.dark-mode .theme-toggle:hover {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-        }
+        /* Custom theme toggle removed - using universal theme manager */
 
         .container {
             max-width: 1200px;
@@ -108,7 +76,7 @@
             margin-bottom: 10px;
         }
 
-        body.dark-mode .page-title {
+        body.dark .page-title {
             color: var(--primary-light);
         }
 
@@ -119,7 +87,7 @@
             margin: 0 auto;
         }
 
-        body.dark-mode .page-subtitle {
+        body.dark .page-subtitle {
             color: #ddd;
         }
 
@@ -143,7 +111,7 @@
             margin: 0 auto; /* ensure centered when single column */
         }
 
-        body.dark-mode .form-container {
+        body.dark .form-container {
             background-color: var(--card-dark-bg);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
@@ -182,7 +150,7 @@
             border-bottom: 2px solid var(--primary-light);
         }
 
-        body.dark-mode .section-header {
+        body.dark .section-header {
             border-color: var(--primary-dark);
         }
 
@@ -192,7 +160,7 @@
             margin-right: 10px;
         }
 
-        body.dark-mode .section-icon {
+        body.dark .section-icon {
             color: var(--primary-light);
         }
 
@@ -203,7 +171,7 @@
             margin: 0;
         }
 
-        body.dark-mode .section-title {
+        body.dark .section-title {
             color: #eee;
         }
 
@@ -222,7 +190,7 @@
             color: var(--primary-color);
         }
 
-        body.dark-mode label {
+        body.dark label {
             color: var(--primary-light);
         }
 
@@ -238,7 +206,7 @@
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        body.dark-mode .form-control {
+        body.dark .form-control {
             background-color: #2c3e50;
             border-color: #4a6278;
             color: var(--dark-text);
@@ -250,7 +218,7 @@
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
         }
 
-        body.dark-mode .form-control:focus {
+        body.dark .form-control:focus {
             border-color: var(--primary-light);
             box-shadow: 0 0 0 3px rgba(214, 234, 255, 0.25);
         }
@@ -270,7 +238,7 @@
             position: relative;
         }
 
-        body.dark-mode .ai-suggestion {
+        body.dark .ai-suggestion {
             background-color: rgba(52, 152, 219, 0.2);
             border-left-color: var(--primary-light);
         }
@@ -283,7 +251,7 @@
             color: var(--primary-dark);
         }
 
-        body.dark-mode .ai-suggestion-heading {
+        body.dark .ai-suggestion-heading {
             color: var(--primary-light);
         }
 
@@ -296,7 +264,7 @@
             line-height: 1.5;
         }
 
-        body.dark-mode .ai-suggestion-content {
+        body.dark .ai-suggestion-content {
             color: #ddd;
         }
 
@@ -364,12 +332,12 @@
             transform: translateY(-2px);
         }
 
-        body.dark-mode .btn-outline {
+        body.dark .btn-outline {
             border-color: var(--primary-light);
             color: var(--primary-light);
         }
 
-        body.dark-mode .btn-outline:hover {
+        body.dark .btn-outline:hover {
             background-color: var(--primary-light);
             color: var(--dark-bg);
         }
@@ -405,7 +373,7 @@
             color: var(--secondary-color);
         }
 
-        body.dark-mode .preview-title {
+        body.dark .preview-title {
             color: #eee;
         }
 
@@ -466,7 +434,7 @@
             margin-bottom: 30px;
         }
 
-        body.dark-mode .resume-preview {
+        body.dark .resume-preview {
             background-color: var(--card-dark-bg);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
@@ -478,7 +446,7 @@
             border-bottom: 2px solid var(--primary-light);
         }
 
-        body.dark-mode .resume-header {
+        body.dark .resume-header {
             border-color: var(--primary-dark);
         }
 
@@ -489,7 +457,7 @@
             margin-bottom: 5px;
         }
 
-        body.dark-mode .resume-name {
+        body.dark .resume-name {
             color: var(--primary-light);
         }
 
@@ -511,7 +479,7 @@
             color: var(--primary-color);
         }
 
-        body.dark-mode .resume-contact-item i {
+        body.dark .resume-contact-item i {
             color: var(--primary-light);
         }
 
@@ -528,7 +496,7 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        body.dark-mode .resume-section-title {
+        body.dark .resume-section-title {
             color: var(--primary-light);
             border-color: #4a6278;
         }
@@ -545,7 +513,7 @@
             border-radius: 8px;
         }
 
-        body.dark-mode .template-selector {
+        body.dark .template-selector {
             background-color: rgba(52, 152, 219, 0.2);
         }
 
@@ -555,7 +523,7 @@
             color: var(--primary-dark);
         }
 
-        body.dark-mode .template-selector-title {
+        body.dark .template-selector-title {
             color: var(--primary-light);
         }
 
@@ -581,7 +549,7 @@
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
         }
 
-        body.dark-mode .template-option.active {
+        body.dark .template-option.active {
             border-color: var(--primary-light);
             box-shadow: 0 0 0 2px rgba(214, 234, 255, 0.3);
         }
@@ -666,7 +634,7 @@
             color: #666;
         }
 
-        body.dark-mode footer {
+        body.dark footer {
             color: #aaa;
         }
 
@@ -759,9 +727,6 @@
 
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
-
-    <!-- Theme toggle button -->
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">🌙</button>
 
     <!-- Breadcrumb Navigation -->
     <nav class="breadcrumb animated" role="navigation" aria-label="Breadcrumb">
@@ -1024,7 +989,6 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // DOM Elements
-            const themeToggle = document.getElementById("themeToggle");
             const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
             const generateResumeBtn = document.getElementById("generateResumeBtn");
             const clearFormBtn = document.getElementById("clearFormBtn");
