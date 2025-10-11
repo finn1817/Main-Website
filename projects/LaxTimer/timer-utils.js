@@ -249,8 +249,12 @@ class TimerUtils {
             { value: "00:15:00", text: "15 minutes" }
         ];
 
+        console.log('Adding preset times to timer selects...');
+
         for (let i = 1; i <= 8; i++) {
             const select = document.getElementById('setTime' + i);
+            console.log(`Timer ${i} select element:`, select);
+            
             if (select) {
                 // Clear existing options except "Not in use"
                 while (select.options.length > 1) {
@@ -264,8 +268,14 @@ class TimerUtils {
                     option.textContent = time.text;
                     select.appendChild(option);
                 });
+                
+                console.log(`Added ${commonTimes.length} preset times to timer ${i}`);
+            } else {
+                console.warn(`Select element for timer ${i} not found`);
             }
         }
+        
+        console.log('Preset times setup complete');
     }
 }
 

@@ -8,6 +8,7 @@ class LaxTimerSettings {
         this.settingsKey = 'laxTimer_settings';
         this.defaultSettings = {
             theme: 'auto', // 'light', 'dark', 'auto'
+            quarterLength: 15, // minutes
             soundEnabled: true,
             visualAlerts: true,
             autoSave: true,
@@ -233,6 +234,26 @@ class LaxTimerSettings {
                                 <option value="00:05:00" ${this.settings.defaultPenaltyTime === '00:05:00' ? 'selected' : ''}>5 minutes</option>
                             </select>
                         </div>
+                        
+                        <div class="setting-group">
+                            <label for="quarterLength">Quarter Length (minutes):</label>
+                            <input type="number" id="quarterLength" min="1" max="30" value="${this.settings.quarterLength || 15}" style="width: 100%; margin-top: 5px;">
+                        </div>
+                        
+                        <div class="settings-actions">
+                            <h4><i class="fas fa-tools"></i> Quick Actions:</h4>
+                            <div class="action-buttons">
+                                <button class="action-btn clear-btn" onclick="clearAllTimers()">
+                                    <i class="fas fa-trash"></i> Clear All Timers
+                                </button>
+                                <button class="action-btn export-btn" onclick="exportTimers()">
+                                    <i class="fas fa-download"></i> Export Timer Data
+                                </button>
+                                <button class="action-btn stats-btn" onclick="showTimerStats()">
+                                    <i class="fas fa-chart-bar"></i> Timer Statistics
+                                </button>
+                            </div>
+                        </div>
                         <div class="keyboard-shortcuts-info">
                             <h4>Keyboard Shortcuts:</h4>
                             <p><strong>Space:</strong> Toggle all timers</p>
@@ -359,6 +380,52 @@ class LaxTimerSettings {
                     background: #6c757d;
                     color: white;
                 }
+                .settings-actions {
+                    background: var(--light-bg);
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-top: 20px;
+                }
+                body.dark .settings-actions {
+                    background: var(--dark-bg);
+                }
+                .settings-actions h4 {
+                    margin-bottom: 15px;
+                    color: var(--primary-color);
+                }
+                .action-buttons {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .action-btn {
+                    padding: 12px 16px;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    transition: all 0.3s ease;
+                    text-align: left;
+                }
+                .action-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                }
+                .clear-btn {
+                    background: linear-gradient(135deg, #ffc107, #ff8f00);
+                    color: white;
+                }
+                .export-btn {
+                    background: linear-gradient(135deg, #17a2b8, #138496);
+                    color: white;
+                }
+                .stats-btn {
+                    background: linear-gradient(135deg, #6f42c1, #5a2d91);
+                    color: white;
+                }
             </style>
         `;
 
@@ -381,6 +448,24 @@ class LaxTimerSettings {
         this.updateSetting('keyboardShortcuts', document.getElementById('keyboardShortcuts').checked);
         this.updateSetting('timerLayout', document.getElementById('timerLayout').value);
         this.updateSetting('defaultPenaltyTime', document.getElementById('defaultPenaltyTime').value);
+        
+        // Handle quarter length
+        const quarterLengthInput = document.getElementById('quarterLength');
+        if (quarterLengthInput) {
+            const quarterLength = parseInt(quarterLengthInput.value);
+            if (quarterLength >= 1 && quarterLength <= 30) {
+                this.updateSetting('quarterLength', quarterLength);
+                
+                // Update game manager if available
+                if (window.gameManager) {
+                    gameManager.quarterLength = quarterLength * 60; // Convert to seconds
+                    gameManager.saveGameSettingsToStorage();
+                }
+            }
+        }
+
+        // Apply settings
+        this.applySettings();
 
         this.hideSettingsModal();
         
@@ -428,6 +513,57 @@ class LaxTimerSettings {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        `;
+        
+        // Add styles
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+            max-width: 300px;
+        `;
+        
+        // Add animation keyframes if not already added
+        if (!document.getElementById('notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'notification-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 3000);
     }
 }
 

@@ -42,10 +42,22 @@
     <div class="game-control-panel" id="gameControlPanel">
         <div class="global-clock">
             <h3><i class="fas fa-clock"></i> Game Clock</h3>
-            <div class="global-clock-display" id="globalClockDisplay">00:00:00</div>
+            <div class="global-clock-display" id="globalClockDisplay">15:00</div>
+            <div class="quarter-info">
+                <div class="quarter-display" id="quarterDisplay">Quarter 1</div>
+            </div>
             <div class="global-clock-controls">
                 <button class="btn pause-all-btn" onclick="toggleGameClock()">
                     <i class="fas fa-pause"></i> <span id="pauseAllText">Pause All</span>
+                </button>
+                <button class="btn restart-game-btn" onclick="restartGame()">
+                    <i class="fas fa-redo"></i> Restart Game
+                </button>
+                <button class="btn next-quarter-btn" onclick="nextQuarter()">
+                    <i class="fas fa-forward"></i> Next Quarter
+                </button>
+                <button class="btn game-settings-btn" onclick="showGameSettings()">
+                    <i class="fas fa-cog"></i> Game Settings
                 </button>
             </div>
         </div>
@@ -127,155 +139,158 @@
         </button>
     </div>
 
-    <!-- Timer 1 -->
-    <div class="timer" id="timer1">
-        <h3><i class="fas fa-clock"></i> Timer 1</h3>
-        <input type="text" id="player1" placeholder="Player Number">
-        <input type="text" id="team1" placeholder="Team Name">
-        <select id="setTime1" onchange="setupTimer(1)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time1">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(1)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(1)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
+    <!-- Timers Container -->
+    <div class="timers-container">
+        <!-- Timer 1 -->
+        <div class="timer" id="timer1">
+            <h3><i class="fas fa-clock"></i> Timer 1</h3>
+            <input type="text" id="player1" placeholder="Player Number">
+            <input type="text" id="team1" placeholder="Team Name">
+            <select id="setTime1" onchange="setupTimer(1)">
+                <option value="Not in use">Not in use</option>
+            </select>
+            <div class="time-display" id="time1">Not in use</div>
+            <div class="timer-buttons">
+                <button class="start-btn" onclick="startTimer(1)">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="stop-btn" onclick="stopTimer(1)">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
         </div>
-    </div>
 
-    <!-- Timer 2 -->
-    <div class="timer" id="timer2">
-        <h3><i class="fas fa-clock"></i> Timer 2</h3>
-        <input type="text" id="player2" placeholder="Player Number">
-        <input type="text" id="team2" placeholder="Team Name">
-        <select id="setTime2" onchange="setupTimer(2)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time2">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(2)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(2)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
+        <!-- Timer 2 -->
+        <div class="timer" id="timer2">
+            <h3><i class="fas fa-clock"></i> Timer 2</h3>
+            <input type="text" id="player2" placeholder="Player Number">
+            <input type="text" id="team2" placeholder="Team Name">
+            <select id="setTime2" onchange="setupTimer(2)">
+                <option value="Not in use">Not in use</option>
+            </select>
+            <div class="time-display" id="time2">Not in use</div>
+            <div class="timer-buttons">
+                <button class="start-btn" onclick="startTimer(2)">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="stop-btn" onclick="stopTimer(2)">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
         </div>
-    </div>
 
-    <!-- Timer 3 -->
-    <div class="timer" id="timer3">
-        <h3><i class="fas fa-clock"></i> Timer 3</h3>
-        <input type="text" id="player3" placeholder="Player Number">
-        <input type="text" id="team3" placeholder="Team Name">
-        <select id="setTime3" onchange="setupTimer(3)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time3">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(3)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(3)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
+        <!-- Timer 3 -->
+        <div class="timer" id="timer3">
+            <h3><i class="fas fa-clock"></i> Timer 3</h3>
+            <input type="text" id="player3" placeholder="Player Number">
+            <input type="text" id="team3" placeholder="Team Name">
+            <select id="setTime3" onchange="setupTimer(3)">
+                <option value="Not in use">Not in use</option>
+            </select>
+            <div class="time-display" id="time3">Not in use</div>
+            <div class="timer-buttons">
+                <button class="start-btn" onclick="startTimer(3)">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="stop-btn" onclick="stopTimer(3)">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
         </div>
-    </div>
 
-    <!-- Timer 4 -->
-    <div class="timer" id="timer4">
-        <h3><i class="fas fa-clock"></i> Timer 4</h3>
-        <input type="text" id="player4" placeholder="Player Number">
-        <input type="text" id="team4" placeholder="Team Name">
-        <select id="setTime4" onchange="setupTimer(4)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time4">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(4)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(4)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
+        <!-- Timer 4 -->
+        <div class="timer" id="timer4">
+            <h3><i class="fas fa-clock"></i> Timer 4</h3>
+            <input type="text" id="player4" placeholder="Player Number">
+            <input type="text" id="team4" placeholder="Team Name">
+            <select id="setTime4" onchange="setupTimer(4)">
+                <option value="Not in use">Not in use</option>
+            </select>
+            <div class="time-display" id="time4">Not in use</div>
+            <div class="timer-buttons">
+                <button class="start-btn" onclick="startTimer(4)">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="stop-btn" onclick="stopTimer(4)">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
         </div>
-    </div>
 
-    <!-- Timer 5 -->
-    <div class="timer" id="timer5">
-        <h3><i class="fas fa-clock"></i> Timer 5</h3>
-        <input type="text" id="player5" placeholder="Player Number">
-        <input type="text" id="team5" placeholder="Team Name">
-        <select id="setTime5" onchange="setupTimer(5)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time5">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(5)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(5)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
+        <!-- Timer 5 -->
+        <div class="timer" id="timer5">
+            <h3><i class="fas fa-clock"></i> Timer 5</h3>
+            <input type="text" id="player5" placeholder="Player Number">
+            <input type="text" id="team5" placeholder="Team Name">
+            <select id="setTime5" onchange="setupTimer(5)">
+                <option value="Not in use">Not in use</option>
+            </select>
+            <div class="time-display" id="time5">Not in use</div>
+            <div class="timer-buttons">
+                <button class="start-btn" onclick="startTimer(5)">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="stop-btn" onclick="stopTimer(5)">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
         </div>
-    </div>
 
-    <!-- Timer 6 -->
-    <div class="timer" id="timer6">
-        <h3><i class="fas fa-clock"></i> Timer 6</h3>
-        <input type="text" id="player6" placeholder="Player Number">
-        <input type="text" id="team6" placeholder="Team Name">
-        <select id="setTime6" onchange="setupTimer(6)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time6">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(6)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(6)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
+        <!-- Timer 6 -->
+        <div class="timer" id="timer6">
+            <h3><i class="fas fa-clock"></i> Timer 6</h3>
+            <input type="text" id="player6" placeholder="Player Number">
+            <input type="text" id="team6" placeholder="Team Name">
+            <select id="setTime6" onchange="setupTimer(6)">
+                <option value="Not in use">Not in use</option>
+            </select>
+            <div class="time-display" id="time6">Not in use</div>
+            <div class="timer-buttons">
+                <button class="start-btn" onclick="startTimer(6)">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="stop-btn" onclick="stopTimer(6)">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
         </div>
-    </div>
 
-    <!-- Timer 7 -->
-    <div class="timer" id="timer7">
-        <h3><i class="fas fa-clock"></i> Timer 7</h3>
-        <input type="text" id="player7" placeholder="Player Number">
-        <input type="text" id="team7" placeholder="Team Name">
-        <select id="setTime7" onchange="setupTimer(7)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time7">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(7)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(7)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
+        <!-- Timer 7 -->
+        <div class="timer" id="timer7">
+            <h3><i class="fas fa-clock"></i> Timer 7</h3>
+            <input type="text" id="player7" placeholder="Player Number">
+            <input type="text" id="team7" placeholder="Team Name">
+            <select id="setTime7" onchange="setupTimer(7)">
+                <option value="Not in use">Not in use</option>
+            </select>
+            <div class="time-display" id="time7">Not in use</div>
+            <div class="timer-buttons">
+                <button class="start-btn" onclick="startTimer(7)">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="stop-btn" onclick="stopTimer(7)">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
         </div>
-    </div>
 
-    <!-- Timer 8 -->
-    <div class="timer" id="timer8">
-        <h3><i class="fas fa-clock"></i> Timer 8</h3>
-        <input type="text" id="player8" placeholder="Player Number">
-        <input type="text" id="team8" placeholder="Team Name">
-        <select id="setTime8" onchange="setupTimer(8)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time8">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(8)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(8)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
+        <!-- Timer 8 -->
+        <div class="timer" id="timer8">
+            <h3><i class="fas fa-clock"></i> Timer 8</h3>
+            <input type="text" id="player8" placeholder="Player Number">
+            <input type="text" id="team8" placeholder="Team Name">
+            <select id="setTime8" onchange="setupTimer(8)">
+                <option value="Not in use">Not in use</option>
+            </select>
+            <div class="time-display" id="time8">Not in use</div>
+            <div class="timer-buttons">
+                <button class="start-btn" onclick="startTimer(8)">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="stop-btn" onclick="stopTimer(8)">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
         </div>
     </div>
 
@@ -287,354 +302,10 @@
     <!-- Scripts -->
     <script src="timer-utils.js"></script>
     <script src="settings.js"></script>
-    <script src="LaxTimer-working.js"></script>
+    <script src="LaxTimer-integrated.js"></script>
     <script src="enhanced-bridge.js"></script>
     <script src="game-manager.js"></script>
     <script src="scoreboard.js"></script>
     <script src="dynamic-timers.js"></script>
-    
-    <!-- Remove the inline compatibility script since it's now in enhanced-bridge.js -->
-</body>
-</html>
-
-    <!-- Timer 1 -->
-    <div class="timer" id="timer1">
-        <h3><i class="fas fa-clock"></i> Timer 1</h3>
-        <input type="text" id="player1" placeholder="Player Number">
-        <input type="text" id="team1" placeholder="Team Name">
-        <select id="setTime1" onchange="setupTimer(1)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time1">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(1)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(1)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 2 -->
-    <div class="timer" id="timer2">
-        <h3><i class="fas fa-clock"></i> Timer 2</h3>
-        <input type="text" id="player2" placeholder="Player Number">
-        <input type="text" id="team2" placeholder="Team Name">
-        <select id="setTime2" onchange="setupTimer(2)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time2">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(2)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(2)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 3 -->
-    <div class="timer" id="timer3">
-        <h3><i class="fas fa-clock"></i> Timer 3</h3>
-        <input type="text" id="player3" placeholder="Player Number">
-        <input type="text" id="team3" placeholder="Team Name">
-        <select id="setTime3" onchange="setupTimer(3)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time3">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(3)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(3)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 4 -->
-    <div class="timer" id="timer4">
-        <h3><i class="fas fa-clock"></i> Timer 4</h3>
-        <input type="text" id="player4" placeholder="Player Number">
-        <input type="text" id="team4" placeholder="Team Name">
-        <select id="setTime4" onchange="setupTimer(4)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time4">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(4)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(4)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 5 -->
-    <div class="timer" id="timer5">
-        <h3><i class="fas fa-clock"></i> Timer 5</h3>
-        <input type="text" id="player5" placeholder="Player Number">
-        <input type="text" id="team5" placeholder="Team Name">
-        <select id="setTime5" onchange="setupTimer(5)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time5">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(5)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(5)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 6 -->
-    <div class="timer" id="timer6">
-        <h3><i class="fas fa-clock"></i> Timer 6</h3>
-        <input type="text" id="player6" placeholder="Player Number">
-        <input type="text" id="team6" placeholder="Team Name">
-        <select id="setTime6" onchange="setupTimer(6)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time6">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(6)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(6)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 7 -->
-    <div class="timer" id="timer7">
-        <h3><i class="fas fa-clock"></i> Timer 7</h3>
-        <input type="text" id="player7" placeholder="Player Number">
-        <input type="text" id="team7" placeholder="Team Name">
-        <select id="setTime7" onchange="setupTimer(7)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time7">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(7)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(7)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 8 -->
-    <div class="timer" id="timer8">
-        <h3><i class="fas fa-clock"></i> Timer 8</h3>
-        <input type="text" id="player8" placeholder="Player Number">
-        <input type="text" id="team8" placeholder="Team Name">
-        <select id="setTime8" onchange="setupTimer(8)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time8">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(8)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(8)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <footer>
-        <i class="fas fa-copyright"></i> 2025 Dan Finn | LaxTimer v2.0 | 
-        <small>Keyboard Shortcuts: Space = Toggle All | 1-8 = Start Timer</small>
-    </footer>
-        <button class="control-btn" onclick="clearAllTimers()" style="background: linear-gradient(135deg, #ffc107, #ff8f00);">
-            <i class="fas fa-trash"></i> Clear All
-        </button>
-        <button class="control-btn" onclick="exportTimers()" style="background: linear-gradient(135deg, #17a2b8, #138496);">
-            <i class="fas fa-download"></i> Export Data
-        </button>
-        <button class="control-btn" onclick="showTimerStats()" style="background: linear-gradient(135deg, #6f42c1, #5a2d91);">
-            <i class="fas fa-chart-bar"></i> Statistics
-        </button>
-    </div>
-
-    <!-- Timer 1 -->
-    <div class="timer" id="timer1">
-        <h3><i class="fas fa-clock"></i> Timer 1</h3>
-        <input type="text" id="player1" placeholder="Player Number">
-        <input type="text" id="team1" placeholder="Team Name">
-        <select id="setTime1" onchange="setupTimer(1)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time1">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(1)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(1)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 2 -->
-    <div class="timer" id="timer2">
-        <h3><i class="fas fa-clock"></i> Timer 2</h3>
-        <input type="text" id="player2" placeholder="Player Number">
-        <input type="text" id="team2" placeholder="Team Name">
-        <select id="setTime2" onchange="setupTimer(2)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time2">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(2)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(2)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 3 -->
-    <div class="timer" id="timer3">
-        <h3><i class="fas fa-clock"></i> Timer 3</h3>
-        <input type="text" id="player3" placeholder="Player Number">
-        <input type="text" id="team3" placeholder="Team Name">
-        <select id="setTime3" onchange="setupTimer(3)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time3">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(3)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(3)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 4 -->
-    <div class="timer" id="timer4">
-        <h3><i class="fas fa-clock"></i> Timer 4</h3>
-        <input type="text" id="player4" placeholder="Player Number">
-        <input type="text" id="team4" placeholder="Team Name">
-        <select id="setTime4" onchange="setupTimer(4)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time4">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(4)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(4)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 5 -->
-    <div class="timer" id="timer5">
-        <h3><i class="fas fa-clock"></i> Timer 5</h3>
-        <input type="text" id="player5" placeholder="Player Number">
-        <input type="text" id="team5" placeholder="Team Name">
-        <select id="setTime5" onchange="setupTimer(5)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time5">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(5)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(5)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 6 -->
-    <div class="timer" id="timer6">
-        <h3><i class="fas fa-clock"></i> Timer 6</h3>
-        <input type="text" id="player6" placeholder="Player Number">
-        <input type="text" id="team6" placeholder="Team Name">
-        <select id="setTime6" onchange="setupTimer(6)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time6">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(6)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(6)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 7 -->
-    <div class="timer" id="timer7">
-        <h3><i class="fas fa-clock"></i> Timer 7</h3>
-        <input type="text" id="player7" placeholder="Player Number">
-        <input type="text" id="team7" placeholder="Team Name">
-        <select id="setTime7" onchange="setupTimer(7)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time7">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(7)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(7)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <!-- Timer 8 -->
-    <div class="timer" id="timer8">
-        <h3><i class="fas fa-clock"></i> Timer 8</h3>
-        <input type="text" id="player8" placeholder="Player Number">
-        <input type="text" id="team8" placeholder="Team Name">
-        <select id="setTime8" onchange="setupTimer(8)">
-            <option value="Not in use">Not in use</option>
-        </select>
-        <div class="time-display" id="time8">00:00:00</div>
-        <div class="timer-buttons">
-            <button class="start-btn" onclick="startTimer(8)">
-                <i class="fas fa-play"></i> Start
-            </button>
-            <button class="stop-btn" onclick="stopTimer(8)">
-                <i class="fas fa-stop"></i> Stop
-            </button>
-        </div>
-    </div>
-
-    <footer>
-        <i class="fas fa-copyright"></i> 2025 Dan Finn | LaxTimer v2.0 | 
-        <small>Keyboard Shortcuts: Space = Toggle All | 1-8 = Start Timer</small>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="timer-utils.js"></script>
-    <script src="settings.js"></script>
-    <script src="LaxTimer-working.js"></script>
-    
-    <!-- Simple functions for compatibility -->
-    <script>
-        function showSettings() {
-            if (window.laxTimerSettings) {
-                laxTimerSettings.showSettingsModal();
-            } else {
-                alert('Settings functionality will be available once fully loaded.');
-            }
-        }
-    </script>
 </body>
 </html>

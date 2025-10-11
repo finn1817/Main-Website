@@ -67,12 +67,15 @@ class LaxTimer {
         const setTimeSelect = document.getElementById('setTime' + index);
         const timeDisplay = document.getElementById('time' + index);
         
+        console.log(`Setting up timer ${index}`, { setTimeSelect, timeDisplay });
+        
         if (!setTimeSelect || !timeDisplay) {
             console.warn(`Timer ${index} elements not found`);
             return;
         }
 
         const selectedValue = setTimeSelect.value;
+        console.log(`Timer ${index} selected value: "${selectedValue}"`);
         
         if (selectedValue === 'Not in use') {
             timeDisplay.textContent = 'Not in use';
@@ -91,6 +94,9 @@ class LaxTimer {
             console.log(`Timer ${index} set to: ${selectedValue}`);
         } else {
             console.warn(`Invalid time format for timer ${index}: ${selectedValue}`);
+            // Try to set it anyway
+            timeDisplay.textContent = selectedValue;
+            timeDisplay.style.color = '';
         }
     }
 

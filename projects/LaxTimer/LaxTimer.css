@@ -54,21 +54,76 @@ body.dark header {
     box-shadow: 0 4px 15px var(--shadow-dark);
 }
 
+/* ===============================
+   LAYOUT IMPROVEMENTS & SPACING
+   =============================== */
+
+/* Main body layout improvements */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+/* Timer controls spacing */
+.timer-controls {
+    margin: 20px auto;
+    max-width: 600px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Timers container - better grid layout */
+.timers-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .timers-container {
+        grid-template-columns: 1fr;
+        padding: 0 10px;
+    }
+    
+    .timer-controls {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+}
+
 .timer {
-    margin: 15px;
+    margin: 0; /* Remove default margin since we use grid gap */
     padding: 25px;
     background: var(--card-bg);
     box-shadow: 0 4px 15px var(--shadow-light);
-    width: 320px;
     text-align: center;
     border-radius: 12px;
     border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.timer:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px var(--shadow-light);
 }
 
 body.dark .timer {
     background: var(--card-dark-bg);
     box-shadow: 0 4px 15px var(--shadow-dark);
     border-color: var(--border-dark-color);
+}
+
+body.dark .timer:hover {
+    box-shadow: 0 6px 20px var(--shadow-dark);
 }
 
 .timer h3 {
@@ -219,12 +274,19 @@ button {
    =============================== */
 
 .game-control-panel {
-    background: var(--secondary-bg);
+    background: var(--card-bg);
     border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin: 20px auto;
+    max-width: 1200px;
+    box-shadow: 0 4px 15px var(--shadow-light);
     border: 1px solid var(--border-color);
+}
+
+body.dark .game-control-panel {
+    background: var(--card-dark-bg);
+    box-shadow: 0 4px 15px var(--shadow-dark);
+    border-color: var(--border-dark-color);
 }
 
 .global-clock {
@@ -353,12 +415,19 @@ button {
    =============================== */
 
 .scoreboard-container {
-    background: var(--secondary-bg);
+    background: var(--card-bg);
     border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin: 20px auto;
+    max-width: 1200px;
+    box-shadow: 0 4px 15px var(--shadow-light);
     border: 1px solid var(--border-color);
+}
+
+body.dark .scoreboard-container {
+    background: var(--card-dark-bg);
+    box-shadow: 0 4px 15px var(--shadow-dark);
+    border-color: var(--border-dark-color);
 }
 
 .scoreboard-header {
