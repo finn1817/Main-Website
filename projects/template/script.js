@@ -87,7 +87,7 @@ const TEMPLATES = [
     
     <footer>
         <div class="container">
-            <p>&copy; 2024 Brand. All rights reserved.</p>
+            <p>&copy; 2025 [Your-Name]. All rights reserved.</p>
         </div>
     </footer>
 </body>
@@ -132,7 +132,7 @@ const TEMPLATES = [
         
         <article class="content">
             <h1>Getting Started with Modern Web Development</h1>
-            <div class="meta">By John Doe • March 15, 2024 • 5 min read</div>
+            <div class="meta">By Dan Finn • March 15, 2025 • 5 min read</div>
             
             <p>Web development has evolved significantly over the past few years. With new frameworks, tools, and best practices emerging constantly, it can be overwhelming for newcomers to know where to start.</p>
             
