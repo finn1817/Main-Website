@@ -5,12 +5,14 @@
 
 class LaxTimer {
     constructor() {
-        this.intervals = [];
+        this.intervals = {};
         this.timers = 8; // Total number of timers
         this.init();
     }
 
     init() {
+        console.log('LaxTimer initializing...');
+        
         // Initialize all timers on page load
         for (let i = 1; i <= this.timers; i++) {
             this.setupTimer(i);
@@ -35,7 +37,7 @@ class LaxTimer {
         
         if (timeInput.value === "Not in use") {
             this.stopTimer(index);
-            timeElement.textContent = "00:00:00";
+            timeElement.textContent = "Not in use";
         }
     }
 
