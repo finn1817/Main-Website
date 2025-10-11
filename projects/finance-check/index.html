@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../../assets/css/loading-states.css">
     <!-- Universal Search Component -->
     <link rel="stylesheet" href="../../assets/css/universal-search.css">
+    <script src="../../assets/js/theme-manager.js"></script>
     <script src="../../assets/js/universal-search.js" defer></script>
     <style>
         :root {
@@ -59,7 +60,7 @@
             padding: 20px 0;
         }
 
-        body.dark-mode {
+        body.dark {
             background: var(--dark-bg);
             color: #f8f9fa;
         }
@@ -79,7 +80,7 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        body.dark-mode .page-title h1 {
+        body.dark .page-title h1 {
             color: #a1c4fd;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
@@ -90,66 +91,8 @@
             margin-top: 5px;
         }
 
-        body.dark-mode .page-subtitle {
+        body.dark .page-subtitle {
             color: #adb5bd;
-        }
-
-        .back-to-home {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background-color: var(--accent-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 500;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .back-to-home:hover {
-            background-color: var(--accent-dark);
-            transform: translateY(-2px);
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-
-        body.dark-mode .theme-toggle {
-            border-color: #a1c4fd;
-            color: #a1c4fd;
-        }
-
-        .theme-toggle:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        body.dark-mode .theme-toggle:hover {
-            background-color: #a1c4fd;
-            color: var(--primary-dark);
         }
 
         .container {
@@ -175,7 +118,7 @@
             overflow: hidden;
         }
 
-        body.dark-mode .calculator-card {
+        body.dark .calculator-card {
             background-color: var(--card-dark);
             box-shadow: var(--card-shadow-dark);
         }
@@ -185,7 +128,7 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         }
 
-        body.dark-mode .calculator-card:hover {
+        body.dark .calculator-card:hover {
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
 
@@ -197,7 +140,7 @@
             border-bottom: 2px solid var(--primary-color);
         }
 
-        body.dark-mode .card-header {
+        body.dark .card-header {
             border-color: #a1c4fd;
         }
 
@@ -214,7 +157,7 @@
             border-radius: 50%;
         }
 
-        body.dark-mode .card-icon {
+        body.dark .card-icon {
             color: #a1c4fd;
             background-color: rgba(161, 196, 253, 0.2);
         }
@@ -230,7 +173,7 @@
             font-weight: 600;
         }
 
-        body.dark-mode .card-title h2 {
+        body.dark .card-title h2 {
             color: #a1c4fd;
         }
 
@@ -240,7 +183,7 @@
             margin-top: 5px;
         }
 
-        body.dark-mode .card-title p {
+        body.dark .card-title p {
             color: #adb5bd;
         }
 
@@ -257,7 +200,7 @@
             font-size: 0.95rem;
         }
 
-        body.dark-mode .form-label {
+        body.dark .form-label {
             color: #e9ecef;
         }
 
@@ -272,7 +215,7 @@
             transition: all 0.3s;
         }
 
-        body.dark-mode .form-input {
+        body.dark .form-input {
             background-color: var(--input-bg-dark);
             border-color: var(--input-border-dark);
             color: var(--input-text-dark);
@@ -284,7 +227,7 @@
             box-shadow: 0 0 0 3px rgba(51, 102, 204, 0.25);
         }
 
-        body.dark-mode .form-input:focus {
+        body.dark .form-input:focus {
             border-color: #a1c4fd;
             box-shadow: 0 0 0 3px rgba(161, 196, 253, 0.25);
         }
@@ -293,7 +236,7 @@
             color: #adb5bd;
         }
 
-        body.dark-mode .form-input::placeholder {
+        body.dark .form-input::placeholder {
             color: #6c757d;
         }
 
@@ -305,7 +248,7 @@
             pointer-events: none;
         }
 
-        body.dark-mode .form-input-icon {
+        body.dark .form-input-icon {
             color: #6c757d;
         }
 
@@ -320,7 +263,7 @@
             background-size: 12px;
         }
 
-        body.dark-mode .form-select {
+        body.dark .form-select {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23adb5bd' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
         }
 
@@ -364,7 +307,7 @@
             transition: opacity 0.5s, transform 0.5s;
         }
 
-        body.dark-mode .result-section {
+        body.dark .result-section {
             background-color: var(--result-bg-dark);
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
         }
@@ -385,7 +328,7 @@
             gap: 10px;
         }
 
-        body.dark-mode .result-title {
+        body.dark .result-title {
             color: #a1c4fd;
         }
 
@@ -397,7 +340,7 @@
             text-align: center;
         }
 
-        body.dark-mode .result-value {
+        body.dark .result-value {
             color: #a1c4fd;
         }
 
@@ -417,7 +360,7 @@
             text-align: center;
         }
 
-        body.dark-mode .result-item {
+        body.dark .result-item {
             background-color: rgba(255, 255, 255, 0.1);
         }
 
@@ -427,7 +370,7 @@
             margin-bottom: 5px;
         }
 
-        body.dark-mode .result-item-label {
+        body.dark .result-item-label {
             color: #adb5bd;
         }
 
@@ -436,7 +379,7 @@
             color: var(--primary-color);
         }
 
-        body.dark-mode .result-item-value {
+        body.dark .result-item-value {
             color: #a1c4fd;
         }
 
@@ -449,7 +392,7 @@
             gap: 5px;
         }
 
-        body.dark-mode .info-tip {
+        body.dark .info-tip {
             color: #adb5bd;
         }
 
@@ -457,7 +400,7 @@
             color: var(--primary-color);
         }
 
-        body.dark-mode .info-tip i {
+        body.dark .info-tip i {
             color: #a1c4fd;
         }
 
@@ -479,7 +422,7 @@
             font-weight: 500;
         }
 
-        body.dark-mode .input-group-prefix {
+        body.dark .input-group-prefix {
             color: #6c757d;
         }
 
@@ -491,7 +434,7 @@
             pointer-events: none;
         }
 
-        body.dark-mode .input-group-suffix {
+        body.dark .input-group-suffix {
             color: #6c757d;
         }
 
@@ -521,7 +464,7 @@
             color: var(--text-color);
         }
 
-        body.dark-mode .advanced-toggle-label {
+        body.dark .advanced-toggle-label {
             color: #e9ecef;
         }
 
@@ -565,7 +508,7 @@
             background-color: var(--primary-color);
         }
 
-        body.dark-mode input:checked + .toggle-slider {
+        body.dark input:checked + .toggle-slider {
             background-color: #a1c4fd;
         }
 
@@ -603,7 +546,7 @@
             animation: float 15s infinite linear;
         }
 
-        body.dark-mode .floating-element {
+        body.dark .floating-element {
             color: #a1c4fd;
             opacity: 0.3;
         }
@@ -630,7 +573,7 @@
             font-size: 0.9rem;
         }
 
-        body.dark-mode .tooltip i {
+        body.dark .tooltip i {
             color: #a1c4fd;
         }
 
@@ -654,7 +597,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        body.dark-mode .tooltip-text {
+        body.dark .tooltip-text {
             background-color: #1a1a1a;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         }
@@ -670,7 +613,7 @@
             border-color: #333 transparent transparent transparent;
         }
 
-        body.dark-mode .tooltip-text::after {
+        body.dark .tooltip-text::after {
             border-color: #1a1a1a transparent transparent transparent;
         }
 
@@ -695,7 +638,7 @@
             width: 100%;
         }
 
-        body.dark-mode .footer {
+        body.dark .footer {
             color: #adb5bd;
         }
 
@@ -712,7 +655,7 @@
             transition: color 0.3s;
         }
 
-        body.dark-mode .footer-link {
+        body.dark .footer-link {
             color: #a1c4fd;
         }
 
@@ -721,7 +664,7 @@
             text-decoration: underline;
         }
 
-        body.dark-mode .footer-link:hover {
+        body.dark .footer-link:hover {
             color: #c2e9fb;
         }
 
@@ -804,9 +747,6 @@
     <!-- Page transition element -->
     <div class="page-transition"></div>
 
-    <!-- Theme toggle button -->
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">🌙</button>
-
     <!-- Breadcrumb Navigation -->
     <nav class="breadcrumb animated" role="navigation" aria-label="Breadcrumb">
         <ol>
@@ -815,11 +755,6 @@
             <li><span class="current"><span class="breadcrumb-icon">💰</span>Finance Toolkit</span></li>
         </ol>
     </nav>
-
-    <!-- Back to Home link -->
-    <a href="../../index.html" class="back-to-home">
-        <i class="fas fa-home"></i> Back to Home
-    </a>
 
     <div class="page-title">
         <h1>Financial Toolkit</h1>
@@ -1222,7 +1157,6 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // DOM Elements
-            const themeToggle = document.getElementById("themeToggle");
             const body = document.body;
             const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
             const pageTransition = document.querySelector(".page-transition");
@@ -1275,8 +1209,8 @@
 
             // Update charts based on theme
             function updateChartsTheme() {
-                const textColor = body.classList.contains("dark-mode") ? "#e9ecef" : "#333";
-                const gridColor = body.classList.contains("dark-mode") ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
+                const textColor = body.classList.contains("dark") ? "#e9ecef" : "#333";
+                const gridColor = body.classList.contains("dark") ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
                 
                 if (savingsChart) {
                     savingsChart.options.scales.x.ticks.color = textColor;
@@ -1595,8 +1529,8 @@
 
             function createSavingsChart(years, balances, contributions, interest) {
                 const chartContainer = document.getElementById("savingsChart");
-                const textColor = body.classList.contains("dark-mode") ? "#e9ecef" : "#333";
-                const gridColor = body.classList.contains("dark-mode") ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
+                const textColor = body.classList.contains("dark") ? "#e9ecef" : "#333";
+                const gridColor = body.classList.contains("dark") ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
                 
                 // Prepare labels for years
                 const labels = Array.from({length: years + 1}, (_, i) => i);
@@ -1814,8 +1748,8 @@
 
             function createRetirementChart(ages, balances, contributions, retirementAge) {
                 const chartContainer = document.getElementById("retirementChart");
-                const textColor = body.classList.contains("dark-mode") ? "#e9ecef" : "#333";
-                const gridColor = body.classList.contains("dark-mode") ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
+                const textColor = body.classList.contains("dark") ? "#e9ecef" : "#333";
+                const gridColor = body.classList.contains("dark") ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
                 
                 // Prepare datasets
                 const data = {
