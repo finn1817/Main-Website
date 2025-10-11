@@ -56,71 +56,9 @@
             position: relative;
         }
 
-        body.dark-mode {
+        body.dark {
             background-color: var(--dark-bg);
             color: var(--dark-text);
-        }
-
-        .back-to-home {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background-color: #4caf50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 500;
-            box-shadow: 0 2px 5px var(--light-shadow);
-            transition: all 0.3s;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .back-to-home:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
-        }
-
-        body.dark-mode .back-to-home {
-            box-shadow: 0 2px 5px var(--dark-shadow);
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 100;
-        }
-
-        body.dark-mode .theme-toggle {
-            border-color: var(--primary-light);
-            color: var(--primary-light);
-        }
-
-        .theme-toggle:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        body.dark-mode .theme-toggle:hover {
-            background-color: var(--primary-light);
-            color: var(--dark-bg);
         }
 
         .container {
@@ -133,7 +71,7 @@
             margin: 60px 0 20px;
         }
 
-        body.dark-mode .container {
+        body.dark .container {
             background-color: var(--dark-card);
             box-shadow: 0 10px 30px var(--dark-shadow);
         }
@@ -172,7 +110,7 @@
             color: var(--primary-color);
         }
 
-        body.dark-mode .form-group label {
+        body.dark .form-group label {
             color: var(--primary-light);
         }
 
@@ -187,7 +125,7 @@
             transition: all 0.3s;
         }
 
-        body.dark-mode .form-control {
+        body.dark .form-control {
             background-color: var(--dark-input);
             border-color: var(--dark-border);
             color: var(--dark-text);
@@ -199,7 +137,7 @@
             box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
         }
 
-        body.dark-mode .form-control:focus {
+        body.dark .form-control:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
         }
@@ -222,7 +160,7 @@
             overflow: hidden;
         }
 
-        body.dark-mode .unit-selector {
+        body.dark .unit-selector {
             background-color: var(--dark-input);
             border-color: var(--dark-border);
         }
@@ -238,7 +176,7 @@
             cursor: pointer;
         }
 
-        body.dark-mode .unit-selector-header {
+        body.dark .unit-selector-header {
             background-color: var(--primary-dark);
             color: var(--dark-text);
         }
@@ -258,7 +196,7 @@
             border-bottom: 1px solid var(--light-border);
         }
 
-        body.dark-mode .unit-option {
+        body.dark .unit-option {
             border-color: var(--dark-border);
         }
 
@@ -270,7 +208,7 @@
             background-color: var(--primary-light);
         }
 
-        body.dark-mode .unit-option:hover {
+        body.dark .unit-option:hover {
             background-color: rgba(0, 123, 255, 0.2);
         }
 
@@ -279,7 +217,7 @@
             color: white;
         }
 
-        body.dark-mode .unit-option.selected {
+        body.dark .unit-option.selected {
             background-color: var(--primary-color);
         }
 
@@ -306,7 +244,7 @@
             color: #6c757d;
         }
 
-        body.dark-mode .unit-abbr {
+        body.dark .unit-abbr {
             color: #adb5bd;
         }
 
@@ -331,7 +269,7 @@
             transition: all 0.3s;
         }
 
-        body.dark-mode .swap-btn {
+        body.dark .swap-btn {
             background-color: var(--primary-dark);
             color: var(--primary-light);
             border-color: var(--primary-light);
@@ -343,7 +281,7 @@
             transform: rotate(180deg);
         }
 
-        body.dark-mode .swap-btn:hover {
+        body.dark .swap-btn:hover {
             background-color: var(--primary-light);
             color: var(--primary-dark);
         }
@@ -370,7 +308,7 @@
             transform: translateY(-2px);
         }
 
-        body.dark-mode .convert-btn:hover {
+        body.dark .convert-btn:hover {
             background-color: #0062cc;
         }
 
@@ -383,7 +321,7 @@
             display: none;
         }
 
-        body.dark-mode .result-panel {
+        body.dark .result-panel {
             background-color: rgba(0, 123, 255, 0.15);
         }
 
@@ -404,7 +342,7 @@
             margin-bottom: 5px;
         }
 
-        body.dark-mode .result-value {
+        body.dark .result-value {
             color: var(--primary-light);
         }
 
@@ -414,7 +352,7 @@
             margin-bottom: 15px;
         }
 
-        body.dark-mode .result-formula {
+        body.dark .result-formula {
             color: #adb5bd;
         }
 
@@ -437,7 +375,7 @@
             margin-bottom: 5px;
         }
 
-        body.dark-mode .result-item-label {
+        body.dark .result-item-label {
             color: #adb5bd;
         }
 
@@ -446,7 +384,7 @@
             color: var(--primary-color);
         }
 
-        body.dark-mode .result-item-value {
+        body.dark .result-item-value {
             color: var(--primary-light);
         }
 
@@ -462,7 +400,7 @@
             display: none;
         }
 
-        body.dark-mode .category-tabs {
+        body.dark .category-tabs {
             border-color: var(--dark-border);
         }
 
@@ -476,7 +414,7 @@
             position: relative;
         }
 
-        body.dark-mode .category-tab {
+        body.dark .category-tab {
             color: #adb5bd;
         }
 
@@ -484,7 +422,7 @@
             color: var(--primary-color);
         }
 
-        body.dark-mode .category-tab:hover {
+        body.dark .category-tab:hover {
             color: var(--primary-light);
         }
 
@@ -492,7 +430,7 @@
             color: var(--primary-color);
         }
 
-        body.dark-mode .category-tab.active {
+        body.dark .category-tab.active {
             color: var(--primary-light);
         }
 
@@ -506,7 +444,7 @@
             background-color: var(--primary-color);
         }
 
-        body.dark-mode .category-tab.active::after {
+        body.dark .category-tab.active::after {
             background-color: var(--primary-light);
         }
 
@@ -520,7 +458,7 @@
             margin-top: 20px;
         }
 
-        body.dark-mode .history-panel {
+        body.dark .history-panel {
             border-color: var(--dark-border);
         }
 
@@ -540,7 +478,7 @@
             gap: 8px;
         }
 
-        body.dark-mode .history-title {
+        body.dark .history-title {
             color: var(--dark-text);
         }
 
@@ -565,7 +503,7 @@
             border-radius: 6px;
         }
 
-        body.dark-mode .history-list {
+        body.dark .history-list {
             border-color: var(--dark-border);
         }
 
@@ -576,7 +514,7 @@
             transition: background-color 0.2s;
         }
 
-        body.dark-mode .history-item {
+        body.dark .history-item {
             border-color: var(--dark-border);
         }
 
@@ -588,7 +526,7 @@
             background-color: var(--primary-light);
         }
 
-        body.dark-mode .history-item:hover {
+        body.dark .history-item:hover {
             background-color: rgba(0, 123, 255, 0.15);
         }
 
@@ -602,7 +540,7 @@
             color: #6c757d;
         }
 
-        body.dark-mode .history-timestamp {
+        body.dark .history-timestamp {
             color: #adb5bd;
         }
 
@@ -616,7 +554,7 @@
             max-width: 700px;
         }
 
-        body.dark-mode .footer {
+        body.dark .footer {
             color: #adb5bd;
         }
 
@@ -633,7 +571,7 @@
             transition: color 0.3s;
         }
 
-        body.dark-mode .footer-link {
+        body.dark .footer-link {
             color: var(--primary-light);
         }
 
@@ -642,7 +580,7 @@
             text-decoration: underline;
         }
 
-        body.dark-mode .footer-link:hover {
+        body.dark .footer-link:hover {
             color: #8bbeff;
         }
 
@@ -661,10 +599,6 @@
             
             .header h1 {
                 font-size: 1.8rem;
-            }
-            
-            .back-to-home, .theme-toggle {
-                top: 10px;
             }
             
             .category-tab {
@@ -696,9 +630,6 @@
     <!-- Page transition element -->
     <div class="page-transition"></div>
 
-    <!-- Theme toggle button -->
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">🌙</button>
-
     <!-- Breadcrumb Navigation -->
     <nav class="breadcrumb animated" role="navigation" aria-label="Breadcrumb">
         <ol>
@@ -707,11 +638,6 @@
             <li><span class="current"><span class="breadcrumb-icon">🔄</span>Unit Converter</span></li>
         </ol>
     </nav>
-
-    <!-- Back to Home link -->
-    <a href="../../index.html" class="back-to-home">
-        <i class="fas fa-home"></i> Back to Home
-    </a>
 
     <div class="container">
         <div class="header">
@@ -842,7 +768,6 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // DOM Elements
-            const themeToggle = document.getElementById("themeToggle");
             const themeManager = window.themeManager || (typeof ThemeManager !== "undefined" ? ThemeManager.getInstance?.() : null);
             const conversionForm = document.getElementById("unitConversionForm");
             const fromValueInput = document.getElementById("fromValue");
