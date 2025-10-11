@@ -47,7 +47,7 @@
             align-items: center;
         }
 
-        body.dark-mode {
+        body.dark {
             background-color: var(--dark-bg);
             color: var(--dark-text);
         }
@@ -70,7 +70,7 @@
             justify-content: center;
         }
 
-        body.dark-mode .theme-toggle {
+        body.dark .theme-toggle {
             background-color: rgba(255, 255, 255, 0.1);
         }
 
@@ -118,9 +118,9 @@
             letter-spacing: .5px;
             transition: background .25s, color .25s, box-shadow .25s, border-color .25s;
         }
-        body.dark-mode .mode-btn { background: var(--dark-card); color: var(--dark-text); border-color: var(--dark-border); }
+        body.dark .mode-btn { background: var(--dark-card); color: var(--dark-text); border-color: var(--dark-border); }
         .mode-btn:hover { box-shadow: 0 4px 12px var(--light-shadow); }
-        body.dark-mode .mode-btn:hover { box-shadow: 0 4px 12px var(--dark-shadow); }
+        body.dark .mode-btn:hover { box-shadow: 0 4px 12px var(--dark-shadow); }
         .mode-btn.active { background: var(--primary-color); color:#fff; border-color: var(--primary-color); box-shadow: 0 4px 16px rgba(0,123,255,.35); }
 
         /* Result wrapper with copy button */
@@ -142,7 +142,7 @@
         }
         #copy-result:hover { background: var(--primary-hover); transform: translateY(-2px); }
         #copy-result:active { transform: scale(.94); }
-        body.dark-mode #copy-result { box-shadow: 0 4px 12px var(--dark-shadow); }
+        body.dark #copy-result { box-shadow: 0 4px 12px var(--dark-shadow); }
         #copy-result.copied { background: #28a745; border-color:#28a745; }
 
         .subtitle {
@@ -151,7 +151,7 @@
             margin-bottom: 20px;
         }
 
-        body.dark-mode .subtitle {
+        body.dark .subtitle {
             color: #aaa;
         }
 
@@ -174,7 +174,7 @@
             box-shadow: 0 10px 25px var(--light-shadow);
         }
 
-        body.dark-mode #calculator {
+        body.dark #calculator {
             background-color: var(--dark-card);
             border-color: var(--dark-border);
             box-shadow: 0 10px 25px var(--dark-shadow);
@@ -216,7 +216,7 @@
             color: var(--light-text);
         }
 
-        body.dark-mode input[type="number"] {
+        body.dark input[type="number"] {
             background-color: var(--dark-card);
             border-color: var(--dark-border);
             color: var(--dark-text);
@@ -247,7 +247,7 @@
             transition: all 0.2s;
         }
 
-        body.dark-mode .operation-btn {
+        body.dark .operation-btn {
             background-color: var(--dark-btn);
             color: var(--dark-text);
             border-color: var(--dark-border);
@@ -258,7 +258,7 @@
             transform: translateY(-2px);
         }
 
-        body.dark-mode .operation-btn:hover {
+        body.dark .operation-btn:hover {
             background-color: #444;
         }
 
@@ -289,7 +289,7 @@
             padding-top: 20px;
         }
 
-        body.dark-mode .dropdown-section {
+        body.dark .dropdown-section {
             border-color: var(--dark-border);
         }
 
@@ -332,7 +332,7 @@
             border-radius: 0 0 6px 6px;
         }
 
-        body.dark-mode .dropdown-content {
+        body.dark .dropdown-content {
             background-color: var(--dark-card);
             border-color: var(--dark-border);
         }
@@ -360,7 +360,7 @@
             transition: all 0.2s;
         }
 
-        body.dark-mode .dropdown-btn {
+        body.dark .dropdown-btn {
             background-color: var(--dark-btn);
             color: var(--dark-text);
             border-color: var(--dark-border);
@@ -371,7 +371,7 @@
             transform: translateY(-1px);
         }
 
-        body.dark-mode .dropdown-btn:hover {
+        body.dark .dropdown-btn:hover {
             background-color: #444;
         }
 
@@ -390,7 +390,7 @@
             border: 1px solid var(--light-border);
         }
 
-        body.dark-mode #result {
+        body.dark #result {
             background-color: #333;
             border-color: var(--dark-border);
         }
@@ -406,7 +406,7 @@
             box-shadow: 0 10px 25px var(--light-shadow);
         }
 
-        body.dark-mode .history-section {
+        body.dark .history-section {
             background-color: var(--dark-card);
             border-color: var(--dark-border);
             box-shadow: 0 10px 25px var(--dark-shadow);
@@ -453,7 +453,7 @@
             transition: background-color 0.2s;
         }
 
-        body.dark-mode .history-item {
+        body.dark .history-item {
             border-color: var(--dark-border);
         }
 
@@ -461,7 +461,7 @@
             background-color: #f0f0f0;
         }
 
-        body.dark-mode .history-item:hover {
+        body.dark .history-item:hover {
             background-color: #333;
         }
 
@@ -476,7 +476,7 @@
             padding-top: 20px;
         }
 
-        body.dark-mode .memory-section {
+        body.dark .memory-section {
             border-color: var(--dark-border);
         }
 
@@ -502,7 +502,7 @@
             font-weight: 500;
         }
 
-        body.dark-mode .memory-btn {
+        body.dark .memory-btn {
             background-color: var(--dark-btn);
             color: var(--dark-text);
             border-color: var(--dark-border);
@@ -512,7 +512,7 @@
             background-color: #e0e0e0;
         }
 
-        body.dark-mode .memory-btn:hover {
+        body.dark .memory-btn:hover {
             background-color: #444;
         }
 
@@ -524,7 +524,7 @@
             color: #777;
         }
 
-        body.dark-mode footer {
+        body.dark footer {
             color: #aaa;
         }
 
@@ -555,8 +555,6 @@
             <li><span class="current"><span class="breadcrumb-icon">🧮</span>Calculator</span></li>
         </ol>
     </nav>
-
-    <a href="../../index.html" class="back-to-home">Back to Home</a>
     
     <div class="container">
         <header>
