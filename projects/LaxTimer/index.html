@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaxTimer - Multi-Timer for Lacrosse | Dan Finn</title>
+    <title>LaxTimer - Professional Lacrosse Game Management | Dan Finn</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
@@ -26,18 +26,106 @@
     </nav>
 
     <header>
-        <i class="fas fa-stopwatch" style="margin-right: 10px;"></i>
-        LaxTimer - Lacrosse Multi-Timer System
+        <h1><i class="fas fa-lacrosse"></i> LaxTimer</h1>
+        <p>Professional Lacrosse Game Management System</p>
+        <div class="header-controls">
+            <button onclick="toggleTheme()" class="theme-toggle" title="Toggle Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button onclick="laxTimerSettings.showSettingsModal()" class="settings-btn" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
     </header>
 
-    <!-- Control Buttons -->
-    <div class="control-buttons">
+    <!-- Game Control Panel -->
+    <div class="game-control-panel" id="gameControlPanel">
+        <div class="global-clock">
+            <h3><i class="fas fa-clock"></i> Game Clock</h3>
+            <div class="global-clock-display" id="globalClockDisplay">00:00:00</div>
+            <div class="global-clock-controls">
+                <button class="btn pause-all-btn" onclick="gameManager.toggleGameClock()">
+                    <i class="fas fa-pause"></i> <span id="pauseAllText">Pause All</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="quarter-info">
+            <h3><i class="fas fa-flag"></i> Quarter</h3>
+            <div class="quarter-display" id="quarterDisplay">Quarter 1</div>
+        </div>
+        
+        <div class="game-controls">
+            <button class="btn restart-game-btn" onclick="gameManager.restartGame()">
+                <i class="fas fa-redo"></i> Restart Game
+            </button>
+            <button class="btn next-quarter-btn" onclick="gameManager.nextQuarter()">
+                <i class="fas fa-forward"></i> Next Quarter
+            </button>
+            <button class="btn game-settings-btn" onclick="gameManager.showGameSettings()">
+                <i class="fas fa-cog"></i> Game Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- Digital Scoreboard -->
+    <div class="scoreboard-container" id="scoreboardContainer">
+        <div class="scoreboard-header">
+            <h3><i class="fas fa-trophy"></i> Digital Scoreboard</h3>
+        </div>
+        
+        <div class="scoreboard-main">
+            <div class="team-section">
+                <div class="team-name" id="homeTeamName" onclick="scoreboard.editTeamName('home')" title="Click to edit">Home Team</div>
+                <div class="score-display" id="homeScore">0</div>
+                <div class="score-controls">
+                    <button class="score-btn minus" onclick="scoreboard.adjustScore('home', -1)">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button class="score-btn plus" onclick="scoreboard.adjustScore('home', 1)">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="vs-separator">VS</div>
+            
+            <div class="team-section">
+                <div class="team-name" id="awayTeamName" onclick="scoreboard.editTeamName('away')" title="Click to edit">Away Team</div>
+                <div class="score-display" id="awayScore">0</div>
+                <div class="score-controls">
+                    <button class="score-btn minus" onclick="scoreboard.adjustScore('away', -1)">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button class="score-btn plus" onclick="scoreboard.adjustScore('away', 1)">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scoreboard-controls">
+            <button class="btn reset-scores-btn" onclick="scoreboard.resetScores()">
+                <i class="fas fa-undo"></i> Reset Scores
+            </button>
+            <button class="btn export-scores-btn" onclick="scoreboard.exportGameData()">
+                <i class="fas fa-download"></i> Export Game
+            </button>
+            <button class="btn scoreboard-settings-btn" onclick="scoreboard.showScoreboardSettings()">
+                <i class="fas fa-cog"></i> Scoreboard Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- Timer Controls -->
+    <div class="timer-controls">
         <button class="control-btn start-all-btn" onclick="startAllTimers()">
-            <i class="fas fa-play"></i> Start All Timers
+            <i class="fas fa-play-circle"></i> Start All
         </button>
         <button class="control-btn stop-all-btn" onclick="stopAllTimers()">
-            <i class="fas fa-stop"></i> Stop All Timers
+            <i class="fas fa-stop-circle"></i> Stop All
         </button>
+    </div>
         <button class="control-btn" onclick="clearAllTimers()" style="background: linear-gradient(135deg, #ffc107, #ff8f00);">
             <i class="fas fa-trash"></i> Clear All
         </button>
@@ -207,8 +295,11 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="LaxTimer.js"></script>
     <script src="timer-utils.js"></script>
+    <script src="game-manager.js"></script>
+    <script src="scoreboard.js"></script>
+    <script src="dynamic-timers.js"></script>
     <script src="settings.js"></script>
+    <script src="LaxTimer-integrated.js"></script>
 </body>
 </html>
