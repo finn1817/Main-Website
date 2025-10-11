@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaxTimer - High School Lacrosse Game Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
+    <link rel="stylesheet" href="main.css">
+    
+    <!-- Universal Theme Manager -->
+    <script src="../../assets/js/theme-manager.js"></script>
+</head>
+<body>
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb animated" role="navigation" aria-label="Breadcrumb">
+        <ol>
+            <li><a href="../../index.html"><span class="breadcrumb-icon">🏠</span>Home</a></li>
+            <li><a href="../index.html"><span class="breadcrumb-icon">🚀</span>Projects</a></li>
+            <li><span class="current"><span class="breadcrumb-icon">⏱️</span>LaxTimer</span></li>
+        </ol>
+    </nav>
+
+    <!-- Header with Theme Toggle -->
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1><i class="fas fa-lacrosse"></i> LaxTimer</h1>
+                <p>High School Lacrosse Game Management</p>
+            </div>
+            <div class="header-right">
+                <button id="settingsBtn" class="header-btn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button onclick="toggleTheme()" class="header-btn theme-toggle" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Team Setup Screen -->
+    <div id="teamSetupScreen" class="screen active">
+        <div class="setup-container">
+            <div class="setup-header">
+                <h2><i class="fas fa-users"></i> Team Setup</h2>
+                <p>Enter the names of both teams to begin the game</p>
+            </div>
+            
+            <div class="team-inputs">
+                <div class="team-input-group">
+                    <label for="team1Name"><i class="fas fa-home"></i> Home Team</label>
+                    <input type="text" id="team1Name" placeholder="Enter home team name" maxlength="20">
+                </div>
+                
+                <div class="vs-divider">
+                    <span>VS</span>
+                </div>
+                
+                <div class="team-input-group">
+                    <label for="team2Name"><i class="fas fa-plane"></i> Away Team</label>
+                    <input type="text" id="team2Name" placeholder="Enter away team name" maxlength="20">
+                </div>
+            </div>
+            
+            <button id="startGameBtn" class="start-game-btn" disabled>
+                <i class="fas fa-play"></i> Start Game
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Game Screen -->
+    <div id="gameScreen" class="screen">
+        <!-- Scoreboard Header -->
+        <div class="scoreboard-header">
+            <div class="team-section home-team">
+                <div class="team-info">
+                    <h3 id="homeTeamDisplay">Team 1</h3>
+                    <div class="score-display">
+                        <span id="homeScore">0</span>
+                        <div class="score-controls">
+                            <button class="score-btn plus" onclick="adjustScore('home', 1)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="score-btn minus" onclick="adjustScore('home', -1)">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-clock-section">
+                <div class="quarter-display">
+                    <span id="quarterText">Quarter 1</span>
+                </div>
+                
+                <div class="clocks-container">
+                    <div class="main-clock">
+                        <div class="clock-label">Time Remaining</div>
+                        <div class="clock-display" id="gameClockDisplay">12:00</div>
+                    </div>
+                    
+                    <div class="active-clock">
+                        <div class="clock-label">Time Active</div>
+                        <div class="clock-display" id="activeTimeDisplay">00:00</div>
+                    </div>
+                </div>
+                
+                <div class="game-controls">
+                    <button id="startPauseBtn" class="control-btn primary">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                    <button id="nextQuarterBtn" class="control-btn">
+                        <i class="fas fa-forward"></i> Next Quarter
+                    </button>
+                    <button id="restartGameBtn" class="control-btn">
+                        <i class="fas fa-redo"></i> Restart
+                    </button>
+                </div>
+            </div>
+            
+            <div class="team-section away-team">
+                <div class="team-info">
+                    <h3 id="awayTeamDisplay">Team 2</h3>
+                    <div class="score-display">
+                        <span id="awayScore">0</span>
+                        <div class="score-controls">
+                            <button class="score-btn plus" onclick="adjustScore('away', 1)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="score-btn minus" onclick="adjustScore('away', -1)">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add Timer Button -->
+        <div class="add-timer-section">
+            <button id="addTimerBtn" class="add-timer-btn">
+                <i class="fas fa-plus"></i> Add New Timer
+            </button>
+        </div>
+        
+        <!-- Penalty Timers Container -->
+        <div id="penaltyTimersContainer" class="penalty-timers-container">
+            <!-- Penalty timers will be added here dynamically -->
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Game Settings</h3>
+                <button class="modal-close" onclick="closeSettings()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label for="quarterLengthSetting">Quarter Length (minutes):</label>
+                    <select id="quarterLengthSetting">
+                        <option value="10">10 minutes</option>
+                        <option value="12" selected>12 minutes (High School)</option>
+                        <option value="15">15 minutes (College/Pro)</option>
+                        <option value="20">20 minutes (Pro)</option>
+                    </select>
+                </div>
+                
+                <div class="setting-group">
+                    <label>
+                        <input type="checkbox" id="soundEnabledSetting" checked>
+                        Enable Timer Sounds
+                    </label>
+                </div>
+                
+                <div class="setting-group">
+                    <label>
+                        <input type="checkbox" id="autoSaveSetting" checked>
+                        Auto-save Game Data
+                    </label>
+                </div>
+                
+                <div class="modal-actions">
+                    <button onclick="saveSettings()" class="save-btn">Save Settings</button>
+                    <button onclick="resetSettings()" class="reset-btn">Reset to Defaults</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timer Creation Modal -->
+    <div id="timerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-clock"></i> Add Penalty Timer</h3>
+                <button class="modal-close" onclick="closeTimerModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label for="playerNumber">Player Number:</label>
+                    <input type="text" id="playerNumber" placeholder="Enter player number" maxlength="3">
+                </div>
+                
+                <div class="setting-group">
+                    <label for="penaltyType">Penalty Type:</label>
+                    <input type="text" id="penaltyType" placeholder="e.g., Slashing, Cross-check" maxlength="30">
+                </div>
+                
+                <div class="setting-group">
+                    <label for="penaltyTeam">Team:</label>
+                    <select id="penaltyTeam">
+                        <option value="home">Home Team</option>
+                        <option value="away">Away Team</option>
+                    </select>
+                </div>
+                
+                <div class="setting-group">
+                    <label for="penaltyDuration">Penalty Duration:</label>
+                    <select id="penaltyDuration">
+                        <option value="30">30 seconds</option>
+                        <option value="60">1 minute</option>
+                        <option value="90">1:30</option>
+                        <option value="120">2 minutes</option>
+                        <option value="150">2:30</option>
+                        <option value="180">3 minutes</option>
+                        <option value="210">3:30</option>
+                        <option value="240">4 minutes</option>
+                        <option value="270">4:30</option>
+                        <option value="300">5 minutes</option>
+                        <option value="custom">Custom Time</option>
+                    </select>
+                </div>
+                
+                <div id="customTimeGroup" class="setting-group" style="display: none;">
+                    <label for="customMinutes">Custom Duration:</label>
+                    <div class="time-input-group">
+                        <input type="number" id="customMinutes" min="0" max="59" placeholder="Min">
+                        <span>:</span>
+                        <input type="number" id="customSeconds" min="0" max="59" placeholder="Sec">
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button onclick="createTimer()" class="create-btn">Create Timer</button>
+                    <button onclick="closeTimerModal()" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Scripts -->
+    <script src="main.js"></script>
+    <script src="timer-manager.js"></script>
+    <script src="game-engine.js"></script>
+</body>
+</html>
