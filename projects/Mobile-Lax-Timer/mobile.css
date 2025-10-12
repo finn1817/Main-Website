@@ -5,14 +5,17 @@
     --secondary-color: #FFC107;
     --home-color: #4CAF50;
     --away-color: #FF5722;
-    --background: #f8f9fa;
-    --text-color: #212529;
-    --card-bg: white;
-    --border-color: #e0e0e0;
     --success-color: #28a745;
     --warning-color: #ffc107;
     --error-color: #dc3545;
     --info-color: #17a2b8;
+    
+    /* Light theme variables */
+    --bg-primary: #f8f9fa;
+    --bg-card: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #e0e0e0;
     --shadow: 0 2px 12px rgba(0,0,0,0.08);
     --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
     
@@ -29,11 +32,12 @@
     --spacing-xl: 32px;
 }
 
-/* Dark theme */
+/* Dark theme - Override variables */
 body.dark {
-    --background: #1a1a1a;
-    --text-color: #e0e0e0;
-    --card-bg: #2d2d2d;
+    --bg-primary: #1a1a1a;
+    --bg-card: #2d2d2d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
     --border-color: #404040;
     --shadow: 0 2px 12px rgba(0,0,0,0.3);
     --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
@@ -49,8 +53,8 @@ body.dark {
 
 body {
     font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--background);
-    color: var(--text-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
     overflow-x: hidden;
     user-select: none;
     -webkit-user-select: none;
@@ -150,7 +154,7 @@ body.dark .theme-toggle .fa-sun {
     align-items: center;
     justify-content: center;
     padding: var(--spacing-lg);
-    background: var(--background);
+    background: var(--bg-primary);
 }
 
 #teamSetupScreen.active {
@@ -160,7 +164,7 @@ body.dark .theme-toggle .fa-sun {
 .setup-container {
     width: 100%;
     max-width: 400px;
-    background: var(--card-bg);
+    background: var(--bg-card);
     border-radius: var(--border-radius);
     padding: var(--spacing-xl);
     box-shadow: var(--shadow-lg);
@@ -199,7 +203,7 @@ body.dark .theme-toggle .fa-sun {
     display: block;
     font-weight: 600;
     margin-bottom: var(--spacing-sm);
-    color: var(--text-color);
+    color: var(--text-primary);
     font-size: 0.95rem;
     display: flex;
     align-items: center;
@@ -212,8 +216,8 @@ body.dark .theme-toggle .fa-sun {
     font-size: 1.1rem;
     border: 2px solid var(--border-color);
     border-radius: var(--border-radius-sm);
-    background: var(--card-bg);
-    color: var(--text-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
     transition: all 0.2s ease;
     min-height: var(--button-height);
 }
@@ -231,7 +235,7 @@ body.dark .theme-toggle .fa-sun {
 }
 
 .vs-divider span {
-    background: var(--card-bg);
+    background: var(--bg-card);
     padding: 0 var(--spacing-md);
     font-weight: 700;
     font-size: 1.2rem;
@@ -282,12 +286,12 @@ body.dark .theme-toggle .fa-sun {
 #gameScreen {
     padding: var(--spacing-md);
     padding-bottom: calc(var(--spacing-xl) + env(safe-area-inset-bottom));
-    background: var(--background);
+    background: var(--bg-primary);
 }
 
 /* Mobile Scoreboard */
 .mobile-scoreboard {
-    background: var(--card-bg);
+    background: var(--bg-card);
     border-radius: var(--border-radius);
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-md);
@@ -332,7 +336,7 @@ body.dark .theme-toggle .fa-sun {
 .score-display {
     font-size: 3rem;
     font-weight: 700;
-    color: var(--text-color);
+    color: var(--text-primary);
     font-family: 'Courier New', monospace;
     line-height: 1;
     text-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -439,8 +443,8 @@ body.dark .theme-toggle .fa-sun {
     align-items: center;
     justify-content: center;
     gap: var(--spacing-sm);
-    background: var(--card-bg);
-    color: var(--text-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
     border: 2px solid var(--border-color);
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
@@ -492,7 +496,7 @@ body.dark .theme-toggle .fa-sun {
 
 /* Timer Summary */
 .mobile-timers-summary {
-    background: var(--card-bg);
+    background: var(--bg-card);
     border-radius: var(--border-radius);
     padding: var(--spacing-lg);
     box-shadow: var(--shadow);
@@ -519,7 +523,7 @@ body.dark .mobile-timers-summary.has-timers {
 .timers-summary-text {
     font-size: 1rem;
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--text-primary);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -557,7 +561,7 @@ body.dark .mobile-timers-summary.has-timers {
 }
 
 .timer-modal-content {
-    background: var(--card-bg);
+    background: var(--bg-card);
     border-radius: var(--border-radius) var(--border-radius) 0 0;
     width: 100%;
     max-height: 70vh;
@@ -579,7 +583,7 @@ body.dark .mobile-timers-summary.has-timers {
     align-items: center;
     padding: var(--spacing-lg);
     border-bottom: 1px solid var(--border-color);
-    background: var(--card-bg);
+    background: var(--bg-card);
     position: sticky;
     top: 0;
 }
@@ -587,7 +591,7 @@ body.dark .mobile-timers-summary.has-timers {
 .timer-modal-header h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--text-color);
+    color: var(--text-primary);
     margin: 0;
     display: flex;
     align-items: center;
@@ -624,7 +628,7 @@ body.dark .mobile-timers-summary.has-timers {
 }
 
 .timer-card {
-    background: var(--card-bg);
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-sm);
     padding: var(--spacing-md);
@@ -684,7 +688,7 @@ body.dark .timer-card.critical {
 .player-number {
     font-weight: 700;
     font-size: 1.1rem;
-    color: var(--text-color);
+    color: var(--text-primary);
 }
 
 .team-indicator {
@@ -721,7 +725,7 @@ body.dark .timer-card.critical {
 .timer-display {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--text-color);
+    color: var(--text-primary);
     text-align: center;
     margin: var(--spacing-md) 0;
     font-family: 'Courier New', monospace;
@@ -783,7 +787,7 @@ body.dark .timer-card.critical {
 }
 
 .modal-content {
-    background: var(--card-bg);
+    background: var(--bg-card);
     border-radius: var(--border-radius);
     padding: 0;
     width: 100%;
@@ -801,13 +805,13 @@ body.dark .timer-card.critical {
     align-items: center;
     padding: var(--spacing-lg);
     border-bottom: 1px solid var(--border-color);
-    background: var(--card-bg);
+    background: var(--bg-card);
 }
 
 .modal-header h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--text-color);
+    color: var(--text-primary);
     margin: 0;
     display: flex;
     align-items: center;
@@ -852,7 +856,7 @@ body.dark .timer-card.critical {
     display: block;
     font-weight: 500;
     margin-bottom: var(--spacing-sm);
-    color: var(--text-color);
+    color: var(--text-primary);
 }
 
 .setting-group input,
@@ -862,8 +866,8 @@ body.dark .timer-card.critical {
     font-size: 1rem;
     border: 2px solid var(--border-color);
     border-radius: var(--border-radius-sm);
-    background: var(--card-bg);
-    color: var(--text-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
     min-height: var(--button-height);
     transition: all 0.2s ease;
 }
@@ -885,7 +889,7 @@ body.dark .timer-card.critical {
 .time-input-row span {
     text-align: center;
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--text-primary);
 }
 
 .modal-actions {
@@ -926,8 +930,8 @@ body.dark .timer-card.critical {
 
 .reset-btn,
 .cancel-btn {
-    background: var(--card-bg);
-    color: var(--text-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
     border: 2px solid var(--border-color);
 }
 
@@ -952,7 +956,7 @@ body.dark .timer-card.critical {
 }
 
 .notification {
-    background: var(--card-bg);
+    background: var(--bg-card);
     border-radius: var(--border-radius-sm);
     padding: var(--spacing-md);
     margin-bottom: var(--spacing-sm);
@@ -1010,7 +1014,7 @@ body.dark .timer-card.critical {
 
 .notification span {
     flex: 1;
-    color: var(--text-color);
+    color: var(--text-primary);
     font-size: 0.95rem;
     font-weight: 500;
 }
