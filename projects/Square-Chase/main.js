@@ -24,7 +24,7 @@ class SquareChaseGame {
             // Initialize theme manager
             this.initializeTheme();
 
-            // Initialize core systems
+            // Initialize core systems (but don't start runtime yet)
             this.effectsManager = new EffectsManager();
             this.gameEngine = new GameEngine();
             this.zoneManager = new ZoneManager();
@@ -39,8 +39,9 @@ class SquareChaseGame {
             // Make game engine globally available for zone manager
             window.gameEngine = this.gameEngine;
 
-            // Start the game
-            this.gameEngine.start();
+            // Mark as pre-game: hide in-game UI and show start screen
+            document.body.classList.add('pre-game');
+            this.injectStartScreen();
 
             // Setup cleanup on page unload
             window.addEventListener('beforeunload', () => {
@@ -51,8 +52,7 @@ class SquareChaseGame {
             console.log('🎮 Square Chase Game initialized successfully!');
             console.log('Features: 6 zone types, 4 active at a time, auto-cycling, improved UI');
             
-            // Show welcome message
-            this.showWelcomeMessage();
+            // No welcome modal now; start screen replaces it
             
         } catch (error) {
             console.error('Failed to initialize Square Chase Game:', error);
@@ -79,45 +79,85 @@ class SquareChaseGame {
         }
     }
 
-    showWelcomeMessage() {
-        // Create a temporary welcome overlay
-        const welcome = document.createElement('div');
-        welcome.className = 'modal active';
-        welcome.innerHTML = `
+    injectStartScreen() {
+        // Create a start screen that includes settings and help
+        const start = document.createElement('div');
+        start.id = 'startScreen';
+        start.className = 'modal active';
+        start.innerHTML = `
             <div class="modal-content">
-                <h2>🎮 Welcome to Square Chase!</h2>
-                <p>Experience the enhanced version with:</p>
-                <ul style="text-align: left; margin: 15px 0;">
-                    <li>7 different zone types (only 4 active at a time)</li>
-                    <li>Timer and scoring system</li>
-                    <li>Dangerous Game Over zones after 30 seconds!</li>
-                    <li>Auto-cycling zones every 15 seconds</li>
-                    <li>Dynamic position shuffling</li>
-                    <li>Enhanced visual effects</li>
-                    <li>Improved UI and controls</li>
-                    <li>Keyboard shortcuts</li>
-                </ul>
-                <p><small>Press <strong>H</strong> for help, <strong>Space</strong> to pause, or <strong>R</strong> to reset</small></p>
+                <h2>🎮 Square Chase</h2>
+                <p>Move your cursor – the square will chase you! Hover zones for effects. Avoid the 💀.</p>
+                <div class="settings-grid" style="margin: 16px 0;">
+                    <div class="settings-item">
+                        <label for="speedSlider_start">Base Speed: <span id="speedValue_start">2%</span></label><br>
+                        <input type="range" id="speedSlider_start" min="1" max="5" value="2">
+                    </div>
+                    <div class="settings-item">
+                        <label for="trailSlider_start">Trail Length: <span id="trailValue_start">12</span></label><br>
+                        <input type="range" id="trailSlider_start" min="5" max="30" value="12">
+                    </div>
+                    <div class="settings-item">
+                        <label><input type="checkbox" id="effectsCheckbox_start" checked> Enable Visual Effects</label>
+                    </div>
+                    <div class="settings-item">
+                        <label><input type="checkbox" id="soundCheckbox_start" checked> Enable Sound Effects</label>
+                    </div>
+                </div>
                 <div class="modal-buttons">
-                    <button class="modal-btn" id="welcomeStart">Start Playing!</button>
+                    <button class="modal-btn" id="startGameBtn">Start Game</button>
+                    <button class="modal-btn secondary" id="openHelpFromStart">Help</button>
                 </div>
             </div>
         `;
-        
-        document.body.appendChild(welcome);
-        
-        // Auto-hide after 5 seconds or on button click
-        const hideWelcome = () => {
-            welcome.classList.remove('active');
-            setTimeout(() => {
-                if (welcome.parentNode) {
-                    welcome.parentNode.removeChild(welcome);
+
+        document.body.appendChild(start);
+
+        // Wire up start screen controls
+        const bind = () => {
+            const speedSlider = document.getElementById('speedSlider_start');
+            const trailSlider = document.getElementById('trailSlider_start');
+            const effectsCheckbox = document.getElementById('effectsCheckbox_start');
+            
+            speedSlider?.addEventListener('input', (e) => {
+                document.getElementById('speedValue_start').textContent = e.target.value + '%';
+            });
+            trailSlider?.addEventListener('input', (e) => {
+                document.getElementById('trailValue_start').textContent = e.target.value;
+            });
+            
+            document.getElementById('openHelpFromStart')?.addEventListener('click', () => {
+                // Show the in-game help modal for consistency
+                window.uiManager?.showModal('helpModal');
+            });
+
+            document.getElementById('startGameBtn')?.addEventListener('click', () => {
+                // Apply chosen settings before start
+                if (speedSlider) this.gameEngine.baseChaseSpeed = parseInt(speedSlider.value) / 100;
+                if (trailSlider) {
+                    this.gameEngine.maxTrails = parseInt(trailSlider.value);
+                    this.gameEngine.currentTrailLength = parseInt(trailSlider.value);
                 }
-            }, 300);
+                if (effectsCheckbox) {
+                    document.body.style.setProperty('--effects-enabled', effectsCheckbox.checked ? '1' : '0');
+                }
+
+                // Transition to playing state
+                start.classList.remove('active');
+                setTimeout(() => start.remove(), 300);
+                document.body.classList.remove('pre-game');
+                document.body.classList.add('playing');
+
+                // Hide breadcrumb during gameplay
+                const bc = document.querySelector('nav.breadcrumb');
+                if (bc) bc.setAttribute('data-was-visible', '1');
+
+                // Start engine
+                this.gameEngine.start();
+            });
         };
-        
-        document.getElementById('welcomeStart').addEventListener('click', hideWelcome);
-        setTimeout(hideWelcome, 5000);
+
+        bind();
     }
 
     pause() {

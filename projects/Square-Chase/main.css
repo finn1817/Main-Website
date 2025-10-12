@@ -16,6 +16,27 @@ body {
   position: relative;
 }
 
+/* Hide breadcrumb when actively playing */
+body.playing nav.breadcrumb {
+  display: none !important;
+}
+
+/* Hide game UI elements before the game starts */
+body.pre-game .game-header,
+body.pre-game .game-stats,
+body.pre-game .control-panel,
+body.pre-game .instructions,
+body.pre-game #chaseSquare,
+body.pre-game .trail,
+body.pre-game .pause-zone {
+  display: none !important;
+}
+
+/* During gameplay, hide Settings button to reduce clutter */
+body.playing #settingsBtn {
+  display: none !important;
+}
+
 /* Screen shake effect */
 body.shake {
   animation: shake 0.5s ease-in-out;
@@ -503,6 +524,30 @@ body.dark {
   border: 2px solid var(--zone-border);
 }
 
+/* Start screen overlay */
+#startScreen.modal {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+#startScreen .modal-content {
+  max-width: 700px;
+}
+
+#startScreen .settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  text-align: left;
+}
+
+#startScreen .settings-item label {
+  font-weight: 600;
+}
+
+#startScreen .settings-item input[type="range"] {
+  width: 100%;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .zone-1, .zone-2, .zone-3, .zone-4 {
@@ -540,5 +585,9 @@ body.dark {
   
   .modal-content {
     padding: 20px;
+  }
+
+  #startScreen .settings-grid {
+    grid-template-columns: 1fr;
   }
 }

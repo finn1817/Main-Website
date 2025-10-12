@@ -237,10 +237,22 @@ class UIManager {
         document.getElementById('playAgainBtn')?.addEventListener('click', () => {
             this.hideModal('gameOverModal');
             this.resetGame();
+            // Return to pre-game start screen
+            if (window.squareChaseGame?.injectStartScreen) {
+                document.body.classList.add('pre-game');
+                document.body.classList.remove('playing');
+                window.squareChaseGame.injectStartScreen();
+            }
         });
 
         document.getElementById('gameOverCloseBtn')?.addEventListener('click', () => {
             this.hideModal('gameOverModal');
+            // Show stats but remain paused; allow user to start new game from start screen
+            if (window.squareChaseGame?.injectStartScreen) {
+                document.body.classList.add('pre-game');
+                document.body.classList.remove('playing');
+                window.squareChaseGame.injectStartScreen();
+            }
         });
 
         // Settings controls
@@ -368,9 +380,18 @@ class UIManager {
     }
 
     resetGame() {
+        // Reset underlying systems
+        this.gameEngine.stop();
         this.gameEngine.reset();
         this.zoneManager.cycleZones();
-        
+
+        // Transition to pre-game screen between games
+        document.body.classList.add('pre-game');
+        document.body.classList.remove('playing');
+        if (window.squareChaseGame?.injectStartScreen) {
+            window.squareChaseGame.injectStartScreen();
+        }
+
         // Visual feedback
         if (window.effectsManager) {
             window.effectsManager.createExplosion(
@@ -381,7 +402,7 @@ class UIManager {
             );
         }
         
-        console.log('Game reset');
+        console.log('Game reset to start screen');
     }
 
     showModal(modalId) {

@@ -122,6 +122,8 @@ class GameEngine {
     endGame() {
         this.gameRunning = false;
         this.stop();
+        // Mark not playing so breadcrumb and other UI can return
+        document.body.classList.remove('playing');
         
         // Trigger game over modal
         if (window.uiManager) {
