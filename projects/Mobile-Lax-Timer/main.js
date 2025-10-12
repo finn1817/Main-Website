@@ -30,9 +30,11 @@ class LaxTimerApp {
     
     init() {
         console.log('LaxTimer initializing...');
+        this.initializeTheme();
         this.setupEventListeners();
         this.applySettings();
         this.showTeamSetup();
+        this.updateTimerDisplay();
     }
     
     setupEventListeners() {
@@ -54,6 +56,13 @@ class LaxTimerApp {
         // Settings
         document.getElementById('settingsBtn').addEventListener('click', () => this.showSettings());
         document.getElementById('penaltyDuration').addEventListener('change', () => this.toggleCustomTime());
+        
+        // Theme toggle
+        document.getElementById('themeToggleBtn').addEventListener('click', () => this.toggleTheme());
+        
+        // Timer display modal
+        document.getElementById('penaltyTimersContainer').addEventListener('click', () => this.showTimerDisplayModal());
+        document.querySelector('.timer-modal-backdrop').addEventListener('click', () => this.closeTimerDisplayModal());
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => this.handleKeyboard(e));
@@ -348,9 +357,77 @@ class LaxTimerApp {
     }
     
     renderTimer(timer) {
+        // Add timer to modal list instead of main container
+        this.updateTimerDisplay();
+    }
+    
+    updateTimerDisplay() {
         const container = document.getElementById('penaltyTimersContainer');
-        const timerElement = timer.createElement();
-        container.appendChild(timerElement);
+        const modalList = document.getElementById('activeTimersList');
+        const timerCount = this.timers.size;
+        
+        if (timerCount === 0) {
+            container.innerHTML = `
+                <div class="timers-summary-text">No Active Penalty Timers</div>
+                <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">Tap "Add Penalty Timer" to create one</div>
+            `;
+            container.classList.remove('has-timers');
+            modalList.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">No active timers</div>';
+        } else {
+            container.innerHTML = `
+                <div class="timers-summary-text">Active Penalty Timers</div>
+                <div class="timers-summary-count">${timerCount}</div>
+                <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">Tap to view details</div>
+            `;
+            container.classList.add('has-timers');
+            
+            // Update modal list
+            modalList.innerHTML = '';
+            this.timers.forEach(timer => {
+                const timerElement = timer.createElement();
+                timerElement.className = timerElement.className.replace('penalty-timer', 'timer-card');
+                modalList.appendChild(timerElement);
+            });
+        }
+    }
+    
+    showTimerDisplayModal() {
+        if (this.timers.size > 0) {
+            document.getElementById('timerDisplayModal').classList.add('active');
+        }
+    }
+    
+    closeTimerDisplayModal() {
+        document.getElementById('timerDisplayModal').classList.remove('active');
+    }
+    
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        
+        // Update theme icon
+        const themeIcon = document.querySelector('#themeToggleBtn .theme-icon');
+        if (newTheme === 'dark') {
+            themeIcon.className = 'fas fa-sun theme-icon';
+        } else {
+            themeIcon.className = 'fas fa-moon theme-icon';
+        }
+    }
+    
+    initializeTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        // Update theme icon
+        const themeIcon = document.querySelector('#themeToggleBtn .theme-icon');
+        if (savedTheme === 'dark') {
+            themeIcon.className = 'fas fa-sun theme-icon';
+        } else {
+            themeIcon.className = 'fas fa-moon theme-icon';
+        }
     }
     
     onTimerExpired(timerId) {
@@ -373,13 +450,14 @@ class LaxTimerApp {
         if (timer) {
             timer.destroy();
             this.timers.delete(timerId);
+            this.updateTimerDisplay();
         }
     }
     
     clearAllTimers() {
         this.timers.forEach(timer => timer.destroy());
         this.timers.clear();
-        document.getElementById('penaltyTimersContainer').innerHTML = '';
+        this.updateTimerDisplay();
     }
     
     clearExpiredTimers() {
@@ -581,5 +659,11 @@ function closeTimerModal() {
 function createTimer() {
     if (laxTimerApp) {
         laxTimerApp.createTimer();
+    }
+}
+
+function closeTimerDisplayModal() {
+    if (laxTimerApp) {
+        laxTimerApp.closeTimerDisplayModal();
     }
 }

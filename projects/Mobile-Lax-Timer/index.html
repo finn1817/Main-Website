@@ -16,20 +16,16 @@
 <body>
     <!-- Mobile Header -->
     <header class="mobile-header">
-        <div class="header-content">
-            <div class="header-main">
-                <h1><i class="fas fa-lacrosse"></i> LaxTimer</h1>
-                <p>Mobile Lacrosse Game Management</p>
-            </div>
-            <div class="header-controls">
-                <button id="settingsBtn" class="header-btn" title="Settings">
-                    <i class="fas fa-cog"></i>
-                </button>
-                <button onclick="toggleTheme()" class="header-btn theme-toggle" title="Toggle Theme">
-                    <i class="fas fa-moon"></i>
-                    <i class="fas fa-sun"></i>
-                </button>
-            </div>
+        <div class="header-left">
+            <h1><i class="fas fa-stopwatch"></i> LaxTimer</h1>
+        </div>
+        <div class="header-right">
+            <button id="themeToggleBtn" class="header-btn" title="Toggle Theme">
+                <i class="fas fa-moon theme-icon"></i>
+            </button>
+            <button id="settingsBtn" class="header-btn" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
         </div>
     </header>
 
@@ -128,13 +124,31 @@
         <!-- Add Timer Button -->
         <div class="add-timer-section">
             <button id="addTimerBtn" class="add-timer-btn">
-                <i class="fas fa-plus"></i> Add Timer
+                <i class="fas fa-plus"></i> Add Penalty Timer
             </button>
         </div>
         
-        <!-- Mobile Penalty Timers -->
-        <div id="penaltyTimersContainer" class="mobile-timers-container">
-            <!-- Penalty timers will be added here dynamically -->
+        <!-- Active Penalty Timers Summary -->
+        <div id="penaltyTimersContainer" class="mobile-timers-summary">
+            <!-- Will show active timers count or list when timers exist -->
+        </div>
+    </div>
+
+    <!-- Timer Modal (Bottom Sheet Style) -->
+    <div id="timerDisplayModal" class="timer-modal">
+        <div class="timer-modal-backdrop"></div>
+        <div class="timer-modal-content">
+            <div class="timer-modal-header">
+                <h3><i class="fas fa-clock"></i> Active Penalty Timers</h3>
+                <button class="timer-modal-close" onclick="closeTimerDisplayModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="timer-modal-body">
+                <div id="activeTimersList" class="active-timers-list">
+                    <!-- Active timers will be displayed here -->
+                </div>
+            </div>
         </div>
     </div>
 
