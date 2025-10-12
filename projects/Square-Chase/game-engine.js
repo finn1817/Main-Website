@@ -20,6 +20,13 @@ class GameEngine {
         this.effectTimeout = null;
         this.chaosInterval = null;
         
+        // Scoring and timing
+        this.score = 0;
+        this.gameTime = 0;
+        this.lastScoreTime = Date.now();
+        this.scoreInterval = null;
+        this.gameRunning = true;
+        
         // Trail system
         this.trails = [];
         this.maxTrails = 12;
@@ -55,6 +62,8 @@ class GameEngine {
     start() {
         if (!this.isRunning) {
             this.isRunning = true;
+            this.gameRunning = true;
+            this.startScoring();
             this.animate();
             console.log('Game engine started');
         }
@@ -63,6 +72,7 @@ class GameEngine {
     stop() {
         if (this.isRunning) {
             this.isRunning = false;
+            this.stopScoring();
             if (this.animationId) {
                 cancelAnimationFrame(this.animationId);
             }
@@ -71,13 +81,54 @@ class GameEngine {
     }
 
     animate() {
-        if (!this.isRunning) return;
+        if (!this.isRunning || !this.gameRunning) return;
 
         this.updateDifficulty();
+        this.updateGameTime();
         this.updatePosition();
         this.updateTrails();
         
         this.animationId = requestAnimationFrame(() => this.animate());
+    }
+
+    updateGameTime() {
+        this.gameTime = (Date.now() - this.gameStartTime) / 1000;
+    }
+
+    startScoring() {
+        // Add 100 points every 3 seconds
+        this.scoreInterval = setInterval(() => {
+            if (this.gameRunning && this.isRunning) {
+                this.score += 100;
+                
+                // Bonus points for longer gameplay
+                if (this.gameTime > 60) {
+                    this.score += 50; // Bonus after 1 minute
+                }
+                if (this.gameTime > 120) {
+                    this.score += 100; // Extra bonus after 2 minutes
+                }
+            }
+        }, 3000);
+    }
+
+    stopScoring() {
+        if (this.scoreInterval) {
+            clearInterval(this.scoreInterval);
+            this.scoreInterval = null;
+        }
+    }
+
+    endGame() {
+        this.gameRunning = false;
+        this.stop();
+        
+        // Trigger game over modal
+        if (window.uiManager) {
+            window.uiManager.showGameOver(this.score, this.gameTime);
+        }
+        
+        console.log(`Game Over! Final Score: ${this.score}, Time: ${Math.floor(this.gameTime)}s`);
     }
 
     updateDifficulty() {
@@ -196,6 +247,10 @@ class GameEngine {
                 this.startChaosEffect();
                 break;
 
+            case 'gameover':
+                this.endGame();
+                return; // Don't set timeout for game over
+
             case 'pause':
                 this.isPaused = true;
                 this.chaseSquare.classList.add('paused');
@@ -248,7 +303,10 @@ class GameEngine {
             speed: (this.difficultySpeed * this.currentSpeedMultiplier).toFixed(1) + 'x',
             effect: this.currentEffect,
             trailLength: Math.round(this.currentTrailLength),
-            position: { x: Math.round(this.chaseX), y: Math.round(this.chaseY) }
+            position: { x: Math.round(this.chaseX), y: Math.round(this.chaseY) },
+            score: this.score,
+            gameTime: Math.floor(this.gameTime),
+            isGameRunning: this.gameRunning
         };
     }
 
@@ -262,6 +320,12 @@ class GameEngine {
         this.difficultySpeed = 1;
         this.currentTrailLength = this.maxTrails;
         
+        // Reset scoring and timing
+        this.score = 0;
+        this.gameTime = 0;
+        this.gameRunning = true;
+        this.stopScoring();
+        
         // Clear all trails
         this.trails.forEach(trail => {
             if (trail.parentNode) {
@@ -271,12 +335,19 @@ class GameEngine {
         this.trails = [];
         
         this.initializePosition();
+        
+        // Restart scoring if game is running
+        if (this.isRunning) {
+            this.startScoring();
+        }
+        
         console.log('Game engine reset');
     }
 
     destroy() {
         this.stop();
         this.clearEffect();
+        this.stopScoring();
         
         // Clear all trails
         this.trails.forEach(trail => {

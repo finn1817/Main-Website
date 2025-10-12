@@ -32,6 +32,12 @@ class SquareChaseGame {
 
             // Make effects manager globally available
             window.effectsManager = this.effectsManager;
+            
+            // Make UI manager globally available for game over handling
+            window.uiManager = this.uiManager;
+            
+            // Make game engine globally available for zone manager
+            window.gameEngine = this.gameEngine;
 
             // Start the game
             this.gameEngine.start();
@@ -82,7 +88,9 @@ class SquareChaseGame {
                 <h2>🎮 Welcome to Square Chase!</h2>
                 <p>Experience the enhanced version with:</p>
                 <ul style="text-align: left; margin: 15px 0;">
-                    <li>6 different zone types (only 4 active at a time)</li>
+                    <li>7 different zone types (only 4 active at a time)</li>
+                    <li>Timer and scoring system</li>
+                    <li>Dangerous Game Over zones after 30 seconds!</li>
                     <li>Auto-cycling zones every 15 seconds</li>
                     <li>Dynamic position shuffling</li>
                     <li>Enhanced visual effects</li>

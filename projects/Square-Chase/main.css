@@ -50,6 +50,7 @@ body.shake {
   --boost-zone: #ffff00;
   --freeze-zone: #00bfff;
   --chaos-zone: #ff1493;
+  --gameover-zone: #8b0000;
 }
 
 /* Dark mode */
@@ -68,6 +69,7 @@ body.dark {
   --boost-zone: #ffff44;
   --freeze-zone: #00ccff;
   --chaos-zone: #ff44aa;
+  --gameover-zone: #cc0000;
 }
 
 /* Cursor chasing square */
@@ -226,6 +228,12 @@ body.dark {
   animation: pulse-chaos 1s ease-in-out infinite;
 }
 
+.zone-gameover {
+  border-color: var(--gameover-zone);
+  animation: pulse-gameover 1.5s ease-in-out infinite;
+  background: rgba(139, 0, 0, 0.1);
+}
+
 /* Zone animations */
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
@@ -264,6 +272,19 @@ body.dark {
   75% { transform: scale(1.05) rotate(3deg); filter: hue-rotate(270deg); }
 }
 
+@keyframes pulse-gameover {
+  0%, 100% { 
+    transform: scale(1); 
+    border-color: var(--gameover-zone); 
+    box-shadow: 0 0 0 rgba(139, 0, 0, 0.8);
+  }
+  50% { 
+    transform: scale(1.1); 
+    border-color: #ff0000; 
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+  }
+}
+
 @keyframes activeZone {
   0% { transform: scale(1); }
   50% { transform: scale(1.15); }
@@ -300,10 +321,46 @@ body.dark {
   border: 1px solid var(--zone-border);
 }
 
+/* Game Timer and Score */
+.game-header {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  gap: 20px;
+  z-index: 100;
+}
+
+.timer-display, .score-display {
+  background: var(--zone-bg);
+  border: 2px solid var(--zone-border);
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--zone-text);
+  min-width: 120px;
+  text-align: center;
+}
+
+.timer-display .label, .score-display .label {
+  font-size: 0.8rem;
+  font-weight: normal;
+  opacity: 0.7;
+  display: block;
+}
+
+.timer-display .value, .score-display .value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: var(--zone-border);
+}
+
 /* Game stats */
 .game-stats {
   position: absolute;
-  top: 80px;
+  top: 140px;
   right: 20px;
   background: var(--zone-bg);
   border: 2px solid var(--zone-border);

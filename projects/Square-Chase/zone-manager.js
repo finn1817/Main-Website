@@ -55,6 +55,15 @@ class ZoneManager {
                 class: 'zone-chaos',
                 color: 'var(--chaos-zone)',
                 effect: { type: 'chaos', duration: 3000 }
+            },
+            {
+                id: 'gameover',
+                name: 'Game Over',
+                icon: '💀',
+                description: 'Hover to end the game!',
+                class: 'zone-gameover',
+                color: 'var(--gameover-zone)',
+                effect: { type: 'gameover', duration: 0 }
             }
         ];
 
@@ -90,8 +99,18 @@ class ZoneManager {
     }
 
     updateZoneSet() {
-        // Randomly select 4 different zone types from the 6 available
-        const availableTypes = [...this.zoneTypes];
+        // Randomly select 4 different zone types from the 7 available
+        // Game Over zone has a 30% chance to appear after 30 seconds
+        const gameTime = window.gameEngine ? window.gameEngine.gameTime : 0;
+        const shouldIncludeGameOver = gameTime > 30 && Math.random() < 0.3;
+        
+        let availableTypes = [...this.zoneTypes];
+        
+        // Remove Game Over zone if it shouldn't appear yet
+        if (!shouldIncludeGameOver) {
+            availableTypes = availableTypes.filter(zone => zone.id !== 'gameover');
+        }
+        
         this.currentZoneSet = [];
         
         for (let i = 0; i < 4; i++) {

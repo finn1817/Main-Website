@@ -11,10 +11,31 @@ class UIManager {
     }
 
     initializeUI() {
+        this.createGameHeader();
         this.createGameStats();
         this.createControlPanel();
         this.createModals();
         this.updateInstructions();
+    }
+
+    createGameHeader() {
+        let gameHeader = document.querySelector('.game-header');
+        if (!gameHeader) {
+            gameHeader = document.createElement('div');
+            gameHeader.className = 'game-header';
+            document.body.appendChild(gameHeader);
+        }
+
+        gameHeader.innerHTML = `
+            <div class="timer-display">
+                <span class="label">TIME</span>
+                <div class="value" id="timeDisplay">0:00</div>
+            </div>
+            <div class="score-display">
+                <span class="label">SCORE</span>
+                <div class="value" id="scoreDisplay">0</div>
+            </div>
+        `;
     }
 
     createGameStats() {
@@ -30,7 +51,7 @@ class UIManager {
             <div><span class="label">Speed:</span> <span class="value" id="speedDisplay">1.0x</span></div>
             <div><span class="label">Effect:</span> <span class="value" id="effectDisplay">None</span></div>
             <div><span class="label">Trail:</span> <span class="value" id="trailDisplay">12</span></div>
-            <div><span class="label">Zones:</span> <span class="value" id="zoneDisplay">4/6</span></div>
+            <div><span class="label">Zones:</span> <span class="value" id="zoneDisplay">4/7</span></div>
             <div><span class="label">Cycle:</span> <span class="value" id="cycleDisplay">15s</span></div>
         `;
     }
@@ -54,6 +75,7 @@ class UIManager {
     createModals() {
         this.createHelpModal();
         this.createSettingsModal();
+        this.createGameOverModal();
     }
 
     createHelpModal() {
@@ -73,14 +95,17 @@ class UIManager {
                     <p>🚀 <strong>Boost Zone:</strong> Temporary super speed burst</p>
                     <p>❄️ <strong>Freeze Zone:</strong> Completely freezes the square</p>
                     <p>🌪️ <strong>Chaos Zone:</strong> Random chaotic movement</p>
+                    <p>💀 <strong>Game Over Zone:</strong> <span style="color: #ff0000;">DANGER!</span> Ends the game if touched!</p>
                 </div>
                 
                 <p><strong>Game Features:</strong></p>
-                <p>• Only 4 zones appear at a time (cycling between 6 types)</p>
+                <p>• Only 4 zones appear at a time (cycling between 7 types)</p>
                 <p>• Zones change positions every 8 seconds</p>
                 <p>• New zone types appear every 15 seconds</p>
                 <p>• Difficulty increases over time</p>
                 <p>• Trail length grows as you play</p>
+                <p>• Score increases by 100 every 3 seconds</p>
+                <p>• Game Over zones appear after 30 seconds!</p>
                 
                 <div class="modal-buttons">
                     <button class="modal-btn" id="helpCloseBtn">Got it!</button>
@@ -131,6 +156,34 @@ class UIManager {
         document.body.appendChild(settingsModal);
     }
 
+    createGameOverModal() {
+        const gameOverModal = document.createElement('div');
+        gameOverModal.id = 'gameOverModal';
+        gameOverModal.className = 'modal';
+        gameOverModal.innerHTML = `
+            <div class="modal-content">
+                <h2 style="color: #ff0000;">💀 GAME OVER!</h2>
+                <p>You touched the Game Over zone!</p>
+                
+                <div style="margin: 20px 0; padding: 15px; background: rgba(255,0,0,0.1); border-radius: 8px;">
+                    <div style="font-size: 1.5rem; font-weight: bold;">Final Score</div>
+                    <div style="font-size: 2rem; color: var(--zone-border); font-family: 'Courier New', monospace;" id="finalScore">0</div>
+                    <div style="margin-top: 10px;">Time Survived: <span id="finalTime">0:00</span></div>
+                </div>
+                
+                <p style="margin: 15px 0;">
+                    <strong>Performance Rating:</strong> <span id="performanceRating">Beginner</span>
+                </p>
+                
+                <div class="modal-buttons">
+                    <button class="modal-btn" id="playAgainBtn">🔄 Play Again</button>
+                    <button class="modal-btn secondary" id="gameOverCloseBtn">📊 View Stats</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(gameOverModal);
+    }
+
     updateInstructions() {
         let instructions = document.querySelector('.instructions');
         if (!instructions) {
@@ -141,7 +194,7 @@ class UIManager {
 
         instructions.innerHTML = `
             Move your cursor around - the square will chase you with a delay!<br>
-            <small>Hover over zones for special effects! • 4 of 6 zones active • Auto-cycling every 15s</small>
+            <small>Hover over zones for special effects! • 4 of 7 zones active • Auto-cycling every 15s • Avoid the 💀!</small>
         `;
     }
 
@@ -178,6 +231,16 @@ class UIManager {
 
         document.getElementById('settingsResetBtn')?.addEventListener('click', () => {
             this.resetSettings();
+        });
+
+        // Game Over modal buttons
+        document.getElementById('playAgainBtn')?.addEventListener('click', () => {
+            this.hideModal('gameOverModal');
+            this.resetGame();
+        });
+
+        document.getElementById('gameOverCloseBtn')?.addEventListener('click', () => {
+            this.hideModal('gameOverModal');
         });
 
         // Settings controls
@@ -245,6 +308,20 @@ class UIManager {
     handleZoneEnter(zoneElement) {
         const zoneType = zoneElement.dataset.type;
         if (!zoneType || zoneElement.classList.contains('hidden')) return;
+
+        // Handle Game Over zone immediately
+        if (zoneType === 'gameover') {
+            if (window.effectsManager) {
+                window.effectsManager.createExplosion(
+                    window.innerWidth / 2,
+                    window.innerHeight / 2,
+                    '#ff0000',
+                    'high'
+                );
+            }
+            this.gameEngine.endGame();
+            return;
+        }
 
         const effect = this.zoneManager.getZoneEffect(zoneType);
         if (effect) {
@@ -327,6 +404,36 @@ class UIManager {
         });
     }
 
+    showGameOver(finalScore, gameTime) {
+        // Update final score and time
+        document.getElementById('finalScore').textContent = finalScore.toLocaleString();
+        
+        const minutes = Math.floor(gameTime / 60);
+        const seconds = Math.floor(gameTime % 60);
+        document.getElementById('finalTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Calculate performance rating
+        let rating = 'Beginner';
+        if (finalScore >= 2000) rating = 'Expert';
+        else if (finalScore >= 1500) rating = 'Advanced';
+        else if (finalScore >= 1000) rating = 'Intermediate';
+        else if (finalScore >= 500) rating = 'Novice';
+        
+        document.getElementById('performanceRating').textContent = rating;
+        
+        // Show the modal
+        this.showModal('gameOverModal');
+        
+        // Create dramatic effects
+        if (window.effectsManager) {
+            setTimeout(() => {
+                window.effectsManager.screenShake(1000);
+            }, 500);
+        }
+        
+        console.log(`Game Over displayed - Score: ${finalScore}, Time: ${gameTime}s, Rating: ${rating}`);
+    }
+
     applySettings() {
         const speedSlider = document.getElementById('speedSlider');
         const trailSlider = document.getElementById('trailSlider');
@@ -370,6 +477,21 @@ class UIManager {
 
         const gameState = this.gameEngine.getGameState();
         
+        // Update timer
+        const timeDisplay = document.getElementById('timeDisplay');
+        if (timeDisplay) {
+            const minutes = Math.floor(gameState.gameTime / 60);
+            const seconds = gameState.gameTime % 60;
+            timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Update score
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        if (scoreDisplay) {
+            scoreDisplay.textContent = gameState.score.toLocaleString();
+        }
+        
+        // Update other stats
         const speedDisplay = document.getElementById('speedDisplay');
         const effectDisplay = document.getElementById('effectDisplay');
         const trailDisplay = document.getElementById('trailDisplay');
