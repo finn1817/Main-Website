@@ -1,0 +1,880 @@
+/* Mobile Lax Timer - Mobile-Optimized Styles */
+
+:root {
+    --primary-color: #2196F3;
+    --secondary-color: #FFC107;
+    --home-color: #4CAF50;
+    --away-color: #FF5722;
+    --background: #f5f5f5;
+    --text-color: #333;
+    --card-bg: white;
+    --border-color: #ddd;
+    --success-color: #4CAF50;
+    --warning-color: #FF9800;
+    --error-color: #f44336;
+    --danger-color: #dc3545;
+    
+    /* Mobile-specific sizing */
+    --header-height: 60px;
+    --button-height: 48px;
+    --touch-target: 44px;
+    --border-radius: 8px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+}
+
+/* Base Mobile Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--background);
+    color: var(--text-color);
+    overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* Mobile Container */
+.mobile-container {
+    max-width: 100vw;
+    min-height: 100vh;
+    position: relative;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Mobile Header */
+.mobile-header {
+    background: var(--primary-color);
+    color: white;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.mobile-header h1 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.mobile-header .settings-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius);
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.mobile-header .settings-btn:active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Team Setup Screen - Mobile */
+.team-setup-screen {
+    display: none;
+    padding: var(--spacing-lg);
+    min-height: calc(100vh - var(--header-height));
+    background: var(--background);
+}
+
+.team-setup-screen.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.team-setup-content {
+    width: 100%;
+    max-width: 400px;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-xl);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.team-setup-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: var(--spacing-xl);
+    color: var(--primary-color);
+}
+
+.team-input-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.team-input-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-color);
+}
+
+.team-input-group input {
+    width: 100%;
+    padding: var(--spacing-md);
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: white;
+    transition: border-color 0.2s ease;
+    min-height: var(--button-height);
+}
+
+.team-input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.start-game-btn {
+    width: 100%;
+    height: var(--button-height);
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: var(--spacing-md);
+}
+
+.start-game-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.start-game-btn:not(:disabled):active {
+    background: #1976D2;
+    transform: scale(0.98);
+}
+
+/* Game Screen - Mobile */
+.game-screen {
+    display: none;
+    min-height: calc(100vh - var(--header-height));
+    padding: var(--spacing-md);
+    padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
+}
+
+.game-screen.active {
+    display: block;
+}
+
+/* Quarter Display */
+.quarter-display {
+    text-align: center;
+    background: var(--card-bg);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.quarter-text {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+/* Mobile Clocks */
+.mobile-clocks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.mobile-clock {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.mobile-clock h3 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: var(--spacing-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mobile-clock .time {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    line-height: 1;
+}
+
+.clock-countdown .time {
+    color: var(--primary-color);
+}
+
+.clock-active .time {
+    color: var(--success-color);
+}
+
+/* Mobile Scoreboard */
+.mobile-scoreboard {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.mobile-scoreboard h3 {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-color);
+}
+
+.mobile-teams {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.mobile-team {
+    text-align: center;
+}
+
+.mobile-team h4 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mobile-team .team-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    min-height: 1.5rem;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.home-team .team-name {
+    color: var(--home-color);
+}
+
+.away-team .team-name {
+    color: var(--away-color);
+}
+
+.mobile-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.score-display {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    min-width: 60px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+}
+
+.score-controls {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.score-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    font-size: 1.25rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.score-btn:active {
+    transform: scale(0.95);
+    background: #1976D2;
+}
+
+.score-btn.minus {
+    background: var(--error-color);
+}
+
+.score-btn.minus:active {
+    background: #d32f2f;
+}
+
+.vs-divider {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #666;
+    align-self: center;
+}
+
+/* Mobile Game Controls */
+.mobile-game-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.mobile-control-btn {
+    height: var(--button-height);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    background: var(--card-bg);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+}
+
+.mobile-control-btn:active {
+    transform: scale(0.98);
+}
+
+.mobile-control-btn.primary {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.mobile-control-btn.primary:active {
+    background: #1976D2;
+}
+
+.mobile-control-btn.primary.pause {
+    background: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+.mobile-control-btn.primary.pause:active {
+    background: #F57C00;
+}
+
+.mobile-control-btn.secondary {
+    background: var(--secondary-color);
+    color: var(--text-color);
+    border-color: var(--secondary-color);
+}
+
+.mobile-control-btn.secondary:active {
+    background: #FFB300;
+}
+
+.mobile-control-btn.danger {
+    background: var(--error-color);
+    color: white;
+    border-color: var(--error-color);
+}
+
+.mobile-control-btn.danger:active {
+    background: #d32f2f;
+}
+
+/* Full-width controls */
+.mobile-controls-full {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+}
+
+.mobile-control-btn.add-timer {
+    background: var(--success-color);
+    color: white;
+    border-color: var(--success-color);
+}
+
+.mobile-control-btn.add-timer:active {
+    background: #388E3C;
+}
+
+/* Mobile Penalty Timers */
+.mobile-penalties {
+    margin-bottom: var(--spacing-md);
+}
+
+.mobile-penalties h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-color);
+    text-align: center;
+}
+
+.mobile-penalty-timers {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.mobile-penalty-timer {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-left: 4px solid transparent;
+}
+
+.mobile-penalty-timer.home-team {
+    border-left-color: var(--home-color);
+}
+
+.mobile-penalty-timer.away-team {
+    border-left-color: var(--away-color);
+}
+
+.mobile-penalty-timer.expired {
+    opacity: 0.6;
+    background: #f5f5f5;
+}
+
+.mobile-penalty-timer.warning {
+    animation: pulse-warning 1s infinite;
+}
+
+.mobile-penalty-timer.critical {
+    animation: pulse-critical 0.5s infinite;
+}
+
+@keyframes pulse-warning {
+    0%, 100% { background-color: var(--card-bg); }
+    50% { background-color: #fff3e0; }
+}
+
+@keyframes pulse-critical {
+    0%, 100% { background-color: var(--card-bg); }
+    50% { background-color: #ffebee; }
+}
+
+.mobile-timer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-sm);
+}
+
+.mobile-timer-info {
+    flex: 1;
+}
+
+.mobile-player-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.mobile-player-number {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.mobile-team-indicator {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.mobile-penalty-type {
+    font-size: 0.875rem;
+    color: #666;
+    font-style: italic;
+}
+
+.mobile-timer-remove {
+    background: none;
+    border: none;
+    color: var(--error-color);
+    font-size: 1.1rem;
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius);
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.mobile-timer-remove:active {
+    background: rgba(244, 67, 54, 0.1);
+}
+
+.mobile-timer-display {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    text-align: center;
+    margin: var(--spacing-md) 0;
+    font-family: 'Courier New', monospace;
+    line-height: 1;
+}
+
+.mobile-timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.mobile-timer-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mobile-timer-btn:active {
+    transform: scale(0.95);
+}
+
+.mobile-timer-btn.timer-pause {
+    background: var(--warning-color);
+}
+
+.mobile-timer-btn.timer-stop {
+    background: var(--error-color);
+}
+
+/* Modal Styles - Mobile */
+.mobile-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+}
+
+.mobile-modal.active {
+    display: flex;
+}
+
+.mobile-modal-content {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-xl);
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.mobile-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mobile-modal-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.mobile-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #666;
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius);
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-modal-close:active {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.mobile-form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.mobile-form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-color);
+}
+
+.mobile-form-group input,
+.mobile-form-group select {
+    width: 100%;
+    padding: var(--spacing-md);
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: white;
+    min-height: var(--button-height);
+}
+
+.mobile-form-group input:focus,
+.mobile-form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.mobile-form-group.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.mobile-form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+.mobile-form-btn {
+    height: var(--button-height);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mobile-form-btn.primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.mobile-form-btn.primary:active {
+    background: #1976D2;
+    transform: scale(0.98);
+}
+
+.mobile-form-btn.secondary {
+    background: var(--border-color);
+    color: var(--text-color);
+}
+
+.mobile-form-btn.secondary:active {
+    background: #bbb;
+    transform: scale(0.98);
+}
+
+/* Mobile Notifications */
+.mobile-notifications {
+    position: fixed;
+    top: calc(var(--header-height) + var(--spacing-md));
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.mobile-notification {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    border-left: 4px solid var(--primary-color);
+}
+
+.mobile-notification.show {
+    transform: translateX(0);
+}
+
+.mobile-notification.success {
+    border-left-color: var(--success-color);
+    color: var(--success-color);
+}
+
+.mobile-notification.warning {
+    border-left-color: var(--warning-color);
+    color: var(--warning-color);
+}
+
+.mobile-notification.error {
+    border-left-color: var(--error-color);
+    color: var(--error-color);
+}
+
+.mobile-notification i {
+    font-size: 1.25rem;
+}
+
+.mobile-notification span {
+    flex: 1;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+/* Safe Area Handling */
+@supports (padding: max(0px)) {
+    .mobile-container {
+        padding-left: max(var(--spacing-md), env(safe-area-inset-left));
+        padding-right: max(var(--spacing-md), env(safe-area-inset-right));
+    }
+    
+    .mobile-header {
+        padding-left: max(var(--spacing-md), env(safe-area-inset-left));
+        padding-right: max(var(--spacing-md), env(safe-area-inset-right));
+        padding-top: env(safe-area-inset-top);
+    }
+    
+    .game-screen {
+        padding-bottom: max(var(--spacing-md), env(safe-area-inset-bottom));
+    }
+}
+
+/* Landscape Orientation Adjustments */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    .mobile-clocks {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+    
+    .mobile-clock {
+        min-height: 80px;
+        padding: var(--spacing-md);
+    }
+    
+    .mobile-clock .time {
+        font-size: 1.5rem;
+    }
+    
+    .mobile-scoreboard {
+        padding: var(--spacing-md);
+    }
+    
+    .score-display {
+        font-size: 2rem;
+    }
+}
+
+/* Large Mobile Screens */
+@media screen and (min-width: 414px) {
+    .mobile-container {
+        max-width: 414px;
+        margin: 0 auto;
+    }
+    
+    .mobile-clock .time {
+        font-size: 2.25rem;
+    }
+    
+    .score-display {
+        font-size: 3rem;
+    }
+}
+
+/* Very Large Mobile Screens / Small Tablets */
+@media screen and (min-width: 768px) {
+    .mobile-container {
+        max-width: 500px;
+    }
+    
+    .mobile-clocks {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .mobile-clock {
+        min-height: 140px;
+        padding: var(--spacing-xl);
+    }
+    
+    .mobile-clock .time {
+        font-size: 2.5rem;
+    }
+    
+    .mobile-scoreboard {
+        padding: var(--spacing-xl);
+    }
+    
+    .mobile-game-controls {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .mobile-control-btn.add-timer {
+        grid-column: 1 / -1;
+    }
+}
