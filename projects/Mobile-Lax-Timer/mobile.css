@@ -30,7 +30,7 @@
 }
 
 /* Dark theme */
-[data-theme="dark"] {
+body.dark {
     --background: #1a1a1a;
     --text-color: #e0e0e0;
     --card-bg: #2d2d2d;
@@ -110,6 +110,29 @@ body {
 .header-btn:active {
     background: rgba(255, 255, 255, 0.3);
     transform: scale(0.95);
+}
+
+/* Theme Toggle - FontAwesome Icons */
+.theme-toggle {
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-toggle .fa-sun {
+    display: none;
+}
+
+body.dark .theme-toggle .fa-moon {
+    display: none;
+}
+
+body.dark .theme-toggle .fa-sun {
+    display: inline;
+}
+
+/* Override theme manager styles - hide default button */
+#theme-toggle {
+    display: none !important;
 }
 
 /* Team Setup Screen - Mobile */
@@ -488,7 +511,7 @@ body {
     border-color: var(--warning-color);
 }
 
-[data-theme="dark"] .mobile-timers-summary.has-timers {
+body.dark .mobile-timers-summary.has-timers {
     background: linear-gradient(135deg, #2d2d2d, #3d3d3d);
     border-color: var(--warning-color);
 }
@@ -632,11 +655,11 @@ body {
     border-color: var(--error-color);
 }
 
-[data-theme="dark"] .timer-card.warning {
+body.dark .timer-card.warning {
     background: linear-gradient(135deg, #2d2d2d, #3d3d3d);
 }
 
-[data-theme="dark"] .timer-card.critical {
+body.dark .timer-card.critical {
     background: linear-gradient(135deg, #2d2d2d, #3d3d3d);
 }
 

@@ -30,7 +30,6 @@ class LaxTimerApp {
     
     init() {
         console.log('LaxTimer initializing...');
-        this.initializeTheme();
         this.setupEventListeners();
         this.applySettings();
         this.showTeamSetup();
@@ -402,32 +401,14 @@ class LaxTimerApp {
     }
     
     toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        // Toggle the body.dark class (same as universal theme manager)
+        const isDark = document.body.classList.contains('dark');
+        const newTheme = isDark ? 'light' : 'dark';
         
-        document.documentElement.setAttribute('data-theme', newTheme);
+        document.body.classList.toggle('dark', newTheme === 'dark');
         localStorage.setItem('theme', newTheme);
         
-        // Update theme icon
-        const themeIcon = document.querySelector('#themeToggleBtn .theme-icon');
-        if (newTheme === 'dark') {
-            themeIcon.className = 'fas fa-sun theme-icon';
-        } else {
-            themeIcon.className = 'fas fa-moon theme-icon';
-        }
-    }
-    
-    initializeTheme() {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        
-        // Update theme icon
-        const themeIcon = document.querySelector('#themeToggleBtn .theme-icon');
-        if (savedTheme === 'dark') {
-            themeIcon.className = 'fas fa-sun theme-icon';
-        } else {
-            themeIcon.className = 'fas fa-moon theme-icon';
-        }
+        console.log('Mobile theme toggled to:', newTheme);
     }
     
     onTimerExpired(timerId) {
