@@ -141,10 +141,8 @@ class AboutPageManager {
       (entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            // Check if this is a stats container or individual stat
-            const statNumbers = entry.target.classList.contains('stat-number') 
-              ? [entry.target]
-              : entry.target.querySelectorAll('.stat-number');
+            // Only animate numbers within the stats container
+            const statNumbers = entry.target.querySelectorAll('.stat-number');
             
             statNumbers.forEach((stat, index) => {
               // Stagger animations for multiple stats in same container
@@ -159,13 +157,8 @@ class AboutPageManager {
       { threshold: 0.5 }
     );
 
-    // Observe individual stat numbers
-    document.querySelectorAll('.stat-number').forEach(stat => {
-      statsObserver.observe(stat);
-    });
-    
-    // Also observe stat containers for batch animation
-    document.querySelectorAll('.stats-grid, .info-card').forEach(container => {
+    // Observe only the stats grid containers for batch animation
+    document.querySelectorAll('.stats-grid').forEach(container => {
       if (container.querySelector('.stat-number')) {
         statsObserver.observe(container);
       }
@@ -175,39 +168,46 @@ class AboutPageManager {
   }
 
   animateNumber(element, delay = 0) {
-    // Support both textContent and data-target attribute
-    const targetValue = element.dataset.target || element.textContent.replace(/[^0-9]/g, '');
-    const finalNumber = parseInt(targetValue);
+    // Prevent double-starting the animation
+    if (element.dataset.animated === 'true') return;
+
+    // Extract prefix and suffix once; default to using the element's current content
+    const original = (element.textContent || '').trim();
+    const match = original.match(/^(\D*)(\d+)(\D*)$/);
+    const digits = match ? match[2] : original.replace(/[^0-9]/g, '');
+    const prefix = match ? match[1] : '';
+    const suffix = match ? match[3] : original.replace(/^[0-9]+/, '').replace(/^[^0-9]*/, '');
+
+    const targetValue = element.dataset.target || digits;
+    const finalNumber = parseInt(targetValue, 10);
     if (isNaN(finalNumber)) return;
-    
-    const duration = 2000; // 2 seconds
-    
+
+    const duration = 1800; // slightly snappier
+
     const timeoutId = setTimeout(() => {
       const startTime = performance.now();
-      
+
       const animate = (currentTime) => {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
-        // Easing function (ease-out)
-        const easedProgress = 1 - Math.pow(1 - progress, 3);
-        const currentNumber = Math.floor(finalNumber * easedProgress);
-        
-        // Preserve any non-numeric characters
-        const originalText = element.textContent;
-        const newText = originalText.replace(/\d+/, currentNumber);
-        element.textContent = newText;
-        
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out
+        const currentNumber = Math.floor(finalNumber * eased);
+
+        element.textContent = `${prefix}${currentNumber}${suffix}`;
+
         if (progress < 1) {
           const frameId = requestAnimationFrame(animate);
           this.animationFrames.add(frameId);
+        } else {
+          element.textContent = `${prefix}${finalNumber}${suffix}`;
+          element.dataset.animated = 'true';
         }
       };
-      
+
       const frameId = requestAnimationFrame(animate);
       this.animationFrames.add(frameId);
     }, delay);
-    
+
     this.timeouts.add(timeoutId);
   }
 
