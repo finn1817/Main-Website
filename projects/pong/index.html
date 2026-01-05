@@ -210,6 +210,16 @@
         body.setAttribute('data-theme', cfg.uiTheme);
       });
 
+      // keyboard controls (moved inside onReady)
+      window.addEventListener('keydown', (e) => {
+        if (['ArrowUp','ArrowDown','w','s','W','S',' '].includes(e.key)) e.preventDefault();
+        if (e.key === 'p' || e.key === 'P') paused = !paused;
+        if (e.key === 'r' || e.key === 'R') reset(true);
+        if (e.key === 'o' || e.key === 'O') toggleSettings();
+        if (e.key === 'f' || e.key === 'F') tryFullscreen();
+        if (e.key === ' ') tryServe();
+      }, { passive: false });
+
       // settings panel init
       initSettingsPanel();
 
@@ -228,16 +238,8 @@
       requestAnimationFrame((t)=>{ lastTime = t; requestAnimationFrame(frame); });
     });
 
-    // keyboard global
+    // game state (moved keyboard listener into onReady above)
     let paused = false, awaitingServe = true;
-    window.addEventListener('keydown', (e) => {
-      if (['ArrowUp','ArrowDown','w','s','W','S',' '].includes(e.key)) e.preventDefault();
-      if (e.key === 'p' || e.key === 'P') paused = !paused;
-      if (e.key === 'r' || e.key === 'R') reset(true);
-      if (e.key === 'o' || e.key === 'O') toggleSettings();
-      if (e.key === 'f' || e.key === 'F') tryFullscreen();
-      if (e.key === ' ') tryServe();
-    }, { passive: false });
 
     // resize scaling (pixel-perfect integer scale)
     function resize() {
@@ -525,13 +527,8 @@
 
     function toggleSettings() {
       const panel = $('#settings');
-      if (!panel) {
-        console.warn('Settings panel not found in DOM');
-        return;
-      }
-      console.log('Toggling settings panel, current classes:', panel.className);
+      if (!panel) return;
       panel.classList.toggle('open');
-      console.log('Settings panel after toggle:', panel.className);
     }
 
     function setCfg(key, value, resetPositions=false) {
