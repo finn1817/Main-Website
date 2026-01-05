@@ -131,7 +131,7 @@
 
   <footer>W/S or Up/Down = P1 • Space = Serve • P = Pause • R = Reset • O = Settings • F = Fullscreen</footer>
 
-  <script>
+  <script data-cfasync="false">
 
     // if your reading this, good luck... bit of a mess but its working!
 
@@ -486,37 +486,37 @@
     // settings and UI helpers
     function initSettingsPanel() {
       // initialize values
-      $('#s-ai').checked = cfg.aiEnabled;
-      $('#s-paddle').value = cfg.paddleH;
-      $('#s-speed').value = cfg.ballSpeedMul;
-      $('#s-win').value = String(cfg.winningScore);
-      $('#s-theme').value = cfg.themeStyle;
-      $('#s-sound').checked = cfg.sound;
-      $('#s-spin').checked = cfg.spin;
+      const elAi = $('#s-ai'); if (elAi) elAi.checked = cfg.aiEnabled;
+      const elPaddle = $('#s-paddle'); if (elPaddle) elPaddle.value = cfg.paddleH;
+      const elSpeed = $('#s-speed'); if (elSpeed) elSpeed.value = cfg.ballSpeedMul;
+      const elWin = $('#s-win'); if (elWin) elWin.value = String(cfg.winningScore);
+      const elTheme = $('#s-theme'); if (elTheme) elTheme.value = cfg.themeStyle;
+      const elSound = $('#s-sound'); if (elSound) elSound.checked = cfg.sound;
+      const elSpin = $('#s-spin'); if (elSpin) elSpin.checked = cfg.spin;
 
       // difficulty buttons state
       function setDiffButtons() {
-        for (const id of ['ai-easy','ai-medium','ai-hard']) $(id).style.opacity = '0.6';
-        if (cfg.aiDifficulty === 'easy') $('#ai-easy').style.opacity = '1';
-        else if (cfg.aiDifficulty === 'hard') $('#ai-hard').style.opacity = '1';
-        else $('#ai-medium').style.opacity = '1';
+        for (const id of ['ai-easy','ai-medium','ai-hard']) { const b = $(id); if (b) b.style.opacity = '0.6'; }
+        if (cfg.aiDifficulty === 'easy') { const b=$('#ai-easy'); if (b) b.style.opacity = '1'; }
+        else if (cfg.aiDifficulty === 'hard') { const b=$('#ai-hard'); if (b) b.style.opacity = '1'; }
+        else { const b=$('#ai-medium'); if (b) b.style.opacity = '1'; }
       }
       setDiffButtons();
 
       // all the listeners
-      $('#s-ai').addEventListener('change', (e)=> setCfg('aiEnabled', e.target.checked));
-      $('#s-paddle').addEventListener('input', (e)=> setCfg('paddleH', parseInt(e.target.value,10), true));
-      $('#s-speed').addEventListener('input', (e)=> setCfg('ballSpeedMul', parseFloat(e.target.value)));
-      $('#s-win').addEventListener('change', (e)=> setCfg('winningScore', parseInt(e.target.value,10), true));
-      $('#s-theme').addEventListener('change', (e)=> setCfg('themeStyle', e.target.value));
-      $('#s-sound').addEventListener('change', (e)=> setCfg('sound', e.target.checked));
-      $('#s-spin').addEventListener('change', (e)=> setCfg('spin', e.target.checked));
+      $('#s-ai')?.addEventListener('change', (e)=> setCfg('aiEnabled', e.target.checked));
+      $('#s-paddle')?.addEventListener('input', (e)=> setCfg('paddleH', parseInt(e.target.value,10), true));
+      $('#s-speed')?.addEventListener('input', (e)=> setCfg('ballSpeedMul', parseFloat(e.target.value)));
+      $('#s-win')?.addEventListener('change', (e)=> setCfg('winningScore', parseInt(e.target.value,10), true));
+      $('#s-theme')?.addEventListener('change', (e)=> setCfg('themeStyle', e.target.value));
+      $('#s-sound')?.addEventListener('change', (e)=> setCfg('sound', e.target.checked));
+      $('#s-spin')?.addEventListener('change', (e)=> setCfg('spin', e.target.checked));
 
-      $('#ai-easy').addEventListener('click', ()=> { setCfg('aiDifficulty','easy'); setDiffButtons(); });
-      $('#ai-medium').addEventListener('click', ()=> { setCfg('aiDifficulty','medium'); setDiffButtons(); });
-      $('#ai-hard').addEventListener('click', ()=> { setCfg('aiDifficulty','hard'); setDiffButtons(); });
+      $('#ai-easy')?.addEventListener('click', ()=> { setCfg('aiDifficulty','easy'); setDiffButtons(); });
+      $('#ai-medium')?.addEventListener('click', ()=> { setCfg('aiDifficulty','medium'); setDiffButtons(); });
+      $('#ai-hard')?.addEventListener('click', ()=> { setCfg('aiDifficulty','hard'); setDiffButtons(); });
 
-      $('#btn-clear-stats').addEventListener('click', () => {
+      $('#btn-clear-stats')?.addEventListener('click', () => {
         Object.assign(stats, { ...DEFAULT_STATS });
         saveJSON(STORE_STATS, stats);
         beep(300,0.07,'triangle',0.05);
