@@ -525,6 +525,7 @@
 
     function toggleSettings() {
       const panel = $('#settings');
+      if (!panel) return;
       panel.classList.toggle('open');
     }
 
