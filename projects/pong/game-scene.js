@@ -88,8 +88,9 @@ function update(dt) {
   // P1 movement
   const p1Speed = 140;
   let dy1 = 0;
-  if (keys.has('w') || keys.has('W')) dy1 -= 1;
-  if (keys.has('s') || keys.has('S')) dy1 += 1;
+  // Support both W/S and ArrowUp/ArrowDown for Player 1
+  if (keys.has('w') || keys.has('W') || keys.has('ArrowUp')) dy1 -= 1;
+  if (keys.has('s') || keys.has('S') || keys.has('ArrowDown')) dy1 += 1;
   p1.y += dy1 * p1Speed * dt;
 
   // P2 movement: player or AI
