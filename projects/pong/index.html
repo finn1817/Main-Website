@@ -525,8 +525,13 @@
 
     function toggleSettings() {
       const panel = $('#settings');
-      if (!panel) return;
+      if (!panel) {
+        console.warn('Settings panel not found in DOM');
+        return;
+      }
+      console.log('Toggling settings panel, current classes:', panel.className);
       panel.classList.toggle('open');
+      console.log('Settings panel after toggle:', panel.className);
     }
 
     function setCfg(key, value, resetPositions=false) {
