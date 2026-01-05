@@ -129,7 +129,7 @@
     <canvas id="game" width="320" height="180" aria-label="Pong game canvas"></canvas>
   </div>
 
-  <footer>W/S = P1 • Up/Down = P2 • Space = Serve • P = Pause • R = Reset • O = Settings • F = Fullscreen</footer>
+  <footer>W/S or Up/Down = P1 • Space = Serve • P = Pause • R = Reset • O = Settings • F = Fullscreen</footer>
 
   <script>
 
@@ -184,21 +184,48 @@
     const stats = loadJSON(STORE_STATS, DEFAULT_STATS);
 
     // dom
-    const body = document.body;
-    const canvas = document.getElementById('game');
-    const ctx = canvas.getContext('2d', { alpha: false });
+    let body, canvas, ctx;
     const $ = (id) => document.getElementById(id);
 
-    // apply UI theme on load
-    body.setAttribute('data-theme', cfg.uiTheme === 'light' ? 'light' : 'dark');
+    function onReady(fn){
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once: true });
+      else fn();
+    }
 
-    // wire header buttons
-    $('#btn-settings').addEventListener('click', toggleSettings);
-    $('#btn-reset').addEventListener('click', () => reset(true));
-    $('#btn-fullscreen').addEventListener('click', tryFullscreen);
-    $('#btn-theme').addEventListener('click', () => {
-      setCfg('uiTheme', (cfg.uiTheme === 'light') ? 'dark' : 'light');
-      body.setAttribute('data-theme', cfg.uiTheme);
+    // Boot UI when DOM is ready (robust vs Rocket Loader)
+    onReady(() => {
+      body = document.body;
+      canvas = document.getElementById('game');
+      ctx = canvas.getContext('2d', { alpha: false });
+
+      // apply UI theme on load
+      body.setAttribute('data-theme', cfg.uiTheme === 'light' ? 'light' : 'dark');
+
+      // wire header buttons (guarded)
+      $('#btn-settings')?.addEventListener('click', toggleSettings);
+      $('#btn-reset')?.addEventListener('click', () => reset(true));
+      $('#btn-fullscreen')?.addEventListener('click', tryFullscreen);
+      $('#btn-theme')?.addEventListener('click', () => {
+        setCfg('uiTheme', (cfg.uiTheme === 'light') ? 'dark' : 'light');
+        body.setAttribute('data-theme', cfg.uiTheme);
+      });
+
+      // settings panel init
+      initSettingsPanel();
+
+      // resize scaling (pixel-perfect integer scale)
+      window.addEventListener('resize', resize);
+      resize();
+
+      // touch: drag on canvas controls left paddle (works on mobile)
+      let touching = false;
+      canvas.addEventListener('pointerdown', (e) => { touching = true; updatePaddleFromPointer(e); });
+      canvas.addEventListener('pointermove', (e) => { if (touching) updatePaddleFromPointer(e); });
+      canvas.addEventListener('pointerup', () => touching = false);
+
+      // start
+      reset(true);
+      requestAnimationFrame((t)=>{ lastTime = t; requestAnimationFrame(frame); });
     });
 
     // keyboard global
@@ -212,9 +239,6 @@
       if (e.key === ' ') tryServe();
     }, { passive: false });
 
-    // settings panel init
-    initSettingsPanel();
-
     // resize scaling (pixel-perfect integer scale)
     function resize() {
       const maxX = Math.floor((window.innerWidth) / GAME_W) || 1;
@@ -225,19 +249,11 @@
       canvas.width = GAME_W; canvas.height = GAME_H;
       ctx.imageSmoothingEnabled = false;
     }
-    window.addEventListener('resize', resize);
-    resize();
 
     // input tracking
     const keys = new Set();
     window.addEventListener('keydown', (e) => keys.add(e.key));
     window.addEventListener('keyup', (e) => keys.delete(e.key));
-
-    // touch: drag on canvas controls left paddle (works on mobile)
-    let touching = false;
-    canvas.addEventListener('pointerdown', (e) => { touching = true; updatePaddleFromPointer(e); });
-    canvas.addEventListener('pointermove', (e) => { if (touching) updatePaddleFromPointer(e); });
-    canvas.addEventListener('pointerup', () => touching = false);
     function updatePaddleFromPointer(e) {
       const rect = canvas.getBoundingClientRect();
       const y = ((e.clientY - rect.top) / rect.height) * GAME_H;
@@ -330,8 +346,8 @@
       // player 1 keyboard
       const P1S = 160;
       let dy1 = 0;
-      if (keys.has('w') || keys.has('W')) dy1 -= 1;
-      if (keys.has('s') || keys.has('S')) dy1 += 1;
+      if (keys.has('w') || keys.has('W') || keys.has('ArrowUp')) dy1 -= 1;
+      if (keys.has('s') || keys.has('S') || keys.has('ArrowDown')) dy1 += 1;
       const p1PrevY = p1.y;
       p1.y += dy1 * P1S * dt;
 
@@ -526,9 +542,7 @@
       else document.exitFullscreen?.();
     }
 
-    // start
-    reset(true);
-    requestAnimationFrame((t)=>{ lastTime = t; requestAnimationFrame(frame); });
+    // game start moved into onReady
   </script>
 </body>
 </html>
