@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pong — inline HTML + game-scene.js</title>
+  <style>
+    :root { color-scheme: dark; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #0b0b0b;
+      color: #eaeaea;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .wrap {
+      position: fixed; inset: 0;
+      display: grid; place-items: center;
+    }
+    canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background: #000;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      border: 1px solid #222;
+    }
+    footer {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      text-align: center; font-size: 12px; opacity: 0.7; padding: 6px 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <canvas id="game" width="320" height="180" aria-label="Pong game canvas"></canvas>
+  </div>
+  <footer>W/S = P1 • Up/Down = P2 • Space = Serve • P = Pause • R = Reset • A = Toggle AI</footer>
+  <script type="module" src="./game-scene.js"></script>
+</body>
+</html>
