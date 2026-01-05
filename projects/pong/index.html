@@ -3,39 +3,100 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pong — inline HTML + game-scene.js</title>
+  <title>Pong — with Settings</title>
   <style>
     :root { color-scheme: dark; }
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: #0b0b0b;
-      color: #eaeaea;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    html, body { margin: 0; height: 100%; background: #0b0b0b; color: #eaeaea; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    header {
+      position: fixed; left: 0; right: 0; top: 0; height: 40px;
+      display: flex; align-items: center; gap: 8px; padding: 0 10px; background: #101010cc; backdrop-filter: blur(4px);
+      border-bottom: 1px solid #1f1f1f; z-index: 3;
     }
-    .wrap {
-      position: fixed; inset: 0;
-      display: grid; place-items: center;
+    header .title { font-weight: 700; letter-spacing: 0.3px; font-size: 13px; opacity: 0.9; }
+    header .spacer { flex: 1; }
+    header .nav-link { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; margin-left: 8px; color: #eaeaea; text-decoration: none; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 6px; }
+    header .nav-link:hover { background: #222; }
+    header button {
+      height: 26px; padding: 0 10px; font: inherit; color: #eaeaea; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 6px; cursor: pointer;
     }
-    canvas {
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-      background: #000;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-      border: 1px solid #222;
+    header button:hover { background: #222; }
+    .wrap { position: fixed; inset: 40px 0 0 0; display: grid; place-items: center; }
+    canvas { image-rendering: pixelated; image-rendering: crisp-edges; background: #000; box-shadow: 0 8px 32px rgba(0,0,0,0.6); border: 1px solid #222; touch-action: none; }
+    footer { position: fixed; left: 0; right: 0; bottom: 0; text-align: center; font-size: 12px; opacity: 0.7; padding: 6px 0; pointer-events: none; }
+    /* Settings panel */
+    #settings {
+      position: fixed; top: 48px; right: 10px; width: 260px; max-width: calc(100% - 20px);
+      background: #0e0e0e; border: 1px solid #262626; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      padding: 12px; z-index: 4; display: none;
     }
-    footer {
-      position: fixed; left: 0; right: 0; bottom: 0;
-      text-align: center; font-size: 12px; opacity: 0.7; padding: 6px 0;
-      pointer-events: none;
-    }
+    #settings.open { display: block; }
+    #settings h3 { margin: 6px 0 10px; font-size: 14px; }
+    .row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin: 8px 0; }
+    .row > label { font-size: 12px; opacity: 0.9; }
+    .row > input[type="range"] { width: 130px; }
+    .row > select, .row > input[type="checkbox"] { justify-self: end; }
+    .hint { font-size: 11px; opacity: 0.7; margin-top: 6px; }
+    .k { opacity: 0.7; }
   </style>
 </head>
 <body>
+  <header>
+    <div class="title">Pong</div>
+    <a href="../../index.html" class="nav-link" title="Home">Home</a>
+    <a href="../index.html" class="nav-link" title="Projects">Projects</a>
+    <div class="spacer"></div>
+    <button id="btn-settings" title="Settings (O)">⚙️</button>
+    <button id="btn-fullscreen" title="Fullscreen (F)">⛶</button>
+    <button id="btn-reset" title="Reset (R)">Reset</button>
+  </header>
+
+  <div id="settings" aria-label="Settings panel">
+    <h3>Settings</h3>
+    <div class="row">
+      <label>AI Right Paddle</label>
+      <input id="s-ai" type="checkbox" />
+    </div>
+    <div class="row">
+      <label>AI Difficulty</label>
+      <select id="s-ai-diff">
+        <option value="easy">Easy</option>
+        <option value="normal" selected>Normal</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>Paddle Height</label>
+      <input id="s-paddle" type="range" min="20" max="60" step="2" />
+    </div>
+    <div class="row">
+      <label>Ball Speed x</label>
+      <input id="s-speed" type="range" min="0.8" max="1.8" step="0.05" />
+    </div>
+    <div class="row">
+      <label>Win Score</label>
+      <select id="s-win">
+        <option>5</option><option selected>11</option><option>15</option><option>21</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>Theme</label>
+      <select id="s-theme">
+        <option value="classic" selected>Classic</option>
+        <option value="neon">Neon</option>
+        <option value="dmg">DMG</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>Sound</label>
+      <input id="s-sound" type="checkbox" />
+    </div>
+    <div class="hint">Changes apply immediately and are saved.</div>
+  </div>
+
   <div class="wrap">
     <canvas id="game" width="320" height="180" aria-label="Pong game canvas"></canvas>
   </div>
-  <footer>W/S or Up/Down = P1 • Space = Serve • P = Pause • R = Reset • A = Toggle AI</footer>
+  <footer>W/S or Up/Down = P1 • Space = Serve • P = Pause • R = Reset • O = Settings • F = Fullscreen</footer>
   <script type="module" src="./game-scene.js"></script>
 </body>
 </html>
