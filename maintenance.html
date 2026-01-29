@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Mode</title>
+    <style>
+        body {
+            background-color: #0d1117; /* GitHub Dark Background */
+            color: #c9d1d9; /* GitHub Text Color */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 40px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            background-color: #161b22;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+        }
+
+        /* The Status Light */
+        .status-container {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(210, 153, 34, 0.15); /* Orange tint */
+            padding: 6px 12px;
+            border-radius: 100px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(210, 153, 34, 0.4);
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #d29922; /* GitHub Orange */
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 10px #d29922;
+            animation: pulse 2s infinite;
+        }
+
+        .status-text {
+            color: #d29922;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 0 0 15px 0;
+            color: #ffffff;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #8b949e;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .site-url {
+            color: #58a6ff; /* Blue highlight */
+            font-family: monospace;
+        }
+
+        .btn {
+            background-color: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #30363d;
+            border-color: #8b949e;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="status-container">
+            <div class="status-dot"></div>
+            <span class="status-text">System Update</span>
+        </div>
+
+        <h1>We'll be right back.</h1>
+        
+        <p>
+            <span id="hostname" class="site-url">This Site</span> is currently offline for scheduled maintenance and upgrades. 
+            Please check back shortly.
+        </p>
+
+        <button class="btn" onclick="window.location.reload()">Check for Updates</button>
+    </div>
+
+    <script>
+        // Automatically inserts the current website URL so you can use this file anywhere
+        document.getElementById('hostname').innerText = window.location.hostname;
+    </script>
+
+</body>
+</html>
