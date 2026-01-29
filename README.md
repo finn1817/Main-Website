@@ -37,7 +37,7 @@ Main-Website/
 ```
 # **Website Features & Background**
 
-- I currently have every site up and running through Github, connecting to my domain through my entry point level site, **https://www.dfinn.me**
+- I currently have every site up and running through Github, connecting to my domain through my entry point level site, **https://www.finnworks.dev**
 
 - The idea was to make a clean layout combining all my individual websites repositories into one solid big repository with LOTS of projects!
 
@@ -70,7 +70,7 @@ Main-Website/
 
 * Dan Finn (Me) - [@finn1817](https://www.github.com/finn1817)
 ## 🔗 **Link to this site**
-* [![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://dfinn.me/Main-Website/) <br/>
+* [![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://finnworks.dev/Main-Website/) <br/>
 
 ## Used For / By:
 

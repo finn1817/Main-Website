@@ -597,7 +597,7 @@ class SiteManagerApp(tk.Tk):
     def _build_deploy_tab(self, nb):
         frame = ttk.Frame(nb)
         nb.add(frame, text='Deploy')
-        ttk.Label(frame, text='GitHub Pages Deploy (dfinn.me)', font=('Segoe UI', 12, 'bold')).pack(anchor='w', padx=12, pady=(12, 6))
+        ttk.Label(frame, text='GitHub Pages Deploy (finnworks.dev)', font=('Segoe UI', 12, 'bold')).pack(anchor='w', padx=12, pady=(12, 6))
 
         form = ttk.Frame(frame)
         form.pack(fill='x', padx=12)
