@@ -258,9 +258,9 @@
       .back-to-home {
         top: 5px;
         left: 5px;
-        padding: 6px 10px;
-        font-size: 11px;
-        max-width: 130px;
+        padding: 5px 8px;
+        font-size: 10px;
+        max-width: 110px;
       }
     }
     .back-to-home:hover {
@@ -292,11 +292,11 @@
     }
     @media (max-width: 767px) {
       .theme-toggle {
-        top: 10px;
-        right: 85px;
-        width: 30px;
-        height: 30px;
-        font-size: 18px;
+        top: 48px;
+        right: 8px;
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
       }
     }
     .theme-toggle:hover {
@@ -322,8 +322,8 @@
       .download-resume {
         top: 5px;
         right: 5px;
-        padding: 6px 10px;
-        font-size: 11px;
+        padding: 5px 8px;
+        font-size: 10px;
       }
       .download-resume::before {
         content: "📄";
@@ -339,9 +339,9 @@
     }
     @media (max-width: 767px) {
       .universal-search-btn {
-        right: 50px !important;
+        right: 48px !important;
         top: 5px !important;
-        transform: scale(0.8);
+        transform: scale(0.75);
       }
     }
 
@@ -351,7 +351,7 @@
         padding-bottom: calc(60px + env(safe-area-inset-bottom));
       }
       .content {
-        padding-bottom: calc(120px + env(safe-area-inset-bottom));
+        padding-bottom: calc(140px + env(safe-area-inset-bottom));
       }
       footer {
         padding-bottom: calc(8px + env(safe-area-inset-bottom));
@@ -361,29 +361,50 @@
       }
       .back-to-home {
         top: calc(10px + env(safe-area-inset-top));
+        left: calc(10px + env(safe-area-inset-left));
       }
       .theme-toggle {
         top: calc(60px + env(safe-area-inset-top));
+        right: calc(10px + env(safe-area-inset-right));
       }
       .download-resume {
         top: calc(10px + env(safe-area-inset-top));
+        right: calc(10px + env(safe-area-inset-right));
       }
       .universal-search-btn {
         top: calc(10px + env(safe-area-inset-top)) !important;
       }
-    }
-    @supports (-webkit-touch-callout: none) and (max-width: 767px) {
-      .back-to-home {
-        top: calc(5px + env(safe-area-inset-top));
-      }
-      .theme-toggle {
-        top: calc(10px + env(safe-area-inset-top));
-      }
-      .download-resume {
-        top: calc(5px + env(safe-area-inset-top));
-      }
-      .universal-search-btn {
-        top: calc(5px + env(safe-area-inset-top)) !important;
+      
+      /* Mobile iOS specific adjustments */
+      @media (max-width: 767px) {
+        .content {
+          padding-bottom: calc(150px + env(safe-area-inset-bottom));
+        }
+        .back-to-home {
+          top: calc(8px + env(safe-area-inset-top));
+          left: calc(8px + env(safe-area-inset-left));
+          font-size: 10px;
+          padding: 5px 8px;
+          max-width: 110px;
+        }
+        .theme-toggle {
+          top: calc(50px + env(safe-area-inset-top));
+          right: calc(8px + env(safe-area-inset-right));
+          width: 32px;
+          height: 32px;
+          font-size: 16px;
+        }
+        .download-resume {
+          top: calc(8px + env(safe-area-inset-top));
+          right: calc(8px + env(safe-area-inset-right));
+          padding: 5px 8px;
+          font-size: 10px;
+        }
+        .universal-search-btn {
+          top: calc(8px + env(safe-area-inset-top)) !important;
+          right: calc(50px + env(safe-area-inset-right)) !important;
+          transform: scale(0.75);
+        }
       }
     }
     .download-resume:hover {
