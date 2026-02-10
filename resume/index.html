@@ -455,6 +455,64 @@
     .education-section {
       margin-bottom: 25px;
     }
+
+    /* Education logos aligned to the right of text */
+    .education-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+    .education-text {
+      flex: 1;
+      min-width: 0;
+    }
+    .education-logo {
+      flex: 0 0 auto;
+      width: 220px;
+      display: flex;
+      justify-content: center;
+    }
+    .education-logo .logo-frame {
+      width: 100%;
+      max-width: 220px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    body.dark .education-logo .logo-frame {
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+    .education-logo img {
+      display: block;
+      width: 100%;
+      height: 96px;
+      object-fit: contain;
+    }
+    .education-logo .logo-frame:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+    }
+    @media (max-width: 720px) {
+      .education-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .education-logo {
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .education-logo .logo-frame {
+        max-width: 260px;
+      }
+    }
     .education-divider {
       border: none;
       height: 2px;
@@ -600,30 +658,41 @@
   </div>
   <div id="education" class="tab-content">
     <h2>Education</h2>
-    
-    <!-- School Logos -->
-    <div style="display: flex; justify-content: center; align-items: flex-end; gap: 50px; margin-bottom: 30px; flex-wrap: wrap;">
-      <img src="assets/images/fred-logo.png" alt="SUNY Fredonia" style="height: 100px; width: auto; filter: drop-shadow(0 3px 10px rgba(0,0,0,0.15)); transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'"/>
-      <img src="assets/images/btsj-logo.png" alt="Bishop Timon St. Jude" style="height: 100px; width: auto; filter: drop-shadow(0 3px 10px rgba(0,0,0,0.15)); transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'"/>
-    </div>
-    
     <div class="education-section">
-      <h3>🎓 Higher Education - College</h3>
-      <ul>
-        <li><strong>Bachelor of Science in Computer Science</strong> - SUNY Fredonia (Currently Attending)</li>
-        <li>My main focusses are on web development & design, software development (Python, C++, and lots of system based programming), personal/work projects (also including lots of system mods/tweaks, personal management scripts for docker/ files/ etc, and personal games!)</li>
-        <li><strong>Captain</strong> - of (eSports) Rocket League - For the SUNY Fredonia eSports Team</li>
-      </ul>
-      <button class="courses-button" id="viewCoursesBtn">📚 View my Completed Computer Science Courses</button>
+      <div class="education-row">
+        <div class="education-text">
+          <h3>🎓 Higher Education - College</h3>
+          <ul>
+            <li><strong>Bachelor of Science in Computer Science</strong> - SUNY Fredonia (Currently Attending)</li>
+            <li>My main focusses are on web development & design, software development (Python, C++, and lots of system based programming), personal/work projects (also including lots of system mods/tweaks, personal management scripts for docker/ files/ etc, and personal games!)</li>
+            <li><strong>Captain</strong> - of (eSports) Rocket League - For the SUNY Fredonia eSports Team</li>
+          </ul>
+          <button class="courses-button" id="viewCoursesBtn">📚 View my Completed Computer Science Courses</button>
+        </div>
+        <aside class="education-logo" aria-label="SUNY Fredonia logo">
+          <div class="logo-frame">
+            <img src="assets/images/fred-logo.png" alt="SUNY Fredonia">
+          </div>
+        </aside>
+      </div>
     </div>
     <hr class="education-divider">
     <div class="education-section">
-      <h3>🏫 High School Education</h3>
-      <ul>
-        <li><strong>High School Diploma</strong> - Bishop Timon St. Jude High School (Graduated)</li>
-        <li>Active member of AV Club, managing audio/video equipment for school events</li>
-        <li><strong>Captain</strong> - (Varsity) Soccer</li>
-      </ul>
+      <div class="education-row">
+        <div class="education-text">
+          <h3>🏫 High School Education</h3>
+          <ul>
+            <li><strong>High School Diploma</strong> - Bishop Timon St. Jude High School (Graduated)</li>
+            <li>Active member of AV Club, managing audio/video equipment for school events</li>
+            <li><strong>Captain</strong> - (Varsity) Soccer</li>
+          </ul>
+        </div>
+        <aside class="education-logo" aria-label="Bishop Timon St. Jude logo">
+          <div class="logo-frame">
+            <img src="assets/images/btsj-logo.png" alt="Bishop Timon St. Jude">
+          </div>
+        </aside>
+      </div>
     </div>
   </div>
   <!-- Courses Modal -->
