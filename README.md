@@ -13,45 +13,158 @@
 ## **Project Structure**
 ```
 Main-Website/
-├── 404.html
-├── index.html (main dashboard)
-├── about-me/
+├── index.html                    # Main dashboard/landing page
+├── 404.html                      # Custom error page
+├── backup-index.html             # Backup version
+├── maintenance.html              # Maintenance mode page
+├── portal.html & portal-2.html   # Alternative entry points
+├── progress.html                 # Project progress tracker
+├── congrats.html                 # Success/celebration page
+│
+├── about-me/                     # About Me section
 │   ├── index.html
 │   ├── about-me.css
 │   └── about-me.js
-├── assets/
+│
+├── assets/                       # Global assets
 │   ├── css/
-│   │   ├── styles.css
-│   │   ├── universal-search.css
-│   │   └── breadcrumb.css
+│   │   ├── styles.css            # Main stylesheet
+│   │   ├── universal-search.css  # Search feature styles
+│   │   ├── breadcrumb.css        # Navigation breadcrumbs
+│   │   └── loading-states.css    # Loading animations
 │   ├── js/
-│   │   ├── theme-manager.js
-│   │   └── universal-search.js
+│   │   ├── theme-manager.js      # Dark/light mode controller
+│   │   ├── universal-search.js   # Site-wide search
+│   │   ├── dynamic-status.js     # Status indicators
+│   │   ├── section-previews.js   # Preview functionality
+│   │   └── analytics-feedback.js # Analytics & feedback
 │   └── images/
-├── contact/
-├── education/
-├── interests/
-├── projects/
-│   └── (all project folders go here!)
-└── resume/
+│       └── Screenshots/          # site screenshots
+│
+├── contact/                      # contact page
+│   └── index.html
+│
+├── education/                    # education section
+│   └── index.html
+│
+├── interests/                    # interests/hobbies section
+│   └── index.html
+│
+├── projects/                     # 🎮 20+ Live Projects Portfolio
+│   ├── index.html                # projects dashboard
+│   │
+│   ├── 2048/                     # 2048
+│   ├── calculator/               # web calculator
+│   ├── hangman/                  # Hangman
+│   ├── word-search/              # word search
+│   ├── pong/                     # Pong
+│   │
+│   ├── Lax-Timer/                # lacrosse shot clock timer - for tom
+│   ├── Mobile-Lax-Timer/         # mobile-optimized version - for tom
+│   ├── my-asteroids/             # asteroids game remake
+│   ├── Square-Chase/             # square chase game
+│   │
+│   ├── Team-Manager/             # sports team management
+│   ├── shared-calendar/          # group calendar
+│   ├── resume-builder/           # smart resume generation tool - not that smart
+│   ├── family-betting/           # family game
+│   │   ├── dashboard.html
+│   │   ├── blackjack.html
+│   │   └── poker.html
+│   │
+│   ├── File-Transfer/            # file transfer utility
+│   ├── password-manager/         # password manager
+│   ├── finance-check/            # finance tracking
+│   ├── text-editor/              # web-based text editor
+│   ├── word-counter/             # word/character counter
+│   ├── unit-converter/           # unit conversion tool
+│   ├── git-account-info/         # git account checker - scraper
+│   │
+│   └── template/                 # templates folder
+│       ├── index.html
+│       ├── script.js
+│       └── styles.css
+│
+├── resume/                       # FULL resume folder
+│   ├── index.html                # resume site
+│   ├── resume.txt                # plain text version
+│   ├── assets/
+│   │   └── images/               # resume images/
+│   └── py/
+│       ├── resume.py             # will be simple dashboard python app showcasing skills / resume built into this
+│       ├── contact_submission.json
+│       └── run.bat
+│
+└── tools/                        # 🛠️ Development Tools
+    ├── tools_dashboard.py        # tools management dashboard
+    ├── run.bat                   # runs py script
+    │
+    ├── asset_usage_scanner/      # scans for unused assets
+    │   ├── asset_usage_scanner.py
+    │   └── asset-usage.json
+    │
+    ├── link_checker/             # check for broken links
+    │   ├── link_checker.py
+    │   └── link-report.json
+    │
+    └── site_manager/             # maintenance tools
+        └── site_manager.py
 ```
 # **Website Features & Background**
 
-- I currently have every site up and running through Github, connecting to my domain through my entry point level site, **https://www.finnworks.dev**
+## **🌐 Live Deployment**
+- Hosted on GitHub Pages and connected to custom domain: **https://www.finnworks.dev**
+- Multiple easter eggs (portal.html, portal-2.html) for programmer tunnel
+- Custom 404 error page with navigation back to main site
+- Maintenance mode page for updates and downtime
 
-- The idea was to make a clean layout combining all my individual websites repositories into one solid big repository with LOTS of projects!
+## **🎨 Design & User Experience**
 
-- **Upgraded Theme System**: Updated light & dark mode that works seamlessly across all pages with smooth transitions and consistent styling throughout the entire site.
+- **Advanced Theme System**: Seamless light & dark mode with smooth transitions, persistent preferences across all pages, and theme-manager.js for global control
+- **Universal Search**: Site-wide search functionality accessible from any page - quickly find projects, sections, or content
+- **Breadcrumb Navigation**: Clear navigation paths showing your location within the site hierarchy
+- **Mobile-First Design**: Fully responsive layouts optimized for all devices, with special attention to iOS/Safari compatibility and safe-area handling
+- **Loading States**: Smooth loading animations and visual feedback for better user experience
+- **Dynamic Status Indicators**: Real-time status updates for projects and features
 
-- **Global Search Feature**: Universal search functionality that lets you quickly find and navigate to any page or project from anywhere on the site.
+## **📂 Portfolio Structure**
 
-- **Mobile Design**: Fully responsive & mobile-friendly with clean layouts that work perfectly on all devices, especially iPhone on Safari.
+### **20+ Live Interactive Projects**
+- **Games**: 2048, Hangman, Word Search, Pong, Asteroids, Square Chase
+- **Sports Tools**: Lacrosse Timer (Desktop + Mobile versions), Team Manager
+- **Business Apps**: Resume Builder, Shared Calendar, Finance Tracker, Team Management
+- **Developer Utilities**: Git Account Info, File Transfer, Text Editor, Word Counter, Unit Converter, Password Manager
+- **Custom Projects**: Family Betting Suite (Blackjack, Poker), and more!
 
-- **Multi-Page Navigation**: Each section is a full page instead of allowing scrolling on every single one, keeping everything organized and fast.
+### **Professional Resume Section**
+- Interactive web-based resume with collapsible sections
+- Client-side PDF generation with jsPDF
+- Contact form integration
+- Developer badge and branding
+- Mobile-optimized with iOS safe-area support
 
-- This does still seperate all other projects besides my main website, meaning they won't be moved into this repository.
+### **Development Tools Suite**
+- **Asset Usage Scanner**: Identifies unused images/files for cleanup
+- **Link Checker**: Scans entire site for broken links and reports issues
+- **Site Manager**: Centralized management dashboard for maintenance tasks
+- **Tools Dashboard**: Python-based control panel for all development tools
 
-- Almost every page has a link back to the main page on the top bar!
+## **⚙️ Technical Features**
+
+- **Multi-Page Architecture**: Each section is a standalone page for better organization and performance
+- **Consistent Styling**: Global CSS variables and shared stylesheets maintain visual consistency
+- **JavaScript Modules**: Reusable JS components (theme-manager, search, analytics)
+- **Analytics & Feedback**: Built-in tracking and user feedback systems
+- **Section Previews**: Dynamic preview generation for project showcase
+- **Template System**: Standardized project template for quick new project setup
+
+## **📊 Project Stats**
+
+- **300+ Deployments**: Continuous improvements and updates
+- **20+ Live Projects**: All interactive and fully functional
+- **100% Mobile Responsive**: Works flawlessly on all screen sizes
+- **Cross-Browser Compatible**: Tested on Chrome, Firefox, Safari, Edge
+- **Single Repository**: All projects organized in one cohesive structure
   
 ## **Screenshots**
 
@@ -72,11 +185,23 @@ Main-Website/
 ## 🔗 **Link to this site**
 * [![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://finnworks.dev/Main-Website/) <br/>
 
-## Used For / By:
+## **💡 Use Cases**
 
-**This project can be used for...**
-- Basically anything! It makes a great portfolio website showcasing LOTS of different projects, but it can also just make a nice dashboard linking tons of other sites!
-- Companies with anything to show can use this as a way to combine lots of links into one main dashboard that can link to anything!
-- Perfect template for anyone wanting a clean, professional, mobile-friendly website with modern features!
+**This project architecture is ideal for:**
+
+- **👨‍💻 Developer Portfolios**: Showcase multiple projects in one cohesive, professional website
+- **🎓 Student Projects**: Organize coursework, personal projects, and achievements
+- **🏢 Business Dashboards**: Create a centralized hub linking to multiple tools/services
+- **📱 App Collections**: Display a suite of web applications with consistent branding
+- **🎨 Creative Portfolios**: Showcase design work, interactive demos, and case studies
+- **🛠️ Tool Libraries**: Organize utility tools and resources in one accessible location
+- **📊 Project Showcases**: Demonstrate capabilities with live, interactive examples
+
+**Key Benefits:**
+- Single repository for easy maintenance and version control
+- Consistent branding and user experience across all projects
+- Built-in development tools for site management
+- Professional presentation with modern UI/UX
+- Easy to extend with new projects using the template system
 ![Logo](https://github.com/finn1817/Main-Website/blob/main/assets/images/logo.png?raw=true)
 
