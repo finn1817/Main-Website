@@ -43,10 +43,11 @@ body.dark {
 .header-section {
   background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
   color: white;
-  padding: 80px 0 40px;
+  padding: 80px 20px 50px;
   text-align: center;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  min-height: 200px;
 }
 
 .header-section::before {
@@ -78,11 +79,13 @@ body.dark {
 }
 
 .header-subtitle {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 300;
-  opacity: 0.9;
-  max-width: 600px;
+  opacity: 0.95;
+  max-width: 700px;
   margin: 0 auto;
+  line-height: 1.6;
+  padding: 0 15px;
   opacity: 0;
   transform: translateY(30px);
   animation: fadeInUp 1s ease 0.2s forwards;
@@ -440,7 +443,8 @@ body.dark .timeline-content h4 {
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-section {
-    padding: 60px 0 30px;
+    padding: 60px 15px 40px;
+    min-height: 220px;
   }
   
   .header-title {
@@ -448,8 +452,9 @@ body.dark .timeline-content h4 {
   }
   
   .header-subtitle {
-    font-size: 1.1rem;
-    padding: 0 15px;
+    font-size: 1.05rem;
+    padding: 0 20px;
+    line-height: 1.5;
   }
   
   .about-hero {
@@ -488,7 +493,8 @@ body.dark .timeline-content h4 {
 
 @media (max-width: 480px) {
   .header-section {
-    padding: 50px 0 25px;
+    padding: 50px 15px 35px;
+    min-height: 240px;
   }
   
   .header-title {
@@ -497,9 +503,9 @@ body.dark .timeline-content h4 {
   }
   
   .header-subtitle {
-    font-size: 1rem;
-    padding: 0 20px;
-    line-height: 1.4;
+    font-size: 0.95rem;
+    padding: 0 15px;
+    line-height: 1.5;
   }
   
   .main-content {
