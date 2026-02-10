@@ -48,6 +48,7 @@ body.dark {
   position: relative;
   overflow: visible;
   min-height: 200px;
+  margin-top: 60px;
 }
 
 .header-section::before {
