@@ -266,6 +266,36 @@
     .back-to-home:hover {
       background-color: #45a049;
     }
+    /* Developer Tag */
+    .dev-tag-container {
+      position: fixed;
+      top: 50px;
+      left: 10px;
+      z-index: 998;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 5px 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      transition: background-color 0.3s;
+    }
+    body.dark .dev-tag-container {
+      background-color: rgba(42, 42, 42, 0.95);
+    }
+    .dev-tag-container img {
+      display: block;
+      max-height: 32px;
+      width: auto;
+    }
+    @media (max-width: 767px) {
+      .dev-tag-container {
+        top: 40px;
+        left: 5px;
+        padding: 3px 6px;
+      }
+      .dev-tag-container img {
+        max-height: 24px;
+      }
+    }
     #about p {
       text-align: justify;
       font-size: 15px;
@@ -386,6 +416,10 @@
           font-size: 10px;
           padding: 5px 8px;
           max-width: 110px;
+        }
+        .dev-tag-container {
+          top: calc(42px + env(safe-area-inset-top));
+          left: calc(8px + env(safe-area-inset-left));
         }
         .theme-toggle {
           top: calc(50px + env(safe-area-inset-top));
@@ -533,7 +567,7 @@
 <body>
 <a href="https://finn1817.github.io/Main-Website/" class="back-to-home">Click this to see my main website!</a>
 <div class="dev-tag-container">
-  <img src="assets/images/developer-tag.png" alt="Developer Tag" style="max-height:36px; margin-top:8px; margin-left:2px; display:block;" />
+  <img src="assets/images/developer-tag.png" alt="Developer" />
 </div>
 <button class="theme-toggle" id="theme-toggle">☀️</button>
 <button class="download-resume" id="downloadResume"><span>Download Resume</span></button>
