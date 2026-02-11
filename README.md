@@ -1,7 +1,7 @@
 
-# **Hi, I'm Dan!** 👋
-## **Welcome to my Main Website!**
-🛠 **The way this is set up...**
+# **Hi, My name is Dan!**
+## **Welcome to my Main Website repo!**
+**The way this is set up...**
 - Starts as a repository reading from a single index script. The main index points out to every other folder containing an index.html which has a page of its own for each section.
 
 ## How everything works
@@ -50,7 +50,7 @@ Main-Website/
 ├── interests/                    # interests/hobbies section
 │   └── index.html
 │
-├── projects/                     # 🎮 20+ Live Projects Portfolio
+├── projects/                     # 20+ Live Projects Portfolio
 │   ├── index.html                # projects dashboard
 │   │
 │   ├── 2048/                     # 2048
@@ -95,7 +95,7 @@ Main-Website/
 │       ├── contact_submission.json
 │       └── run.bat
 │
-└── tools/                        # 🛠️ Development Tools
+└── tools/                        # Development Tools
     ├── tools_dashboard.py        # tools management dashboard
     ├── run.bat                   # runs py script
     │
@@ -112,13 +112,13 @@ Main-Website/
 ```
 # **Website Features & Background**
 
-## **🌐 Live Deployment**
+## **Live Deployment**
 - Hosted on GitHub Pages and connected to custom domain: **https://www.finnworks.dev**
 - Multiple easter eggs (portal.html, portal-2.html) for programmer tunnel
 - Custom 404 error page with navigation back to main site
 - Maintenance mode page for updates and downtime
 
-## **🎨 Design & User Experience**
+## **Design & User Experience**
 
 - **Advanced Theme System**: Seamless light & dark mode with smooth transitions, persistent preferences across all pages, and theme-manager.js for global control
 - **Universal Search**: Site-wide search functionality accessible from any page - quickly find projects, sections, or content
@@ -127,7 +127,7 @@ Main-Website/
 - **Loading States**: Smooth loading animations and visual feedback for better user experience
 - **Dynamic Status Indicators**: Real-time status updates for projects and features
 
-## **📂 Portfolio Structure**
+## **Portfolio Structure**
 
 ### **20+ Live Interactive Projects**
 - **Games**: 2048, Hangman, Word Search, Pong, Asteroids, Square Chase
@@ -149,7 +149,7 @@ Main-Website/
 - **Site Manager**: Centralized management dashboard for maintenance tasks
 - **Tools Dashboard**: Python-based control panel for all development tools
 
-## **⚙️ Technical Features**
+## **Tech Features**
 
 - **Multi-Page Architecture**: Each section is a standalone page for better organization and performance
 - **Consistent Styling**: Global CSS variables and shared stylesheets maintain visual consistency
@@ -158,7 +158,7 @@ Main-Website/
 - **Section Previews**: Dynamic preview generation for project showcase
 - **Template System**: Standardized project template for quick new project setup
 
-## **📊 Project Stats**
+## **Basic Stats**
 
 - **300+ Deployments**: Continuous improvements and updates
 - **20+ Live Projects**: All interactive and fully functional
@@ -172,7 +172,7 @@ Main-Website/
 
 ![Screenshot](https://github.com/finn1817/Main-Website/blob/main/assets/images/Screenshots/lightMode.png?raw=true)
 
-👩‍💻 Let me know if you want anything like this!🤔
+Let me know if you want anything like this!
 ## **Badges & License**
 
 
@@ -185,17 +185,17 @@ Main-Website/
 ## 🔗 **Link to this site**
 * [![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://finnworks.dev/Main-Website/) <br/>
 
-## **💡 Use Cases**
+## **Use Cases**
 
 **This project architecture is ideal for:**
 
-- **👨‍💻 Developer Portfolios**: Showcase multiple projects in one cohesive, professional website
-- **🎓 Student Projects**: Organize coursework, personal projects, and achievements
-- **🏢 Business Dashboards**: Create a centralized hub linking to multiple tools/services
-- **📱 App Collections**: Display a suite of web applications with consistent branding
-- **🎨 Creative Portfolios**: Showcase design work, interactive demos, and case studies
-- **🛠️ Tool Libraries**: Organize utility tools and resources in one accessible location
-- **📊 Project Showcases**: Demonstrate capabilities with live, interactive examples
+- **Developer Portfolios**: Showcase multiple projects in one cohesive, professional website
+- **Student Projects**: Organize coursework, personal projects, and achievements
+- **Business Dashboards**: Create a centralized hub linking to multiple tools/services
+- **App Collections**: Display a suite of web applications with consistent branding
+- **Creative Portfolios**: Showcase design work, interactive demos, and case studies
+- **Tool Libraries**: Organize utility tools and resources in one accessible location
+- **Project Showcases**: Demonstrate capabilities with live, interactive examples
 
 **Key Benefits:**
 - Single repository for easy maintenance and version control
