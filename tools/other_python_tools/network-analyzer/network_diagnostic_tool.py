@@ -98,6 +98,7 @@ import win32con
 import win32service
 import win32serviceutil
 import wmi
+from pysnmp.hlapi import *
 
 # Suppress scapy warnings
 import logging
@@ -110,7 +111,9 @@ class NetworkDiagnosticTool:
         
         self.root = ctk.CTk()
         self.root.title("Dan's Network Diagnostic & Speed Tester v1.0")
-        self.root.geometry("1600x1000")
+        
+        # Start maximized
+        self.root.state('zoomed')  # Windows maximized
         self.root.minsize(1400, 900)
         
         # Data storage
@@ -370,81 +373,155 @@ class NetworkDiagnosticTool:
         self.speed_canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
 
     def create_overview_tab(self):
-        """Minimal Overview tab so UI initializes cleanly. Populates a placeholder IP label used elsewhere."""
+        """Complete Overview tab with all network information"""
         overview_frame = ctk.CTkFrame(self.notebook)
         self.notebook.add(overview_frame, text="📄 Overview")
 
-        # Basic network summary area (minimal so rest of UI can reference labels)
+        # Network Information Section
         info_frame = ctk.CTkFrame(overview_frame)
-        info_frame.pack(fill="x", padx=10, pady=10)
-
-        self.ip_address_label = ctk.CTkLabel(info_frame, text="IP: Detecting...", 
+        info_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        ctk.CTkLabel(info_frame, text="Network Information", 
+                    font=ctk.CTkFont(size=20, weight="bold")).pack(pady=10)
+        
+        # Current Network Info
+        network_info_frame = ctk.CTkFrame(info_frame)
+        network_info_frame.pack(fill="x", padx=20, pady=10)
+        
+        self.network_name_label = ctk.CTkLabel(network_info_frame, text="Network: Detecting...", 
+                                               font=ctk.CTkFont(size=14))
+        self.network_name_label.pack(anchor="w", padx=10, pady=2)
+        
+        self.ip_address_label = ctk.CTkLabel(network_info_frame, text="IP: Detecting...", 
                                              font=ctk.CTkFont(size=14))
         self.ip_address_label.pack(anchor="w", padx=10, pady=2)
+        
+        self.gateway_label = ctk.CTkLabel(network_info_frame, text="Gateway: Detecting...", 
+                                         font=ctk.CTkFont(size=14))
+        self.gateway_label.pack(anchor="w", padx=10, pady=2)
+        
+        self.signal_strength_label = ctk.CTkLabel(network_info_frame, text="Signal: N/A", 
+                                                  font=ctk.CTkFont(size=14))
+        self.signal_strength_label.pack(anchor="w", padx=10, pady=2)
+        
+        self.channel_label = ctk.CTkLabel(network_info_frame, text="Channel: N/A", 
+                                         font=ctk.CTkFont(size=14))
+        self.channel_label.pack(anchor="w", padx=10, pady=2)
+        
+        self.frequency_label = ctk.CTkLabel(network_info_frame, text="Type: N/A", 
+                                           font=ctk.CTkFont(size=14))
+        self.frequency_label.pack(anchor="w", padx=10, pady=2)
+        
+        self.security_label = ctk.CTkLabel(network_info_frame, text="Security: N/A", 
+                                          font=ctk.CTkFont(size=14))
+        self.security_label.pack(anchor="w", padx=10, pady=2)
+        
+        # Router Information
+        router_frame = ctk.CTkFrame(info_frame)
+        router_frame.pack(fill="x", padx=20, pady=10)
+        
+        ctk.CTkLabel(router_frame, text="Router Information", 
+                    font=ctk.CTkFont(size=16, weight="bold")).pack(pady=5)
+        
+        self.router_name_label = ctk.CTkLabel(router_frame, text="Router: Detecting...", 
+                                              font=ctk.CTkFont(size=14))
+        self.router_name_label.pack(anchor="w", padx=10, pady=2)
+        
+        self.router_model_label = ctk.CTkLabel(router_frame, text="Model: Unknown", 
+                                               font=ctk.CTkFont(size=14))
+        self.router_model_label.pack(anchor="w", padx=10, pady=2)
 
         
     def create_wifi_analysis_tab(self):
-        """WiFi network analysis and scanner"""
+        """WiFi network analysis and scanner - Redesigned for better visibility"""
         wifi_frame = ctk.CTkFrame(self.notebook)
         self.notebook.add(wifi_frame, text="WiFi Analysis")
         
-        # WiFi scanner controls
-        scanner_frame = ctk.CTkFrame(wifi_frame)
-        scanner_frame.pack(fill="x", padx=10, pady=10)
+        # Header with controls
+        header_frame = ctk.CTkFrame(wifi_frame)
+        header_frame.pack(fill="x", padx=10, pady=10)
         
-        ctk.CTkLabel(scanner_frame, text="WiFi Network Scanner", 
-                    font=ctk.CTkFont(size=18, weight="bold")).pack(pady=10)
+        ctk.CTkLabel(header_frame, text="WiFi Network Scanner", 
+                    font=ctk.CTkFont(size=18, weight="bold")).pack(side="left", padx=10)
         
-        scanner_controls = ctk.CTkFrame(scanner_frame)
-        scanner_controls.pack(fill="x", padx=10, pady=5)
-        
-        self.scan_status = ctk.CTkLabel(scanner_controls, text="Ready to scan", 
+        self.scan_status = ctk.CTkLabel(header_frame, text="Ready to scan", 
                                       font=ctk.CTkFont(size=14))
-        self.scan_status.pack(side="left", padx=10, pady=5)
+        self.scan_status.pack(side="left", padx=20)
         
-        self.refresh_scan_btn = ctk.CTkButton(scanner_controls, text="🔄 Refresh Scan", 
-                                            command=self.scan_wifi_networks, width=120)
-        self.refresh_scan_btn.pack(side="right", padx=10, pady=5)
+        self.refresh_scan_btn = ctk.CTkButton(header_frame, text="🔄 Refresh Scan", 
+                                            command=self.scan_wifi_networks, width=150, height=40)
+        self.refresh_scan_btn.pack(side="right", padx=10)
         
-        # WiFi networks table
-        networks_frame = ctk.CTkFrame(wifi_frame)
-        networks_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        # Main content area - split into two columns
+        content_frame = ctk.CTkFrame(wifi_frame)
+        content_frame.pack(fill="both", expand=True, padx=10, pady=5)
         
-        # Create treeview for WiFi networks
-        columns = ("SSID", "BSSID", "Signal", "Channel", "Frequency", "Security", "Vendor")
-        self.wifi_tree = ttk.Treeview(networks_frame, columns=columns, show="headings", height=15)
+        # LEFT SIDE - Networks Table (50% width)
+        left_frame = ctk.CTkFrame(content_frame)
+        left_frame.pack(side="left", fill="both", expand=True, padx=(0, 5))
         
-        # Configure columns
-        for col in columns:
-            self.wifi_tree.heading(col, text=col)
-            self.wifi_tree.column(col, width=120, anchor="center")
+        ctk.CTkLabel(left_frame, text="📡 Nearby Networks", 
+                    font=ctk.CTkFont(size=16, weight="bold")).pack(pady=10)
         
-        # Scrollbar for treeview
-        wifi_scrollbar = ttk.Scrollbar(networks_frame, orient="vertical", command=self.wifi_tree.yview)
+        # Table container
+        table_container = ctk.CTkFrame(left_frame)
+        table_container.pack(fill="both", expand=True, padx=10, pady=5)
+        
+        # Create treeview for WiFi networks with better columns
+        columns = ("SSID", "Signal", "Channel", "Frequency", "Security")
+        self.wifi_tree = ttk.Treeview(table_container, columns=columns, show="headings", height=20)
+        
+        # Configure columns with better widths
+        self.wifi_tree.heading("SSID", text="Network Name")
+        self.wifi_tree.column("SSID", width=200, anchor="w")
+        
+        self.wifi_tree.heading("Signal", text="Signal")
+        self.wifi_tree.column("Signal", width=80, anchor="center")
+        
+        self.wifi_tree.heading("Channel", text="Ch")
+        self.wifi_tree.column("Channel", width=50, anchor="center")
+        
+        self.wifi_tree.heading("Frequency", text="Frequency")
+        self.wifi_tree.column("Frequency", width=100, anchor="center")
+        
+        self.wifi_tree.heading("Security", text="Security")
+        self.wifi_tree.column("Security", width=120, anchor="center")
+        
+        # Scrollbar for table
+        wifi_scrollbar = ttk.Scrollbar(table_container, orient="vertical", command=self.wifi_tree.yview)
         self.wifi_tree.configure(yscrollcommand=wifi_scrollbar.set)
         
-        self.wifi_tree.pack(side="left", fill="both", expand=True, padx=10, pady=10)
-        wifi_scrollbar.pack(side="right", fill="y", pady=10)
+        self.wifi_tree.pack(side="left", fill="both", expand=True)
+        wifi_scrollbar.pack(side="right", fill="y")
         
-        # WiFi signal strength visualization
-        signal_frame = ctk.CTkFrame(wifi_frame)
-        signal_frame.pack(fill="x", padx=10, pady=10)
+        # RIGHT SIDE - Signal Strength Graph (50% width)
+        right_frame = ctk.CTkFrame(content_frame)
+        right_frame.pack(side="right", fill="both", expand=True, padx=(5, 0))
         
-        ctk.CTkLabel(signal_frame, text="📶 Signal Strength Map", 
-                    font=ctk.CTkFont(size=18, weight="bold")).pack(pady=10)
+        ctk.CTkLabel(right_frame, text="📶 Signal Strength Map", 
+                    font=ctk.CTkFont(size=16, weight="bold")).pack(pady=10)
+        
+        # Graph container
+        graph_container = ctk.CTkFrame(right_frame)
+        graph_container.pack(fill="both", expand=True, padx=10, pady=5)
         
         # Create matplotlib figure for signal strength
-        self.wifi_fig, self.wifi_ax = plt.subplots(figsize=(12, 4))
+        self.wifi_fig, self.wifi_ax = plt.subplots(figsize=(8, 6))
         self.wifi_fig.patch.set_facecolor('#2b2b2b')
         self.wifi_ax.set_facecolor('#2b2b2b')
-        self.wifi_ax.tick_params(colors='white')
-        self.wifi_ax.set_title('WiFi Signal Strength by Channel', color='white', fontsize=14, weight='bold')
-        self.wifi_ax.set_ylabel('Signal Strength (dBm)', color='white')
-        self.wifi_ax.set_xlabel('Channel', color='white')
+        self.wifi_ax.tick_params(colors='white', labelsize=10)
+        self.wifi_ax.spines['bottom'].set_color('white')
+        self.wifi_ax.spines['left'].set_color('white')
+        self.wifi_ax.spines['top'].set_visible(False)
+        self.wifi_ax.spines['right'].set_visible(False)
+        self.wifi_ax.set_title('Signal Strength by Channel', color='white', fontsize=14, weight='bold', pad=15)
+        self.wifi_ax.set_ylabel('Signal Strength (%)', color='white', fontsize=11)
+        self.wifi_ax.set_xlabel('WiFi Channel', color='white', fontsize=11)
+        self.wifi_ax.grid(True, alpha=0.2, color='white')
         
-        self.wifi_canvas = FigureCanvasTkAgg(self.wifi_fig, signal_frame)
+        self.wifi_canvas = FigureCanvasTkAgg(self.wifi_fig, graph_container)
         self.wifi_canvas.draw()
-        self.wifi_canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
+        self.wifi_canvas.get_tk_widget().pack(fill="both", expand=True, padx=5, pady=5)
         
     def create_dns_benchmark_tab(self):
         """DNS server benchmarking"""
@@ -897,13 +974,29 @@ class NetworkDiagnosticTool:
             for adapter_name in gateways:
                 if adapter_name in stats and stats[adapter_name].bytes_sent > 0:
                     for addr in gateways[adapter_name]:
-                        if addr.family == socket.AF_INET and not addr.address.startswith('169.254'):
+                        if addr.family == socket.AF_INET and not addr.address.startswith('169.254') and not addr.address.startswith('127.'):
                             self.current_network = {
                                 'adapter': adapter_name,
                                 'ip_address': addr.address,
                                 'netmask': addr.netmask,
                                 'gateway': self.get_default_gateway()
                             }
+                            
+                            # Try to get WiFi details - returns True if WiFi is active
+                            is_wifi = self.get_wifi_details()
+                            
+                            # If not WiFi or WiFi detection failed, check adapter name for clues
+                            if not is_wifi:
+                                # Check if adapter name suggests Ethernet
+                                adapter_lower = adapter_name.lower()
+                                if any(term in adapter_lower for term in ['ethernet', 'eth', 'local area', 'realtek', 'intel ethernet', 'broadcom']):
+                                    self.current_network['ssid'] = 'Ethernet Connection'
+                                elif any(term in adapter_lower for term in ['wi-fi', 'wifi', 'wireless', '802.11']):
+                                    # WiFi adapter but couldn't get details
+                                    self.current_network['ssid'] = 'WiFi (Details Unavailable)'
+                                else:
+                                    self.current_network['ssid'] = f'Wired Connection ({adapter_name})'
+                            
                             break
                     if self.current_network:
                         break
@@ -1094,8 +1187,6 @@ class NetworkDiagnosticTool:
     def _snmp_query_router(self, gateway_ip):
         """Query router using SNMP protocol (standard network management)"""
         try:
-            from pysnmp.hlapi import *
-            
             info = {}
             
             # Standard SNMP community strings (most routers use 'public' read-only)
@@ -1228,9 +1319,23 @@ class NetworkDiagnosticTool:
             return 'Unknown'
     
     def get_wifi_details(self):
-        """Get WiFi-specific details if connected via WiFi"""
+        """Get WiFi-specific details if connected via WiFi. Returns True if WiFi is active."""
         try:
             if platform.system() == "Windows":
+                # Check if WiFi interface is active and connected
+                interface_result = subprocess.run(['netsh', 'wlan', 'show', 'interfaces'], 
+                                                capture_output=True, text=True, shell=True)
+                
+                if not interface_result.stdout or 'disconnected' in interface_result.stdout.lower():
+                    return False  # WiFi not connected
+                
+                if 'There is no wireless interface on the system' in interface_result.stdout:
+                    return False  # No WiFi adapter
+                
+                # Parse WiFi interface details (signal, channel, etc.)
+                if interface_result.stdout:
+                    self._parse_wifi_interface(interface_result.stdout)
+                
                 # get current WiFi profile
                 result = subprocess.run(['netsh', 'wlan', 'show', 'profile'], 
                                       capture_output=True, text=True, shell=True)
@@ -1253,15 +1358,13 @@ class NetworkDiagnosticTool:
                         if profile_result.stdout:
                             self._parse_wifi_profile(profile_result.stdout, current_profile)
                 
-                # get signal strength and other details
-                interface_result = subprocess.run(['netsh', 'wlan', 'show', 'interfaces'], 
-                                                capture_output=True, text=True, shell=True)
-                
-                if interface_result.stdout:
-                    self._parse_wifi_interface(interface_result.stdout)
+                return True  # WiFi is active
                     
         except Exception as e:
             print(f"Error getting WiFi details: {e}")
+            return False
+        
+        return False
     
     def _parse_wifi_profile(self, profile_output, ssid):
         """Parse WiFi profile information"""
@@ -1293,7 +1396,11 @@ class NetworkDiagnosticTool:
             
             for line in lines:
                 line = line.strip()
-                if 'Signal' in line and ':' in line:
+                if 'SSID' in line and ':' in line and 'BSSID' not in line:
+                    ssid = line.split(':', 1)[1].strip()
+                    if ssid:  # Only update if SSID is not empty
+                        self.current_network['ssid'] = ssid
+                elif 'Signal' in line and ':' in line:
                     signal = line.split(':', 1)[1].strip()
                     self.current_network['signal_strength'] = signal
                 elif 'Channel' in line and ':' in line:
@@ -1327,15 +1434,19 @@ class NetworkDiagnosticTool:
             self.speed_status.configure(text="Finding best server...")
             self.speed_progress.set(0.1)
             
-            st = speedtest.Speedtest()
+            # Use secure connection and get best server
+            st = speedtest.Speedtest(secure=True)
             
             # find best server
-            self.speed_status.configure(text="Connecting to test server...")
+            self.speed_status.configure(text="Selecting optimal server...")
             self.speed_progress.set(0.2)
             st.get_best_server()
             
+            server_info = st.results.server
+            server_name = f"{server_info.get('sponsor', 'Unknown')} - {server_info.get('name', 'Unknown')}"
+            
             # download test
-            self.speed_status.configure(text="Testing download speed...")
+            self.speed_status.configure(text=f"Testing download from {server_name}...")
             self.speed_progress.set(0.3)
             download_speed = st.download() / 1_000_000  # Convert to Mbps
             
@@ -1639,72 +1750,111 @@ class NetworkDiagnosticTool:
             print(f"Error parsing WiFi scan: {e}")
     
     def _update_wifi_display(self):
-        """Update WiFi networks display"""
+        """Update WiFi networks display - simplified columns"""
         try:
             # clear existing items
             for item in self.wifi_tree.get_children():
                 self.wifi_tree.delete(item)
             
-            # add networks to treeview
+            # add networks to treeview with simplified columns
             for network in self.wifi_networks:
                 self.wifi_tree.insert('', 'end', values=(
                     network.get('ssid', 'Hidden'),
-                    network.get('bssid', 'Unknown'),
-                    network.get('signal', 'Unknown'),
-                    network.get('channel', 'Unknown'),
+                    network.get('signal', 'N/A'),
+                    network.get('channel', 'N/A'),
                     network.get('frequency', 'Unknown'),
-                    network.get('security', 'Unknown'),
-                    network.get('vendor', 'Unknown')
+                    network.get('security', 'Unknown')
                 ))
                 
         except Exception as e:
             print(f"Error updating WiFi display: {e}")
     
     def _update_wifi_graph(self):
-        """Update WiFi signal strength graph"""
+        """Update WiFi signal strength graph - improved visualization"""
         if not self.wifi_networks:
+            # Show empty state message
+            self.wifi_ax.clear()
+            self.wifi_ax.set_facecolor('#2b2b2b')
+            self.wifi_ax.text(0.5, 0.5, 'No WiFi networks found\\n\\nClick \"Refresh Scan\" to scan for networks', 
+                            horizontalalignment='center', verticalalignment='center',
+                            transform=self.wifi_ax.transAxes, color='white', fontsize=14)
+            self.wifi_ax.set_xticks([])
+            self.wifi_ax.set_yticks([])
+            self.wifi_canvas.draw()
             return
         
         try:
-            # group networks by channel
-            channel_data = defaultdict(list)
+            # Group networks by channel and convert signal to percentage
+            channel_data = {}
             
             for network in self.wifi_networks:
                 channel = network.get('channel', 'Unknown')
                 signal = network.get('signal', '0%')
+                ssid = network.get('ssid', 'Hidden')[:15]  # Truncate long names
                 
                 try:
-                    # convert signal percentage to dBm (rough approximation)
-                    signal_pct = int(signal.replace('%', ''))
-                    signal_dbm = -100 + (signal_pct * 70 / 100)  # rough conversion
+                    # Extract signal percentage
+                    if '%' in signal:
+                        signal_pct = int(signal.replace('%', ''))
+                    else:
+                        signal_pct = 50  # Default
                     
                     if channel.isdigit():
-                        channel_data[int(channel)].append(signal_dbm)
+                        ch = int(channel)
+                        if ch not in channel_data:
+                            channel_data[ch] = []
+                        channel_data[ch].append({'ssid': ssid, 'signal': signal_pct})
                 except:
                     continue
             
             if not channel_data:
                 return
             
-            # prepare data for plotting
-            channels = sorted(channel_data.keys())
-            avg_signals = [np.mean(channel_data[ch]) for ch in channels]
-            max_signals = [max(channel_data[ch]) for ch in channels]
-            
-            # clear and plot
+            # Clear and setup plot
             self.wifi_ax.clear()
             self.wifi_ax.set_facecolor('#2b2b2b')
             
-            self.wifi_ax.bar(channels, avg_signals, alpha=0.7, color='cyan', label='Average Signal')
-            self.wifi_ax.bar(channels, max_signals, alpha=0.5, color='orange', label='Max Signal')
+            # Sort channels
+            channels = sorted(channel_data.keys())
             
-            self.wifi_ax.set_title('WiFi Signal Strength by Channel', color='white', fontsize=14, weight='bold')
-            self.wifi_ax.set_ylabel('Signal Strength (dBm)', color='white')
-            self.wifi_ax.set_xlabel('Channel', color='white')
-            self.wifi_ax.legend()
-            self.wifi_ax.grid(True, alpha=0.3)
-            self.wifi_ax.tick_params(colors='white')
+            # Plot bars for each channel
+            colors = ['#00d4ff', '#ff6b35', '#5dd39e', '#ffb142', '#bc5090', '#ffa07a', '#20b2aa', '#ff69b4']
             
+            for i, ch in enumerate(channels):
+                networks = channel_data[ch]
+                # Use the strongest network for this channel
+                strongest = max(networks, key=lambda x: x['signal'])
+                color = colors[i % len(colors)]
+                
+                bar = self.wifi_ax.bar(ch, strongest['signal'], width=0.8, 
+                                      color=color, alpha=0.8, edgecolor='white', linewidth=1)
+                
+                # Add label if signal is strong enough
+                if strongest['signal'] > 30:
+                    self.wifi_ax.text(ch, strongest['signal'] + 3, strongest['ssid'], 
+                                    ha='center', va='bottom', color='white', fontsize=8, rotation=45)
+            
+            # Styling
+            self.wifi_ax.set_title('Signal Strength by Channel', color='white', fontsize=14, weight='bold', pad=15)
+            self.wifi_ax.set_ylabel('Signal Strength (%)', color='white', fontsize=11)
+            self.wifi_ax.set_xlabel('WiFi Channel', color='white', fontsize=11)
+            self.wifi_ax.set_ylim(0, 110)
+            
+            # Set x-axis to show all channels
+            self.wifi_ax.set_xticks(channels)
+            self.wifi_ax.set_xticklabels(channels, color='white')
+            
+            self.wifi_ax.tick_params(colors='white', labelsize=10)
+            self.wifi_ax.grid(True, alpha=0.2, color='white', axis='y')
+            
+            # Style spines
+            self.wifi_ax.spines['bottom'].set_color('white')
+            self.wifi_ax.spines['left'].set_color('white')
+            self.wifi_ax.spines['top'].set_visible(False)
+            self.wifi_ax.spines['right'].set_visible(False)
+            
+            # Tight layout to prevent cutoff
+            self.wifi_fig.tight_layout()
             self.wifi_canvas.draw()
             
         except Exception as e:
@@ -2643,7 +2793,23 @@ class NetworkDiagnosticTool:
     
     def run(self):
         """Start the application"""
+        # Set up cleanup on close
+        self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
         self.root.mainloop()
+    
+    def _on_closing(self):
+        """Clean up resources before closing"""
+        try:
+            # Stop monitoring
+            self.monitoring_active = False
+            self.ping_monitoring = False
+            self.wifi_scanning = False
+            
+            # Destroy the root window
+            self.root.quit()
+            self.root.destroy()
+        except:
+            pass
 
 # bruh - app start
 if __name__ == "__main__":

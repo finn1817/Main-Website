@@ -27,16 +27,32 @@ if errorlevel 1 (
     exit /b 1
 )
 
+:: Check if local venv exists, create if missing
+if not exist ".venv\Scripts\python.exe" (
+    echo [INFO] Local virtual environment not found
+    echo [CREATE] Creating .venv in project folder...
+    python -m venv .venv
+    if errorlevel 1 (
+        echo [ERROR] Failed to create virtual environment
+        pause
+        exit /b 1
+    )
+    echo [SUCCESS] Virtual environment created
+)
+
+:: Use local venv Python
+set PYTHON_EXE=%~dp0.venv\Scripts\python.exe
+
 :: Smart dependency check - Test for key packages
 echo [1/3] Checking dependencies...
-python -c "import customtkinter, scapy, psutil, matplotlib, pysnmp" >nul 2>&1
+"%PYTHON_EXE%" -c "import customtkinter, scapy, psutil, matplotlib, pysnmp" >nul 2>&1
 if errorlevel 1 (
     echo [INFO] Dependencies not installed or incomplete
     echo [INSTALL] Running first-time setup...
     echo.
     
     :: Run installer
-    python install.py
+    "%PYTHON_EXE%" install.py
     if errorlevel 1 (
         echo.
         echo [ERROR] Installation failed
@@ -59,8 +75,8 @@ if errorlevel 1 (
     echo [UAC] Windows will prompt for elevation
     echo.
     
-    :: Use PowerShell to elevate and run the Python script
-    powershell -Command "Start-Process python -ArgumentList '%~dp0network_diagnostic_tool.py' -Verb RunAs"
+    :: Use PowerShell to elevate and run the Python script with visible terminal
+    powershell -Command "Start-Process cmd -ArgumentList '/k cd /d %~dp0 && \"%PYTHON_EXE%\" network_diagnostic_tool.py && echo. && echo [FINISHED] Press any key to close... && pause >nul' -Verb RunAs"
     
     if errorlevel 1 (
         echo [ERROR] Admin elevation was denied or failed
@@ -70,6 +86,7 @@ if errorlevel 1 (
     
     echo [SUCCESS] Network Analyzer launched with admin rights
     echo.
+    echo Check the elevated window for output.
     echo You can close this window.
     timeout /t 3 >nul
     exit /b 0
@@ -80,13 +97,19 @@ if errorlevel 1 (
     echo.
     
     :: We're already admin, just run it
-    python network_diagnostic_tool.py
+    "%PYTHON_EXE%" network_diagnostic_tool.py
     
     if errorlevel 1 (
         echo.
-        echo [ERROR] Application crashed or exited with error
+        echo [ERROR] Application crashed or exited with error code: %errorlevel%
+        echo.
         pause
+        exit /b 1
     )
+    
+    echo.
+    echo [FINISHED] Application closed normally
+    pause
 )
 
 popd

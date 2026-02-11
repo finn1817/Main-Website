@@ -1,0 +1,155 @@
+# Python Network Analyzer - Comprehensive .gitignore
+# Protects ALL sensitive network data from being committed
+
+# ============================================
+# CRITICAL: Network Data & Reports (NEVER COMMIT)
+# ============================================
+
+# Network diagnostic reports (contains IP addresses, SSIDs, etc.)
+*network_diagnostic_report*.txt
+*network_report*.txt
+*diagnostic_report*.txt
+network_reports/
+reports/
+
+# NetFlow data dumps (contains traffic data)
+*netflow_dump*.json
+*netflow*.json
+netflow_data/
+
+# WiFi scan results (contains SSIDs, BSSIDs, MAC addresses)
+*wifi_scan*.txt
+*wifi_scan*.json
+*wifi_networks*.json
+
+# Speed test history (may contain ISP info, server details)
+*speed_test*.json
+*speed_history*.json
+
+# DNS query logs (browsing history)
+*dns_queries*.txt
+*dns_queries*.json
+*dns_log*.txt
+
+# Packet capture files
+*.pcap
+*.pcapng
+*.cap
+
+# Security alerts and logs (may contain attack signatures)
+*security_alerts*.json
+*security_log*.txt
+alerts/
+
+# Network topology scans (network structure)
+*topology*.json
+*network_map*.json
+
+# Bandwidth monitoring data (usage patterns)
+*bandwidth*.json
+*traffic*.json
+
+# Connection profiles (network credentials)
+*network_profile*.json
+profiles/
+
+# ============================================
+# Python Virtual Environment
+# ============================================
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ============================================
+# Python Cache & Compiled Files
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ============================================
+# Distribution & Packaging
+# ============================================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ============================================
+# Testing & Coverage
+# ============================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# ============================================
+# Logs & Temporary Files
+# ============================================
+*.log
+*.tmp
+*.temp
+temp/
+tmp/
+logs/
+
+# ============================================
+# IDEs & Editors
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============================================
+# OS Files
+# ============================================
+desktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ============================================
+# Backup Files
+# ============================================
+*.bak
+*.backup
+*~
+backup/
+
+# ============================================
+# User-specific files
+# ============================================
+.env
+.env.local
+config.local.json
+settings.local.json
+
+# ============================================
+# Desktop shortcuts (personal paths)
+# ============================================
+# Note: The desktop shortcuts created by install.py are user-specific
+# and should not be committed

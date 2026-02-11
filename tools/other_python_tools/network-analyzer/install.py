@@ -95,8 +95,20 @@ def create_desktop_launcher(script_path):
         return
     desktop = Path.home() / 'Desktop'
     bat = desktop / f'Run_{Path(script_path).stem}.bat'
-    python_exe = sys.executable
-    content = ["@echo off", f'start "" "{python_exe}" "{str(Path(script_path).resolve())}"', 'pause']
+    script_dir = Path(script_path).parent
+    
+    # Create launcher that calls run.bat (which handles admin elevation and error display)
+    content = [
+        "@echo off",
+        "title Network Analyzer Launcher",
+        f'cd /d "{str(script_dir.resolve())}"',
+        'call run.bat',
+        'if errorlevel 1 (',
+        '    echo.',
+        '    echo [ERROR] Failed to launch Network Analyzer',
+        '    pause',
+        ')'
+    ]
     with open(bat, 'w', encoding='utf-8') as f:
         f.write('\r\n'.join(content))
     print(f'Created launcher {bat}')
@@ -104,13 +116,43 @@ def create_desktop_launcher(script_path):
 
 def main():
     print('network-analyzer installer')
+    
+    # Ensure we're in the script directory
+    base = Path(__file__).parent
+    os.chdir(base)
+    
+    # Check/create local venv
+    venv_python = base / '.venv' / 'Scripts' / 'python.exe'
+    if not venv_python.exists():
+        print('ℹ️ Creating local virtual environment...')
+        try:
+            subprocess.run([sys.executable, '-m', 'venv', '.venv'], check=True)
+            print('✅ Virtual environment created')
+        except subprocess.CalledProcessError as e:
+            print(f'❌ Failed to create venv: {e}')
+            sys.exit(1)
+    else:
+        print('✅ Local virtual environment found')
+    
+    # Use venv python for everything below
+    python_exe = str(venv_python)
+    
     if not pip_ok():
         print('❌ pip missing')
         sys.exit(1)
-    base = Path(__file__).parent
+    
     req = base / 'requirements.txt'
     if req.exists():
-        install_reqs(req)
+        print(f'📦 Installing from {req.name}...')
+        env = os.environ.copy()
+        env['PYTHONIOENCODING'] = 'utf-8'
+        env['PYTHONUTF8'] = '1'
+        try:
+            subprocess.run([python_exe, '-m', 'pip', 'install', '-r', str(req)], check=True, env=env)
+            print(f'✅ Installed all requirements')
+        except subprocess.CalledProcessError as e:
+            print(f'❌ pip install failed: {e}')
+            sys.exit(1)
     else:
         print('ℹ️ No requirements.txt found; auto-detecting dependencies')
         script = base / 'network_diagnostic_tool.py'
