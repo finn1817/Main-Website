@@ -1,0 +1,10 @@
+project Notes:
+
+1. Npcap Required - Download from https://npcap.com/ for full packet capture
+- check off "Support raw 802.11 traffic (and monitor mode) for wireless adapters" when installing for deauth detection to work
+
+2. Admin rights NEEDED - physically cannot capture packets without admin
+
+3. WiFi Deauth - Will show "No alerts" on most Windows systems (driver limitation, code is correct as I have found)
+
+4. Port Scaning - To test IDS, run nmap -sS [your-ip] from another machine

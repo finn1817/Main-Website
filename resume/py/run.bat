@@ -3,6 +3,11 @@ REM Resume Desktop App Launcher
 REM This batch file launches the resume Python GUI application
 REM It checks for dependencies and installs them if needed
 
+setlocal
+
+REM Ensure we run from this script's directory (keeps paths + PDF output consistent)
+pushd "%~dp0"
+
 echo.
 echo ====================================
 echo Dan Finn - Resume Application
@@ -26,10 +31,11 @@ echo Checking dependencies...
 python -c "import customtkinter" >nul 2>&1
 if errorlevel 1 (
     echo Installing customtkinter...
-    pip install customtkinter
+    python -m pip install customtkinter
     if errorlevel 1 (
         echo ERROR: Failed to install customtkinter
         pause
+        popd
         exit /b 1
     )
 )
@@ -37,11 +43,22 @@ if errorlevel 1 (
 python -c "import reportlab" >nul 2>&1
 if errorlevel 1 (
     echo Installing reportlab...
-    pip install reportlab
+    python -m pip install reportlab
     if errorlevel 1 (
         echo ERROR: Failed to install reportlab
         pause
+        popd
         exit /b 1
+    )
+)
+
+REM Pillow is used to render logos/images (optional in code, but install it so it works off the bat)
+python -c "from PIL import Image" >nul 2>&1
+if errorlevel 1 (
+    echo Installing pillow...
+    python -m pip install pillow
+    if errorlevel 1 (
+        echo WARNING: Failed to install pillow (logos may not display)
     )
 )
 
@@ -59,3 +76,6 @@ if errorlevel 1 (
     echo ERROR: Application exited with an error
     pause
 )
+
+popd
+endlocal
