@@ -1,7 +1,7 @@
 
 # **Hi, My name is Dan!**
 ## **Welcome to my Main Website repo!**
-🛠 **The way this is set up...**
+**The way this is set up...**
 - Starts as a repository reading from a single index script. The main index points out to every other folder containing an index.html which has a page of its own for each section.
 
 ## How everything works
