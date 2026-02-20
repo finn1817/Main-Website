@@ -1,0 +1,3 @@
+auto encrypt / decrypt passwords in app
+
+have user set up security back up / forgot password questions
