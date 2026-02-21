@@ -6,7 +6,6 @@
   <title>Dan Finn's Resume</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
   <link href="../assets/css/universal-search.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * { box-sizing: border-box; }
     :root {
@@ -786,6 +785,104 @@
     .back-btn:hover {
       background: var(--nav-hover);
     }
+    /* PDF Viewer Modal */
+    .pdf-viewer-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+    }
+    .pdf-viewer-modal-content {
+      background-color: var(--content-bg);
+      margin: 2% auto;
+      padding: 25px;
+      border: 1px solid var(--collapsible-border);
+      border-radius: 12px;
+      width: 95%;
+      max-width: 1000px;
+      max-height: 95vh;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 767px) {
+      .pdf-viewer-modal-content {
+        margin: 1% auto;
+        padding: 15px;
+        width: 98%;
+        max-height: 98vh;
+      }
+    }
+    .pdf-viewer-close {
+      color: var(--text-color);
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      font-size: 32px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.3s;
+      z-index: 10;
+    }
+    .pdf-viewer-close:hover {
+      color: #ff6b35;
+    }
+    .pdf-controls {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+    .pdf-download-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #ff6b35, #ff8c42);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    }
+    .pdf-download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+    }
+    .pdf-viewer-container {
+      flex: 1;
+      min-height: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .pdf-viewer-iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+      border-radius: 8px;
+    }
+    @media (max-width: 767px) {
+      .pdf-viewer-iframe {
+        height: 65vh;
+      }
+      .pdf-download-btn {
+        font-size: 14px;
+        padding: 10px 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -945,6 +1042,21 @@
       <span class="cover-letters-close" id="coverLettersClose">&times;</span>
       <div id="coverLetterContent">
         <!-- Content will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+  <!-- PDF Viewer Modal -->
+  <div id="pdfViewerModal" class="pdf-viewer-modal">
+    <div class="pdf-viewer-modal-content">
+      <span class="pdf-viewer-close" id="pdfViewerClose">&times;</span>
+      <h2 style="color: var(--subheading-color); text-align: center; margin-bottom: 15px;">Dan Finn's Resume</h2>
+      <div class="pdf-controls">
+        <a href="assets/pdf/resume-without-phone.pdf" download="Dan_Finn_Resume.pdf" class="pdf-download-btn">
+          📥 Download PDF
+        </a>
+      </div>
+      <div class="pdf-viewer-container">
+        <iframe id="pdfViewer" class="pdf-viewer-iframe" src="assets/pdf/resume-without-phone.pdf" title="Resume PDF"></iframe>
       </div>
     </div>
   </div>
@@ -1183,173 +1295,17 @@
       card.classList.toggle('open');
     });
   });
-  // PDF Generation Function
-  function generateResumePDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    let yPosition = 20;
-    const margin = 20;
-    const lineHeight = 6;
-    const pageHeight = doc.internal.pageSize.height;
-    
-    function addNewPageIfNeeded(requiredSpace = 20) {
-      if (yPosition + requiredSpace > pageHeight - 20) {
-        doc.addPage();
-        yPosition = 20;
-      }
+  // PDF Viewer Function - Opens modal with real PDF
+  function openPDFViewer() {
+    const pdfViewerModal = document.getElementById('pdfViewerModal');
+    if (pdfViewerModal) {
+      pdfViewerModal.style.display = 'block';
+      // Reload iframe to ensure PDF loads fresh
+      const iframe = document.getElementById('pdfViewer');
+      iframe.src = iframe.src;
     }
-    
-    function addText(text, fontSize = 11, isBold = false, indent = 0) {
-      doc.setFontSize(fontSize);
-      doc.setFont("helvetica", isBold ? "bold" : "normal");
-      
-      const maxWidth = 170 - indent;
-      const textLines = doc.splitTextToSize(text, maxWidth);
-      
-      addNewPageIfNeeded(textLines.length * lineHeight);
-      
-      textLines.forEach(line => {
-        doc.text(line, margin + indent, yPosition);
-        yPosition += lineHeight;
-      });
-    }
-    
-    // Header
-    doc.setFillColor(0, 86, 179);
-    doc.rect(0, 0, 210, 35, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.setFont("helvetica", "bold");
-    doc.text("Dan Finn", 105, 15, { align: 'center' });
-    doc.setFontSize(12);
-    doc.text("Computer Science Student at SUNY Fredonia", 105, 25, { align: 'center' });
-    
-    doc.setTextColor(0, 0, 0);
-    yPosition = 45;
-    
-    // About Me Section
-    addText("ABOUT ME", 14, true);
-    yPosition += 3;
-    addText("I'm a computer science student at SUNY Fredonia and my main focuses around between all around IT and programming. In my free time, I make a lot of websites, and PC apps, and I am good at getting things done quick while working as they should be. I try to always manage security in any site I build, as I have had lots of work with many different databases!");
-    yPosition += 2;
-    addText("My programming style is very step by step. I learn easiest by going right into projects and figuring things out as I go. This way, if I don't already know how to do something, I get the challenge of learning something new that some people may not have thought was possible. A lot of the work I have done (including school work) has been self taught, forcing me to adapt to new things quick.");
-    yPosition += 2;
-    addText("I get motivated by the feeling of making something work that will actually be useful to someone, whether that be simple automation or a full project to make things easier for someone. Today, it is possible to build almost anything if you have enough faith in yourself and are willing to learn something new.");
-    yPosition += 2;
-    addText("I really enjoy app / web app development. I have connected several websites to cloud databases while managing front-end and back-end of projects (Have done lots of full stack projects). I love remaking games that help me get foundations down, and I have recently gone back on several old projects just to update them to my current standard, which is a lot further than it was when I started.");
-    yPosition += 2;
-    addText("I also have experience with containerization. I successfully built my own cloud storage drive with a working on/off button built into a Python GUI I connected to it! This lets me properly access my cloud storage from anywhere, while keeping all user data (like sign-ins) properly seperated & secured / stored elsewhere.");
-    yPosition += 8;
-    
-    // Education Section
-    addText("EDUCATION", 14, true);
-    yPosition += 3;
-    addText("• Bachelor of Science in Computer Science - SUNY Fredonia (Currently Attending)", 11, false, 5);
-    addText("• High School Diploma - Bishop Timon St. Jude High School (Graduated)", 11, false, 5);
-    yPosition += 8;
-    
-    // IT Experience Section
-    addText("IT EXPERIENCE", 14, true);
-    yPosition += 3;
-    
-    // eSports Lounge Attendant
-    addText("eSports Lounge Attendant -- SUNY Fredonia (Still cover shifts occasionally)", 12, true, 5);
-    addText("• Watch over 12 gaming PCs and 3 other consoles (Xbox, PS5, Nintendo Switch), making sure everything is taken care of and keeping track of user accountability.", 10, false, 10);
-    addText("• Managed sign-in and out application, and enforced lounge rules to maintain a respectful and safe gaming lounge.", 10, false, 10);
-    addText("• Provided in-person support and updates for the people in the lounge and the gaming PCs and consoles at all times.", 10, false, 10);
-    yPosition += 5;
-    
-    // IT Staff
-    addText("IT Staff -- SUNY Fredonia (Current)", 12, true, 5);
-    addText("• Issue runner and technical support helper (Moving around and helping over the phone when needed).", 10, false, 10);
-    addText("• Helped resolve lots of IT support tickets through our Jira ticket system.", 10, false, 10);
-    addText("• Providing tech assistance and system maintenance / set up.", 10, false, 10);
-    addText("• OS config / set up (windows & many linux versions + GRUB boot setup)", 10, false, 10);
-    addText("• Drive repair / swapping (& re-imaging over network)", 10, false, 10);
-    addText("• Helped with a full campus wide switch from google to microsoft & dealt with many complaints but found solutions whenever I could!", 10, false, 10);
-    addText("• Remoting operations for storage management (schools systems notifys about the pc's with the lowest storage, my job has been to manage that storage and keep it usable!)", 10, false, 10);
-    yPosition += 5;
-    
-    // ITS Internship (Help Desk)
-    addText("ITS Internship (Help Desk) -- SUNY Fredonia (Summer 2025)", 12, true, 5);
-    addText("• Provided in-person, remote, and over the phone technical help for staff and students. (Mainly included swapping drives, taking computers apart, and setting up new ones from the box)", 10, false, 10);
-    addText("• Helped take care of our ticket system. Included helping others with permission issues, hardware setup (fixing Computers, TVs, Phones, and even TouchPads), and did lots of extra work following others and assisting setting up new computers when the school was on break!", 10, false, 10);
-    addText("• Helped number and track inventory around the entire college campus.", 10, false, 10);
-    yPosition += 5;
-    
-    // ITS Internship (Programming)
-    addText("ITS Internship (Programming) -- SUNY Fredonia (2024--2025)", 12, true, 5);
-    addText("• Created a Windows-specific Python app to manage workers from three workplaces, separating and organizing saved data properly to a cloud database.", 10, false, 10);
-    addText("• This app can automate schedule generation based on worker availability and the workplaces hours of operation.", 10, false, 10);
-    addText("• Developed a time sync feature allowing my boss to find last minute shift coverage based on who is available, and to use this app from anywhere, including viewing all of his old schedules.", 10, false, 10);
-    yPosition += 5;
-    
-    // AV Club
-    addText("AV Club -- Bishop Timon St. Jude", 12, true, 5);
-    addText("• Worked with professional audio/video equipment for school events and livestreams (basketball games, football games, and pep rallies).", 10, false, 10);
-    addText("• Handled live sound setup during shows / livestreams, helped with video recording, and closing edits on the schools sports games.", 10, false, 10);
-    addText("• Worked with soundboards, wireless mics, and video cameras.", 10, false, 10);
-    yPosition += 8;
-    
-    // Skills Section
-    addText("SKILLS", 14, true);
-    yPosition += 3;
-    addText("Programming: C++, C#, Python, HTML, SQL, Bash. Some knowledge in Java, Kotlin, R, Perl, Assembly.", 11, false, 5);
-    addText("Web: Strong with HTML/JavaScript. Built many web apps.", 11, false, 5);
-    addText("Cybersecurity: Networking, routers/switches, troubleshooting.", 11, false, 5);
-    addText("OS: Windows, Linux (Ubuntu/Debian), macOS, Android. Command-line and system admin experience.", 11, false, 5);
-    addText("VMs: Experienced setting up and configuring virtual machines.", 11, false, 5);
-    yPosition += 3;
-    // Programming Projects Section
-    addText("PROGRAMMING PROJECTS", 14, true);
-    yPosition += 3;
-    addText("Portfolio: 18+ Live Web Applications (view at: finn1817.github.io/Main-Website/projects/)", 11, true, 5);
-    yPosition += 2;
-    addText("Fredonia Workplace Dashboard", 12, true, 5);
-    addText("A web app I built on my own for SUNY Fredonia ITS to automate and manage 3 workplaces, making scheduling and admin tasks much easier for both staff and students.", 10, false, 10);
-    yPosition += 2;
-    addText("NATracker", 12, true, 5);
-    addText("A group project for real-time file system tracking, designed for workplace use. We decided to make it as a python app!", 10, false, 10);
-    yPosition += 2;
-    addText("Main Website", 12, true, 5);
-    addText("My main portfolio website, combining all my individual sites into a single, modern, multi-page dashboard with light/dark mode feature.", 10, false, 10);
-    yPosition += 2;
-    addText("Additional Projects Include:", 11, true, 5);
-    addText("• Games: 2048, Hangman, Word Search, Square Chase, Calculator", 10, false, 10);
-    addText("• Business Tools: Team Manager, Shared Calendar, Resume Builder, File Transfer", 10, false, 10);
-    addText("• Utilities: Git Account Info, Unit Converter, Text Editor, Word Counter", 10, false, 10);
-    yPosition += 3;
-    addText("Tools Used:", 11, true, 5);
-    addText("• Microsoft Products (Word, Excel, PowerPoint, Access, Outlook, Calendar, Teams, Authentication, SharePoint)", 10, false, 10);
-    addText("• Google Services (FireBase, Docs, Sheets, Slides, Forms, Calendar, and more)", 10, false, 10);
-    addText("• Visual Studio / Android Studio - For personal & school projects", 10, false, 10);
-    addText("• Visual Studio Code - My go to for most coding projects", 10, false, 10);
-    addText("• Docker - Experience with containerization & managing environments", 10, false, 10);
-    addText("• GitHub (individual & group work) - Used for source control", 10, false, 10);
-    addText("• Unity (from game design courses)", 10, false, 10);
-    addText("• WinSCP (for remote file transfer)", 10, false, 10);
-    addText("• Terminal / PowerShell (automation, search, admin tasks, and more)", 10, false, 10);
-    yPosition += 3;
-    
-    addText("Projects:", 11, true, 5);
-    addText("• C++: Sound Editor (Personal Guitar Pedal App), replicating Files App (windows app with AI integrated), automation tools, windows manipulation to work with some c# apps I made for personal use (remaking fun games, and for database-linked apps)", 10, false, 10);
-    addText("• Python: I have made countless python apps from simple file finding / editing scripts, pattern parsing, and some automation to building api scripts to work with a schools Database for creating work schedules. I have fun building these apps since you really can build them how you want, and whenever you need them. I have a folder full of python tools for TONS of different things (Windows (how I want it), Network (Testing), Games, and even for programming (I tried once to remake my own VS-code but nothing beats the real deal!))", 10, false, 10);
-    addText("• Web: I have also made / worked on several websites, not only personal, but for work, and my own professional development. I have made an advanced workplace app to make my bosses job a lot easier than it was, along with a simple / fun / easy to use wedding photos website for my brothers wedding. Not only was that a learning experience for me, but it felt really cool to build something for my brother as he wanted it (included QR code so anyone at the wedding could post pictures!). This way he also got all of this for free!", 10, false, 10);
-    addText("• Bash: I have used this for several of my python applications install & uninstall scripts, and for some system tweaks on Windows", 10, false, 10);
-    addText("• Homebrew/Modding: installed custom firmware, WiiFlow/USB Loader on Wii to simply advance the machine (holding all games on system instead of needing all of disks we had to search through). This did involve troubleshooting (But proved to me that I can pick up on new things quickly - as this was Visually working with nintendo software, and I had never done something like this before then and have done it multiple times since.)", 10, false, 10);
-    
-    // save the PDF
-    doc.save('Dan_Finn_Resume.pdf');
-    
-    // show confirmation popup
-    const popup = document.getElementById('popup');
-    popup.innerText = "Resume PDF downloaded successfully!";
-    popup.style.display = "block";
-    setTimeout(() => {
-      popup.style.display = "none";
-    }, 3000);
   }
+  
   document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("contactForm");
     const popup = document.getElementById("popup");
@@ -1357,9 +1313,30 @@
     const viewCoursesBtn = document.getElementById("viewCoursesBtn");
     const coursesModal = document.getElementById("coursesModal");
     const coursesClose = document.getElementById("coursesClose");
-    // download resume functionality
-    downloadButton.addEventListener("click", generateResumePDF);
-    // courses modal functionality
+    const pdfViewerModal = document.getElementById('pdfViewerModal');
+    const pdfViewerClose = document.getElementById('pdfViewerClose');
+    
+    // Open PDF viewer instead of generating PDF
+    downloadButton.addEventListener("click", openPDFViewer);
+    
+    // Close PDF viewer modal
+    if (pdfViewerClose) {
+      pdfViewerClose.addEventListener("click", () => {
+        pdfViewerModal.style.display = 'none';
+      });
+    }
+    
+    // Close PDF viewer when clicking outside
+    window.addEventListener("click", (event) => {
+      if (event.target === pdfViewerModal) {
+        pdfViewerModal.style.display = 'none';
+      }
+      if (event.target === coursesModal) {
+        coursesModal.style.display = "none";
+      }
+    });
+    
+    // courses modal func
     viewCoursesBtn.addEventListener("click", () => {
       coursesModal.style.display = "block";
     });
@@ -1371,8 +1348,8 @@
         coursesModal.style.display = "none";
       }
     });
-    // Theme manager handles the toggle automatically
-    // form submission functionality
+    // theme manager - handles the toggle automatically
+    // form submission func
     if (localStorage.getItem("formSubmitted") === "true") {
       disableForm();
     }
@@ -1397,11 +1374,11 @@
       }
     });
 
-    // Mobile-specific check for nav overflow
+    // mobile check for nav overflow
     function checkNavOverflow() {
       const nav = document.querySelector('nav');
       if (window.innerWidth <= 767) {
-        // Show visual indicator that nav is scrollable
+        // show visual indicator that nav is scrollable
         if (nav.scrollWidth > nav.clientWidth) {
           nav.style.paddingBottom = '3px';
         } else {
@@ -1410,12 +1387,12 @@
       }
     }
     
-    // Run on load and resize
+    // run on load and resize
     window.addEventListener('load', checkNavOverflow);
     window.addEventListener('resize', checkNavOverflow);
   });
   
-  // Easter egg for console
+  // console easter egg
   console.clear();
   console.log(`%c
 ██████   █████  ███    ██ 
@@ -1431,7 +1408,7 @@ I hope you like what you see!
 Some facts about this site:
 • Built with HTML, CSS, and JavaScript
 • working dark/light mode toggle
-• PDF resume generation with jsPDF
+• Professional PDF resume viewer & download
 • Responsive design for all devices
 • Clean, simple code structure / easily modifiable
 
