@@ -40,13 +40,13 @@ document.addEventListener('DOMContentLoaded', function() {
             `
         },
         generic: {
-            title: "IT Position",
+            title: "IT Positions",
             content: `
                 <div style="line-height: 1.8; text-align: left;">
                     <p style="margin-bottom: 20px;"><strong>Dear Hiring Manager,</strong></p>
                     
                     <p style="margin-bottom: 20px;">
-                        I am writing to express my interest in the IT position at your organization. As a Computer Science student at SUNY Fredonia with hands-on experience in IT support, system administration, and programming, I am confident I can make valuable member to your team.
+                        I am writing to express my interest in any IT position at your organization. As a Computer Science student at SUNY Fredonia with hands-on experience in IT, system administration, and programming, I am confident I can make a valuable member of any team.
                     </p>
                     
                     <p style="margin-bottom: 15px;"><strong>My Experience:</strong></p>
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         Buffalo Bills - Network Engineer
                     </button>
                     <button class="cover-letter-btn generic" onclick="showCoverLetter('generic')">
-                        IT Position
+                        IT Positions
                     </button>
                 </div>
                 <p style="text-align: center; margin-top: 30px; color: var(--text-color); opacity: 0.7; font-size: 14px;">
