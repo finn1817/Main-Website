@@ -668,33 +668,123 @@
         padding: 15px 10px;
       }
     }
-    /* Bills Cover Letter Button */
-    .bills-cover-letter-btn {
-      background-color: #c60c30;
+    /* Cover Letters Button */
+    .cover-letters-btn {
+      background: linear-gradient(135deg, #00338D, #C60C30);
       color: white;
       border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
+      padding: 10px 20px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
       margin-top: 10px;
       font-size: 14px;
-      transition: background-color 0.3s, transform 0.1s;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
-    .bills-cover-letter-btn:hover {
-      background-color: #a00a27;
-      transform: translateY(-1px);
-      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    .cover-letters-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
     }
-    .bills-cover-letter-btn:active {
-      transform: translateY(0);
+    .cover-letters-btn:active {
+      transform: scale(0.98);
     }
     @media (max-width: 767px) {
-      .bills-cover-letter-btn {
-        font-size: 13px;
-        padding: 8px 12px;
+      .cover-letters-btn {
+        font-size: 12px;
+        padding: 8px 16px;
       }
+    }
+    /* Cover Letters Modal */
+    .cover-letters-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+    }
+    .cover-letters-modal-content {
+      background-color: var(--content-bg);
+      margin: 5% auto;
+      padding: 30px;
+      border: 1px solid var(--collapsible-border);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+    @media (max-width: 767px) {
+      .cover-letters-modal-content {
+        margin: 10% auto;
+        padding: 20px;
+        width: 95%;
+        max-height: 85vh;
+      }
+    }
+    .cover-letters-close {
+      color: var(--text-color);
+      float: right;
+      font-size: 32px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 20px;
+      transition: color 0.3s;
+    }
+    .cover-letters-close:hover {
+      color: #c60c30;
+    }
+    #coverLetterContent h2 {
+      color: var(--subheading-color);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .cover-letter-selection {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .cover-letter-btn {
+      padding: 15px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      color: white;
+    }
+    .cover-letter-btn.bills {
+      background: linear-gradient(135deg, #00338D, #C60C30);
+    }
+    .cover-letter-btn.generic {
+      background: linear-gradient(135deg, #0056b3, #003f7f);
+    }
+    .cover-letter-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+    .back-btn {
+      margin-bottom: 15px;
+      padding: 8px 15px;
+      background: var(--nav-bg);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .back-btn:hover {
+      background: var(--nav-hover);
     }
   </style>
 </head>

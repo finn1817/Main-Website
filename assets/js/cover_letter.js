@@ -1,120 +1,146 @@
+/**
+ * Cover Letter Modal Management
+ * I can handle displaying cover letters for different job applications here
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Create the button functionality
-    const btn = document.getElementById('billsCoverLetterBtn');
+    const coverLettersBtn = document.getElementById('coverLettersBtn');
+    const coverLettersModal = document.getElementById('coverLettersModal');
+    const coverLettersClose = document.getElementById('coverLettersClose');
+    const coverLetterContent = document.getElementById('coverLetterContent');
     
-    if (btn) {
-        btn.addEventListener('click', function() {
-            // Check if modal already exists to prevent duplicates
-            let modal = document.getElementById('coverLetterModal');
-            
-            if (!modal) {
-                modal = buildCoverLetterModal();
-                document.body.appendChild(modal);
+    // Bills cover letter
+    const coverLetters = {
+        bills: {
+            title: "Buffalo Bills - Network Engineer Position",
+            content: `
+                <div style="line-height: 1.8; text-align: left;">
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; margin-bottom: 5px;">
+                            <span>Daniel Finn</span>
+                            <span>Network Engineer</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; color: var(--subheading-color); font-weight: 500;">
+                            <span>Buffalo Bills - Cover Letter</span>
+                            <span>Feb 2026</span>
+                        </div>
+                    </div>
+                    
+                    <p style="margin-bottom: 20px;">
+                        My name is Daniel Finn, and I am from Buffalo, NY. I worked in IT for the last few years, and my main motivation from my work so far has been in building new problem solving solutions. As a CS student with experience in app development, I went above and beyond building my last app "the Fredonia Workplace Dashboard". This is a web app that I built to allow my managers to manage all three locations from one website. This project included cloud db (CRUD) integration, automation for schedule generation, and it saves time. It is also in use for my superiors and several workers too, as they can also view their schedules here.
+                    </p>
+                    <p style="margin-bottom: 20px;">
+                        I can't wait for the opportunity to build tools like this on an even bigger scale, and working for a company like the Buffalo Bills is one my life goals. I love Buffalo, and I love the Bills, and I am fully committed to bringing any tech skills and everything I have to the organization. I have hands-on networking experience, and have worked with several different systems. Past that, I can and have programmed in Python, C++, C#, HTML, CSS, JS, and several other languages, and I am confident when I need to learn new things.
+                    </p>
+                    <p style="margin-bottom: 20px;">
+                        Right now, I drive an hour just to get to work. I don't mind the drive though as I really enjoy working in IT. I always show up with energy, and try to do everything I can to help out. Showing up on time and finishing tasks are two things I strive for, and I have been put in front of many tasks in the past, but have always been able to resolve the issue.
+                    </p>
+                    <p><strong>Go Bills!</strong></p>
+                </div>
+            `
+        },
+        generic: {
+            title: "IT Position",
+            content: `
+                <div style="line-height: 1.8; text-align: left;">
+                    <p style="margin-bottom: 20px;"><strong>Dear Hiring Manager,</strong></p>
+                    
+                    <p style="margin-bottom: 20px;">
+                        I am writing to express my interest in the IT position at your organization. As a Computer Science student at SUNY Fredonia with hands-on experience in IT support, system administration, and programming, I am confident I can make valuable member to your team.
+                    </p>
+                    
+                    <p style="margin-bottom: 15px;"><strong>My Experience:</strong></p>
+                    
+                    <p style="margin-bottom: 20px;">
+                        Currently serving as IT Staff at SUNY Fredonia, I provide technical support, maintain systems, repair hardware, manage network issues / resolutions, and handle some larger scale database projects. I've also completed internships in help desk operations and programming, giving me a huge grasp on IT operations.
+                    </p>
+                    
+                    <p style="margin-bottom: 15px;"><strong>Technical Proficiency:</strong></p>
+                    <ul style="margin-left: 20px; margin-bottom: 20px;">
+                        <li>Operating Systems: Windows, Linux (multiple distributions), & macOS</li>
+                        <li>Programming: Python, C++, Web (HTML, CSS, JS), C#, Bash, & SQL</li>
+                        <li>Networking: Cisco equipment, set-up, routing, switching, troubleshooting</li>
+                        <li>Hardware: System builds, repairs, diagnostics, drive imaging</li>
+                        <li>Cloud Technology: Database management, containerization (Docker), Firebase proficiency</li>
+                    </ul>
+                    
+                    <p style="margin-bottom: 20px;">
+                        I am good at finding and fixing issues quickly and explaining what went wrong to the user. Whether it's resolving support tickets, setting up new systems, or developing automation tools, I always focus on efficiency on functionlity more than anything else.
+                    </p>
+                    
+                    <p style="margin-bottom: 20px;">
+                        I am very excited about the new stadium opportunity and would be happy to bring my skills and dedication to your organization!
+                    </p>
+                    
+                    <p><strong>Sincerely,</strong><br>
+                    <strong>Dan Finn</strong><br>
+                    Computer Science Student, SUNY Fredonia<br>
+                    Email: <a href="mailto:finn1817@fredonia.edu" style="color: var(--subheading-color);">finn1817@fredonia.edu</a></p>
+                </div>
+            `
+        }
+    };
+    
+    // Open modal and show selection menu
+    if (coverLettersBtn) {
+        coverLettersBtn.addEventListener('click', function() {
+            if (coverLettersModal) {
+                coverLettersModal.style.display = 'block';
+                showCoverLetterMenu();
             }
-            
-            // Show the modal
-            modal.style.display = 'block';
         });
     }
-
-    // Function to build the modal DOM elements
-    function buildCoverLetterModal() {
-        // Create main modal container
-        const modal = document.createElement('div');
-        modal.id = 'coverLetterModal';
-        modal.style.cssText = `
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(2px);
-        `;
-
-        // Create modal content wrapper
-        const content = document.createElement('div');
-        content.style.cssText = `
-            background-color: var(--content-bg, #fff);
-            color: var(--text-color, #333);
-            margin: 5% auto;
-            padding: 40px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 800px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
-            font-family: 'Roboto', sans-serif;
-            border: 1px solid var(--collapsible-border, #ccc);
-        `;
-
-        // Close button
-        const closeBtn = document.createElement('span');
-        closeBtn.innerHTML = '&times;';
-        closeBtn.style.cssText = `
-            color: var(--subheading-color, #003f7f);
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            line-height: 1;
-        `;
-        closeBtn.onclick = () => modal.style.display = 'none';
-
-        // Close when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) modal.style.display = 'none';
+    
+    // Close modal
+    if (coverLettersClose) {
+        coverLettersClose.addEventListener('click', function() {
+            coverLettersModal.style.display = 'none';
         });
-
-        // Header Section (using Grid for the spacing in your text)
-        const headerDiv = document.createElement('div');
-        headerDiv.style.cssText = `
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--heading-border, #0056b3);
-        `;
-
-        headerDiv.innerHTML = `
-            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; margin-bottom: 5px;">
-                <span>Daniel Finn</span>
-                <span>Network Engineer</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; color: var(--subheading-color, #003f7f); font-weight: 500;">
-                <span>Buffalo Bills - Cover Letter</span>
-                <span>Feb 2026</span>
-            </div>
-        `;
-
-        // The Body Text (Exact Wording)
-        const bodyText = document.createElement('div');
-        bodyText.style.cssText = `
-            line-height: 1.8;
-            font-size: 16px;
-            text-align: left;
-        `;
-
-        bodyText.innerHTML = `
-            <p style="margin-bottom: 20px;">
-                My name is Daniel Finn, and I am from Buffalo, NY. I worked in IT for the last few years, and my main motivation from my work so far has been in building new problem solving solutions. As a CS student with experience in app development, I went above and beyond building my last app “the Fredonia Workplace Dashboard”. This is a web app that I built to allow my managers to manage all three locations from one website. This project included cloud db (CRUD) integration, automation for schedule generation, and it saves time. It is also in use for my superiors and several workers too, as they can also view their schedules here.
-            </p>
-            <p style="margin-bottom: 20px;">
-                I can’t wait for the opportunity to build tools like this on an even bigger scale, and working for a company like the Buffalo Bills is my life goal! I love Buffalo, and I love the Bills, and I am fully committed to bringing any tech skills I have to the organization. I have hands-on networking experience, and have worked with several different systems. Past that, I can and have programmed in Python, C++, C#, HTML, CSS, JS, and several other languages, and I am confident when I need to learn new things.
-            </p>
-            <p>
-                Right now, I drive an hour just to get to work. I don’t mind the drive though as I really enjoy working in IT. I always show up with energy, and try to do everything I can to help out. Showing up on time and finishing tasks are two things I strive for, and I have been put in front of many tasks in the past, but have always been able to resolve the issue.
-            </p>
-        `;
-
-        // Assemble
-        content.appendChild(closeBtn);
-        content.appendChild(headerDiv);
-        content.appendChild(bodyText);
-        modal.appendChild(content);
-
-        return modal;
     }
+    
+    // Close when clicking outside the modal
+    window.addEventListener('click', function(event) {
+        if (event.target === coverLettersModal) {
+            coverLettersModal.style.display = 'none';
+        }
+    });
+    
+    // Show cover letter selection menu
+    function showCoverLetterMenu() {
+        if (coverLetterContent) {
+            coverLetterContent.innerHTML = `
+                <h2>Select a Cover Letter</h2>
+                <div class="cover-letter-selection">
+                    <button class="cover-letter-btn bills" onclick="showCoverLetter('bills')">
+                        Buffalo Bills - Network Engineer
+                    </button>
+                    <button class="cover-letter-btn generic" onclick="showCoverLetter('generic')">
+                        IT Position
+                    </button>
+                </div>
+                <p style="text-align: center; margin-top: 30px; color: var(--text-color); opacity: 0.7; font-size: 14px;">
+                    Click a button above to view the corresponding cover letter
+                </p>
+            `;
+        }
+    }
+    
+    // Show specific cover letter
+    window.showCoverLetter = function(type) {
+        const letter = coverLetters[type];
+        if (letter && coverLetterContent) {
+            coverLetterContent.innerHTML = `
+                <button class="back-btn" onclick="showCoverLetterMenu()">
+                    ← Back to Selection
+                </button>
+                <h2>${letter.title}</h2>
+                <div style="background: var(--content-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--collapsible-border);">
+                    ${letter.content}
+                </div>
+            `;
+        }
+    };
+    
+    // Make showCoverLetterMenu available globally for the back button
+    window.showCoverLetterMenu = showCoverLetterMenu;
 });
