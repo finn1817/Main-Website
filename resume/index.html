@@ -668,6 +668,34 @@
         padding: 15px 10px;
       }
     }
+    /* Bills Cover Letter Button */
+    .bills-cover-letter-btn {
+      background-color: #c60c30;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 14px;
+      transition: background-color 0.3s, transform 0.1s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .bills-cover-letter-btn:hover {
+      background-color: #a00a27;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    }
+    .bills-cover-letter-btn:active {
+      transform: translateY(0);
+    }
+    @media (max-width: 767px) {
+      .bills-cover-letter-btn {
+        font-size: 13px;
+        padding: 8px 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -680,6 +708,9 @@
 <header>
   <h1>Dan Finn - Resume Website</h1>
   <p>Computer Science Student at SUNY Fredonia</p>
+  <button id="billsCoverLetterBtn" class="bills-cover-letter-btn">
+    View Buffalo Bills Cover Letter
+  </button>
 </header>
 <nav>
   <button class="tab-button active" data-tab="about">About Me</button>
@@ -731,7 +762,7 @@
           </div>
         </aside>
       </div>
-    </div>
+   </div>
     <hr class="education-divider">
     <div class="education-section">
       <div class="education-row">
@@ -848,7 +879,7 @@
       <div class="collapsible-content">
         <ul>
           <li>Provided in-person, remote, and over the phone technical help for staff and students. (Mainly included swapping drives, taking computers apart, and setting up new ones from the box) (Also included helping several people work through a google to microsoft complete transfer)</li>
-          <li>Helped take care of our ticket system. Included helping others with permission issues, hardware setup (fixing Computers, TVs, Phones, and even TouchPads), and did lots of extra work following others and assisting setting up new computers when the school was on break!</li>
+          <li>Helped take care of our ticket system. Included helping others with permission issues, hardware setup (fixing Computers, TVs, Phones, and even TouchPads), and did extra work following others and assisting setting up new computers when the school was on break!</li>
           <li>Helped number and track inventory around the entire college campus.</li>
         </ul>
       </div>
@@ -1316,5 +1347,6 @@ Keep coding! 🔥`,
   
 </script>
   <script src="../assets/js/universal-search.js"></script>
+  <script src="../assets/js/cover_letter.js"></script>
 </body>
 </html>
