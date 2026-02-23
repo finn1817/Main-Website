@@ -47,12 +47,16 @@ class UIManager {
             document.body.appendChild(statsElement);
         }
 
+        // Load and display high score
+        const highScore = this.loadHighScore();
+
         statsElement.innerHTML = `
             <div><span class="label">Speed:</span> <span class="value" id="speedDisplay">1.0x</span></div>
             <div><span class="label">Effect:</span> <span class="value" id="effectDisplay">None</span></div>
             <div><span class="label">Trail:</span> <span class="value" id="trailDisplay">12</span></div>
             <div><span class="label">Zones:</span> <span class="value" id="zoneDisplay">4/7</span></div>
             <div><span class="label">Cycle:</span> <span class="value" id="cycleDisplay">15s</span></div>
+            <div style="border-top: 1px solid var(--zone-border); margin-top: 5px; padding-top: 5px;"><span class="label">High Score:</span> <span class="value" id="highScoreDisplay">${highScore.toLocaleString()}</span></div>
         `;
     }
 
@@ -169,6 +173,10 @@ class UIManager {
                     <div style="font-size: 1.5rem; font-weight: bold;">Final Score</div>
                     <div style="font-size: 2rem; color: var(--zone-border); font-family: 'Courier New', monospace;" id="finalScore">0</div>
                     <div style="margin-top: 10px;">Time Survived: <span id="finalTime">0:00</span></div>
+                    <div id="newHighScoreBadge" style="display: none; color: #ffd700; font-weight: bold; font-size: 1.2rem; margin-top: 10px;">
+                        🎉 NEW HIGH SCORE! 🎉
+                    </div>
+                    <div style="margin-top: 10px; font-size: 1rem;">High Score: <span id="gameOverHighScore">0</span></div>
                 </div>
                 
                 <p style="margin: 15px 0;">
@@ -426,12 +434,27 @@ class UIManager {
     }
 
     showGameOver(finalScore, gameTime) {
+        // Load current high score
+        const currentHighScore = this.loadHighScore();
+        const isNewHighScore = finalScore > currentHighScore;
+        
         // Update final score and time
         document.getElementById('finalScore').textContent = finalScore.toLocaleString();
         
         const minutes = Math.floor(gameTime / 60);
         const seconds = Math.floor(gameTime % 60);
         document.getElementById('finalTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Show/hide new high score badge
+        const newHighScoreBadge = document.getElementById('newHighScoreBadge');
+        if (isNewHighScore) {
+            this.saveHighScore(finalScore);
+            newHighScoreBadge.style.display = 'block';
+            document.getElementById('gameOverHighScore').textContent = finalScore.toLocaleString();
+        } else {
+            newHighScoreBadge.style.display = 'none';
+            document.getElementById('gameOverHighScore').textContent = currentHighScore.toLocaleString();
+        }
         
         // Calculate performance rating
         let rating = 'Beginner';
@@ -452,7 +475,16 @@ class UIManager {
             }, 500);
         }
         
-        console.log(`Game Over displayed - Score: ${finalScore}, Time: ${gameTime}s, Rating: ${rating}`);
+        console.log(`Game Over displayed - Score: ${finalScore}, Time: ${gameTime}s, Rating: ${rating}, High Score: ${isNewHighScore ? 'NEW!' : currentHighScore}`);
+    }
+
+    loadHighScore() {
+        const saved = localStorage.getItem('square-chase-high-score');
+        return saved ? parseInt(saved) : 0;
+    }
+
+    saveHighScore(score) {
+        localStorage.setItem('square-chase-high-score', score.toString());
     }
 
     applySettings() {

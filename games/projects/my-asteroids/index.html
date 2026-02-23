@@ -79,7 +79,8 @@
     <div id="gameContainer">
         <div id="ui">
             <span>Score: <span id="score">0</span></span> &nbsp;&nbsp;&nbsp;
-            <span>Lives: <span id="lives">3</span></span>
+            <span>Lives: <span id="lives">3</span></span> &nbsp;&nbsp;&nbsp;
+            <span>High Score: <span id="highScore">0</span></span>
         </div>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div id="instructions">
@@ -90,6 +91,8 @@
     <div id="gameOver">
         <h1>GAME OVER</h1>
         <p>Final Score: <span id="finalScore">0</span></p>
+        <p id="newHighScore" style="color: #ffd700; display: none; font-weight: bold; font-size: 18px;">🎉 NEW HIGH SCORE! 🎉</p>
+        <p>High Score: <span id="gameOverHighScore">0</span></p>
         <button onclick="restartGame()">Play Again</button>
     </div>
 
@@ -103,6 +106,19 @@
         let gamePaused = false;
         let score = 0;
         let lives = 3;
+        let highScore = 0;
+
+        // Load high score from localStorage
+        function loadHighScore() {
+            const saved = localStorage.getItem('my-asteroids-high-score');
+            highScore = saved ? parseInt(saved) : 0;
+            document.getElementById('highScore').textContent = highScore;
+        }
+
+        // Save high score to localStorage
+        function saveHighScore() {
+            localStorage.setItem('my-asteroids-high-score', highScore.toString());
+        }
 
         // Player ship
         const player = {
@@ -143,6 +159,7 @@
 
         // Start button
         window.onload = () => {
+            loadHighScore(); // Load high score on page load
             const startBtn = document.createElement('button');
             startBtn.textContent = 'Start Game';
             startBtn.style.fontSize = '24px';
@@ -395,12 +412,25 @@
         function updateUI() {
             document.getElementById('score').textContent = score;
             document.getElementById('lives').textContent = lives;
+            document.getElementById('highScore').textContent = highScore;
         }
 
         // End game
         function endGame() {
             gameRunning = false;
             document.getElementById('finalScore').textContent = score;
+            
+            // Check for new high score
+            const isNewHighScore = score > highScore;
+            if (isNewHighScore) {
+                highScore = score;
+                saveHighScore();
+                document.getElementById('newHighScore').style.display = 'block';
+            } else {
+                document.getElementById('newHighScore').style.display = 'none';
+            }
+            
+            document.getElementById('gameOverHighScore').textContent = highScore;
             document.getElementById('gameOver').style.display = 'block';
         }
 

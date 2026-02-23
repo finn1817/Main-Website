@@ -70,10 +70,14 @@
         <div id="ui">
             Score: <span id="score">0</span><br>
             Level: <span id="level">1</span><br>
-            Lives: <span id="lives">3</span>
+            Lives: <span id="lives">3</span><br>
+            High Score: <span id="highScore">0</span>
         </div>
         <div id="gameOver">
             Game Over<br>
+            Final Score: <span id="finalScore">0</span><br>
+            <span id="newHighScore" style="color: #ffd700; display: none; font-weight: bold;">🎉 NEW HIGH SCORE! 🎉<br></span>
+            High Score: <span id="gameOverHighScore">0</span><br>
             <button id="restartButton">Restart</button>
         </div>
         <div id="levelUp">
@@ -99,6 +103,7 @@
         const scoreElement = document.getElementById('score');
         const levelElement = document.getElementById('level');
         const livesElement = document.getElementById('lives');
+        const highScoreElement = document.getElementById('highScore');
         const gameOverElement = document.getElementById('gameOver');
         const levelUpElement = document.getElementById('levelUp');
         const restartButton = document.getElementById('restartButton');
@@ -110,6 +115,22 @@
         let score, level, lives, gameLoop, spawnLoop;
         let gameActive = false;
         let gameStarted = false;
+        let highScore = 0;
+
+        // Load high score from localStorage
+        function loadHighScore() {
+            const saved = localStorage.getItem('current-day-astroids-high-score');
+            highScore = saved ? parseInt(saved) : 0;
+            highScoreElement.textContent = highScore;
+        }
+
+        // Save high score to localStorage
+        function saveHighScore() {
+            localStorage.setItem('current-day-astroids-high-score', highScore.toString());
+        }
+
+        // Initialize high score on page load
+        loadHighScore();
 
         class Entity {
             constructor(x, y, radius, color) {
@@ -380,12 +401,28 @@
             scoreElement.textContent = score;
             levelElement.textContent = level;
             livesElement.textContent = lives;
+            highScoreElement.textContent = highScore;
         }
 
         function gameOver() {
             gameActive = false;
             clearInterval(gameLoop);
             clearInterval(spawnLoop);
+            
+            // Update final score display
+            document.getElementById('finalScore').textContent = score;
+            
+            // Check for new high score
+            const isNewHighScore = score > highScore;
+            if (isNewHighScore) {
+                highScore = score;
+                saveHighScore();
+                document.getElementById('newHighScore').style.display = 'block';
+            } else {
+                document.getElementById('newHighScore').style.display = 'none';
+            }
+            
+            document.getElementById('gameOverHighScore').textContent = highScore;
             gameOverElement.style.display = 'block';
         }
 
