@@ -11,9 +11,9 @@ class UniversalSearch {
       // Projects (scanned from the projects/ directory)
       {
         title: "2048",
-        path: "Home › Projects › 2048",
-        url: `${this.basePath}projects/2048/`,
-        type: "projects",
+        path: "Home › Games › 2048",
+        url: `${this.basePath}games/projects/2048/`,
+        type: "games",
         description: "Classic 2048 sliding tile puzzle game.",
         keywords: ["2048", "game", "puzzle", "tiles", "javascript"]
       },
@@ -51,9 +51,9 @@ class UniversalSearch {
       },
       {
         title: "Hangman",
-        path: "Home › Projects › Hangman",
-        url: `${this.basePath}projects/hangman/`,
-        type: "projects",
+        path: "Home › Games › Hangman",
+        url: `${this.basePath}games/projects/hangman/`,
+        type: "games",
         description: "Classic hangman word-guessing game implemented in JavaScript.",
         keywords: ["hangman", "game", "word", "javascript"]
       },
@@ -115,17 +115,17 @@ class UniversalSearch {
       },
       {
         title: "Word Search",
-        path: "Home › Projects › Word Search",
-        url: `${this.basePath}projects/word-search/`,
-        type: "projects",
+        path: "Home › Games › Word Search",
+        url: `${this.basePath}games/projects/word-search/`,
+        type: "games",
         description: "Word search puzzle generator and solver.",
         keywords: ["word", "search", "puzzle", "game"]
       },
       {
         title: "Family Betting",
-        path: "Home › Projects › Family Betting",
-        url: `${this.basePath}projects/family-betting/`,
-        type: "projects",
+        path: "Home › Games › Family Betting",
+        url: `${this.basePath}games/projects/family-betting/`,
+        type: "games",
         description: "Family-friendly betting games including blackjack and poker.",
         keywords: ["family", "betting", "games", "blackjack", "poker", "casino"]
       },
@@ -139,11 +139,29 @@ class UniversalSearch {
       },
       {
         title: "Square Chase",
-        path: "Home › Projects › Square Chase",
-        url: `${this.basePath}projects/Square-Chase/`,
-        type: "projects",
+        path: "Home › Games › Square Chase",
+        url: `${this.basePath}games/projects/Square-Chase/`,
+        type: "games",
         description: "Interactive cursor-chasing game with dynamic zones and effects.",
         keywords: ["square", "chase", "game", "cursor", "interactive", "zones"]
+      },
+
+      // Games (moved from projects/)
+      {
+        title: "Pong",
+        path: "Home › Games › Pong",
+        url: `${this.basePath}games/projects/pong/`,
+        type: "games",
+        description: "Classic arcade pong game. Bounce the ball and beat your opponent!",
+        keywords: ["pong", "game", "arcade", "classic", "paddle", "ball"]
+      },
+      {
+        title: "My Asteroids",
+        path: "Home › Games › My Asteroids",
+        url: `${this.basePath}games/projects/my-asteroids/`,
+        type: "games",
+        description: "Blast asteroids in space! Classic arcade action in the depths of space.",
+        keywords: ["asteroids", "game", "arcade", "space", "shoot", "classic"]
       },
 
       // Top-level pages
@@ -154,6 +172,14 @@ class UniversalSearch {
         type: "pages",
         description: "Browse all projects and web applications.",
         keywords: ["projects", "portfolio", "apps"]
+      },
+      {
+        title: "Games",
+        path: "Home › Games",
+        url: `${this.basePath}games/`,
+        type: "pages",
+        description: "Play a variety of browser-based games including classic arcade games and logic puzzles.",
+        keywords: ["games", "play", "arcade", "fun", "entertainment", "puzzles"]
       },
       {
         title: "About Me",
