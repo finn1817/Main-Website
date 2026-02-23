@@ -163,6 +163,14 @@ class UniversalSearch {
         description: "Blast asteroids in space! Classic arcade action in the depths of space.",
         keywords: ["asteroids", "game", "arcade", "space", "shoot", "classic"]
       },
+      {
+        title: "Current Day Asteroids",
+        path: "Home › Games › Current Day Asteroids",
+        url: `${this.basePath}games/projects/current-day-astroids/`,
+        type: "games",
+        description: "Modern take on the classic asteroids game with updated graphics and gameplay.",
+        keywords: ["asteroids", "current", "modern", "game", "arcade", "space", "shoot", "shooter"]
+      },
 
       // Top-level pages
       {

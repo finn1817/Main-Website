@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Shooter</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #gameContainer {
+            position: relative;
+        }
+        canvas {
+            border: 2px solid #fff;
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 18px;
+        }
+        #gameOver, #levelUp {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 36px;
+            text-align: center;
+            display: none;
+        }
+        #howToPlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui">
+            Score: <span id="score">0</span><br>
+            Level: <span id="level">1</span><br>
+            Lives: <span id="lives">3</span>
+        </div>
+        <div id="gameOver">
+            Game Over<br>
+            <button id="restartButton">Restart</button>
+        </div>
+        <div id="levelUp">
+            Level Up!<br>
+            <button id="nextLevelButton">Next Level</button>
+        </div>
+        <div id="howToPlay">
+            <h2>How to Play</h2>
+            <p>Use arrow keys to move your ship.</p>
+            <p>Click to shoot at enemies.</p>
+            <p>Collect power-ups to gain advantages.</p>
+            <p>Survive as long as possible and increase your score!</p>
+            <button id="startButton">Start Game</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+
+        const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
+        const livesElement = document.getElementById('lives');
+        const gameOverElement = document.getElementById('gameOver');
+        const levelUpElement = document.getElementById('levelUp');
+        const restartButton = document.getElementById('restartButton');
+        const nextLevelButton = document.getElementById('nextLevelButton');
+        const howToPlayElement = document.getElementById('howToPlay');
+        const startButton = document.getElementById('startButton');
+
+        let player, bullets, enemies, particles, powerUps;
+        let score, level, lives, gameLoop, spawnLoop;
+        let gameActive = false;
+        let gameStarted = false;
+
+        class Entity {
+            constructor(x, y, radius, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        class Player extends Entity {
+            constructor(x, y, radius, color) {
+                super(x, y, radius, color);
+                this.velocity = 5;
+            }
+
+            update() {
+                if (keys.ArrowLeft && this.x - this.radius > 0) this.x -= this.velocity;
+                if (keys.ArrowRight && this.x + this.radius < canvas.width) this.x += this.velocity;
+                if (keys.ArrowUp && this.y - this.radius > 0) this.y -= this.velocity;
+                if (keys.ArrowDown && this.y + this.radius < canvas.height) this.y += this.velocity;
+            }
+        }
+
+        class Projectile extends Entity {
+            constructor(x, y, radius, color, velocity) {
+                super(x, y, radius, color);
+                this.velocity = velocity;
+            }
+
+            update() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+            }
+        }
+
+        class Enemy extends Entity {
+            constructor(x, y, radius, color, velocity, health) {
+                super(x, y, radius, color);
+                this.velocity = velocity;
+                this.health = health;
+            }
+
+            update() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+            }
+        }
+
+        class Particle extends Entity {
+            constructor(x, y, radius, color, velocity) {
+                super(x, y, radius, color);
+                this.velocity = velocity;
+                this.alpha = 1;
+            }
+
+            update() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= 0.01;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                super.draw();
+                ctx.restore();
+            }
+        }
+
+        class PowerUp extends Entity {
+            constructor(x, y, radius, color, type) {
+                super(x, y, radius, color);
+                this.type = type;
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 3,
+                    y: 3
+                };
+            }
+
+            update() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+            }
+        }
+
+        const keys = {};
+
+        function initGame() {
+            if (!gameStarted) {
+                howToPlayElement.style.display = 'none';
+                gameStarted = true;
+            }
+
+            player = new Player(canvas.width / 2, canvas.height - 50, 15, 'white');
+            bullets = [];
+            enemies = [];
+            particles = [];
+            powerUps = [];
+            score = 0;
+            level = 1;
+            lives = 3;
+            gameActive = true;
+
+            updateUI();
+            gameLoop = setInterval(update, 1000 / 60);
+            spawnLoop = setInterval(spawnEnemies, 1000);
+        }
+
+        function update() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            player.update();
+            player.draw();
+
+            particles.forEach((particle, index) => {
+                if (particle.alpha <= 0) {
+                    particles.splice(index, 1);
+                } else {
+                    particle.update();
+                    particle.draw();
+                }
+            });
+
+            bullets.forEach((bullet, bulletIndex) => {
+                bullet.update();
+                bullet.draw();
+
+                if (bullet.x - bullet.radius < 0 ||
+                    bullet.x + bullet.radius > canvas.width ||
+                    bullet.y - bullet.radius < 0 ||
+                    bullet.y + bullet.radius > canvas.height) {
+                    bullets.splice(bulletIndex, 1);
+                }
+            });
+
+            enemies.forEach((enemy, enemyIndex) => {
+                enemy.update();
+                enemy.draw();
+
+                const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+                if (dist - enemy.radius - player.radius < 1) {
+                    lives--;
+                    updateUI();
+                    enemies.splice(enemyIndex, 1);
+                    createParticles(enemy.x, enemy.y, enemy.color);
+
+                    if (lives <= 0) {
+                        gameOver();
+                    }
+                }
+
+                bullets.forEach((bullet, bulletIndex) => {
+                    const dist = Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y);
+                    if (dist - enemy.radius - bullet.radius < 1) {
+                        enemy.health--;
+                        if (enemy.health <= 0) {
+                            enemies.splice(enemyIndex, 1);
+                            bullets.splice(bulletIndex, 1);
+                            score += 10;
+                            updateUI();
+                            createParticles(enemy.x, enemy.y, enemy.color);
+
+                            if (Math.random() < 0.1) {
+                                spawnPowerUp(enemy.x, enemy.y);
+                            }
+
+                            if (enemies.length === 0) {
+                                levelUp();
+                            }
+                        } else {
+                            bullets.splice(bulletIndex, 1);
+                            createParticles(bullet.x, bullet.y, 'white');
+                        }
+                    }
+                });
+            });
+
+            powerUps.forEach((powerUp, index) => {
+                powerUp.update();
+                powerUp.draw();
+
+                const dist = Math.hypot(player.x - powerUp.x, player.y - powerUp.y);
+                if (dist - powerUp.radius - player.radius < 1) {
+                    powerUps.splice(index, 1);
+                    applyPowerUp(powerUp.type);
+                }
+
+                if (powerUp.y + powerUp.radius > canvas.height) {
+                    powerUps.splice(index, 1);
+                }
+            });
+        }
+
+        function spawnEnemies() {
+            const radius = Math.random() * (30 - 10) + 10;
+            let x, y;
+            if (Math.random() < 0.5) {
+                x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
+                y = Math.random() * canvas.height;
+            } else {
+                x = Math.random() * canvas.width;
+                y = 0 - radius;
+            }
+
+            const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
+            const angle = Math.atan2(player.y - y, player.x - x);
+            const velocity = {
+                x: Math.cos(angle) * (2 + level * 0.5),
+                y: Math.sin(angle) * (2 + level * 0.5)
+            };
+
+            enemies.push(new Enemy(x, y, radius, color, velocity, level));
+        }
+
+        function spawnPowerUp(x, y) {
+            const types = ['health', 'rapidFire', 'shield'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const color = type === 'health' ? 'green' : type === 'rapidFire' ? 'yellow' : 'blue';
+            powerUps.push(new PowerUp(x, y, 10, color, type));
+        }
+
+        function applyPowerUp(type) {
+            switch (type) {
+                case 'health':
+                    lives = Math.min(lives + 1, 5);
+                    break;
+                case 'rapidFire':
+                    player.velocity = 8;
+                    setTimeout(() => player.velocity = 5, 5000);
+                    break;
+                case 'shield':
+                    player.color = 'rgba(255, 255, 255, 0.5)';
+                    player.radius = 20;
+                    setTimeout(() => {
+                        player.color = 'white';
+                        player.radius = 15;
+                    }, 5000);
+                    break;
+            }
+            updateUI();
+        }
+
+        function createParticles(x, y, color) {
+            for (let i = 0; i < 8; i++) {
+                particles.push(new Particle(
+                    x,
+                    y,
+                    Math.random() * 3,
+                    color,
+                    {
+                        x: (Math.random() - 0.5) * (Math.random() * 6),
+                        y: (Math.random() - 0.5) * (Math.random() * 6)
+                    }
+                ));
+            }
+        }
+
+        function updateUI() {
+            scoreElement.textContent = score;
+            levelElement.textContent = level;
+            livesElement.textContent = lives;
+        }
+
+        function gameOver() {
+            gameActive = false;
+            clearInterval(gameLoop);
+            clearInterval(spawnLoop);
+            gameOverElement.style.display = 'block';
+        }
+
+        function levelUp() {
+            level++;
+            updateUI();
+            clearInterval(gameLoop);
+            clearInterval(spawnLoop);
+            levelUpElement.style.display = 'block';
+        }
+
+        function shootBullet(event) {
+            if (!gameActive || !gameStarted) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const angle = Math.atan2(
+                y - player.y,
+                x - player.x
+            );
+            const velocity = {
+                x: Math.cos(angle) * 5,
+                y: Math.sin(angle) * 5
+            };
+            bullets.push(new Projectile(player.x, player.y, 5, 'white', velocity));
+        }
+
+        canvas.addEventListener('click', shootBullet);
+
+        window.addEventListener('keydown', (event) => {
+            keys[event.code] = true;
+        });
+
+        window.addEventListener('keyup', (event) => {
+            keys[event.code] = false;
+        });
+
+        restartButton.addEventListener('click', () => {
+            gameOverElement.style.display = 'none';
+            initGame();
+        });
+
+        nextLevelButton.addEventListener('click', () => {
+            levelUpElement.style.display = 'none';
+            enemies = [];
+            bullets = [];
+            powerUps = [];
+            gameLoop = setInterval(update, 1000 / 60);
+            spawnLoop = setInterval(spawnEnemies, 1000);
+        });
+
+        startButton.addEventListener('click', initGame);
+    </script>
+</body>
+</html>
