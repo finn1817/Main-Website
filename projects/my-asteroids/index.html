@@ -263,15 +263,15 @@
                 if (dist < player.radius + asteroid.radius) {
                     lives--;
                     updateUI();
-                    asteroids.splice(index, 1);
                     
                     if (lives <= 0) {
                         endGame();
                     } else {
-                        // Reset player position
+                        // Reset player position (keep the asteroid!)
                         player.x = canvas.width / 2;
                         player.y = canvas.height / 2;
                         player.speed = 0;
+                        player.angle = -Math.PI / 2;
                     }
                 }
             });
