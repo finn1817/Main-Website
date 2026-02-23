@@ -5,7 +5,8 @@ class SectionPreviews {
             'Contact Info': '📧 Get in touch by email',
             'My Interests': '🎯 Discover what I do outside of programming',
             'School Involvement': '🎓 View my academic path',
-            'More Projects': '🚀 Explore a bigger portfolio of my web dev and programming projects',
+            'Projects': '🚀 Explore my web development and programming projects',
+            'Games': '🎮 Play interactive games I\'ve created - 2048, Hangman, Word Search & more!',
             'My Resume': '📄 Download / view my resume in a web format'
         };
         this.init();

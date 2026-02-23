@@ -319,16 +319,28 @@
     .button-list a:nth-child(3) { animation-delay: 0.4s; }
     .button-list a:nth-child(4) { animation-delay: 0.5s; }
     .button-list a:nth-child(5) { animation-delay: 0.6s; }
+    .button-list a:nth-child(6) { animation-delay: 0.7s; }
 
-    /* specific styling for "More Projects" button (5th button) */
+    /* specific styling for "Projects" button (5th button) */
     .button-list a:nth-child(5) {
-      background: linear-gradient(135deg, #dc3545, #c82333);
-      box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+      background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
     }
 
     .button-list a:nth-child(5):hover {
-      background: linear-gradient(135deg, #c82333, #bd2130);
-      box-shadow: 0 12px 35px rgba(220, 53, 69, 0.5);
+      background: linear-gradient(135deg, #ee5a6f, #dc4f64);
+      box-shadow: 0 12px 35px rgba(255, 107, 107, 0.5);
+    }
+
+    /* specific styling for "Games" button (6th button) */
+    .button-list a:nth-child(6) {
+      background: linear-gradient(135deg, #9b59b6, #8e44ad);
+      box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
+    }
+
+    .button-list a:nth-child(6):hover {
+      background: linear-gradient(135deg, #8e44ad, #7d3c98);
+      box-shadow: 0 12px 35px rgba(155, 89, 182, 0.5);
     }
 
     .button-list a:hover,
@@ -344,7 +356,7 @@
       background: var(--secondary-gradient);
       box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
       animation: slide-in-right 0.6s ease forwards;
-      animation-delay: 0.8s;
+      animation-delay: 0.9s;
     }
 
     .resume-button:hover {
@@ -926,7 +938,8 @@
         <a href="contact/"><span>Contact Info</span></a>
         <a href="interests/"><span>My Interests</span></a>
         <a href="education/"><span>School Involvement</span></a>
-        <a href="projects/"><span>More Projects</span></a>
+        <a href="projects/"><span>Projects</span></a>
+        <a href="games/"><span>Games</span></a>
       </div>
 
       <p style="animation-delay: 0.7s;">Download or view my professional resume:</p>
