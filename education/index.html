@@ -389,14 +389,22 @@
     }
 
     .skill-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 1rem;
-      padding: 0.75rem;
+      padding: 1rem;
       background: rgba(0, 123, 255, 0.05);
-      border-radius: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 123, 255, 0.12);
       transition: all 0.3s ease;
+    }
+
+    .skill-item[data-animate] {
+      opacity: 0;
+      transform: translateX(-12px);
+    }
+
+    .skill-item.is-visible {
+      opacity: 1;
+      transform: translateX(0);
     }
 
     .skill-item:hover {
@@ -405,25 +413,24 @@
     }
 
     .skill-name {
-      font-weight: 500;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary-dark);
     }
 
-    .skill-level {
-      display: flex;
-      gap: 2px;
+    body.dark .skill-name {
+      color: #82c6ff;
     }
 
-    .skill-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #ddd;
-      transition: all 0.3s ease;
+    .skill-detail {
+      margin: 0.25rem 0;
+      line-height: 1.5;
+      font-size: 0.95rem;
     }
 
-    .skill-dot.filled {
-      background: var(--primary-color);
-      box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    .skill-detail strong {
+      color: var(--primary-color);
     }
 
     /* Interactive Stats */
@@ -795,7 +802,7 @@
           <div class="content-icon">🎓</div>
           <h3 class="content-title">College</h3>
           <p class="content-description">
-            Began studying computer science at SUNY Fredonia. Transitioned from super basic coding experience (one class on arduino) to understanding programming concepts and building things on my own.
+            Began studying computer science at SUNY Fredonia. Moved quick on my own from super basic coding experience (one class on arduino in high school) to understanding programming & building things on my own.
           </p>
           <div class="achievement-badges">
             <span class="badge">C++</span>
@@ -832,7 +839,7 @@
           <div class="content-icon">🚀</div>
           <h3 class="content-title">Work Ready</h3>
           <p class="content-description">
-            Getting toward graduation with solid programming skills, real-world experience, and a lot to show that I am capable of getting things done. I feel ready to go straight into a real job in the tech field.
+            Getting toward graduation with programming skills, real-world experience, and a lot to show that I am capable of getting things done. I feel ready to go straight into a real job in my field.
           </p>
           <div class="achievement-badges">
             <span class="badge">Website Proof</span>
@@ -848,194 +855,88 @@
   <section class="skills-section">
     <div class="skills-header">
       <h2>Tech Expertise</h2>
-      <p>skill development across multiple domains - In my opinion</p>
+      <p>What I do well and where I have already used it in real work, school, and personal projects</p>
     </div>
 
     <div class="skills-grid">
       <div class="skill-category">
         <h3>💻 Programming Languages</h3>
         <div class="skill-item">
-          <span class="skill-name">C++</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-          </div>
+          <h4 class="skill-name">C++</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Object-oriented programming, clean (easy to read & pick up) structure, and multiple algorithm building assignments.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Built multiple college and work projects | Used Python, HTML, CSS, JS, and C++ during my CS courses.</p>
         </div>
         <div class="skill-item">
-          <span class="skill-name">Python</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-          </div>
+          <h4 class="skill-name">Python</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Automation scripts, toolsets (GUI & command line), and finding quick solutions for problems.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Created tools for this websites, courses, and work (in a SUNY IT department), including projects for checks, maintenance, and automation.</p>
         </div>
         <div class="skill-item">
-          <span class="skill-name">C#</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot"></div>
-          </div>
+          <h4 class="skill-name">C#</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Building structured applications with dynamic & easy to understand code.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Used in class projects and software engineering assignments that emphasized teamwork, architecture, and debugging.</p>
         </div>
         <div class="skill-item">
-          <span class="skill-name">SQL</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot"></div>
-          </div>
-        </div>
-        <div class="skill-item">
-          <span class="skill-name">Bash</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot"></div>
-            <div class="skill-dot"></div>
-          </div>
-        </div>
-        <div class="skill-item">
-          <span class="skill-name">Java / Koltin</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot"></div>
-            <div class="skill-dot"></div>
-          </div>
+          <h4 class="skill-name">SQL and Data Work</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Writing practical queries, organizing data, and connecting databases to apps.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Applied SQL in coursework and project env's where data accuracy and security matter.</p>
         </div>
       </div>
 
       <div class="skill-category">
         <h3>🌐 Web Skills</h3>
         <div class="skill-item">
-          <span class="skill-name">HTML</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-          </div>
+          <h4 class="skill-name">HTML Structure</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Project structure, clear organization, and readable scripts.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Built and have maintained multiple pages on just this personal website alone, along with many others.</p>
         </div>
         <div class="skill-item">
-          <span class="skill-name">Interactive Pages</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot"></div>
-          </div>
+          <h4 class="skill-name">Interactive JavaScript</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Updates, user feedback, and dynamic app behavior that still keeps pages fast.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Built interactive sections, project demos, and utility features throughout this site.</p>
         </div>
         <div class="skill-item">
-          <span class="skill-name">CSS / JS</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot"></div>
-          </div>
-        </div>
-        <div class="skill-item">
-          <span class="skill-name">Overall Design</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-          </div>
+          <h4 class="skill-name">CSS and Visual Design</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Creating global themes, responsive layouts, and consistent visual style across pages.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Designed and updated full-page UI sections for portfolio, tools, and game pages.</p>
         </div>
       </div>
 
       <div class="skill-category">
         <h3>🛠️ Tools & System Work</h3>
         <div class="skill-item">
-          <span class="skill-name">Bash Scripting</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot"></div>
-            <div class="skill-dot"></div>
-          </div>
+          <h4 class="skill-name">Scripting and Automation</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Writing scripts to reduce duplication and keep projects organized.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Used JS / Python scripting, know how to scan project assets, and check project links for workflow tasks.</p>
         </div>
         <div class="skill-item">
-          <span class="skill-name">VS Code</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-          </div>
+          <h4 class="skill-name">Git and GitHub Workflow</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Use version control as a source backup, allowing easy comfortable updates, and keeping project history.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Managed site updates and class/work code changes through easily named commits.</p>
         </div>
         <div class="skill-item">
-          <span class="skill-name">Git/GitHub</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-          </div>
-        </div>
-        
-        <div class="skill-item">
-          <span class="skill-name">Hardware Maintenance</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-          </div>
+          <h4 class="skill-name">Technical Support and Hardware</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Diagnosing issues, communicating clearly, and solving system issues.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Applied through IT work and hands-on hardware maintenance.</p>
         </div>
       </div>
 
       <div class="skill-category">
         <h3>🎯 Other Skills</h3>
         <div class="skill-item">
-          <span class="skill-name">Team Leadership</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-          </div>
+          <h4 class="skill-name">Team Leadership</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Leading teams, keeping people motivated, and staying organized under pressure.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Served as a captain in both soccer and Rocket League, helping  my planning and coordination.</p>
         </div>
         <div class="skill-item">
-          <span class="skill-name">Problem Solving</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-          </div>
+          <h4 class="skill-name">Problem Solving</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Breaking down difficult tasks and finding easier solutions quickly.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Used all around programming, troubleshooting work, and project planning.</p>
         </div>
         <div class="skill-item">
-          <span class="skill-name">Project Management</span>
-          <div class="skill-level">
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-            <div class="skill-dot filled"></div>
-          </div>
+          <h4 class="skill-name">Project Follow-Through</h4>
+          <p class="skill-detail"><strong>What I do well:</strong> Turning ideas into finished projects and updating based on feedback.</p>
+          <p class="skill-detail"><strong>Experience:</strong> Built and maintained a growing website full of of tools, games, and other apps.</p>
         </div>
       </div>
     </div>
@@ -1182,21 +1083,25 @@
         statsObserver.observe(statsSection);
       }
 
-      // Skill level animation
+      // Skill item reveal animation
       const skillObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            const skillDots = entry.target.querySelectorAll('.skill-dot.filled');
-            skillDots.forEach((dot, index) => {
+            const skillItems = entry.target.querySelectorAll('.skill-item');
+            skillItems.forEach((item, index) => {
               setTimeout(() => {
-                dot.style.animation = 'pulse 0.5s ease';
-              }, index * 100);
+                item.classList.add('is-visible');
+              }, index * 120);
             });
+            skillObserver.unobserve(entry.target);
           }
         });
       }, { threshold: 0.5 });
 
       document.querySelectorAll('.skill-category').forEach(category => {
+        category.querySelectorAll('.skill-item').forEach(item => {
+          item.setAttribute('data-animate', 'true');
+        });
         skillObserver.observe(category);
       });
     });
