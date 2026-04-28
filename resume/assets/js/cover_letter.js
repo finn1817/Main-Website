@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p style="margin-bottom: 20px;"><strong>Dear Hiring Manager(s) that may see this,</strong></p>
                     
                     <p style="margin-bottom: 20px;">
-                        I am writing to show my interest in any IT positions that I can help in. As a Computer Science student at SUNY Fredonia with lotds of hands-on experience in IT, system support, and programming, I am confident I can make a valuable member of any team.
+                        I am writing to show my interest in any IT positions that I can help in. As a Computer Science student at SUNY Fredonia with lots of hands-on experience in IT, system support, and programming, I am confident I can make a valuable member of any team.
                     </p>
                     
                     <p style="margin-bottom: 15px;"><strong>My Experience:</strong></p>
