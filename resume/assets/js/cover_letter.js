@@ -40,36 +40,36 @@ document.addEventListener('DOMContentLoaded', function() {
             `
         },
         generic: {
-            title: "IT Positions",
+            title: "Buffalo Bills - IT Position",
             content: `
                 <div style="line-height: 1.8; text-align: left;">
-                    <p style="margin-bottom: 20px;"><strong>Dear Hiring Manager,</strong></p>
+                    <p style="margin-bottom: 20px;"><strong>Dear Hiring Manager(s) that may see this,</strong></p>
                     
                     <p style="margin-bottom: 20px;">
-                        I am writing to express my interest in any IT position at your organization. As a Computer Science student at SUNY Fredonia with hands-on experience in IT, system administration, and programming, I am confident I can make a valuable member of any team.
+                        I am writing to show my interest in any IT positions that I can help in. As a Computer Science student at SUNY Fredonia with lotds of hands-on experience in IT, system support, and programming, I am confident I can make a valuable member of any team.
                     </p>
                     
                     <p style="margin-bottom: 15px;"><strong>My Experience:</strong></p>
                     
                     <p style="margin-bottom: 20px;">
-                        Currently serving as IT Staff at SUNY Fredonia, I provide technical support, maintain systems, repair hardware, manage network issues / resolutions, and handle some larger scale database projects. I've also completed internships in help desk operations and programming, giving me a huge grasp on IT operations.
+                        In my current IT spot with SUNY Fredonia, I provide tech support, system hardware / software support & repair, deal with network issues, and handle a few database projects. I've also completed two internships with ITS for IT support and programming, showing me how things get fixed and dealt with in the real world.
                     </p>
                     
                     <p style="margin-bottom: 15px;"><strong>Technical Proficiency:</strong></p>
                     <ul style="margin-left: 20px; margin-bottom: 20px;">
-                        <li>Operating Systems: Windows, Linux (multiple distributions), & macOS</li>
+                        <li>Operating Systems: Windows, Linux (multiple distros), & macOS</li>
                         <li>Programming: Python, C++, Web (HTML, CSS, JS), C#, Bash, & SQL</li>
-                        <li>Networking: Cisco equipment, set-up, routing, switching, troubleshooting</li>
-                        <li>Hardware: System builds, repairs, diagnostics, drive imaging</li>
-                        <li>Cloud Technology: Database management, containerization (Docker), Firebase proficiency</li>
+                        <li>Networking: Cisco equipment, setup / config, routing, switching, & troubleshooting</li>
+                        <li>Hardware: System building, repairing, diagnostics testing, & drive imaging</li>
+                        <li>Cloud Technology: Database setup / planning, containerization (Docker), & Firestore / Firebase for real time changes / hosting</li>
                     </ul>
                     
                     <p style="margin-bottom: 20px;">
-                        I am good at finding and fixing issues quickly and explaining what went wrong to the user. Whether it's resolving support tickets, setting up new systems, or developing automation tools, I always focus on efficiency on functionlity more than anything else.
+                        I am good at finding and fixing issues quickly and explaining what went wrong. Whether it's resolving support tickets, setting up a new system, or making automation tools, I always try to focus on functionlity over anything else.
                     </p>
                     
                     <p style="margin-bottom: 20px;">
-                        I am very excited about the new stadium opportunity and would be happy to bring my skills and dedication to your organization!
+                        I am very excited about the new stadium opportunity and it is one of my dreams gto work for the Buffalo Bills!
                     </p>
                     
                     <p><strong>Sincerely,</strong><br>
