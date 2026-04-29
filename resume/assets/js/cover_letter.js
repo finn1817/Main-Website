@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         Buffalo Bills - Network Engineer
                     </button>
                     <button class="cover-letter-btn generic" onclick="showCoverLetter('generic')">
-                        IT Positions
+                        IT Employment
                     </button>
                 </div>
                 <p style="text-align: center; margin-top: 30px; color: var(--text-color); opacity: 0.7; font-size: 14px;">
